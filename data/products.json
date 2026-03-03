@@ -1,0 +1,182 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Nettoyant Doux à l'Eau de Rose",
+      "brand": "Bioderma",
+      "category": "skincare",
+      "subcategory": "cleanser",
+      "price": 14.90,
+      "skinTypes": ["normale", "sensible", "seche"],
+      "description": "Nettoie en douceur sans agresser la peau. Parfait pour les peaux sensibles.",
+      "emoji": "🧴",
+      "rating": 4.7
+    },
+    {
+      "id": 2,
+      "name": "Sérum Vitamine C 15%",
+      "brand": "The Ordinary",
+      "category": "skincare",
+      "subcategory": "serum",
+      "price": 9.80,
+      "skinTypes": ["normale", "mixte", "terne"],
+      "description": "Antioxydant puissant qui illumine le teint et protège des radicaux libres.",
+      "emoji": "✨",
+      "rating": 4.5
+    },
+    {
+      "id": 3,
+      "name": "Crème Hydratante SPF 50",
+      "brand": "La Roche-Posay",
+      "category": "skincare",
+      "subcategory": "spf",
+      "price": 22.50,
+      "skinTypes": ["normale", "grasse", "mixte", "sensible"],
+      "description": "Protection solaire haute avec texture légère. Usage quotidien indispensable.",
+      "emoji": "☀️",
+      "rating": 4.9
+    },
+    {
+      "id": 4,
+      "name": "Huile Démaquillante Camélia",
+      "brand": "Shu Uemura",
+      "category": "skincare",
+      "subcategory": "cleanser",
+      "price": 38.00,
+      "skinTypes": ["normale", "seche", "mixte"],
+      "description": "Dissout le maquillage waterproof tout en nourrissant la peau.",
+      "emoji": "🫧",
+      "rating": 4.8
+    },
+    {
+      "id": 5,
+      "name": "Tonique Acide Glycolique 7%",
+      "brand": "Paula's Choice",
+      "category": "skincare",
+      "subcategory": "toner",
+      "price": 32.00,
+      "skinTypes": ["normale", "grasse", "mixte"],
+      "description": "Exfolie en douceur, resserre les pores et unifie le teint.",
+      "emoji": "💧",
+      "rating": 4.6
+    },
+    {
+      "id": 6,
+      "name": "Crème Barrière Nourrissante",
+      "brand": "CeraVe",
+      "category": "skincare",
+      "subcategory": "moisturizer",
+      "price": 16.50,
+      "skinTypes": ["seche", "sensible", "normale"],
+      "description": "Répare la barrière cutanée avec 3 céramides essentielles.",
+      "emoji": "🌿",
+      "rating": 4.7
+    },
+    {
+      "id": 7,
+      "name": "Sérum Rétinol 0.3%",
+      "brand": "The Ordinary",
+      "category": "skincare",
+      "subcategory": "serum",
+      "price": 6.30,
+      "skinTypes": ["normale", "grasse", "mixte"],
+      "description": "Réduit les rides et améliore la texture. À utiliser le soir uniquement.",
+      "emoji": "✨",
+      "rating": 4.4
+    },
+    {
+      "id": 8,
+      "name": "Masque Kaolin Purifiant",
+      "brand": "Innisfree",
+      "category": "skincare",
+      "subcategory": "mask",
+      "price": 18.00,
+      "skinTypes": ["grasse", "mixte"],
+      "description": "Absorbe le sébum et désincruste les pores en profondeur.",
+      "emoji": "🎭",
+      "rating": 4.3
+    },
+    {
+      "id": 9,
+      "name": "Rouge à Lèvres Satin — Rouge Passion",
+      "brand": "Charlotte Tilbury",
+      "category": "makeup",
+      "subcategory": "lipstick",
+      "price": 29.00,
+      "color": "#DC143C",
+      "description": "Formule longue tenue avec fini satiné lumineux.",
+      "emoji": "💄",
+      "rating": 4.8
+    },
+    {
+      "id": 10,
+      "name": "Fond de Teint Fluide Naturel",
+      "brand": "NARS",
+      "category": "makeup",
+      "subcategory": "foundation",
+      "price": 42.00,
+      "skinTypes": ["normale", "mixte", "seche"],
+      "description": "Couvrance légère à modulable pour un effet peau nette.",
+      "emoji": "🏷️",
+      "rating": 4.6
+    },
+    {
+      "id": 11,
+      "name": "Blush Poudre — Orgasm",
+      "brand": "NARS",
+      "category": "makeup",
+      "subcategory": "blush",
+      "price": 34.00,
+      "color": "#FF9E80",
+      "description": "Le blush iconique pêche-doré qui illumine tous les teints.",
+      "emoji": "🌸",
+      "rating": 4.9
+    },
+    {
+      "id": 12,
+      "name": "Mascara Volume Extrême",
+      "brand": "Lancôme",
+      "category": "makeup",
+      "subcategory": "mascara",
+      "price": 33.00,
+      "description": "Courbe et volumise les cils dès la première couche.",
+      "emoji": "👁️",
+      "rating": 4.7
+    },
+    {
+      "id": 13,
+      "name": "Contour des Yeux Repulpant",
+      "brand": "Vichy",
+      "category": "skincare",
+      "subcategory": "eye",
+      "price": 24.00,
+      "skinTypes": ["normale", "seche", "mixte", "sensible"],
+      "description": "Réduit les cernes et les poches, repulpe la zone du regard.",
+      "emoji": "👁️",
+      "rating": 4.5
+    },
+    {
+      "id": 14,
+      "name": "Lip Gloss — Rose Nude",
+      "brand": "Fenty Beauty",
+      "category": "makeup",
+      "subcategory": "lipstick",
+      "price": 21.00,
+      "color": "#C8956C",
+      "description": "Gloss plumpant non collant pour des lèvres pulpeuses et brillantes.",
+      "emoji": "💋",
+      "rating": 4.6
+    },
+    {
+      "id": 15,
+      "name": "Brume Fixatrice Hydratante",
+      "brand": "Mario Badescu",
+      "category": "makeup",
+      "subcategory": "setting",
+      "price": 12.00,
+      "description": "Fixe le maquillage et hydrate tout au long de la journée.",
+      "emoji": "💦",
+      "rating": 4.5
+    }
+  ]
+}
