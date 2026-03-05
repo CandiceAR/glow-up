@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — GLOW UP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: #f5f5f5; }
+    .admin-wrap { max-width: 1100px; margin: 0 auto; padding: 80px 24px 60px; }
+    .admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
+    .admin-header h1 { font-family: 'Cormorant Garamond', serif; font-size: 2rem; }
+    .admin-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+    .admin-tab { padding: 8px 20px; border: 1px solid var(--sand); border-radius: 50px; font-size: 0.82rem; cursor: pointer; transition: 0.2s; background: white; }
+    .admin-tab.active { background: var(--charcoal); color: white; border-color: var(--charcoal); }
+
+    /* Login */
+    #loginPanel {
+      max-width: 360px;
+      margin: 80px auto;
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+    #loginPanel h2 { margin-bottom: 8px; }
+    #loginPanel p  { margin-bottom: 24px; font-size: 0.875rem; color: var(--muted); }
+    .admin-pass-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--sand);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* Table */
+    .products-table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .products-table th { background: var(--charcoal); color: white; padding: 12px 16px; font-size: 0.78rem; font-weight: 500; text-align: left; letter-spacing: 0.05em; }
+    .products-table td { padding: 12px 16px; font-size: 0.82rem; border-bottom: 1px solid var(--sand); vertical-align: middle; }
+    .products-table tr:last-child td { border-bottom: none; }
+    .products-table tr:hover td { background: #fafafa; }
+
+    .badge-active   { background: #d4edda; color: #155724; padding: 3px 8px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
+    .badge-inactive { background: #f8d7da; color: #721c24; padding: 3px 8px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
+    .badge-featured { background: #C9A98A; color: white; padding: 3px 8px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
+
+    .btn-sm { padding: 6px 14px; font-size: 0.75rem; border-radius: 20px; cursor: pointer; transition: 0.2s; font-family: 'DM Sans', sans-serif; }
+    .btn-edit   { background: var(--charcoal); color: white; border: none; }
+    .btn-delete { background: var(--error); color: white; border: none; }
+    .btn-toggle { background: white; border: 1px solid var(--sand); color: var(--charcoal); }
+    .btn-toggle:hover { background: var(--sand); }
+    .btn-actions { display: flex; gap: 6px; }
+
+    /* Color pill */
+    .color-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .color-pill-dot { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.1); flex-shrink: 0; }
+
+    /* Form */
+    .product-form {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 24px;
+    }
+    .product-form h2 { font-size: 1.4rem; margin-bottom: 24px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: 1/-1; }
+    .form-label { font-size: 0.78rem; font-weight: 600; color: var(--charcoal); letter-spacing: 0.04em; text-transform: uppercase; }
+    .form-input, .form-select, .form-textarea {
+      padding: 10px 14px;
+      border: 1px solid var(--sand);
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--charcoal);
+      transition: 0.2s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--nude);
+      background: white;
+    }
+    .form-textarea { resize: vertical; min-height: 80px; }
+    .form-actions { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+    .form-checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border: 1px solid var(--sand);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .form-checkbox-row input { width: 16px; height: 16px; cursor: pointer; accent-color: var(--nude); }
+
+    /* ASIN extractor */
+    .asin-extractor {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      border: 1px solid var(--sand);
+      margin-bottom: 24px;
+    }
+    .asin-extractor h3 { font-size: 1rem; margin-bottom: 12px; }
+    .asin-row { display: flex; gap: 8px; }
+    .asin-row input { flex: 1; }
+    .asin-result { margin-top: 12px; padding: 10px 14px; background: var(--cream); border-radius: 8px; font-family: monospace; font-size: 0.82rem; color: var(--charcoal); word-break: break-all; }
+
+    /* Stats */
+    .admin-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 32px; }
+    .stat-card { background: white; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .stat-number { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; color: var(--charcoal); line-height: 1; }
+    .stat-label  { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+
+    /* Search */
+    .admin-toolbar { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+    .search-input {
+      flex: 1;
+      min-width: 200px;
+      padding: 8px 14px;
+      border: 1px solid var(--sand);
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .search-input:focus { outline: none; border-color: var(--nude); }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar minimale admin -->
+  <header class="navbar">
+    <div class="nav-left"></div>
+    <a class="nav-logo" href="index.html">GLOW UP</a>
+    <div class="nav-right">
+      <button class="btn-nav-auth" onclick="Admin.logout()">Déconnexion</button>
+    </div>
+  </header>
+
+  <!-- Login Panel -->
+  <div id="loginPanel">
+    <h2>Administration</h2>
+    <p>Accès réservé à l'administrateur</p>
+    <input type="password" id="adminPassword" class="admin-pass-input" placeholder="Mot de passe admin" onkeydown="if(event.key==='Enter') Admin.login()">
+    <button class="btn btn-dark full-width" onclick="Admin.login()">Accéder →</button>
+    <p id="loginError" style="color:var(--error); margin-top:12px; display:none; font-size:0.82rem;"></p>
+  </div>
+
+  <!-- Admin Panel (caché par défaut) -->
+  <div id="adminPanel" style="display:none;">
+    <div class="admin-wrap">
+
+      <div class="admin-header">
+        <h1>Tableau de bord</h1>
+        <button class="btn btn-dark" onclick="Admin.showAddForm()">+ Ajouter un produit</button>
+      </div>
+
+      <!-- Stats -->
+      <div class="admin-stats" id="adminStats"></div>
+
+      <!-- Onglets -->
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="Admin.showTab('products')">Produits</button>
+        <button class="admin-tab" onclick="Admin.showTab('asin')">Extracteur ASIN</button>
+      </div>
+
+      <!-- Tab: Produits -->
+      <div id="tabProducts">
+
+        <!-- Formulaire ajout/modif -->
+        <div id="productFormWrap" style="display:none;">
+          <div class="product-form">
+            <h2 id="formTitle">Ajouter un produit</h2>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">ASIN Amazon *</label>
+                <input type="text" id="fAsin" class="form-input" placeholder="B000FKG4TI" oninput="Admin.autoFillAmazonUrl()">
+              </div>
+              <div class="form-group">
+                <label class="form-label">ID interne (ex: m051)</label>
+                <input type="text" id="fId" class="form-input" placeholder="m051">
+              </div>
+              <div class="form-group full">
+                <label class="form-label">Nom du produit *</label>
+                <input type="text" id="fName" class="form-input" placeholder="Color Riche — 297 Red Passion">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Marque *</label>
+                <input type="text" id="fBrand" class="form-input" placeholder="L'Oréal Paris">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Catégorie *</label>
+                <select id="fCategory" class="form-select">
+                  <option value="lipstick">Rouge à lèvres</option>
+                  <option value="blush">Blush</option>
+                  <option value="foundation">Fond de teint</option>
+                  <option value="mascara">Mascara</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Nom de la teinte</label>
+                <input type="text" id="fShadeName" class="form-input" placeholder="Red Passion">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Couleur HEX</label>
+                <input type="color" id="fColorHex" class="form-input" value="#CC0000" style="height:44px; padding:4px 8px;">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Prix (€)</label>
+                <input type="number" id="fPrice" class="form-input" placeholder="11.50" step="0.01" min="0">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Note /5</label>
+                <input type="number" id="fRating" class="form-input" placeholder="4.5" step="0.1" min="0" max="5">
+              </div>
+              <div class="form-group full">
+                <label class="form-label">URL Amazon (auto-remplie avec tag affilié)</label>
+                <input type="text" id="fAmazonUrl" class="form-input" placeholder="https://www.amazon.fr/dp/B000FKG4TI?tag=kand10ar-21">
+              </div>
+              <div class="form-group full">
+                <label class="form-label">URL image Amazon</label>
+                <input type="text" id="fImageUrl" class="form-input" placeholder="https://m.media-amazon.com/images/I/...">
+              </div>
+              <div class="form-group full">
+                <label class="form-label">Description</label>
+                <textarea id="fDescription" class="form-textarea" placeholder="Description courte du produit..."></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Finition</label>
+                <select id="fFinish" class="form-select">
+                  <option value="mat">Mat</option>
+                  <option value="satin">Satiné</option>
+                  <option value="brillant">Brillant</option>
+                  <option value="crème">Crème</option>
+                  <option value="poudré">Poudré</option>
+                  <option value="naturel">Naturel</option>
+                  <option value="lumineux">Lumineux</option>
+                  <option value="nacré">Nacré</option>
+                  <option value="volume">Volume</option>
+                  <option value="allongeant">Allongeant</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Notes admin</label>
+                <input type="text" id="fNotes" class="form-input" placeholder="Bestseller, viral, etc.">
+              </div>
+              <div class="form-group">
+                <label class="form-label" style="margin-bottom:4px;">Statut</label>
+                <label class="form-checkbox-row">
+                  <input type="checkbox" id="fActive" checked>
+                  <span>Actif (visible sur le site)</span>
+                </label>
+              </div>
+              <div class="form-group">
+                <label class="form-label" style="margin-bottom:4px;">Mise en avant</label>
+                <label class="form-checkbox-row">
+                  <input type="checkbox" id="fFeatured">
+                  <span>★ Produit vedette</span>
+                </label>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-dark" onclick="Admin.saveProduct()">Enregistrer</button>
+              <button class="btn btn-outline" onclick="Admin.cancelForm()">Annuler</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Toolbar recherche -->
+        <div class="admin-toolbar">
+          <input type="text" class="search-input" placeholder="Rechercher par nom, marque, ASIN…" oninput="Admin.search(this.value)" id="searchInput">
+          <select class="form-select" style="width:auto;" onchange="Admin.filterCat(this.value)" id="catFilter">
+            <option value="all">Toutes catégories</option>
+            <option value="lipstick">Rouge à lèvres</option>
+            <option value="blush">Blush</option>
+            <option value="foundation">Fond de teint</option>
+            <option value="mascara">Mascara</option>
+          </select>
+        </div>
+
+        <!-- Table produits -->
+        <table class="products-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Produit</th>
+              <th>ASIN</th>
+              <th>Catégorie</th>
+              <th>Couleur</th>
+              <th>Prix</th>
+              <th>Note</th>
+              <th>Statut</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="productsTableBody">
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Tab: Extracteur ASIN -->
+      <div id="tabAsin" style="display:none;">
+        <div class="asin-extractor">
+          <h3>Extraire l'ASIN depuis une URL Amazon</h3>
+          <p style="font-size:0.82rem; color:var(--muted); margin-bottom:12px;">Colle une URL Amazon complète pour extraire l'ASIN et générer l'URL affiliée.</p>
+          <div class="asin-row">
+            <input type="text" id="asinInput" class="form-input" placeholder="https://www.amazon.fr/dp/B000FKG4TI/ref=...">
+            <button class="btn btn-dark btn-sm" style="padding:10px 20px;" onclick="Admin.extractASIN()">Extraire</button>
+          </div>
+          <div id="asinResult" class="asin-result" style="display:none;"></div>
+        </div>
+
+        <div class="asin-extractor">
+          <h3>Vérifier le tag affilié</h3>
+          <p style="font-size:0.82rem; color:var(--muted); margin-bottom:12px;">Colle une URL Amazon pour vérifier et corriger le tag affilié.</p>
+          <div class="asin-row">
+            <input type="text" id="tagInput" class="form-input" placeholder="https://www.amazon.fr/dp/B000FKG4TI">
+            <button class="btn btn-dark btn-sm" style="padding:10px 20px;" onclick="Admin.checkTag()">Vérifier</button>
+          </div>
+          <div id="tagResult" class="asin-result" style="display:none;"></div>
+        </div>
+      </div>
+
+    </div><!-- /admin-wrap -->
+  </div><!-- /adminPanel -->
+
+  <script src="js/adminPanel.js"></script>
+</body>
+</html>

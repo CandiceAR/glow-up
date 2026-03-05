@@ -1,0 +1,22 @@
+# Secrets
+stripe_backup_code.txt
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+
+# Node (si Phase 1)
+node_modules/
+.env
+.env.local
+
+# Logs
+*.log
+
+# PDF privés
+recapitulatif_*.pdf

@@ -3,400 +3,286 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Glow Up ✨ — Ta Routine Beauté</title>
+  <title>Glow Up — Skincare & Maquillage Virtuel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <!-- ===== NAVBAR ===== -->
-  <header class="navbar" id="navbar">
-    <div class="nav-logo">
-      <img src="glow-up-icon.jpg" alt="" class="nav-icon" onerror="this.style.display='none'">
-      <span>Glow Up</span>
+  <header class="navbar">
+    <div class="nav-left">
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
-    <nav class="nav-menu" id="navMenu">
-      <button class="nav-item active" data-view="home">Accueil</button>
-      <button class="nav-item" data-view="tryon">Essai Virtuel</button>
-      <button class="nav-item" data-view="routine">Ma Routine</button>
-      <button class="nav-item" data-view="produits">Produits</button>
-      <button class="nav-item" data-view="profil">Mon Profil</button>
-    </nav>
-    <button class="btn btn-primary nav-cta" onclick="navigateTo('tryon')">Essayer →</button>
-    <button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+
+    <a class="nav-logo" href="#" onclick="showScreen('home'); return false;">GLOW UP</a>
+
+    <div class="nav-right">
+      <nav class="nav-links" id="navLinks">
+        <a class="nav-link active" data-screen="home"     href="#" onclick="showScreen('home'); return false;">Accueil</a>
+        <a class="nav-link"        data-screen="shop"     href="#" onclick="showScreen('shop'); return false;">Boutique</a>
+        <a class="nav-link"        data-screen="capture"  href="#" onclick="showScreen('capture'); return false;">Mon Look</a>
+      </nav>
+      <div id="navUser"></div>
+    </div>
   </header>
 
-  <!-- ===== MAIN ===== -->
-  <main>
+  <!-- ===== APP ===== -->
+  <div id="app">
 
     <!-- ======== HOME ======== -->
-    <section class="view active" id="view-home">
-
-      <!-- Hero -->
-      <div class="hero">
-        <div class="hero-text">
-          <div class="hero-badge">✨ Prototype Beta</div>
-          <h1>Révèle ta <span class="text-gradient">beauté naturelle</span></h1>
-          <p class="hero-sub">Essaie du maquillage en réalité augmentée, construis ta routine skincare personnalisée et découvre les produits faits pour toi.</p>
-          <div class="hero-btns">
-            <button class="btn btn-primary large" onclick="navigateTo('tryon')">💄 Essayer du maquillage</button>
-            <button class="btn btn-outline large" onclick="navigateTo('routine')">🌿 Ma routine</button>
-          </div>
-          <div class="hero-stats">
-            <div class="stat"><strong>AR</strong><span>Essai virtuel</span></div>
-            <div class="stat-sep"></div>
-            <div class="stat"><strong>50+</strong><span>teintes</span></div>
-            <div class="stat-sep"></div>
-            <div class="stat"><strong>100%</strong><span>gratuit</span></div>
+    <div class="screen active" id="screen-home">
+      <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+          <span class="eyebrow">Skincare 100% Objectif · Maquillage Virtuel</span>
+          <h1 class="hero-title">Découvre ta routine,<br><em>essaie avant d'acheter.</em></h1>
+          <p class="hero-sub">Questionnaire personnalisé · Routine sur-mesure · Try-on virtuel MediaPipe<br>Liens Amazon affiliés — même commission, aucun favoritisme.</p>
+          <div class="hero-actions">
+            <button class="btn btn-dark" onclick="startGlowUp()">Commencer mon analyse ✦</button>
+            <button class="btn btn-outline" onclick="showScreen('shop')">Voir la boutique</button>
           </div>
         </div>
-        <div class="hero-visual">
-          <div class="hero-mockup">
-            <div class="mockup-face">😊</div>
-            <div class="mockup-lips"></div>
-            <div class="mockup-blush left"></div>
-            <div class="mockup-blush right"></div>
-            <div class="mockup-label">Essai virtuel AR</div>
+      </section>
+
+      <!-- Produits vedettes -->
+      <section class="section">
+        <div class="section-head">
+          <span class="section-tag">Sélection</span>
+          <h2>Produits Vedettes</h2>
+          <p>Notés 4.5+ sur Amazon, sélectionnés sans favoritisme.</p>
+        </div>
+        <div class="products-grid" id="featuredGrid"></div>
+        <div class="section-cta">
+          <button class="btn btn-outline" onclick="showScreen('shop')">Voir toute la collection →</button>
+        </div>
+      </section>
+
+      <!-- Promise -->
+      <section class="promise" id="promise">
+        <div class="promise-grid">
+          <div class="promise-item">
+            <span class="promise-icon">✦</span>
+            <h4>100% Objectif</h4>
+            <p>Même commission affiliée Amazon sur tous les produits — aucun sponsoring, aucun conflit d'intérêt</p>
+          </div>
+          <div class="promise-item">
+            <span class="promise-icon">◇</span>
+            <h4>Try-on Virtuel</h4>
+            <p>Essaie le maquillage sur ta photo avant d'acheter grâce à MediaPipe</p>
+          </div>
+          <div class="promise-item">
+            <span class="promise-icon">○</span>
+            <h4>Routine Personnalisée</h4>
+            <p>10 questions, moteur de règles expert, résultats instantanés sans IA</p>
+          </div>
+          <div class="promise-item">
+            <span class="promise-icon">△</span>
+            <h4>Sélection Rigoureuse</h4>
+            <p>Seulement des produits notés 4.5+ avec des milliers d'avis vérifiés</p>
           </div>
         </div>
-      </div>
+      </section>
+    </div><!-- /screen-home -->
 
-      <!-- Features -->
-      <div class="section-header">
-        <h2>Tout ce dont tu as besoin</h2>
-        <p>Une expérience beauté complète, directement dans ton navigateur</p>
-      </div>
-      <div class="features-grid">
-        <div class="feature-card" onclick="navigateTo('tryon')">
-          <div class="feature-emoji">💄</div>
-          <h3>Essai Virtuel</h3>
-          <p>Teste rouge à lèvres, blush et fard à paupières sur ton selfie grâce à la reconnaissance faciale.</p>
-          <div class="feature-tag">AR • Face Detection</div>
+    <!-- ======== CAPTURE ======== -->
+    <div class="screen" id="screen-capture">
+      <div class="capture-container">
+        <div class="section-head" style="margin-bottom:32px">
+          <span class="section-tag">Étape 1 / 3</span>
+          <h1>Prends ta photo</h1>
+          <p>Pour l'essai virtuel de maquillage. Tu peux passer cette étape.</p>
         </div>
-        <div class="feature-card" onclick="navigateTo('routine')">
-          <div class="feature-emoji">🌿</div>
-          <h3>Routine Skincare</h3>
-          <p>Construis et suis ta routine beauté matin et soir. Maintiens ton streak et progresse chaque jour.</p>
-          <div class="feature-tag">Tracker • Streak</div>
-        </div>
-        <div class="feature-card" onclick="navigateTo('produits')">
-          <div class="feature-emoji">🛍️</div>
-          <h3>Catalogue Produits</h3>
-          <p>Explore notre sélection de produits makeup et skincare adaptés à ton type de peau.</p>
-          <div class="feature-tag">Curatorial</div>
-        </div>
-        <div class="feature-card" onclick="navigateTo('profil')">
-          <div class="feature-emoji">✨</div>
-          <h3>Profil Beauté</h3>
-          <p>Personalise ton expérience selon ton type de peau pour des recommandations sur-mesure.</p>
-          <div class="feature-tag">Personnalisé</div>
-        </div>
-      </div>
 
-      <!-- How it works -->
-      <div class="section-header">
-        <h2>Comment ça marche ?</h2>
-      </div>
-      <div class="steps-how">
-        <div class="how-step">
-          <div class="how-num">1</div>
-          <h4>Upload ton selfie</h4>
-          <p>Choisis une photo de face, bien éclairée</p>
-        </div>
-        <div class="how-arrow">→</div>
-        <div class="how-step">
-          <div class="how-num">2</div>
-          <h4>Choisis ton look</h4>
-          <p>Sélectionne le type de maquillage et la couleur</p>
-        </div>
-        <div class="how-arrow">→</div>
-        <div class="how-step">
-          <div class="how-num">3</div>
-          <h4>Admire le résultat</h4>
-          <p>Compare avant/après et sauvegarde ton look</p>
-        </div>
-      </div>
+        <div class="capture-area">
+          <!-- Webcam -->
+          <video id="cameraStream" autoplay muted playsinline style="display:none; width:100%; border-radius:16px; max-width:400px;"></video>
+          <button class="capture-snap-btn" id="captureBtn" style="display:none;" aria-label="Prendre la photo">📸</button>
 
-      <!-- Tip du jour -->
-      <div class="tip-banner">
-        <span class="tip-icon">💡</span>
-        <div>
-          <strong>Conseil du jour</strong>
-          <p id="dailyTip"></p>
-        </div>
-      </div>
-
-    </section>
-
-    <!-- ======== ESSAI VIRTUEL ======== -->
-    <section class="view" id="view-tryon">
-      <div class="view-header">
-        <h2>💄 Essai Virtuel</h2>
-        <p>Upload ton selfie et essaie différents looks en quelques secondes</p>
-      </div>
-
-      <div class="tryon-grid">
-
-        <!-- Controls -->
-        <aside class="tryon-controls">
-
-          <div class="control-block">
-            <h4>1. Ton selfie</h4>
-            <label class="upload-box" for="imageUpload">
-              <span class="upload-emoji">📸</span>
-              <p>Clique pour choisir</p>
-              <small>JPG · PNG · max 10 MB</small>
+          <div class="capture-options">
+            <label class="btn btn-dark capture-upload-btn" for="photoUpload">
+              📁 Uploader une photo
+              <input type="file" id="photoUpload" accept="image/*" style="display:none">
             </label>
-            <input type="file" id="imageUpload" accept="image/*">
+            <button class="btn btn-outline" id="cameraBtn">
+              📷 Utiliser la caméra
+            </button>
           </div>
 
-          <div class="control-block">
-            <h4>2. Type de maquillage</h4>
-            <div class="makeup-tabs" id="makeupTabs">
-              <button class="tab active" data-makeup="lipstick">💄 Lèvres</button>
-              <button class="tab" data-makeup="blush">🌸 Blush</button>
-              <button class="tab" data-makeup="eyeshadow">👁️ Yeux</button>
+          <div id="capturePreview" style="display:none; margin-top:24px; text-align:center;">
+            <img id="capturePreviewImg" alt="Aperçu" style="max-width:280px; border-radius:16px; border:2px solid var(--sand);">
+            <p style="margin-top:12px; color:var(--muted);">Photo prête !</p>
+          </div>
+        </div>
+
+        <div class="capture-nav">
+          <button class="btn btn-outline" onclick="showScreen('home')">← Retour</button>
+          <button class="btn btn-dark" id="captureNextBtn" onclick="showScreen('questionnaire')" style="display:block">
+            Continuer sans photo →
+          </button>
+        </div>
+      </div>
+    </div><!-- /screen-capture -->
+
+    <!-- ======== QUESTIONNAIRE ======== -->
+    <div class="screen" id="screen-questionnaire">
+      <div class="questionnaire-container">
+        <div id="questionnaireContent">
+          <!-- Rendu dynamique par questionnaire.js -->
+          <p class="loading-placeholder">Chargement du questionnaire…</p>
+        </div>
+      </div>
+    </div><!-- /screen-questionnaire -->
+
+    <!-- ======== RESULTS ======== -->
+    <div class="screen" id="screen-results">
+      <div class="results-container">
+        <div id="resultsContent">
+          <!-- Rendu dynamique par routineRenderer.js -->
+        </div>
+      </div>
+    </div><!-- /screen-results -->
+
+    <!-- ======== PRODUCTS ======== -->
+    <div class="screen" id="screen-products">
+      <div class="products-screen-container">
+        <div class="section-head">
+          <span class="section-tag">Étape 3 / 3</span>
+          <h1>Produits Recommandés</h1>
+          <p>Sélectionnés selon ton profil et ta routine. Essaie-les virtuellement avant d'acheter.</p>
+        </div>
+        <div class="products-grid" id="recommendedGrid"></div>
+        <div class="section-cta" style="margin-top:32px;">
+          <button class="btn btn-dark" onclick="showScreen('tryon')">
+            Essayer virtuellement ✦
+          </button>
+          <button class="btn btn-outline" onclick="showScreen('results')" style="margin-top:12px">
+            ← Revoir ma routine
+          </button>
+        </div>
+      </div>
+    </div><!-- /screen-products -->
+
+    <!-- ======== TRY-ON ======== -->
+    <div class="screen" id="screen-tryon">
+      <div class="tryon-container">
+        <div class="tryon-canvas-side">
+          <div class="section-head" style="text-align:left; padding:0 0 16px;">
+            <span class="section-tag">Essai virtuel</span>
+            <h1>Try-On Maquillage</h1>
+          </div>
+
+          <div class="tryon-canvas-wrap" id="tryOnCanvasWrap">
+            <img id="tryOnSource" alt="Photo visage" style="display:none;">
+            <canvas id="tryOnCanvas" aria-label="Essai maquillage virtuel"></canvas>
+
+            <!-- État chargement -->
+            <div id="tryOnLoading" style="display:none;" class="tryon-overlay-state">
+              <div class="spinner"></div>
+              <p class="loading-msg">Initialisation…</p>
+            </div>
+
+            <!-- État erreur -->
+            <p id="tryOnError" class="tryon-error" style="display:none;"></p>
+
+            <!-- État vide (pas de photo) -->
+            <div id="tryOnEmpty" class="tryon-empty-state">
+              <p>Aucune photo détectée.</p>
+              <button class="btn btn-outline" onclick="showScreen('capture')">Ajouter une photo →</button>
             </div>
           </div>
 
-          <div class="control-block">
-            <h4>3. Couleur</h4>
-            <div class="color-palette" id="colorPalette"></div>
-            <div class="color-selected-label" id="colorLabel">Rouge Passion</div>
-          </div>
-
-          <div class="control-block">
-            <h4>Intensité</h4>
-            <div class="slider-row">
-              <input type="range" id="opacitySlider" min="10" max="80" value="45">
-              <span id="opacityValue">45%</span>
-            </div>
-          </div>
-
-          <div class="control-block control-actions">
-            <button class="btn btn-primary full" id="applyBtn" disabled>✨ Appliquer</button>
-            <button class="btn btn-ghost full" id="resetBtn">↺ Réinitialiser</button>
-          </div>
-
-        </aside>
-
-        <!-- Canvas -->
-        <div class="tryon-canvas-area">
-          <div class="status-bar" id="tryonStatus" style="display:none"></div>
-
-          <div class="tryon-placeholder" id="tryonPlaceholder">
-            <div class="placeholder-emoji">💄</div>
-            <h3>Prête à te transformer ?</h3>
-            <p>Upload une photo pour commencer l'essai virtuel</p>
-          </div>
-
-          <div class="canvas-comparison" id="canvasComparison" style="display:none">
-            <div class="canvas-col">
-              <div class="canvas-badge">AVANT</div>
-              <canvas id="originalCanvas"></canvas>
-            </div>
-            <div class="canvas-col">
-              <div class="canvas-badge after">APRÈS</div>
-              <canvas id="resultCanvas"></canvas>
-            </div>
+          <div class="tryon-canvas-actions">
+            <button class="btn btn-outline" onclick="showScreen('products')">← Produits</button>
+            <button class="btn btn-dark" onclick="TryOn.goToFinalResult()">Voir le résultat final →</button>
           </div>
         </div>
 
+        <div class="tryon-panel-side" id="tryOnPanel">
+          <!-- Rendu par tryOn.js -->
+        </div>
       </div>
-    </section>
+    </div><!-- /screen-tryon -->
 
-    <!-- ======== ROUTINE ======== -->
-    <section class="view" id="view-routine">
-      <div class="view-header">
-        <h2>🌿 Ma Routine Beauté</h2>
-        <p>Suis ta routine quotidienne et maintiens ton streak</p>
+    <!-- ======== FINAL ======== -->
+    <div class="screen" id="screen-final">
+      <div class="final-container">
+        <div id="finalContent">
+          <!-- Rendu par tryOn.js renderFinalResult() -->
+        </div>
+        <div class="final-actions">
+          <button class="btn btn-outline" onclick="showScreen('tryon')">← Modifier le look</button>
+          <button class="btn btn-outline" onclick="showScreen('home')">Recommencer</button>
+        </div>
+      </div>
+    </div><!-- /screen-final -->
+
+    <!-- ======== SHOP ======== -->
+    <div class="screen" id="screen-shop">
+      <div class="shop-hero">
+        <span class="eyebrow">Collection complète</span>
+        <h1>La Boutique</h1>
+        <p>Tous nos produits, sélectionnés sans favoritisme</p>
       </div>
 
-      <div class="routine-layout">
-
-        <!-- Streak -->
-        <div class="streak-card">
-          <div class="streak-body">
-            <div class="streak-flame">🔥</div>
-            <div class="streak-info">
-              <div class="streak-num" id="streakCount">0</div>
-              <div class="streak-lbl">jours consécutifs</div>
-            </div>
-          </div>
-          <div class="streak-status" id="streakStatus">⏳ En cours...</div>
+      <div class="shop-container">
+        <div class="filter-bar" id="filterTabs">
+          <button class="filter-tab active" data-cat="all"        onclick="filterShop('all')">Tout</button>
+          <button class="filter-tab"        data-cat="lipstick"   onclick="filterShop('lipstick')">Rouge à lèvres</button>
+          <button class="filter-tab"        data-cat="blush"      onclick="filterShop('blush')">Blush</button>
+          <button class="filter-tab"        data-cat="foundation" onclick="filterShop('foundation')">Fond de teint</button>
+          <button class="filter-tab"        data-cat="mascara"    onclick="filterShop('mascara')">Mascara</button>
         </div>
-
-        <!-- Progress global -->
-        <div class="progress-card">
-          <div class="progress-header">
-            <span>Progression aujourd'hui</span>
-            <span id="globalPct">0%</span>
-          </div>
-          <div class="progress-track">
-            <div class="progress-fill" id="globalProgress"></div>
-          </div>
-        </div>
-
-        <!-- Matin -->
-        <div class="routine-block">
-          <div class="routine-block-head">
-            <div class="routine-time-label">
-              <span>🌅</span>
-              <h3>Routine Matin</h3>
-            </div>
-            <span class="prog-pill" id="morningProg">0/0</span>
-          </div>
-          <div class="steps-list" id="morningSteps"></div>
-          <button class="add-step-btn" onclick="openAddStep('morning')">+ Ajouter une étape</button>
-        </div>
-
-        <!-- Soir -->
-        <div class="routine-block">
-          <div class="routine-block-head">
-            <div class="routine-time-label">
-              <span>🌙</span>
-              <h3>Routine Soir</h3>
-            </div>
-            <span class="prog-pill" id="eveningProg">0/0</span>
-          </div>
-          <div class="steps-list" id="eveningSteps"></div>
-          <button class="add-step-btn" onclick="openAddStep('evening')">+ Ajouter une étape</button>
-        </div>
-
+        <div class="products-grid" id="shopGrid"></div>
       </div>
-    </section>
+    </div><!-- /screen-shop -->
 
-    <!-- ======== PRODUITS ======== -->
-    <section class="view" id="view-produits">
-      <div class="view-header">
-        <h2>🛍️ Catalogue Produits</h2>
-        <p>Découvre les produits adaptés à ton profil beauté</p>
+  </div><!-- /app -->
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">GLOW UP</div>
+        <p>Beauté éclairée,<br>sans compromis.</p>
       </div>
-
-      <!-- Filters -->
-      <div class="product-filters">
-        <button class="filter-btn active" data-cat="all">Tout</button>
-        <button class="filter-btn" data-cat="skincare">Skincare</button>
-        <button class="filter-btn" data-cat="makeup">Makeup</button>
-        <button class="filter-btn" data-cat="serum">Sérums</button>
-        <button class="filter-btn" data-cat="spf">SPF</button>
+      <div class="footer-col">
+        <h5>Découvrir</h5>
+        <ul>
+          <li><a href="#" onclick="showScreen('shop'); return false;">Boutique</a></li>
+          <li><a href="#" onclick="startGlowUp(); return false;">Mon diagnostic</a></li>
+          <li><a href="#" onclick="showScreen('tryon'); return false;">Try-on virtuel</a></li>
+        </ul>
       </div>
-
-      <!-- Search -->
-      <div class="product-search">
-        <input type="text" id="productSearch" placeholder="🔍 Rechercher un produit..." class="form-input">
-      </div>
-
-      <!-- Grid -->
-      <div class="products-grid" id="productsGrid"></div>
-
-    </section>
-
-    <!-- ======== PROFIL ======== -->
-    <section class="view" id="view-profil">
-      <div class="view-header">
-        <h2>✨ Mon Profil Beauté</h2>
-        <p>Complète ton profil pour des recommandations personnalisées</p>
-      </div>
-
-      <div class="profil-grid">
-
-        <div class="profil-card">
-          <h4>👤 Mes infos</h4>
-          <div class="form-group">
-            <label>Prénom</label>
-            <input type="text" id="profilName" placeholder="Ton prénom" class="form-input">
-          </div>
-          <div class="form-group">
-            <label>Tranche d'âge</label>
-            <select id="profilAge" class="form-input">
-              <option value="">Sélectionne</option>
-              <option value="18-24">18–24 ans</option>
-              <option value="25-34">25–34 ans</option>
-              <option value="35-44">35–44 ans</option>
-              <option value="45+">45 ans et +</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="profil-card">
-          <h4>💧 Mon Type de Peau</h4>
-          <div class="skin-type-grid" id="skinTypeGrid">
-            <button class="skin-btn" data-type="normale">🌿 Normale</button>
-            <button class="skin-btn" data-type="seche">🏜️ Sèche</button>
-            <button class="skin-btn" data-type="grasse">💦 Grasse</button>
-            <button class="skin-btn" data-type="mixte">☯️ Mixte</button>
-            <button class="skin-btn" data-type="sensible">🌸 Sensible</button>
-          </div>
-        </div>
-
-        <div class="profil-card">
-          <h4>🎯 Mes Préoccupations</h4>
-          <div class="concerns-grid">
-            <label class="concern-check"><input type="checkbox" value="acne"> Acné</label>
-            <label class="concern-check"><input type="checkbox" value="taches"> Taches</label>
-            <label class="concern-check"><input type="checkbox" value="rides"> Rides</label>
-            <label class="concern-check"><input type="checkbox" value="eclat"> Éclat terne</label>
-            <label class="concern-check"><input type="checkbox" value="hydratation"> Déshydratation</label>
-            <label class="concern-check"><input type="checkbox" value="pores"> Pores dilatés</label>
-            <label class="concern-check"><input type="checkbox" value="cernes"> Cernes</label>
-            <label class="concern-check"><input type="checkbox" value="rougeurs"> Rougeurs</label>
-          </div>
-        </div>
-
-        <div class="profil-card">
-          <h4>💄 Mes Teintes Favorites</h4>
-          <div id="favColors" class="fav-colors">
-            <p class="text-muted">Tes couleurs favorites apparaîtront ici après l'essai virtuel.</p>
-          </div>
-        </div>
-
-        <div class="profil-card profil-save">
-          <button class="btn btn-primary large full" onclick="saveProfile()">💾 Sauvegarder mon profil</button>
-          <p id="profilSaveMsg"></p>
-        </div>
-
-      </div>
-    </section>
-
-  </main>
-
-  <!-- ===== MODAL AJOUT ÉTAPE ===== -->
-  <div class="modal-overlay" id="modalOverlay" onclick="closeModal()"></div>
-  <div class="modal" id="addStepModal">
-    <div class="modal-head">
-      <h3>Nouvelle étape</h3>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-    <div class="modal-body">
-      <div class="form-group">
-        <label>Nom du produit / étape</label>
-        <input type="text" id="stepName" placeholder="Ex: Nettoyant doux" class="form-input">
-      </div>
-      <div class="form-group">
-        <label>Catégorie</label>
-        <select id="stepCategory" class="form-input">
-          <option value="cleanser">🧴 Nettoyant</option>
-          <option value="toner">💧 Tonique / Lotion</option>
-          <option value="serum">✨ Sérum</option>
-          <option value="eye">👁️ Contour des yeux</option>
-          <option value="moisturizer">🌿 Hydratant / Crème</option>
-          <option value="sunscreen">☀️ Protection solaire</option>
-          <option value="mask">🎭 Masque</option>
-          <option value="oil">🫧 Huile / Baume</option>
-          <option value="exfoliant">🔮 Exfoliant</option>
-          <option value="other">➕ Autre</option>
-        </select>
+      <div class="footer-col">
+        <h5>Infos</h5>
+        <ul>
+          <li><a href="#" onclick="showScreen('home'); document.getElementById('promise').scrollIntoView({behavior:'smooth'}); return false;">Notre philosophie</a></li>
+          <li><a href="#">FAQ</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
       </div>
     </div>
-    <div class="modal-foot">
-      <button class="btn btn-primary" onclick="confirmAddStep()">Ajouter</button>
-      <button class="btn btn-ghost" onclick="closeModal()">Annuler</button>
+    <div class="footer-bottom">
+      <p>© 2026 Glow Up. Liens Amazon avec code affilié <strong>kand10ar-21</strong> — même commission sur tous les produits.</p>
     </div>
-  </div>
+  </footer>
 
-  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
-  <script src="script.js"></script>
+  <!-- ===== MODAL GÉNÉRIQUE ===== -->
+  <div class="overlay" id="modalOverlay"></div>
+  <div class="modal-box" id="modalBox" role="dialog" aria-modal="true"></div>
+
+  <!-- ===== SCRIPTS ===== -->
+  <script src="js/rulesEngine.js"></script>
+  <script src="js/productCatalog.js"></script>
+  <script src="js/questionnaire.js"></script>
+  <script src="js/routineRenderer.js"></script>
+  <script src="js/tryOn.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+
 </body>
 </html>

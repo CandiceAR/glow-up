@@ -1,0 +1,11 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "source": "auto",
+    "description": "Produits récupérés automatiquement via Amazon PA-API — Phase 1 uniquement",
+    "tag": "kand10ar-21",
+    "lastSync": null,
+    "status": "disabled"
+  },
+  "products": []
+}

@@ -1,0 +1,229 @@
+{
+  "version": "1.0",
+  "rules": [
+    {
+      "id": "R1",
+      "name": "Peau grasse acnéique",
+      "priority": 10,
+      "conditions": {
+        "skinType": { "in": ["grasse"] },
+        "concerns": { "includesAny": ["acne", "points_noirs", "pores"] }
+      },
+      "routine": {
+        "matin": [
+          { "order": 1, "step": "cleanser", "label": "Nettoyant gel purifiant", "note": "Sans sulfates agressifs" },
+          { "order": 2, "step": "toner", "label": "Tonique sans alcool — Niacinamide", "note": "Resserre les pores" },
+          { "order": 3, "step": "serum", "label": "Sérum Niacinamide 10% + Zinc 1%", "note": "Réduit le sébum" },
+          { "order": 4, "step": "moisturizer", "label": "Gel hydratant non-comédogène", "note": "Texture légère" },
+          { "order": 5, "step": "spf", "label": "SPF 50 fluide mat", "note": "Obligatoire chaque matin" }
+        ],
+        "soir": [
+          { "order": 1, "step": "cleanser", "label": "Nettoyant gel purifiant", "note": "Double nettoyage si maquillage" },
+          { "order": 2, "step": "treatment", "label": "Acide salicylique BHA 2%", "note": "3x/semaine maximum" },
+          { "order": 3, "step": "serum", "label": "Sérum Rétinol 0.1% (progressif)", "note": "Alterner avec BHA" },
+          { "order": 4, "step": "moisturizer", "label": "Gel-crème hydratant léger", "note": "" }
+        ]
+      },
+      "warnings": [
+        "Évite les huiles occlusives (coco, beurre de karité)",
+        "Ne mélange pas BHA et rétinol le même soir",
+        "Le rétinol peut causer purge initiale — normal, persist 4-6 semaines",
+        "Toujours SPF le matin si tu utilises des actifs exfoliants"
+      ],
+      "makeupTips": [
+        "Privilégie les fonds de teint matifiants à tenue longue",
+        "Évite les primers huileux",
+        "Le blush poudre est préférable au blush crème"
+      ]
+    },
+    {
+      "id": "R2",
+      "name": "Peau sèche déshydratée",
+      "priority": 10,
+      "conditions": {
+        "skinType": { "in": ["seche"] }
+      },
+      "routine": {
+        "matin": [
+          { "order": 1, "step": "cleanser", "label": "Nettoyant crème doux sans savon", "note": "Respecte le film hydrolipidique" },
+          { "order": 2, "step": "toner", "label": "Tonique hydratant — Acide hyaluronique", "note": "Applique sur peau humide" },
+          { "order": 3, "step": "serum", "label": "Sérum Acide Hyaluronique", "note": "3 poids moléculaires idéal" },
+          { "order": 4, "step": "moisturizer", "label": "Crème riche — Céramides + Squalane", "note": "Scelle l'hydratation" },
+          { "order": 5, "step": "spf", "label": "SPF 50 hydratant", "note": "Choisir texture crémeuse" }
+        ],
+        "soir": [
+          { "order": 1, "step": "cleanser", "label": "Nettoyant crème ou huile démaquillante", "note": "Nettoyage doux" },
+          { "order": 2, "step": "serum", "label": "Sérum Squalane ou Niacinamide", "note": "" },
+          { "order": 3, "step": "moisturizer", "label": "Crème barrière nourrissante", "note": "Céramides 1, 3, 6-II" },
+          { "order": 4, "step": "oil", "label": "Huile visage (optionnel)", "note": "En dernier — scelle tout" }
+        ]
+      },
+      "warnings": [
+        "Évite les nettoyants moussants agressifs",
+        "Pas d'alcool dans tes soins — regarde INCI",
+        "Le rétinol peut trop dessécher — commence très lentement (0.025%)",
+        "Bois 1.5L d'eau/jour — hydratation vient de l'intérieur aussi"
+      ],
+      "makeupTips": [
+        "Privilégie les fonds de teint hydratants ou sérum-teint",
+        "Le blush crème s'applique mieux sur peau sèche",
+        "Prépare ta peau avec un primer hydratant avant le maquillage"
+      ]
+    },
+    {
+      "id": "R3",
+      "name": "Peau sensible avec rougeurs",
+      "priority": 10,
+      "conditions": {
+        "skinType": { "in": ["sensible"] },
+        "concerns": { "includesAny": ["rougeurs", "irritation", "couperose"] }
+      },
+      "routine": {
+        "matin": [
+          { "order": 1, "step": "cleanser", "label": "Nettoyant micellaire apaisant", "note": "Sans rinçage possible" },
+          { "order": 2, "step": "serum", "label": "Sérum Centella Asiatica ou Azélaïque", "note": "Anti-rougeurs, calmant" },
+          { "order": 3, "step": "moisturizer", "label": "Crème apaisante barrière", "note": "Sans parfum, sans alcool" },
+          { "order": 4, "step": "spf", "label": "SPF 50 minéral (oxyde de zinc)", "note": "Moins irritant que filtres chimiques" }
+        ],
+        "soir": [
+          { "order": 1, "step": "cleanser", "label": "Nettoyant crème ou eau micellaire", "note": "Très doux" },
+          { "order": 2, "step": "serum", "label": "Sérum apaisant — Panthenol, Allantoïne", "note": "" },
+          { "order": 3, "step": "moisturizer", "label": "Crème réparatrice barrière", "note": "Céramides + Niacinamide faible dose" }
+        ]
+      },
+      "warnings": [
+        "Évite les actifs forts : AHA, BHA, rétinol au départ",
+        "Patch test obligatoire pour chaque nouveau produit (coude intérieur 48h)",
+        "Parfums et huiles essentielles sont souvent des irritants",
+        "La chaleur et le froid extrêmes peuvent aggraver les rougeurs"
+      ],
+      "makeupTips": [
+        "Choisis des fonds de teint sans parfum ni alcool",
+        "Le blush poudre minéral est le plus doux pour les peaux sensibles",
+        "Évite les formules waterproof qui nécessitent un démaquillage fort"
+      ]
+    },
+    {
+      "id": "R4",
+      "name": "Peau mixte — éclat et pores",
+      "priority": 8,
+      "conditions": {
+        "skinType": { "in": ["mixte"] },
+        "concerns": { "includesAny": ["pores", "eclat_terne", "brillance"] }
+      },
+      "routine": {
+        "matin": [
+          { "order": 1, "step": "cleanser", "label": "Nettoyant gel doux équilibrant", "note": "Pas trop décapant" },
+          { "order": 2, "step": "toner", "label": "Tonique rééquilibrant — Niacinamide 5%", "note": "" },
+          { "order": 3, "step": "serum", "label": "Sérum Vitamine C 10-15%", "note": "Éclat + antioxydant" },
+          { "order": 4, "step": "moisturizer", "label": "Fluide hydratant léger", "note": "Zones sèches seulement" },
+          { "order": 5, "step": "spf", "label": "SPF 50 fluide", "note": "" }
+        ],
+        "soir": [
+          { "order": 1, "step": "cleanser", "label": "Nettoyant gel équilibrant", "note": "" },
+          { "order": 2, "step": "exfoliant", "label": "AHA 5-10% (2-3x/semaine)", "note": "Estompe les taches, unifie" },
+          { "order": 3, "step": "serum", "label": "Sérum Niacinamide", "note": "Pores + éclat" },
+          { "order": 4, "step": "moisturizer", "label": "Crème légère zones sèches / gel zone T", "note": "Bi-zone si nécessaire" }
+        ]
+      },
+      "warnings": [
+        "La zone T grasse ≠ peau hydratée — ne saute pas l'hydratant",
+        "Alterne AHA et rétinol, ne les utilise pas le même soir",
+        "SPF le matin est essentiel surtout avec Vitamine C et AHA"
+      ],
+      "makeupTips": [
+        "Le fond de teint semi-mat convient parfaitement",
+        "Matifie la zone T seulement avec une poudre translucide",
+        "Le blush liquide ou poudre selon la zone d'application"
+      ]
+    },
+    {
+      "id": "R5",
+      "name": "Anti-âge rides et fermeté",
+      "priority": 9,
+      "conditions": {
+        "objectives": { "includesAny": ["anti-age"] },
+        "concerns": { "includesAny": ["rides", "fermete", "perte_eclat"] }
+      },
+      "routine": {
+        "matin": [
+          { "order": 1, "step": "cleanser", "label": "Nettoyant crème doux", "note": "" },
+          { "order": 2, "step": "serum", "label": "Sérum Vitamine C 15-20% + Vitamine E + Ferulic", "note": "Antioxydant, anti-rides, éclat" },
+          { "order": 3, "step": "eye", "label": "Contour des yeux repulpant", "note": "Tapotements doux" },
+          { "order": 4, "step": "moisturizer", "label": "Crème hydratante + Peptides", "note": "Stimule le collagène" },
+          { "order": 5, "step": "spf", "label": "SPF 50+ anti-âge", "note": "Protection = meilleur anti-âge" }
+        ],
+        "soir": [
+          { "order": 1, "step": "cleanser", "label": "Nettoyant crème ou huile", "note": "" },
+          { "order": 2, "step": "treatment", "label": "Rétinol 0.3% à 1% (progressif)", "note": "1x/semaine pour commencer" },
+          { "order": 3, "step": "serum", "label": "Sérum Peptides + Hyaluronique", "note": "Nuits sans rétinol" },
+          { "order": 4, "step": "moisturizer", "label": "Crème riche réparatrice nuit", "note": "" }
+        ]
+      },
+      "warnings": [
+        "⚠️ RÉTINOL INTERDIT grossesse et allaitement — consulte ton médecin",
+        "Commence rétinol très progressivement (1x/sem, puis 2x, puis 3x)",
+        "SPF le matin est non-négociable avec le rétinol (photosensibilisant)",
+        "Évite rétinol + AHA/BHA le même soir (irritation)"
+      ],
+      "makeupTips": [
+        "Les fonds de teint hydratants avec acide hyaluronique sont tes alliés",
+        "Évite les poudres qui se logent dans les rides — préfère le teint lumineux",
+        "Le blush crème redonne de l'éclat et une apparence jeune"
+      ]
+    },
+    {
+      "id": "R6",
+      "name": "Routine normale équilibrée",
+      "priority": 5,
+      "conditions": {
+        "skinType": { "in": ["normale"] }
+      },
+      "routine": {
+        "matin": [
+          { "order": 1, "step": "cleanser", "label": "Nettoyant doux gel ou crème", "note": "" },
+          { "order": 2, "step": "serum", "label": "Sérum Vitamine C ou Niacinamide", "note": "Éclat et prévention" },
+          { "order": 3, "step": "moisturizer", "label": "Crème hydratante légère", "note": "" },
+          { "order": 4, "step": "spf", "label": "SPF 50", "note": "Indispensable" }
+        ],
+        "soir": [
+          { "order": 1, "step": "cleanser", "label": "Nettoyant doux", "note": "" },
+          { "order": 2, "step": "serum", "label": "Sérum selon besoin du moment", "note": "Hyaluronique, peptides, rétinol" },
+          { "order": 3, "step": "moisturizer", "label": "Crème hydratante", "note": "" }
+        ]
+      },
+      "warnings": [
+        "Même avec une peau normale, la constance est clé",
+        "Le SPF est obligatoire toute l'année, par tous les temps"
+      ],
+      "makeupTips": [
+        "Tu as la chance de pouvoir utiliser la plupart des formules",
+        "Adapte ton fond de teint à la saison (léger l'été, couvrant l'hiver)"
+      ]
+    },
+    {
+      "id": "FALLBACK",
+      "name": "Routine safe universelle",
+      "priority": 0,
+      "conditions": {},
+      "routine": {
+        "matin": [
+          { "order": 1, "step": "cleanser", "label": "Nettoyant doux visage", "note": "Adapté à ton type de peau" },
+          { "order": 2, "step": "moisturizer", "label": "Crème hydratante légère", "note": "" },
+          { "order": 3, "step": "spf", "label": "SPF 30 minimum", "note": "La règle d'or" }
+        ],
+        "soir": [
+          { "order": 1, "step": "cleanser", "label": "Nettoyant doux visage", "note": "" },
+          { "order": 2, "step": "moisturizer", "label": "Crème hydratante", "note": "" }
+        ]
+      },
+      "warnings": [
+        "Cette routine est un point de départ — complète ton profil pour des conseils personnalisés",
+        "Le SPF est le produit anti-âge numéro 1 selon tous les dermatologues"
+      ],
+      "makeupTips": [
+        "Commence simple — un fond de teint et un mascara suffisent pour démarrer"
+      ]
+    }
+  ]
+}
