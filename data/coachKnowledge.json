@@ -1,0 +1,54 @@
+{
+  "skincare_rules": [
+    "Une routine simple est souvent meilleure qu’une routine trop complexe.",
+    "Le SPF le matin est essentiel pour protéger la peau.",
+    "Les actifs puissants comme le rétinol doivent être introduits progressivement.",
+    "Une peau sensible doit privilégier des actifs doux.",
+    "Une bonne hydratation est essentielle pour maintenir la barrière cutanée."
+  ],
+
+  "important_molecules": {
+    "very_good": [
+      "niacinamide",
+      "acide hyaluronique",
+      "vitamine C",
+      "rétinol",
+      "céramides",
+      "peptides",
+      "acide azélaïque",
+      "panthénol",
+      "centella asiatica"
+    ],
+
+    "good": [
+      "acide glycolique",
+      "acide lactique",
+      "zinc PCA",
+      "allantoïne",
+      "squalane",
+      "bakuchiol"
+    ],
+
+    "watch_out": [
+      "alcohol denat.",
+      "fragrance",
+      "SLS",
+      "huiles très comédogènes"
+    ]
+  },
+
+  "common_skincare_errors": [
+    "utiliser trop d’actifs irritants ensemble",
+    "ne pas utiliser de SPF",
+    "utiliser rétinol et exfoliant fort en même temps",
+    "avoir une routine trop compliquée",
+    "utiliser un produit non adapté au type de peau"
+  ],
+
+  "glowup_advice": [
+    "privilégier une routine cohérente plutôt qu'une accumulation de produits",
+    "introduire les actifs progressivement",
+    "observer la réaction de la peau avant d'ajouter un nouveau produit",
+    "adapter la routine au type de peau et aux objectifs"
+  ]
+}

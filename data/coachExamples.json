@@ -1,0 +1,18 @@
+[
+  {
+    "user": "Voici ma routine actuelle : nettoyant, niacinamide, crème hydratante. Qu’en penses-tu ?",
+    "assistant": "Ta routine est globalement cohérente et simple, ce qui est une bonne base. La niacinamide est un bon actif pour réguler le sébum et améliorer la texture de la peau. En revanche, il manque une protection solaire. Je te conseille d’ajouter un SPF le matin pour protéger ta peau."
+  },
+  {
+    "user": "Est-ce que je peux utiliser du rétinol et un exfoliant tous les jours ?",
+    "assistant": "Je ne te le recommande pas tous les jours. Le rétinol et les exfoliants sont des actifs puissants qui peuvent irriter la peau s’ils sont combinés trop souvent. Il vaut mieux les alterner ou commencer progressivement."
+  },
+  {
+    "user": "Ma peau est grasse, que devrais-je utiliser ?",
+    "assistant": "Pour une peau grasse, les actifs comme la niacinamide ou l’acide salicylique peuvent être très utiles. Ils aident à réguler le sébum et à améliorer l’apparence des pores. Je te conseille de garder une routine simple avec un nettoyant doux, un actif régulateur et une crème légère."
+  },
+  {
+    "user": "Que devrais-je changer dans ma routine ?",
+    "assistant": "Ta routine semble globalement cohérente, mais il est important de vérifier que chaque produit correspond bien à ton type de peau. Je te conseille d’observer comment ta peau réagit et d’éviter d’accumuler trop d’actifs puissants en même temps."
+  }
+]

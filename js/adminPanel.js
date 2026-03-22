@@ -330,12 +330,205 @@ const Admin = (() => {
   }
 
   // ─── Onglets ──────────────────────────────────────────────────
+  let currentTab = 'products';
+
   function showTab(tab) {
+    currentTab = tab;
     document.querySelectorAll('.admin-tab').forEach((t, i) => {
-      t.classList.toggle('active', i === (tab === 'products' ? 0 : 1));
+      t.classList.toggle('active', i === ['products', 'analytics', 'asin', 'coach'].indexOf(tab));
     });
-    document.getElementById('tabProducts').style.display = tab === 'products' ? 'block' : 'none';
-    document.getElementById('tabAsin').style.display     = tab === 'asin'     ? 'block' : 'none';
+    document.getElementById('tabProducts').style.display  = tab === 'products'  ? 'block' : 'none';
+    document.getElementById('tabAnalytics').style.display = tab === 'analytics' ? 'block' : 'none';
+    document.getElementById('tabAsin').style.display      = tab === 'asin'      ? 'block' : 'none';
+    document.getElementById('tabCoach').style.display     = tab === 'coach'     ? 'block' : 'none';
+    if (tab === 'analytics') renderAnalytics();
+    if (tab === 'coach')     renderCoachKeyStatus();
+  }
+
+  // ─── Coach IA — gestion clé API ──────────────────────────────
+  const COACH_KEY_STORE = 'glow_coach_key';
+
+  function renderCoachKeyStatus() {
+    const el = document.getElementById('coachKeyStatus');
+    if (!el) return;
+    el.innerHTML = `<span style="color:var(--muted); font-size:0.82rem;">La clé API est configurée dans les variables d'environnement Netlify — elle n'est jamais exposée côté navigateur.</span>`;
+  }
+
+  function saveCoachKey() {
+    const inp = document.getElementById('coachApiKeyInput');
+    const key = inp?.value?.trim();
+    if (!key) { alert('Colle ta clé API avant d\'enregistrer.'); return; }
+    if (!key.startsWith('sk-ant-')) {
+      alert('Cette clé ne ressemble pas à une clé Claude (elle doit commencer par sk-ant-…). Vérifie et réessaie.');
+      return;
+    }
+    localStorage.setItem(COACH_KEY_STORE, key);
+    inp.value = '';
+    renderCoachKeyStatus();
+    alert('✅ Clé enregistrée avec succès !');
+  }
+
+  function deleteCoachKey() {
+    if (!confirm('Supprimer la clé API ? Le Coach reviendra en mode sans IA.')) return;
+    localStorage.removeItem(COACH_KEY_STORE);
+    renderCoachKeyStatus();
+  }
+
+  function toggleKeyVisibility() {
+    const inp = document.getElementById('coachApiKeyInput');
+    if (!inp) return;
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+  }
+
+  async function testCoachKey() {
+    const result = document.getElementById('coachTestResult');
+    result.innerHTML = '<span style="color:var(--muted);">⏳ Test en cours…</span>';
+    try {
+      const res = await fetch('/.netlify/functions/coach', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 30,
+          messages: [{ role: 'user', content: 'Réponds juste "Connexion OK".' }]
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const reply = data.content?.[0]?.text || '?';
+        result.innerHTML = `<span style="color:var(--success);">✅ Connexion réussie ! Réponse Claude : <em>${reply}</em></span>`;
+      } else {
+        const err = await res.json().catch(() => ({}));
+        result.innerHTML = `<span style="color:var(--error);">❌ Erreur ${res.status} : ${err?.error?.message || 'Clé API manquante ou invalide dans Netlify.'}</span>`;
+      }
+    } catch (e) {
+      result.innerHTML = `<span style="color:var(--error);">❌ Fonction proxy non disponible — déploie le site sur Netlify d'abord.</span>`;
+    }
+  }
+
+  // ─── Analytics ────────────────────────────────────────────────
+  let analyticsPeriod = 30;
+
+  function setPeriod(days) {
+    analyticsPeriod = days;
+    ['7', '30', '90', 'All'].forEach(d => {
+      const btn = document.getElementById('period' + d);
+      if (btn) btn.classList.toggle('active', String(days) === (d === 'All' ? '9999' : d));
+    });
+    renderAnalytics();
+  }
+
+  function renderAnalytics() {
+    if (typeof Tracker === 'undefined') {
+      document.getElementById('analyticsKpis').innerHTML = '<p style="color:var(--muted); font-size:0.85rem;">Le module tracker n\'est pas chargé.</p>';
+      return;
+    }
+
+    const s = Tracker.getStats(analyticsPeriod);
+
+    // KPIs
+    document.getElementById('analyticsKpis').innerHTML = `
+      <div class="kpi-card">
+        <div class="kpi-value">${s.sessions}</div>
+        <div class="kpi-label">Sessions</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">${s.views}</div>
+        <div class="kpi-label">Vues produits</div>
+      </div>
+      <div class="kpi-card highlight">
+        <div class="kpi-value">${s.buys}</div>
+        <div class="kpi-label">Clics Acheter</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">${s.tryons}</div>
+        <div class="kpi-label">Essais virtuels</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">${s.convRate}%</div>
+        <div class="kpi-label">Taux vue → achat</div>
+      </div>`;
+
+    // Timeline 7 jours
+    const maxVal = Math.max(1, ...s.timeline.map(d => Math.max(d.sessions, d.views, d.buys)));
+    document.getElementById('analyticsTimeline').innerHTML = s.timeline.map(d => `
+      <div class="timeline-col">
+        <div class="timeline-bar-wrap">
+          <div class="timeline-bar bar-sessions" style="height:${Math.round((d.sessions / maxVal) * 56)}px" title="Sessions: ${d.sessions}"></div>
+          <div class="timeline-bar bar-views"    style="height:${Math.round((d.views    / maxVal) * 56)}px" title="Vues: ${d.views}"></div>
+          <div class="timeline-bar bar-buys"     style="height:${Math.round((d.buys     / maxVal) * 56)}px" title="Achats: ${d.buys}"></div>
+        </div>
+        <div class="timeline-label">${d.label}</div>
+      </div>`).join('');
+
+    // Top vues
+    const maxViews = s.topViews[0]?.[1] || 1;
+    document.getElementById('analyticsTopViews').innerHTML = s.topViews.length
+      ? s.topViews.map(([pid, count], i) => {
+          const p = products.find(x => x.id === pid);
+          const name = p ? `${p.brand} — ${p.name.slice(0, 28)}` : pid;
+          return `<tr>
+            <td class="top-rank">#${i + 1}</td>
+            <td style="font-size:0.78rem;">${name}</td>
+            <td class="top-bar-wrap"><div class="top-bar" style="width:${Math.round((count / maxViews) * 80)}px"></div></td>
+            <td class="top-count">${count}</td>
+          </tr>`;
+        }).join('')
+      : '<tr><td colspan="4" style="color:var(--muted); padding:12px 0; font-size:0.8rem;">Aucune vue enregistrée</td></tr>';
+
+    // Top achats
+    const maxBuys = s.topBuys[0]?.[1] || 1;
+    document.getElementById('analyticsTopBuys').innerHTML = s.topBuys.length
+      ? s.topBuys.map(([pid, count], i) => {
+          const p = products.find(x => x.id === pid);
+          const name = p ? `${p.brand} — ${p.name.slice(0, 28)}` : pid;
+          return `<tr>
+            <td class="top-rank">#${i + 1}</td>
+            <td style="font-size:0.78rem;">${name}</td>
+            <td class="top-bar-wrap"><div class="top-bar" style="width:${Math.round((count / maxBuys) * 80)}px"></div></td>
+            <td class="top-count">${count}</td>
+          </tr>`;
+        }).join('')
+      : '<tr><td colspan="4" style="color:var(--muted); padding:12px 0; font-size:0.8rem;">Aucun clic enregistré</td></tr>';
+
+    // Écrans
+    const screenLabels = {
+      home: 'Accueil', shop: 'Boutique', capture: 'Photo', 'skin-analysis': 'Analyse peau',
+      questionnaire: 'Questionnaire', results: 'Résultats', tryon: 'Essai virtuel',
+      products: 'Produits recommandés', makeup: 'Routine makeup', intention: 'Intention', journey: 'Mon parcours'
+    };
+    const maxScreen = s.topScreens[0]?.[1] || 1;
+    document.getElementById('analyticsScreens').innerHTML = s.topScreens.length
+      ? s.topScreens.map(([name, count]) => `
+          <div class="screen-row">
+            <span class="screen-name">${screenLabels[name] || name}</span>
+            <div class="screen-bar-bg"><div class="screen-bar-fill" style="width:${Math.round((count / maxScreen) * 100)}%"></div></div>
+            <span class="screen-count">${count}</span>
+          </div>`).join('')
+      : '<p style="color:var(--muted); font-size:0.8rem;">Aucune navigation enregistrée</p>';
+
+    // Produits froids
+    document.getElementById('analyticsCold').innerHTML = s.coldProducts.length
+      ? s.coldProducts.map(({ pid, views }, i) => {
+          const p = products.find(x => x.id === pid);
+          const name = p ? `${p.brand} — ${p.name.slice(0, 30)}` : pid;
+          return `<tr>
+            <td class="top-rank">#${i + 1}</td>
+            <td style="font-size:0.78rem;">${name}</td>
+            <td class="top-count" style="color:#856404;">${views} vues</td>
+          </tr>`;
+        }).join('')
+      : '<tr><td colspan="3" style="color:var(--muted); padding:12px 0; font-size:0.8rem;">Aucun produit froid détecté</td></tr>';
+  }
+
+  function exportStatsCSV() {
+    if (typeof Tracker !== 'undefined') Tracker.exportCSV();
+  }
+
+  function clearStats() {
+    if (!confirm('Effacer toutes les statistiques ? Cette action est irréversible.')) return;
+    if (typeof Tracker !== 'undefined') Tracker.clearAll();
+    renderAnalytics();
   }
 
   // ─── Extracteur ASIN ──────────────────────────────────────────
@@ -406,7 +599,9 @@ const Admin = (() => {
   return {
     login, logout, initAdmin, showAddForm, editProduct, cancelForm,
     saveProduct, toggleActive, toggleFeatured, deleteProduct,
-    search, filterCat, showTab, extractASIN, checkTag, autoFillAmazonUrl, exportJSON
+    search, filterCat, showTab, setPeriod, exportStatsCSV, clearStats,
+    extractASIN, checkTag, autoFillAmazonUrl, exportJSON,
+    saveCoachKey, deleteCoachKey, toggleKeyVisibility, testCoachKey
   };
 
 })();

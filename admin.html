@@ -124,6 +124,53 @@
     .stat-number { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; color: var(--charcoal); line-height: 1; }
     .stat-label  { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
 
+    /* Analytics tab */
+    .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+    @media (max-width: 700px) { .analytics-grid { grid-template-columns: 1fr; } }
+    .analytics-card { background: white; border-radius: 14px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .analytics-card h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 16px; }
+    .analytics-card.full { grid-column: 1 / -1; }
+    .analytics-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 14px; margin-bottom: 24px; }
+    .kpi-card { background: white; border-radius: 12px; padding: 18px 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-left: 3px solid var(--nude); }
+    .kpi-value { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; color: var(--charcoal); line-height: 1; }
+    .kpi-label { font-size: 0.72rem; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .kpi-card.highlight { border-left-color: #C9A98A; }
+
+    /* Tableau top produits */
+    .top-table { width: 100%; border-collapse: collapse; }
+    .top-table td { padding: 8px 0; font-size: 0.82rem; border-bottom: 1px solid var(--sand); }
+    .top-table tr:last-child td { border-bottom: none; }
+    .top-rank { width: 28px; color: var(--muted); font-size: 0.72rem; font-weight: 600; }
+    .top-bar-wrap { padding: 0 10px; }
+    .top-bar { height: 6px; background: linear-gradient(90deg, var(--nude), #C9A98A); border-radius: 3px; transition: width 0.4s; }
+    .top-count { text-align: right; font-weight: 600; font-size: 0.8rem; color: var(--charcoal); width: 36px; }
+
+    /* Timeline */
+    .timeline-chart { display: flex; align-items: flex-end; gap: 8px; height: 80px; margin-top: 8px; }
+    .timeline-col { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+    .timeline-bar-wrap { display: flex; gap: 3px; align-items: flex-end; height: 60px; }
+    .timeline-bar { width: 10px; border-radius: 3px 3px 0 0; transition: height 0.3s; min-height: 2px; }
+    .bar-sessions { background: #C9A98A; }
+    .bar-views    { background: #d4bfaa; }
+    .bar-buys     { background: #8b6b52; }
+    .timeline-label { font-size: 0.6rem; color: var(--muted); white-space: nowrap; }
+    .timeline-legend { display: flex; gap: 14px; margin-top: 10px; font-size: 0.72rem; color: var(--muted); }
+    .legend-dot { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 4px; }
+
+    /* Écrans */
+    .screen-list { display: flex; flex-direction: column; gap: 8px; }
+    .screen-row { display: flex; align-items: center; gap: 10px; font-size: 0.82rem; }
+    .screen-name { min-width: 100px; color: var(--charcoal); }
+    .screen-bar-bg { flex: 1; height: 8px; background: var(--sand); border-radius: 4px; }
+    .screen-bar-fill { height: 100%; background: var(--nude); border-radius: 4px; }
+    .screen-count { font-size: 0.78rem; font-weight: 600; color: var(--muted); min-width: 30px; text-align: right; }
+
+    /* Period filter */
+    .analytics-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .period-btn { padding: 6px 14px; border: 1px solid var(--sand); border-radius: 20px; font-size: 0.78rem; background: white; cursor: pointer; transition: 0.2s; }
+    .period-btn.active { background: var(--charcoal); color: white; border-color: var(--charcoal); }
+    .conv-badge { display: inline-block; background: #d4edda; color: #155724; padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+
     /* Search */
     .admin-toolbar { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
     .search-input {
@@ -173,7 +220,9 @@
       <!-- Onglets -->
       <div class="admin-tabs">
         <button class="admin-tab active" onclick="Admin.showTab('products')">Produits</button>
+        <button class="admin-tab" onclick="Admin.showTab('analytics')">📊 Statistiques</button>
         <button class="admin-tab" onclick="Admin.showTab('asin')">Extracteur ASIN</button>
+        <button class="admin-tab" onclick="Admin.showTab('coach')">✦ Coach IA</button>
       </div>
 
       <!-- Tab: Produits -->
@@ -310,6 +359,62 @@
         </table>
       </div>
 
+      <!-- Tab: Statistiques -->
+      <div id="tabAnalytics" style="display:none;">
+        <div class="analytics-toolbar">
+          <span style="font-size:0.82rem; color:var(--muted);">Période :</span>
+          <button class="period-btn" onclick="Admin.setPeriod(7)"  id="period7">7 jours</button>
+          <button class="period-btn active" onclick="Admin.setPeriod(30)" id="period30">30 jours</button>
+          <button class="period-btn" onclick="Admin.setPeriod(90)" id="period90">90 jours</button>
+          <button class="period-btn" onclick="Admin.setPeriod(9999)" id="periodAll">Tout</button>
+          <button class="btn-sm btn-edit" style="margin-left:auto;" onclick="Admin.exportStatsCSV()">⬇ Export CSV</button>
+          <button class="btn-sm btn-delete" onclick="Admin.clearStats()">Effacer les stats</button>
+        </div>
+
+        <!-- KPIs -->
+        <div class="analytics-kpis" id="analyticsKpis"></div>
+
+        <!-- Grille graphiques -->
+        <div class="analytics-grid">
+
+          <!-- Timeline 7 jours -->
+          <div class="analytics-card full">
+            <h3>Activité — 7 derniers jours</h3>
+            <div class="timeline-chart" id="analyticsTimeline"></div>
+            <div class="timeline-legend">
+              <span><span class="legend-dot" style="background:#C9A98A;"></span>Sessions</span>
+              <span><span class="legend-dot" style="background:#d4bfaa;"></span>Vues produits</span>
+              <span><span class="legend-dot" style="background:#8b6b52;"></span>Clics Acheter</span>
+            </div>
+          </div>
+
+          <!-- Top produits vus -->
+          <div class="analytics-card">
+            <h3>Top produits — vues</h3>
+            <table class="top-table" id="analyticsTopViews"></table>
+          </div>
+
+          <!-- Top produits achetés -->
+          <div class="analytics-card">
+            <h3>Top produits — clics Acheter</h3>
+            <table class="top-table" id="analyticsTopBuys"></table>
+          </div>
+
+          <!-- Écrans les plus visités -->
+          <div class="analytics-card">
+            <h3>Écrans les plus visités</h3>
+            <div class="screen-list" id="analyticsScreens"></div>
+          </div>
+
+          <!-- Produits froids -->
+          <div class="analytics-card">
+            <h3>Vus mais jamais cliqués</h3>
+            <table class="top-table" id="analyticsCold"></table>
+          </div>
+
+        </div>
+      </div>
+
       <!-- Tab: Extracteur ASIN -->
       <div id="tabAsin" style="display:none;">
         <div class="asin-extractor">
@@ -333,9 +438,38 @@
         </div>
       </div>
 
+      <!-- ── ONGLET COACH IA ── -->
+      <div id="tabCoach" style="display:none;">
+
+        <div class="asin-extractor">
+          <h3>🔑 Clé API Claude (Glow Up Coach)</h3>
+          <div id="coachKeyStatus" style="margin-bottom:16px;"></div>
+
+          <p style="font-size:0.85rem; font-weight:600; margin-bottom:8px;">Comment configurer ta clé API :</p>
+          <ol style="font-size:0.82rem; color:var(--muted); line-height:1.9; padding-left:18px; margin:0;">
+            <li>Déploie ce site sur <strong>Netlify</strong> (glisse ton dossier sur <code>netlify.com/drop</code>)</li>
+            <li>Dans Netlify → <strong>Site settings → Environment variables</strong></li>
+            <li>Ajoute une variable : <code>ANTHROPIC_API_KEY</code> = ta clé <code>sk-ant-…</code></li>
+            <li>Redéploie le site (bouton <strong>Trigger deploy</strong>)</li>
+          </ol>
+        </div>
+
+        <div class="asin-extractor" style="margin-top:24px;">
+          <h3>🧪 Tester la connexion</h3>
+          <p style="font-size:0.82rem; color:var(--muted); margin-bottom:12px;">
+            Fonctionne uniquement une fois le site déployé sur Netlify avec la variable <code>ANTHROPIC_API_KEY</code> configurée.
+          </p>
+          <button class="btn btn-dark btn-sm" style="padding:10px 20px;"
+                  onclick="Admin.testCoachKey()">Lancer le test</button>
+          <div id="coachTestResult" style="margin-top:12px; font-size:0.85rem;"></div>
+        </div>
+
+      </div><!-- /tabCoach -->
+
     </div><!-- /admin-wrap -->
   </div><!-- /adminPanel -->
 
+  <script src="js/tracker.js"></script>
   <script src="js/adminPanel.js"></script>
 </body>
 </html>

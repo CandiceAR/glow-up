@@ -1,0 +1,19 @@
+{
+  "name": "Glow Up — Skincare & Maquillage Virtuel",
+  "short_name": "Glow Up",
+  "description": "Ton assistant beauté personnel : skincare, maquillage virtuel et routines personnalisées.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#fdf8f4",
+  "theme_color": "#c8956c",
+  "orientation": "portrait",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "glow-up-icon.jpg",
+      "sizes": "any",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}

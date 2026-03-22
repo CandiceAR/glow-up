@@ -6,7 +6,14 @@
   <title>Glow Up — Skincare & Maquillage Virtuel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20">
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#c8956c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Glow Up">
+  <link rel="apple-touch-icon" href="glow-up-icon.jpg">
 </head>
 <body>
 
@@ -25,6 +32,9 @@
         <a class="nav-link active" data-screen="home"     href="#" onclick="showScreen('home'); return false;">Accueil</a>
         <a class="nav-link"        data-screen="shop"     href="#" onclick="showScreen('shop'); return false;">Boutique</a>
         <a class="nav-link"        data-screen="capture"  href="#" onclick="showScreen('capture'); return false;">Mon Look</a>
+        <a class="nav-link nav-link-journey" data-screen="journey" href="#" onclick="showScreen('journey'); return false;">✦ Skin Journey</a>
+        <a class="nav-link" data-screen="skinpedia" href="#" onclick="showScreen('skinpedia'); return false;">Skinpedia</a>
+        <a class="nav-link nav-link-coach" data-screen="coach" href="#" onclick="showScreen('coach'); return false;">✦ Coach</a>
       </nav>
       <div id="navUser"></div>
     </div>
@@ -45,6 +55,9 @@
             <button class="btn btn-dark" onclick="startGlowUp()">Commencer mon analyse ✦</button>
             <button class="btn btn-outline" onclick="showScreen('shop')">Voir la boutique</button>
           </div>
+          <p class="hero-login-hint" id="heroLoginHint">
+            Déjà un compte ? <a href="#" onclick="openAuthModal(); return false;">Connecte-toi</a> pour retrouver ton analyse et ta progression.
+          </p>
         </div>
       </section>
 
@@ -92,14 +105,18 @@
     <div class="screen" id="screen-capture">
       <div class="capture-container">
         <div class="section-head" style="margin-bottom:32px">
-          <span class="section-tag">Étape 1 / 3</span>
+          <span class="section-tag">Étape 1</span>
           <h1>Prends ta photo</h1>
-          <p>Pour l'essai virtuel de maquillage. Tu peux passer cette étape.</p>
+          <p>Ta photo permet d'analyser ta peau et ta morphologie pour une routine vraiment personnalisée. L'analyse se fait localement — aucune donnée envoyée.</p>
         </div>
 
         <div class="capture-area">
-          <!-- Webcam -->
-          <video id="cameraStream" autoplay muted playsinline style="display:none; width:100%; border-radius:16px; max-width:400px;"></video>
+          <!-- Webcam + overlay temps réel -->
+          <div class="capture-camera-wrap" id="cameraWrap" style="display:none;">
+            <video id="cameraStream" autoplay muted playsinline></video>
+            <canvas id="cameraOverlay" aria-hidden="true"></canvas>
+            <div class="capture-scan-badge">Analyse en cours…</div>
+          </div>
           <button class="capture-snap-btn" id="captureBtn" style="display:none;" aria-label="Prendre la photo">📸</button>
 
           <div class="capture-options">
@@ -115,17 +132,93 @@
           <div id="capturePreview" style="display:none; margin-top:24px; text-align:center;">
             <img id="capturePreviewImg" alt="Aperçu" style="max-width:280px; border-radius:16px; border:2px solid var(--sand);">
             <p style="margin-top:12px; color:var(--muted);">Photo prête !</p>
+            <button class="btn btn-dark capture-analyse-btn" id="captureAnalyseBtn" onclick="handleCaptureNext()">
+              Analyser mon visage ✦
+            </button>
           </div>
         </div>
 
         <div class="capture-nav">
           <button class="btn btn-outline" onclick="showScreen('home')">← Retour</button>
-          <button class="btn btn-dark" id="captureNextBtn" onclick="showScreen('questionnaire')" style="display:block">
-            Continuer sans photo →
-          </button>
         </div>
       </div>
     </div><!-- /screen-capture -->
+
+    <!-- ======== SKIN ANALYSIS ======== -->
+    <div class="screen" id="screen-skin-analysis">
+      <div class="skin-analysis-container">
+        <div id="skinAnalysisContent">
+          <!-- Rendu dynamique par skinAnalysis.js -->
+          <p class="loading-placeholder">Chargement de l'analyse…</p>
+        </div>
+      </div>
+    </div><!-- /screen-skin-analysis -->
+
+    <!-- ======== ROUTINE CHOICE ======== -->
+    <div class="screen" id="screen-routine-choice">
+      <div class="routine-choice-container">
+
+        <div class="routine-choice-header">
+          <span class="section-tag">Étape 2</span>
+          <h1>Quelle routine veux-tu découvrir ?</h1>
+          <p>Choisis la routine qui t'intéresse le plus.<br>Tu peux découvrir l'autre plus tard avec l'accès complet Glow Up.</p>
+        </div>
+
+        <div class="routine-choice-cards" id="routineChoiceCards">
+
+          <!-- Skincare -->
+          <div class="choice-card" id="choiceCardSkincare" onclick="pickRoutine('skincare')">
+            <div class="choice-card-icon">◇</div>
+            <div class="choice-card-body">
+              <h2>Routine Skincare</h2>
+              <p>Analyse de peau · Routine personnalisée · Produits adaptés à ton profil</p>
+              <ul class="choice-card-perks">
+                <li>Diagnostic cutané par zones</li>
+                <li>Routine matin &amp; soir sur-mesure</li>
+                <li>Produits recommandés sans favoritisme</li>
+              </ul>
+            </div>
+            <div class="choice-card-cta">Choisir Skincare →</div>
+            <div class="choice-card-lock" id="lockSkincare" style="display:none">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span>Accès complet Glow Up</span>
+            </div>
+          </div>
+
+          <!-- Make-up -->
+          <div class="choice-card" id="choiceCardMakeup" onclick="pickRoutine('makeup')">
+            <div class="choice-card-icon">✦</div>
+            <div class="choice-card-body">
+              <h2>Routine Make-up</h2>
+              <p>Coach beauté IA · Produits adaptés à ta morphologie · Dupes inclus</p>
+              <ul class="choice-card-perks">
+                <li>Analyse de la forme du visage &amp; des yeux</li>
+                <li>5 produits sélectionnés par l'IA</li>
+                <li>Alternative moins chère (Dupe) pour chaque produit</li>
+              </ul>
+            </div>
+            <div class="choice-card-cta">Choisir Make-up →</div>
+            <div class="choice-card-lock" id="lockMakeup" style="display:none">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span>Accès complet Glow Up</span>
+            </div>
+          </div>
+
+        </div>
+
+        <p class="routine-choice-note" id="routineChoiceNote" style="display:none">
+          Tu as déjà découvert une routine. Débloque l'accès complet pour accéder aux deux.
+          <button class="btn-ghost" onclick="openPaywallModal()" style="margin-left:8px; text-decoration:underline; font-size:inherit;">
+            Voir les offres →
+          </button>
+        </p>
+
+        <div style="text-align:center; margin-top:32px;">
+          <button class="btn btn-outline" onclick="showScreen('skin-analysis')">← Retour à mon analyse</button>
+        </div>
+
+      </div>
+    </div><!-- /screen-routine-choice -->
 
     <!-- ======== QUESTIONNAIRE ======== -->
     <div class="screen" id="screen-questionnaire">
@@ -228,17 +321,115 @@
         <p>Tous nos produits, sélectionnés sans favoritisme</p>
       </div>
 
-      <div class="shop-container">
-        <div class="filter-bar" id="filterTabs">
-          <button class="filter-tab active" data-cat="all"        onclick="filterShop('all')">Tout</button>
-          <button class="filter-tab"        data-cat="lipstick"   onclick="filterShop('lipstick')">Rouge à lèvres</button>
-          <button class="filter-tab"        data-cat="blush"      onclick="filterShop('blush')">Blush</button>
-          <button class="filter-tab"        data-cat="foundation" onclick="filterShop('foundation')">Fond de teint</button>
-          <button class="filter-tab"        data-cat="mascara"    onclick="filterShop('mascara')">Mascara</button>
-        </div>
-        <div class="products-grid" id="shopGrid"></div>
-      </div>
+      <div class="shop-layout">
+
+        <!-- ── Sidebar ── -->
+        <aside class="shop-sidebar">
+          <button class="shop-sidebar-toggle" onclick="toggleShopSidebar()">
+            <span>☰</span> Filtrer par catégorie
+          </button>
+          <div class="shop-sidebar-body" id="shopSidebarBody">
+
+            <!-- Sélection -->
+            <div class="sidebar-group" id="sg-selection">
+              <button class="sidebar-group-title" onclick="toggleSidebarGroup('sg-selection')">
+                Sélection <span class="sidebar-arrow">▾</span>
+              </button>
+              <div class="sidebar-group-items">
+                <button class="sidebar-item active" data-cat="all"      onclick="filterShop('all')">Tout voir</button>
+                <button class="sidebar-item"        data-cat="featured" onclick="filterShop('featured')">★ Vedette</button>
+                <button class="sidebar-item"        data-cat="h2o"      onclick="filterShop('h2o')">💧 H₂O</button>
+                <button class="sidebar-item"        data-cat="vitc"     onclick="filterShop('vitc')">✨ Vit C</button>
+              </div>
+            </div>
+
+            <!-- Soin visage -->
+            <div class="sidebar-group" id="sg-soin">
+              <button class="sidebar-group-title" onclick="toggleSidebarGroup('sg-soin')">
+                Soin Visage <span class="sidebar-arrow">▾</span>
+              </button>
+              <div class="sidebar-group-items">
+                <button class="sidebar-item" data-cat="serum"       onclick="filterShop('serum')">Sérum</button>
+                <button class="sidebar-item" data-cat="cleanser"    onclick="filterShop('cleanser')">Démaquillant</button>
+                <button class="sidebar-item" data-cat="cream"       onclick="filterShop('cream')">Crème</button>
+                <button class="sidebar-item" data-cat="eye"         onclick="filterShop('eye')">Contour yeux</button>
+                <button class="sidebar-item" data-cat="retinol"     onclick="filterShop('retinol')">Rétinol</button>
+                <button class="sidebar-item" data-cat="niacinamide" onclick="filterShop('niacinamide')">Niacinamide</button>
+                <button class="sidebar-item" data-cat="spf"         onclick="filterShop('spf')">SPF ☀️</button>
+                <button class="sidebar-item" data-cat="nightmask"   onclick="filterShop('nightmask')">Masque de nuit</button>
+              </div>
+            </div>
+
+            <!-- Maquillage -->
+            <div class="sidebar-group" id="sg-makeup">
+              <button class="sidebar-group-title" onclick="toggleSidebarGroup('sg-makeup')">
+                Maquillage <span class="sidebar-arrow">▾</span>
+              </button>
+              <div class="sidebar-group-items">
+                <button class="sidebar-item" data-cat="foundation" onclick="filterShop('foundation')">Fond de teint</button>
+                <button class="sidebar-item" data-cat="bronzer"    onclick="filterShop('bronzer')">Bronzer &amp; Bonne mine</button>
+                <button class="sidebar-item" data-cat="eyeliner"   onclick="filterShop('eyeliner')">Eyeliner &amp; Kajal</button>
+                <button class="sidebar-item" data-cat="mascara"    onclick="filterShop('mascara')">Mascara</button>
+                <button class="sidebar-item" data-cat="lipstick"   onclick="filterShop('lipstick')">Rouge à lèvres</button>
+                <button class="sidebar-item" data-cat="lipbalm"    onclick="filterShop('lipbalm')">Baume à lèvres</button>
+              </div>
+            </div>
+
+          </div><!-- /shop-sidebar-body -->
+        </aside>
+
+        <!-- ── Contenu principal ── -->
+        <main class="shop-main">
+          <div id="catExplainer"></div>
+          <div class="products-grid" id="shopGrid"></div>
+        </main>
+
+      </div><!-- /shop-layout -->
     </div><!-- /screen-shop -->
+
+    <!-- ======== SKIN JOURNEY ======== -->
+    <div class="screen" id="screen-journey">
+      <div class="journey-container">
+        <div id="skinJourneyContent">
+          <p class="loading-placeholder">Chargement du programme…</p>
+        </div>
+      </div>
+    </div><!-- /screen-journey -->
+
+    <!-- ======== MAKEUP ROUTINE ======== -->
+    <div class="screen" id="screen-makeup">
+      <div class="makeup-routine-container">
+        <div id="makeupRoutineContent">
+          <div class="skin-loading-screen">
+            <div class="skin-scan-anim">
+              <div class="skin-scan-face"><div class="skin-scan-line"></div></div>
+            </div>
+            <p class="skin-loading-title">Préparation de ta routine make-up…</p>
+          </div>
+        </div>
+        <div style="text-align:center; margin-top:32px; padding-bottom:40px;">
+          <button class="btn btn-outline" onclick="showScreen('results')">← Retour à ma routine</button>
+        </div>
+      </div>
+    </div><!-- /screen-makeup -->
+
+    <!-- ======== SKINPEDIA ======== -->
+    <div class="screen" id="screen-skinpedia">
+      <div class="skinpedia-container">
+        <div id="skinpediaContent">
+          <p class="loading-placeholder">Chargement de la Skinpedia…</p>
+        </div>
+      </div>
+    </div><!-- /screen-skinpedia -->
+
+    <!-- ======== GLOW UP COACH ======== -->
+    <div class="screen" id="screen-coach">
+      <div class="coach-container">
+        <div id="glowCoachContent">
+          <p class="loading-placeholder">Chargement de Glow Up Coach…</p>
+        </div>
+      </div>
+    </div><!-- /screen-coach -->
 
   </div><!-- /app -->
 
@@ -267,7 +458,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <p>© 2026 Glow Up. Liens Amazon avec code affilié <strong>kand10ar-21</strong> — même commission sur tous les produits.</p>
+      <p>© 2026 Glow Up. Liens Amazon avec code affilié <strong>kan10ar-21</strong> — même commission sur tous les produits.</p>
     </div>
   </footer>
 
@@ -276,13 +467,32 @@
   <div class="modal-box" id="modalBox" role="dialog" aria-modal="true"></div>
 
   <!-- ===== SCRIPTS ===== -->
-  <script src="js/rulesEngine.js"></script>
-  <script src="js/productCatalog.js"></script>
-  <script src="js/questionnaire.js"></script>
-  <script src="js/routineRenderer.js"></script>
-  <script src="js/tryOn.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/skinAnalysis.js?v=20"></script>
+  <script src="js/rulesEngine.js?v=20"></script>
+  <script src="js/catalogue.js?v=20"></script>
+  <script src="js/productCatalog.js?v=20"></script>
+  <script src="js/questionnaire.js?v=20"></script>
+  <script src="js/routineRenderer.js?v=20"></script>
+  <script src="js/tryOn.js?v=20"></script>
+  <script src="js/auth.js?v=20"></script>
+  <script src="js/skinJourney.js?v=20"></script>
+  <script src="js/makeupRoutine.js?v=1"></script>
+  <script src="js/tracker.js"></script>
+  <script src="js/skinpedia.js?v=1"></script>
+  <script src="js/glowCoach.js?v=1"></script>
+  <script src="js/routineSaver.js?v=1"></script>
+  <script src="js/app.js?v=20"></script>
+
+  <!-- Enregistrement du Service Worker PWA -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('Service Worker enregistré :', reg.scope))
+          .catch(err => console.warn('Service Worker échec :', err));
+      });
+    }
+  </script>
 
 </body>
 </html>

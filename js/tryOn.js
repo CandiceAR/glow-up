@@ -44,6 +44,15 @@ const TryOn = (() => {
   // ─── Initialisation MediaPipe ─────────────────────────────────
   async function init() {
     if (initialized || loading) return;
+
+    // Réutiliser l'instance déjà créée par skinAnalysis.js si disponible
+    if (window._glowFaceLandmarker) {
+      faceLandmarker = window._glowFaceLandmarker;
+      initialized    = true;
+      console.log('[TryOn] MediaPipe réutilisé depuis le cache global');
+      return;
+    }
+
     loading = true;
 
     try {
@@ -67,6 +76,8 @@ const TryOn = (() => {
         numFaces: 1
       });
 
+      // Mettre en cache global pour skinAnalysis.js et autres modules
+      window._glowFaceLandmarker = faceLandmarker;
       initialized = true;
       console.log('[TryOn] MediaPipe initialisé');
     } catch (err) {
@@ -407,6 +418,7 @@ const TryOn = (() => {
         reader.onload = ev => {
           AppState.face.photo = ev.target.result;
           showCapturePreview(ev.target.result);
+          if (typeof SkinJourney !== 'undefined') SkinJourney.onPhotoReady();
         };
         reader.readAsDataURL(file);
       });
@@ -415,23 +427,40 @@ const TryOn = (() => {
     if (cameraBtn) {
       cameraBtn.addEventListener('click', async () => {
         try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+          const constraints = { video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } } };
+          const stream = await navigator.mediaDevices.getUserMedia(constraints);
           cameraStream.srcObject = stream;
-          cameraStream.style.display = 'block';
+
+          const cameraWrap    = document.getElementById('cameraWrap');
+          const cameraOverlay = document.getElementById('cameraOverlay');
+
+          if (cameraWrap) cameraWrap.style.display = 'block';
           captureBtn.style.display = 'block';
-          cameraBtn.style.display = 'none';
+          cameraBtn.style.display  = 'none';
+
+          // Lancer l'analyse zone en temps réel
+          cameraStream.onloadedmetadata = () => {
+            if (typeof SkinAnalysis !== 'undefined' && cameraOverlay) {
+              SkinAnalysis.startLiveAnalysis(cameraStream, cameraOverlay);
+            }
+          };
 
           captureBtn.onclick = () => {
+            // Arrêter l'overlay
+            if (typeof SkinAnalysis !== 'undefined') SkinAnalysis.stopLiveAnalysis();
+
             const tempCanvas = document.createElement('canvas');
             tempCanvas.width  = cameraStream.videoWidth;
             tempCanvas.height = cameraStream.videoHeight;
             tempCanvas.getContext('2d').drawImage(cameraStream, 0, 0);
             const dataUrl = tempCanvas.toDataURL('image/jpeg', 0.92);
             AppState.face.photo = dataUrl;
+            if (typeof SkinJourney !== 'undefined') SkinJourney.onPhotoReady();
+
             stream.getTracks().forEach(t => t.stop());
-            cameraStream.style.display = 'none';
+            if (cameraWrap) cameraWrap.style.display = 'none';
             captureBtn.style.display = 'none';
-            cameraBtn.style.display = 'block';
+            cameraBtn.style.display  = 'block';
             showCapturePreview(dataUrl);
           };
         } catch (err) {
@@ -442,15 +471,15 @@ const TryOn = (() => {
   }
 
   function showCapturePreview(dataUrl) {
-    const preview   = document.getElementById('capturePreview');
-    const previewEl = document.getElementById('capturePreviewImg');
-    const nextBtn   = document.getElementById('captureNextBtn');
+    const preview     = document.getElementById('capturePreview');
+    const previewEl   = document.getElementById('capturePreviewImg');
+    const analyseBtn  = document.getElementById('captureAnalyseBtn');
     if (preview && previewEl) {
       previewEl.src         = dataUrl;
       preview.style.display = 'block';
     }
-    if (nextBtn) nextBtn.style.display = 'block';
-    showToast('Photo prête ! Continue le questionnaire.', 'success');
+    if (analyseBtn) analyseBtn.style.display = 'inline-flex';
+    showToast('Photo prête ! Lance l\'analyse de ton visage.', 'success');
   }
 
   // ─── Helpers géométriques ─────────────────────────────────────

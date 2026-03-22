@@ -4,125 +4,7 @@
 
 // ===== CATALOGUE =====
 
-const PRODUCTS = [
-  {
-    id: 1,
-    name: "Sérum Éclat Vitamine C",
-    cat: "serum", catLabel: "Sérum",
-    price: 42,
-    sizes: ["15 ml", "30 ml"], defaultSize: "30 ml",
-    badge: "Bestseller",
-    emoji: "✨",
-    bg: "linear-gradient(145deg, #f5e8d5 0%, #e8d3c0 100%)",
-    desc: "Ce sérum concentré à 12 % de vitamine C encapsulée illumine le teint, réduit les taches et protège la peau des agressions quotidiennes. Texture légère à absorption rapide — idéale le matin avant l'hydratant.",
-    ingredients: "Aqua, Ascorbic Acid 12%, Niacinamide 5%, Sodium Hyaluronate, Ferulic Acid, Glycerin, Panthenol, Allantoin.",
-    rating: 4.8, reviews: 247, featured: true
-  },
-  {
-    id: 2,
-    name: "Crème Hydratante Barrière",
-    cat: "creme", catLabel: "Crème",
-    price: 38,
-    sizes: ["50 ml", "100 ml"], defaultSize: "50 ml",
-    badge: null,
-    emoji: "🌿",
-    bg: "linear-gradient(145deg, #e8ece5 0%, #d8e0d2 100%)",
-    desc: "Formule riche en céramides et acide hyaluronique qui restaure la barrière cutanée, hydrate pendant 72 h et apaise les peaux sensibles et déshydratées. Sans parfum.",
-    ingredients: "Aqua, Ceramide NP, Ceramide AP, Sodium Hyaluronate, Glycerin, Niacinamide 4%, Cholesterol, Phytosphingosine.",
-    rating: 4.7, reviews: 183, featured: true
-  },
-  {
-    id: 3,
-    name: "Huile Précieuse Camélia",
-    cat: "soin", catLabel: "Soin",
-    price: 55,
-    sizes: ["30 ml"], defaultSize: "30 ml",
-    badge: "Nouveau",
-    emoji: "🫧",
-    bg: "linear-gradient(145deg, #f5e8c8 0%, #e8d5a8 100%)",
-    desc: "Huile sèche luxueuse à base de camélia, jojoba et rose de Damas. Nourrit, illumine et répare sans effet gras. S'utilise seule ou mélangée à ta crème.",
-    ingredients: "Camellia Sinensis Seed Oil, Simmondsia Chinensis Seed Oil, Rosa Damascena Flower Oil, Tocopherol, Squalane.",
-    rating: 4.9, reviews: 98, featured: true
-  },
-  {
-    id: 4,
-    name: "Nettoyant Doux à l'Avoine",
-    cat: "nettoyant", catLabel: "Nettoyant",
-    price: 26,
-    sizes: ["150 ml"], defaultSize: "150 ml",
-    badge: null,
-    emoji: "🧴",
-    bg: "linear-gradient(145deg, #f0ebe2 0%, #e5ddd0 100%)",
-    desc: "Gel nettoyant qui élimine les impuretés sans altérer le microbiome cutané. Enrichi en extrait d'avoine colloïdale pour apaiser et protéger. Convient à toutes les peaux.",
-    ingredients: "Aqua, Avena Sativa Kernel Extract, Glycerin, Sodium Cocoyl Glutamate, Panthenol, Allantoin, Bisabolol.",
-    rating: 4.5, reviews: 312, featured: true
-  },
-  {
-    id: 5,
-    name: "Crème Solaire SPF 50+",
-    cat: "spf", catLabel: "SPF",
-    price: 32,
-    sizes: ["50 ml"], defaultSize: "50 ml",
-    badge: "Essentiel",
-    emoji: "☀️",
-    bg: "linear-gradient(145deg, #f0f0e0 0%, #e8e8d0 100%)",
-    desc: "Protection solaire haute sans résidu blanc, fini mat léger. Filtres UVA/UVB de nouvelle génération. Non comédogène — l'étape finale indispensable de toute routine.",
-    ingredients: "Aqua, Zinc Oxide 10%, Titanium Dioxide 5%, Niacinamide 5%, Glycerin, Sodium Hyaluronate, Dimethicone.",
-    rating: 4.6, reviews: 429, featured: false
-  },
-  {
-    id: 6,
-    name: "Masque Purifiant Kaolin",
-    cat: "soin", catLabel: "Masque",
-    price: 28,
-    sizes: ["75 ml"], defaultSize: "75 ml",
-    badge: null,
-    emoji: "🎭",
-    bg: "linear-gradient(145deg, #e8e0f0 0%, #d8d0e8 100%)",
-    desc: "Masque argile-kaolin qui désincruste les pores, régule le sébum et unifie le grain de peau. Sans alcool — peau nette sans sensation de tiraillement. 1 à 2 fois par semaine.",
-    ingredients: "Aqua, Kaolin, Bentonite, Glycerin, Niacinamide 3%, Zinc PCA, Allantoin, Bisabolol.",
-    rating: 4.4, reviews: 156, featured: false
-  },
-  {
-    id: 7,
-    name: "Tonique Hydratant à la Rose",
-    cat: "nettoyant", catLabel: "Tonique",
-    price: 24,
-    sizes: ["200 ml"], defaultSize: "200 ml",
-    badge: null,
-    emoji: "💧",
-    bg: "linear-gradient(145deg, #f0e0e8 0%, #e8d0d8 100%)",
-    desc: "Lotion tonique légère à l'eau de rose et à l'acide hyaluronique. Prépare la peau à absorber les soins suivants, apporte hydratation immédiate et redonne de l'éclat.",
-    ingredients: "Rosa Damascena Flower Water, Sodium Hyaluronate, Glycerin, Niacinamide 2%, Panthenol, Allantoin.",
-    rating: 4.6, reviews: 201, featured: false
-  },
-  {
-    id: 8,
-    name: "Sérum Rétinol 0.3%",
-    cat: "serum", catLabel: "Sérum",
-    price: 48,
-    sizes: ["30 ml"], defaultSize: "30 ml",
-    badge: null,
-    emoji: "🔮",
-    bg: "linear-gradient(145deg, #e8d8e8 0%, #d8c8d8 100%)",
-    desc: "Sérum anti-âge au rétinol encapsulé pour une libération progressive qui limite les irritations. Réduit les rides, améliore la texture. À utiliser exclusivement le soir.",
-    ingredients: "Aqua, Retinol 0.3% (Encapsulated), Sodium Hyaluronate, Glycerin, Squalane, Niacinamide 3%, Tocopherol.",
-    rating: 4.5, reviews: 134, featured: true
-  },
-  {
-    id: 9,
-    name: "Contour des Yeux Repulpant",
-    cat: "creme", catLabel: "Soin Yeux",
-    price: 36,
-    sizes: ["15 ml"], defaultSize: "15 ml",
-    badge: null,
-    emoji: "👁️",
-    bg: "linear-gradient(145deg, #f5f0e8 0%, #ede8e0 100%)",
-    desc: "Soin ultra-léger qui cible cernes, poches et ridules. Complexe de peptides et caféine pour un regard reposé et lumineux dès 4 semaines d'utilisation.",
-    ingredients: "Aqua, Caffeine 1%, Peptide Complex, Sodium Hyaluronate, Glycerin, Niacinamide 2%, Ceramide NP.",
-    rating: 4.7, reviews: 89, featured: false
-  }
-];
+const PRODUCTS = [];
 
 // ===== STATE =====
 
@@ -201,13 +83,16 @@ function renderShop() {
   grid.innerHTML = list.map(renderCard).join('');
 }
 
+function filterShop(cat) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.toggle('active', t.dataset.cat === cat));
+  renderShop();
+}
+
 document.getElementById('filterTabs')?.addEventListener('click', e => {
   const tab = e.target.closest('.filter-tab');
   if (!tab) return;
-  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-  tab.classList.add('active');
-  currentFilter = tab.dataset.cat;
-  renderShop();
+  filterShop(tab.dataset.cat);
 });
 
 // ===== PRODUCT MODAL =====

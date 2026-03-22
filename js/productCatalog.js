@@ -7,7 +7,7 @@
 
 const ProductCatalog = (() => {
 
-  const TAG = 'kand10ar-21';
+  const TAG = 'kan10ar-21';
 
   // ─── Injecter/normaliser le tag affilié dans une URL Amazon ──
   function ensureTag(url) {
@@ -34,34 +34,11 @@ const ProductCatalog = (() => {
   // ─── Charger les produits ─────────────────────────────────────
   async function load() {
     try {
-      const [manualRes, autoRes] = await Promise.all([
-        fetch('data/products-manual.json'),
-        fetch('data/products-auto.json').catch(() => null)
-      ]);
+      const products = (typeof CATALOGUE !== 'undefined' ? CATALOGUE : [])
+        .filter(p => p.active !== false)
+        .map(p => ({ ...p, amazonUrl: ensureTag(p.amazonUrl) }));
 
-      const manualData = await manualRes.json();
-      const manual = (manualData.products || []).map(p => ({
-        ...p,
-        _source: 'manual',
-        amazonUrl: ensureTag(p.amazonUrl)
-      }));
-
-      let auto = [];
-      if (autoRes && autoRes.ok) {
-        const autoData = await autoRes.json();
-        auto = (autoData.products || []).map(p => ({
-          ...p,
-          _source: 'auto',
-          amazonUrl: ensureTag(p.amazonUrl)
-        }));
-      }
-
-      // Fusion : manual prioritaire, dédup par ASIN
-      const merged = mergeProducts(manual, auto);
-
-      // Filtrer inactifs
-      AppState.products.catalog = merged.filter(p => p.active !== false);
-
+      AppState.products.catalog = products;
       console.log('[Catalog] Chargé:', AppState.products.catalog.length, 'produits actifs');
     } catch (err) {
       console.error('[Catalog] Erreur chargement:', err);
@@ -90,14 +67,21 @@ const ProductCatalog = (() => {
 
   // ─── Obtenir produits recommandés selon les réponses ─────────
   function getRecommended(answers) {
-    const { skinType, makeupUsed } = answers;
-    const usedCategories = makeupUsed || [];
+    const { skinType, makeupUsed = [], makeupFrequency } = answers;
 
-    let pool = AppState.products.catalog;
+    const skincareCategories = ['cleanser', 'serum', 'eye', 'cream', 'spf', 'lipbalm'];
+    const makeupCategories   = makeupFrequency !== 'jamais' ? (makeupUsed || []) : [];
+    const allowed = [...skincareCategories, ...makeupCategories];
 
-    // Filtrer par catégories maquillage utilisées
-    if (usedCategories.length > 0) {
-      pool = pool.filter(p => usedCategories.includes(p.category));
+    let pool = AppState.products.catalog.filter(p => allowed.includes(p.category));
+
+    // Filtrer par type de peau
+    if (skinType) {
+      const filtered = pool.filter(p =>
+        !p.skinTypeTags || p.skinTypeTags.length === 0 ||
+        p.skinTypeTags.includes(skinType)
+      );
+      if (filtered.length >= 4) pool = filtered;
     }
 
     // Trier : featured d'abord, puis par rating
@@ -105,15 +89,6 @@ const ProductCatalog = (() => {
       if (b.isFeatured !== a.isFeatured) return b.isFeatured ? 1 : -1;
       return (b.rating || 0) - (a.rating || 0);
     });
-
-    // Filtrer par type de peau si défini
-    if (skinType) {
-      const withSkinFilter = pool.filter(p =>
-        !p.skinTypeTags || p.skinTypeTags.length === 0 ||
-        p.skinTypeTags.includes(skinType)
-      );
-      pool = withSkinFilter.length >= 3 ? withSkinFilter : pool;
-    }
 
     AppState.products.recommended = pool;
     return pool;
@@ -131,8 +106,13 @@ const ProductCatalog = (() => {
     const colorDot = product.colorHex
       ? `<span class="color-dot" style="background:${product.colorHex}" title="${product.shadeName || ''}"></span>`
       : '';
-    const featuredBadge = product.isFeatured
-      ? '<span class="badge badge-featured">★ Vedette</span>'
+    const badgeParts = [];
+    if (product.badge === 'h2o')      badgeParts.push('<span class="badge badge-h2o">💧 H₂O</span>');
+    if (product.badge === 'vitc')     badgeParts.push('<span class="badge badge-vitc">✨ Vit C</span>');
+    if (product.badge === 'vitc-spf') badgeParts.push('<span class="badge badge-vitc-spf">☀️ Vit C + SPF</span>');
+    if (product.isFeatured)           badgeParts.push('<span class="badge badge-featured">★ Vedette</span>');
+    const badgeHTML = badgeParts.length
+      ? `<div class="badge-stack">${badgeParts.join('')}</div>`
       : '';
     const categoryLabel = getCategoryLabel(product.category);
 
@@ -142,7 +122,7 @@ const ProductCatalog = (() => {
           <img src="${product.imageUrl || 'assets/images/placeholder.jpg'}"
                alt="${product.name}"
                onerror="this.src='assets/images/placeholder.jpg'">
-          ${featuredBadge}
+          ${badgeHTML}
         </div>
         <div class="product-card-body">
           <div class="product-card-meta">
@@ -166,15 +146,30 @@ const ProductCatalog = (() => {
     const p = AppState.products.catalog.find(x => x.id === id);
     if (!p) return;
     AppState.products.selected = p;
-
-    // On est AVANT le try-on ? → pas de bouton Amazon
-    const postTryOn = ['final'].includes(AppState.screen);
+    if (typeof Tracker !== 'undefined') Tracker.trackView(id);
 
     const previews = renderSkinTonePreviews(p);
     const ratingStars = renderStars(p.rating);
     const colorInfo = p.colorHex
       ? `<div class="modal-color"><span class="color-swatch" style="background:${p.colorHex}"></span>${p.shadeName || ''}</div>`
       : '';
+
+    const paired = p.pairedWith
+      ? AppState.products.catalog.find(x => x.id === p.pairedWith)
+      : null;
+    const pairedHtml = paired ? `
+      <div class="modal-paired">
+        <p class="modal-paired-label">🖌️ Utilise avec</p>
+        <div class="modal-paired-card">
+          <img src="${paired.imageUrl}" alt="${paired.name}" onerror="this.src='assets/images/placeholder.jpg'">
+          <div class="modal-paired-info">
+            <span class="product-brand">${paired.brand}</span>
+            <p class="modal-paired-name">${paired.name}</p>
+            <span class="modal-paired-price">${paired.price.toFixed(2)} €</span>
+          </div>
+          <a class="btn btn-amazon btn-amazon-sm" href="${paired.amazonUrl}" target="_blank" rel="noopener">Acheter</a>
+        </div>
+      </div>` : '';
 
     const html = `
       <button class="modal-close" onclick="closeModal()">×</button>
@@ -190,10 +185,12 @@ const ProductCatalog = (() => {
           ${colorInfo}
           <div class="product-rating">${ratingStars} <span>(${p.rating || '—'}/5)</span></div>
           <p class="product-desc">${p.description || ''}</p>
+          ${p.applyTip ? `<div class="product-apply-tip"><span class="apply-tip-label">💡 Comment l'appliquer</span><p>${p.applyTip}</p></div>` : ''}
           <div class="product-price-lg">${p.price ? p.price.toFixed(2) + ' €' : '—'}</div>
           ${previews}
+          ${pairedHtml}
           <div class="modal-actions">
-            ${postTryOn ? renderBuyButton(p) : ''}
+            ${renderBuyButton(p)}
             <button class="btn btn-outline" onclick="TryOn.addProduct('${p.id}'); closeModal();">
               ✦ Essayer virtuellement
             </button>
@@ -204,15 +201,15 @@ const ProductCatalog = (() => {
     openModal(html);
   }
 
-  // ─── Bouton Amazon (affiché SEULEMENT après try-on) ──────────
+  // ─── Bouton Amazon ─────────────────────────────────────────────
   function renderBuyButton(product) {
     return `
-      <a class="btn btn-amazon"
+      <a class="btn btn-amazon btn-amazon-prominent"
          href="${product.amazonUrl}"
          target="_blank"
          rel="noopener nofollow sponsored"
          onclick="trackAmazonClick('${product.id}')">
-        Acheter sur Amazon →
+        🛒 Acheter sur Amazon →
       </a>`;
   }
 
@@ -244,18 +241,27 @@ const ProductCatalog = (() => {
 
   function getCategoryLabel(cat) {
     const map = {
-      lipstick: 'Rouge à lèvres',
-      blush: 'Blush',
+      // Skincare
+      cleanser:   'Démaquillant',
+      serum:      'Sérum',
+      eye:        'Contour yeux',
+      cream:      'Crème hydratante',
+      spf:        'Protection solaire',
+      nightmask:  'Masque de nuit',
+      // Maquillage
+      lipstick:   'Rouge à lèvres',
+      blush:      'Blush',
       foundation: 'Fond de teint',
-      mascara: 'Mascara'
+      mascara:    'Mascara',
+      // Lèvres
+      lipbalm:    'Baume à lèvres'
     };
     return map[cat] || cat;
   }
 
-  // ─── Tracking click Amazon (Phase 0 : simple log) ─────────────
+  // ─── Tracking click Amazon ────────────────────────────────────
   window.trackAmazonClick = function(productId) {
-    console.log('[Tracking] Clic Amazon →', productId);
-    // Phase 1 : envoyer à Firebase Analytics
+    if (typeof Tracker !== 'undefined') Tracker.trackBuyClick(productId);
   };
 
   return { load, getRecommended, getByCategory, renderCard, openProductModal, ensureTag, mergeProducts };
