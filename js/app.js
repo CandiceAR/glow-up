@@ -73,8 +73,11 @@ function showScreen(name) {
   window.scrollTo(0, 0);
   if (typeof Tracker !== 'undefined') Tracker.trackScreen(name);
 
-  // Mettre à jour les liens actifs de la nav
+  // Mettre à jour les liens actifs de la nav (desktop + mobile)
   document.querySelectorAll('.nav-link').forEach(l => {
+    l.classList.toggle('active', l.dataset.screen === name);
+  });
+  document.querySelectorAll('.mobile-nav-item').forEach(l => {
     l.classList.toggle('active', l.dataset.screen === name);
   });
 
