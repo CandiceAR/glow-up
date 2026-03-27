@@ -38,13 +38,17 @@ const MakeupRoutine = (() => {
     return catalogue.filter(p => p.category === cat);
   }
 
+  function getByCategories(cats) {
+    return catalogue.filter(p => cats.includes(p.category));
+  }
+
   function getById(id) {
     return catalogue.find(p => p.id === id);
   }
 
   // ══════════════════════════════════════════════════════════════
   // SÉLECTION INTELLIGENTE DES PRODUITS
-  // Basée sur le profil peau — retourne des IDs du catalogue
+  // Basée sur le profil peau — retourne des produits du catalogue
   // ══════════════════════════════════════════════════════════════
 
   function selectFoundation(profile) {
@@ -52,110 +56,157 @@ const MakeupRoutine = (() => {
     if (!foundations.length) return null;
 
     const { skinType, undertone } = profile;
+    let selected = [];
 
-    // Logique de sélection basée sur le type de peau
-    // Peau grasse/mixte → fonds de teint mats (Dermacol, Wet n Wild)
-    // Peau sèche → fonds de teint hydratants (By Terry, Clinique)
-    // Peau sensible → CC crèmes douces (IT Cosmetics)
-
-    let selectedIds = [];
-
+    // Sélection basée sur le type de peau
     if (skinType === 'grasse' || skinType === 'mixte') {
-      // Privilégier les mats
-      selectedIds = ['m022', 'm016', 'm019']; // Dermacol, Wet n Wild, NYX
+      // Mats : Dermacol, Wet n Wild, NYX
+      selected = [getById('m022'), getById('m016'), getById('m019')].filter(Boolean);
     } else if (skinType === 'seche') {
-      // Privilégier les hydratants
-      selectedIds = ['m017', 'm021', 'm015']; // By Terry, Charlotte Tilbury, Clinique
+      // Hydratants : By Terry, Charlotte Tilbury, Clinique
+      selected = [getById('m017'), getById('m021'), getById('m015')].filter(Boolean);
     } else if (skinType === 'sensible') {
-      // CC crèmes douces
-      selectedIds = ['m026', 'm028', 'm030']; // IT Cosmetics CC+
+      // CC crèmes douces : IT Cosmetics
+      selected = [getById('m026'), getById('m028'), getById('m030')].filter(Boolean);
     } else {
-      // Peau normale - polyvalent
-      selectedIds = ['m020', 'm015', 'm026']; // Clinique Even Better, Superbalanced, IT Cosmetics
+      // Peau normale
+      selected = [getById('m020'), getById('m015'), getById('m026')].filter(Boolean);
     }
 
-    // Filtrer par sous-ton si possible
-    if (undertone === 'warm') {
-      // Teintes chaudes
-      const warmIds = ['m026', 'm027', 'm023', 'm025'];
-      const warmMatch = selectedIds.find(id => warmIds.includes(id));
-      if (warmMatch) selectedIds = [warmMatch, ...selectedIds.filter(id => id !== warmMatch)];
-    } else if (undertone === 'cool') {
-      // Teintes froides/neutres
-      const coolIds = ['m028', 'm029', 'm024'];
-      const coolMatch = selectedIds.find(id => coolIds.includes(id));
-      if (coolMatch) selectedIds = [coolMatch, ...selectedIds.filter(id => id !== coolMatch)];
+    // Affiner par sous-ton
+    if (undertone === 'warm' && selected.length > 0) {
+      const warmOptions = [getById('m026'), getById('m027'), getById('m023')].filter(Boolean);
+      if (warmOptions.length) selected = [warmOptions[0], ...selected.filter(p => p.id !== warmOptions[0]?.id)];
+    } else if (undertone === 'cool' && selected.length > 0) {
+      const coolOptions = [getById('m028'), getById('m029'), getById('m024')].filter(Boolean);
+      if (coolOptions.length) selected = [coolOptions[0], ...selected.filter(p => p.id !== coolOptions[0]?.id)];
     }
 
-    // Retourner les produits existants
-    const products = selectedIds
-      .map(id => getById(id))
-      .filter(Boolean)
-      .slice(0, 2);
-
-    if (!products.length) {
-      // Fallback : premier fond de teint disponible
-      return [foundations[0]];
-    }
-
-    return products;
+    return selected.slice(0, 2);
   }
 
   function selectConcealer(profile) {
-    const concealers = catalogue.filter(p =>
-      p.category === 'foundation' && p.name.toLowerCase().includes('concealer')
-    );
-
+    const concealers = getByCategory('concealer');
     if (!concealers.length) return null;
-    if (!profile.cernes?.detected) return null;
 
-    const { undertone } = profile;
+    const { undertone, skinType } = profile;
+    let selected = [];
 
-    // IT Cosmetics Do It All selon sous-ton
+    // Best-sellers universels
+    const clinique = getById('m038'); // Clinique Anti-Cernes
+    const maybelline = getById('m047'); // Maybelline Instant Anti-Age
+
     if (undertone === 'warm') {
-      return [getById('m023') || getById('m025')].filter(Boolean); // Fair Warm ou Tan Rich Warm
+      selected = [clinique, getById('m040'), maybelline].filter(Boolean); // Light Beige pour peaux chaudes
     } else if (undertone === 'cool') {
-      return [getById('m024')].filter(Boolean); // Tan Neutral
+      selected = [maybelline, getById('m042'), clinique].filter(Boolean); // NYX Ivoire
+    } else {
+      selected = [maybelline, clinique, getById('m043')].filter(Boolean); // NYX Natural
     }
 
-    return [concealers[0]];
+    // Peau sensible → privilégier Clinique
+    if (skinType === 'sensible') {
+      selected = [clinique, ...selected.filter(p => p?.id !== 'm038')];
+    }
+
+    return selected.slice(0, 2);
+  }
+
+  function selectMascara(profile) {
+    const mascaras = getByCategory('mascara');
+    if (!mascaras.length) return null;
+
+    const { eyeShape } = profile;
+    let selected = [];
+
+    // Sélection par forme des yeux
+    if (eyeShape === 'round') {
+      // Yeux ronds → allonger
+      selected = [getById('m054'), getById('m051')].filter(Boolean); // Maybelline Lash Sensational, Clinique
+    } else if (eyeShape === 'narrow') {
+      // Yeux bridés/étroits → ouvrir le regard
+      selected = [getById('m049'), getById('m055')].filter(Boolean); // Charlotte Tilbury Push Up, Maybelline Sky High
+    } else {
+      // Amande → volume
+      selected = [getById('m055'), getById('m054')].filter(Boolean); // Maybelline Sky High, Lash Sensational
+    }
+
+    // Toujours proposer le best-seller
+    const skyHigh = getById('m055');
+    if (skyHigh && !selected.find(p => p?.id === 'm055')) {
+      selected.push(skyHigh);
+    }
+
+    return selected.slice(0, 2);
+  }
+
+  function selectLips(profile) {
+    const lips = getByCategories(['lipstick', 'lipbalm', 'lipgloss']);
+    if (!lips.length) return null;
+
+    const { undertone, lipShape } = profile;
+    let selected = [];
+
+    if (undertone === 'warm') {
+      // Teintes chaudes : nudes pêche, corail
+      selected = [
+        getById('m060'), // Clinique Chubby Stick
+        getById('m071'), // NYX Butter Gloss Cerise
+        getById('m078')  // Summer Fridays Brown Sugar
+      ].filter(Boolean);
+    } else if (undertone === 'cool') {
+      // Teintes froides : roses, berry
+      selected = [
+        getById('m064'), // Clinique Pink Honey
+        getById('m077'), // Summer Fridays Pink Sugar
+        getById('m072')  // Elizabeth Arden
+      ].filter(Boolean);
+    } else {
+      // Neutres universels
+      selected = [
+        getById('m011'), // Clinique Almost Lipstick (Black Honey)
+        getById('m060'), // Clinique Chubby Stick
+        getById('m082')  // Burt's Bees
+      ].filter(Boolean);
+    }
+
+    // Lèvres fines → produits repulpants
+    if (lipShape === 'thin') {
+      const plumping = getById('m068'); // NYX Lip Liner Repulpant
+      if (plumping) selected = [plumping, ...selected];
+    }
+
+    return selected.slice(0, 2);
   }
 
   function selectEyeliner(profile) {
     const eyeliners = getByCategory('eyeliner');
     if (!eyeliners.length) return null;
 
-    const { undertone, eyeColor } = profile;
-
-    // Sélection basée sur le sous-ton
-    let selectedId;
+    const { undertone } = profile;
+    let selected;
 
     if (undertone === 'warm') {
-      // Teintes chaudes : Terre Cuite, Bordeaux, Olive
-      selectedId = 'm033'; // Terre Cuite
+      selected = getById('m033'); // Terre Cuite
     } else if (undertone === 'cool') {
-      // Teintes froides : Mauve, Quartz Fumé
-      selectedId = 'm031'; // Mauve
+      selected = getById('m031'); // Mauve
     } else {
-      // Neutre : Éclair de Nuit (noir classique)
-      selectedId = 'm036'; // Éclair de Nuit
+      selected = getById('m036'); // Éclair de Nuit (noir)
     }
 
-    const product = getById(selectedId);
-    return product ? [product] : [eyeliners[0]];
+    return selected ? [selected] : [eyeliners[0]];
   }
 
-  function selectLips(profile) {
-    const lips = getByCategory('lipbalm');
-    if (!lips.length) return null;
+  function selectBronzer(profile) {
+    const bronzers = getByCategory('bronzer');
+    if (!bronzers.length) return null;
 
-    // On n'a qu'un seul produit lèvres : Clinique Almost Lipstick
-    const cliniqueLips = getById('m011');
-    return cliniqueLips ? [cliniqueLips] : null;
+    // Best-sellers
+    return [getById('m093'), getById('m089')].filter(Boolean).slice(0, 1); // NYX Butter Bronzer
   }
 
   // ══════════════════════════════════════════════════════════════
-  // TIPS CONTEXTUELS (courts et simples)
+  // TIPS CONTEXTUELS
   // ══════════════════════════════════════════════════════════════
 
   function getTip(category, profile) {
@@ -167,32 +218,26 @@ const MakeupRoutine = (() => {
         sensible: 'Teste d\'abord sur le cou. Évite de frotter.',
         normale: 'Estompe au pinceau ou éponge humide.'
       },
-      concealer: {
-        default: 'Tapote doucement sous les yeux. Ne tire pas la peau.'
-      },
-      eyeliner: {
-        default: 'Trace près des cils. Estompe pour un effet smoky doux.'
-      },
-      lips: {
-        default: 'Applique au doigt pour un effet naturel.'
-      }
+      concealer: 'Tapote doucement sous les yeux en triangle inversé.',
+      mascara: 'Zigzague la brosse de la racine vers les pointes.',
+      lips: 'Applique au doigt pour un effet naturel.',
+      eyeliner: 'Trace près des cils. Estompe pour un effet smoky.',
+      bronzer: 'Applique en 3 : tempes, pommettes, mâchoire.'
     };
 
     if (category === 'foundation') {
       return tips.foundation[profile.skinType] || tips.foundation.normale;
     }
-    return tips[category]?.default || '';
+    return tips[category] || '';
   }
 
   // ══════════════════════════════════════════════════════════════
   // RENDU CARTE PRODUIT
-  // Affiche UNIQUEMENT les données du catalogue
   // ══════════════════════════════════════════════════════════════
 
   function renderCard(product, index) {
     if (!product) return '';
 
-    // TOUTES les données viennent du même objet produit
     const { id, name, brand, imageUrl, amazonUrl, price, description, rating } = product;
 
     return `
@@ -280,21 +325,21 @@ const MakeupRoutine = (() => {
   // ══════════════════════════════════════════════════════════════
 
   function render(container, profile) {
-    // Sélection des produits depuis le catalogue UNIQUEMENT
     const foundations = selectFoundation(profile);
     const concealers = selectConcealer(profile);
-    const eyeliners = selectEyeliner(profile);
+    const mascaras = selectMascara(profile);
     const lips = selectLips(profile);
+    const eyeliners = selectEyeliner(profile);
+    const bronzers = selectBronzer(profile);
 
-    // Vérifier qu'on a au moins un produit
-    const hasProducts = foundations?.length || concealers?.length || eyeliners?.length || lips?.length;
+    const hasProducts = foundations?.length || concealers?.length || mascaras?.length || lips?.length;
 
     if (!hasProducts) {
       container.innerHTML = `
         <div class="premium-routine">
           <div class="premium-empty">
             <span class="premium-empty-icon">💄</span>
-            <p class="premium-empty-text">Aucun produit makeup disponible dans le catalogue.</p>
+            <p class="premium-empty-text">Aucun produit disponible.</p>
           </div>
         </div>`;
       return;
@@ -313,11 +358,13 @@ const MakeupRoutine = (() => {
 
         ${renderSection('Teint', '◇', getTip('foundation', profile), foundations)}
         ${renderSection('Anti-cernes', '◉', getTip('concealer', profile), concealers)}
-        ${renderSection('Yeux', '○', getTip('eyeliner', profile), eyeliners)}
+        ${renderSection('Mascara', '○', getTip('mascara', profile), mascaras)}
         ${renderSection('Lèvres', '❋', getTip('lips', profile), lips)}
+        ${renderSection('Liner', '◈', getTip('eyeliner', profile), eyeliners)}
+        ${renderSection('Bronzer', '☀', getTip('bronzer', profile), bronzers)}
 
         <footer class="premium-footer">
-          <p>Liens affiliés · Même commission sur tous les produits</p>
+          <p>Liens affiliés Amazon · Même commission sur tous les produits</p>
         </footer>
 
       </div>`;
@@ -331,14 +378,12 @@ const MakeupRoutine = (() => {
     const container = document.getElementById('makeupRoutineContent');
     if (!container) return;
 
-    // Afficher loading
     container.innerHTML = `
       <div class="premium-loading">
         <div class="premium-loading-spinner"></div>
         <p>Chargement...</p>
       </div>`;
 
-    // Charger le catalogue
     await loadCatalogue();
 
     if (!catalogue.length) {
@@ -352,26 +397,21 @@ const MakeupRoutine = (() => {
       return;
     }
 
-    // Récupérer l'analyse
     const analysis = AppState?.face?.skinAnalysis;
     const questionnaire = AppState?.questionnaire?.answers;
 
-    // Construire le profil
     const profile = {
       faceShape: analysis?.faceShape?.shape || 'oval',
       skinType: analysis?.skinType?.type || questionnaire?.skinType || 'normale',
       undertone: analysis?.undertone?.type || 'neutral',
-      cernes: analysis?.cernes || null,
-      eyeColor: questionnaire?.eyeColor || null
+      eyeShape: analysis?.eyeShape || 'almond',
+      lipShape: analysis?.lipShape || 'medium'
     };
 
     console.log('[MakeupRoutine] Profil:', profile);
-
-    // Rendre
     render(container, profile);
   }
 
-  // API publique
   return {
     initScreen,
     loadCatalogue,
