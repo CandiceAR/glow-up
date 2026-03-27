@@ -1,4 +1,4 @@
-const CACHE_NAME = 'glowup-v3';
+const CACHE_NAME = 'glowup-v4';
 
 const STATIC_ASSETS = [
   '/',
@@ -15,6 +15,7 @@ const STATIC_ASSETS = [
   '/js/catalogue.js',
   '/js/skinAnalysis.js',
   '/js/skinJourney.js',
+  '/js/makeupRoutine.js',
   '/data/products-manual.json',
   '/data/catalogue.json'
 ];
