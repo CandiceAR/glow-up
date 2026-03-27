@@ -66,20 +66,35 @@ const TryOn = (() => {
         'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm'
       );
 
-      faceLandmarker = await FaceLandmarker.createFromOptions(filesetResolver, {
-        baseOptions: {
-          modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
-          delegate: 'GPU'
-        },
-        outputFaceBlendshapes: false,
-        runningMode: 'IMAGE',
-        numFaces: 1
-      });
+      // Essayer GPU d'abord, puis fallback CPU si échec
+      try {
+        faceLandmarker = await FaceLandmarker.createFromOptions(filesetResolver, {
+          baseOptions: {
+            modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
+            delegate: 'GPU'
+          },
+          outputFaceBlendshapes: false,
+          runningMode: 'IMAGE',
+          numFaces: 1
+        });
+        console.log('[TryOn] MediaPipe initialisé (GPU)');
+      } catch (gpuErr) {
+        console.warn('[TryOn] GPU non disponible, fallback CPU…', gpuErr);
+        faceLandmarker = await FaceLandmarker.createFromOptions(filesetResolver, {
+          baseOptions: {
+            modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
+            delegate: 'CPU'
+          },
+          outputFaceBlendshapes: false,
+          runningMode: 'IMAGE',
+          numFaces: 1
+        });
+        console.log('[TryOn] MediaPipe initialisé (CPU)');
+      }
 
       // Mettre en cache global pour skinAnalysis.js et autres modules
       window._glowFaceLandmarker = faceLandmarker;
       initialized = true;
-      console.log('[TryOn] MediaPipe initialisé');
     } catch (err) {
       console.error('[TryOn] Erreur initialisation MediaPipe:', err);
       showTryOnError('Impossible de charger le moteur de maquillage virtuel. Vérifie ta connexion.');

@@ -72,24 +72,47 @@ const SkinAnalysis = (() => {
   async function getOrInitDetector() {
     if (window._glowFaceLandmarker) return window._glowFaceLandmarker;
 
-    const { FaceLandmarker, FilesetResolver } = await import(
-      'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs'
-    );
-    const filesetResolver = await FilesetResolver.forVisionTasks(
-      'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm'
-    );
-    const lm = await FaceLandmarker.createFromOptions(filesetResolver, {
-      baseOptions: {
-        modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
-        delegate: 'GPU'
-      },
-      outputFaceBlendshapes: false,
-      runningMode: 'IMAGE',
-      numFaces: 1
-    });
-    window._glowFaceLandmarker = lm;
-    console.log('[SkinAnalysis] Détecteur IMAGE initialisé');
-    return lm;
+    try {
+      const { FaceLandmarker, FilesetResolver } = await import(
+        'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs'
+      );
+      const filesetResolver = await FilesetResolver.forVisionTasks(
+        'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm'
+      );
+
+      // Essayer GPU d'abord, puis fallback CPU si échec
+      let lm;
+      try {
+        lm = await FaceLandmarker.createFromOptions(filesetResolver, {
+          baseOptions: {
+            modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
+            delegate: 'GPU'
+          },
+          outputFaceBlendshapes: false,
+          runningMode: 'IMAGE',
+          numFaces: 1
+        });
+        console.log('[SkinAnalysis] Détecteur IMAGE initialisé (GPU)');
+      } catch (gpuErr) {
+        console.warn('[SkinAnalysis] GPU non disponible, fallback CPU…', gpuErr);
+        lm = await FaceLandmarker.createFromOptions(filesetResolver, {
+          baseOptions: {
+            modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
+            delegate: 'CPU'
+          },
+          outputFaceBlendshapes: false,
+          runningMode: 'IMAGE',
+          numFaces: 1
+        });
+        console.log('[SkinAnalysis] Détecteur IMAGE initialisé (CPU)');
+      }
+
+      window._glowFaceLandmarker = lm;
+      return lm;
+    } catch (err) {
+      console.error('[SkinAnalysis] Impossible de charger MediaPipe:', err);
+      return null;
+    }
   }
 
   async function getOrInitVideoDetector() {
@@ -104,16 +127,33 @@ const SkinAnalysis = (() => {
       const filesetResolver = await FilesetResolver.forVisionTasks(
         'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm'
       );
-      videoDetector = await FaceLandmarker.createFromOptions(filesetResolver, {
-        baseOptions: {
-          modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
-          delegate: 'GPU'
-        },
-        outputFaceBlendshapes: false,
-        runningMode: 'VIDEO',
-        numFaces: 1
-      });
-      console.log('[SkinAnalysis] Détecteur VIDEO initialisé');
+
+      // Essayer GPU d'abord, puis fallback CPU si échec
+      try {
+        videoDetector = await FaceLandmarker.createFromOptions(filesetResolver, {
+          baseOptions: {
+            modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
+            delegate: 'GPU'
+          },
+          outputFaceBlendshapes: false,
+          runningMode: 'VIDEO',
+          numFaces: 1
+        });
+        console.log('[SkinAnalysis] Détecteur VIDEO initialisé (GPU)');
+      } catch (gpuErr) {
+        console.warn('[SkinAnalysis] GPU VIDEO non disponible, fallback CPU…', gpuErr);
+        videoDetector = await FaceLandmarker.createFromOptions(filesetResolver, {
+          baseOptions: {
+            modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
+            delegate: 'CPU'
+          },
+          outputFaceBlendshapes: false,
+          runningMode: 'VIDEO',
+          numFaces: 1
+        });
+        console.log('[SkinAnalysis] Détecteur VIDEO initialisé (CPU)');
+      }
+
       return videoDetector;
     } catch (err) {
       console.error('[SkinAnalysis] Erreur VIDEO detector:', err);
@@ -876,12 +916,18 @@ const SkinAnalysis = (() => {
         SkinJourney.addAnalysis();
       }
     } catch (err) {
-      console.error('[SkinAnalysis]', err);
+      console.error('[SkinAnalysis] Erreur analyse:', err);
       content.innerHTML = `
         <div class="skin-empty-state">
-          <p>Une erreur est survenue lors de l'analyse.</p>
-          <button class="btn btn-outline" onclick="showScreen('routine-choice')">
+          <span class="skin-empty-icon">⚠</span>
+          <h2>Analyse temporairement indisponible</h2>
+          <p>Le moteur d'analyse n'a pas pu se charger sur cet appareil.<br>
+          <small style="color:var(--muted)">${err.message || 'Erreur inconnue'}</small></p>
+          <button class="btn btn-dark" onclick="showScreen('routine-choice')">
             Continuer sans analyse →
+          </button>
+          <button class="btn btn-outline" onclick="showScreen('capture')" style="margin-top:10px">
+            ← Réessayer avec une autre photo
           </button>
         </div>`;
     }
