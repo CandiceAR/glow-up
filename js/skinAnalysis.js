@@ -769,7 +769,7 @@ const SkinAnalysis = (() => {
       marron: {
         label: 'Cernes pigmentés',
         text: `Cernes pigmentaires ${cernes.intensity}s — accumulation de mélanine sous l'œil, souvent d'origine génétique ou post-inflammatoire.`,
-        correction: 'Vitamine C stabilisée + Rétinol doux (0.2-0.3 %) en contour des yeux le soir. SPF indispensable pour éviter l'aggravation.'
+        correction: 'Vitamine C stabilisée + Rétinol doux (0.2-0.3 %) en contour des yeux le soir. SPF indispensable pour éviter l\'aggravation.'
       }
     };
 
