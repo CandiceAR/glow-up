@@ -79,6 +79,26 @@ const Admin = (() => {
     localStorage.setItem('glow_products_manual', JSON.stringify(products));
   }
 
+  // ─── Persister sur GitHub via Netlify Function ──────────────────
+  async function persistToGitHub() {
+    try {
+      const res = await fetch('/.netlify/functions/saveProducts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ products })
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        console.warn('[Admin] Erreur sauvegarde GitHub:', err);
+      } else {
+        const data = await res.json();
+        console.log('[Admin] Sauvegardé sur GitHub:', data.message);
+      }
+    } catch (e) {
+      console.warn('[Admin] Impossible d\'appeler saveProducts function:', e.message);
+    }
+  }
+
   // ─── Stats ────────────────────────────────────────────────────
   function renderStats() {
     const total    = products.length;
@@ -223,7 +243,7 @@ const Admin = (() => {
     }
   }
 
-  function saveProduct() {
+  async function saveProduct() {
     const id   = document.getElementById('fId').value.trim();
     const asin = document.getElementById('fAsin').value.trim().toUpperCase();
     const name = document.getElementById('fName').value.trim();
@@ -281,6 +301,7 @@ const Admin = (() => {
     }
 
     saveToStorage();
+    persistToGitHub();
     cancelForm();
     renderStats();
     renderTable();
@@ -288,31 +309,34 @@ const Admin = (() => {
   }
 
   // ─── Toggle active / featured ─────────────────────────────────
-  function toggleActive(id) {
+  async function toggleActive(id) {
     const p = products.find(x => x.id === id);
     if (!p) return;
     p.active = !p.active;
     saveToStorage();
+    persistToGitHub();
     renderStats();
     renderTable();
   }
 
-  function toggleFeatured(id) {
+  async function toggleFeatured(id) {
     const p = products.find(x => x.id === id);
     if (!p) return;
     p.isFeatured = !p.isFeatured;
     saveToStorage();
+    persistToGitHub();
     renderStats();
     renderTable();
   }
 
   // ─── Supprimer ────────────────────────────────────────────────
-  function deleteProduct(id) {
+  async function deleteProduct(id) {
     const p = products.find(x => x.id === id);
     if (!p) return;
     if (!confirm(`Supprimer "${p.name}" ? Cette action est irréversible.`)) return;
     products = products.filter(x => x.id !== id);
     saveToStorage();
+    persistToGitHub();
     renderStats();
     renderTable();
   }
