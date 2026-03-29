@@ -44,7 +44,33 @@ const Admin = (() => {
     }
   }
 
-  // ─── Init ──────────────────────────────────────────────────────
+  // ─── Extraire ASIN de l'URL Amazon ────────────────────────
+  function extractASINFromUrl() {
+    const url = document.getElementById('fAmazonUrl').value;
+    if (!url) return;
+
+    const asinMatch = url.match(/\/dp\/([A-Z0-9]{10})/);
+    if (asinMatch && asinMatch[1]) {
+      document.getElementById('fAsin').value = asinMatch[1];
+    }
+  }
+
+  // ─── Générer ID automatique depuis le nom et la marque ────
+  function generateProductId() {
+    const name = document.getElementById('fName').value.trim();
+    const brand = document.getElementById('fBrand').value.trim();
+    const asin = document.getElementById('fAsin').value.trim();
+
+    if (!name || !brand || !asin) return null;
+
+    // Créer un slug court et unique
+    const brandSlug = brand.toLowerCase().replace(/\s+/g, '-').slice(0, 8);
+    const nameSlug = name.toLowerCase().replace(/\s+/g, '-').slice(0, 12);
+    const asinShort = asin.slice(-4);
+
+    const id = `${brandSlug}-${nameSlug}-${asinShort}`;
+    return id.replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-');
+  }
   async function initAdmin() {
     await loadProducts();
     renderStats();
@@ -244,59 +270,96 @@ const Admin = (() => {
   }
 
   async function saveProduct() {
-    const id   = document.getElementById('fId').value.trim();
-    const asin = document.getElementById('fAsin').value.trim().toUpperCase();
+    const amazonUrl = document.getElementById('fAmazonUrl').value.trim();
     const name = document.getElementById('fName').value.trim();
     const brand = document.getElementById('fBrand').value.trim();
+    const imageUrl = document.getElementById('fImageUrl').value.trim();
 
-    if (!id || !asin || !name || !brand) {
-      alert('Merci de remplir les champs obligatoires (ID, ASIN, Nom, Marque)');
+    // Validation des champs obligatoires
+    if (!amazonUrl || !name || !brand || !imageUrl) {
+      alert('Merci de remplir tous les champs obligatoires :\n- Lien affilié Amazon\n- Nom du produit\n- Marque\n- Chemin image');
       return;
     }
 
-    const amazonUrl = ensureTag(document.getElementById('fAmazonUrl').value.trim() || `https://www.amazon.fr/dp/${asin}?tag=${TAG}`);
+    // Extraire ASIN de l'URL
+    extractASINFromUrl();
+    let asin = document.getElementById('fAsin').value.trim();
+
+    if (!asin) {
+      const asinMatch = amazonUrl.match(/\/dp\/([A-Z0-9]{10})/);
+      if (asinMatch && asinMatch[1]) {
+        asin = asinMatch[1];
+        document.getElementById('fAsin').value = asin;
+      } else {
+        alert('Impossible d\'extraire l\'ASIN. Vérifie que le lien Amazon est au bon format : https://www.amazon.fr/dp/[ASIN]');
+        return;
+      }
+    }
+
+    // Générer ou utiliser l'ID existant
+    let id = document.getElementById('fId').value.trim();
+    if (!id) {
+      id = generateProductId();
+      if (!id) {
+        alert('Erreur lors de la génération de l\'ID');
+        return;
+      }
+      document.getElementById('fId').value = id;
+    }
+
+    // Vérifier unicité
+    if (!editingId && products.some(p => p.id === id)) {
+      if (!confirm(`Un produit avec l'ID "${id}" existe déjà. Changer l'ID ? (nouvelle génération)`)) return;
+      // Rajouter un suffixe pour le rendre unique
+      id = `${id}-${Date.now().toString().slice(-4)}`;
+      document.getElementById('fId').value = id;
+    }
+
+    // Construire l'URL Amazon avec le tag si manquant
+    let finalAmazonUrl = amazonUrl;
+    if (!amazonUrl.includes('tag=')) {
+      finalAmazonUrl = amazonUrl.includes('?')
+        ? `${amazonUrl}&tag=${TAG}`
+        : `${amazonUrl}?tag=${TAG}`;
+    }
 
     const product = {
       id,
       asin,
       name,
       brand,
-      category:    document.getElementById('fCategory').value,
-      subcategory: document.getElementById('fCategory').value,
-      shadeName:   document.getElementById('fShadeName').value.trim() || null,
-      colorHex:    document.getElementById('fColorHex').value || null,
-      imageUrl:    document.getElementById('fImageUrl').value.trim() || '',
-      amazonUrl,
-      price:       parseFloat(document.getElementById('fPrice').value) || null,
-      currency:    'EUR',
-      rating:      parseFloat(document.getElementById('fRating').value) || null,
+      category: 'lipstick', // défaut
+      subcategory: 'lipstick',
+      shadeName: null,
+      colorHex: null,
+      imageUrl,
+      amazonUrl: finalAmazonUrl,
+      price: null,
+      currency: 'EUR',
+      rating: null,
       skinTypeTags: ['normale', 'mixte', 'seche', 'grasse', 'sensible'],
       concernTags: [],
-      makeupCategory: document.getElementById('fCategory').value,
-      finish:      document.getElementById('fFinish').value,
-      coverage:    null,
-      isFeatured:  document.getElementById('fFeatured').checked,
-      active:      document.getElementById('fActive').checked,
+      makeupCategory: 'lipstick',
+      finish: 'mat',
+      coverage: null,
+      isFeatured: false,
+      active: true,
       skinTonePreview: {
-        mode:   'images',
-        light:  `assets/previews/${id}_light.jpg`,
+        mode: 'images',
+        light: `assets/previews/${id}_light.jpg`,
         medium: `assets/previews/${id}_medium.jpg`,
-        dark:   `assets/previews/${id}_dark.jpg`
+        dark: `assets/previews/${id}_dark.jpg`
       },
-      description: document.getElementById('fDescription').value.trim(),
-      curatedBy:   'admin',
-      curatedAt:   new Date().toISOString().split('T')[0],
-      notes:       document.getElementById('fNotes').value.trim()
+      description: '',
+      curatedBy: 'admin',
+      curatedAt: new Date().toISOString().split('T')[0],
+      notes: ''
     };
 
     if (editingId) {
       const idx = products.findIndex(p => p.id === editingId);
       if (idx !== -1) products[idx] = product;
     } else {
-      // Vérifier unicité ASIN
-      if (products.some(p => p.asin === asin)) {
-        if (!confirm(`Un produit avec l'ASIN ${asin} existe déjà. Ajouter quand même ?`)) return;
-      }
       products.push(product);
     }
 
@@ -305,7 +368,7 @@ const Admin = (() => {
     cancelForm();
     renderStats();
     renderTable();
-    alert(`Produit ${editingId ? 'modifié' : 'ajouté'} avec succès !`);
+    alert(`✓ Produit ${editingId ? 'modifié' : 'ajouté'} avec succès !\nID: ${id}\nASIN: ${asin}`);
   }
 
   // ─── Toggle active / featured ─────────────────────────────────

@@ -228,100 +228,56 @@
       <!-- Tab: Produits -->
       <div id="tabProducts">
 
-        <!-- Formulaire ajout/modif -->
+        <!-- Formulaire ajout/modif - VERSION SIMPLIFIÉE -->
         <div id="productFormWrap" style="display:none;">
           <div class="product-form">
             <h2 id="formTitle">Ajouter un produit</h2>
+            <p style="font-size:0.82rem; color:var(--muted); margin-bottom:16px;">Remplis juste le minimum : L'ASIN et l'ID sont générés automatiquement.</p>
             <div class="form-grid">
-              <div class="form-group">
-                <label class="form-label">ASIN Amazon *</label>
-                <input type="text" id="fAsin" class="form-input" placeholder="B000FKG4TI" oninput="Admin.autoFillAmazonUrl()">
-              </div>
-              <div class="form-group">
-                <label class="form-label">ID interne (ex: m051)</label>
-                <input type="text" id="fId" class="form-input" placeholder="m051">
-              </div>
+              <!-- SECTION: INFOS OBLIGATOIRES -->
               <div class="form-group full">
-                <label class="form-label">Nom du produit *</label>
+                <label class="form-label">🔗 Lien affilié Amazon *</label>
+                <input type="url" id="fAmazonUrl" class="form-input" placeholder="https://www.amazon.fr/dp/B000FKG4TI?tag=kand10ar-21" oninput="Admin.extractASINFromUrl()">
+                <small style="font-size:0.75rem; color:var(--muted); margin-top:4px; display:block;">L'ASIN sera extrait automatiquement</small>
+              </div>
+
+              <div class="form-group full">
+                <label class="form-label">📦 Nom du produit *</label>
                 <input type="text" id="fName" class="form-input" placeholder="Color Riche — 297 Red Passion">
               </div>
-              <div class="form-group">
-                <label class="form-label">Marque *</label>
+
+              <div class="form-group full">
+                <label class="form-label">🏷️ Marque *</label>
                 <input type="text" id="fBrand" class="form-input" placeholder="L'Oréal Paris">
               </div>
-              <div class="form-group">
-                <label class="form-label">Catégorie *</label>
-                <select id="fCategory" class="form-select">
-                  <option value="lipstick">Rouge à lèvres</option>
-                  <option value="blush">Blush</option>
-                  <option value="foundation">Fond de teint</option>
-                  <option value="mascara">Mascara</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Nom de la teinte</label>
-                <input type="text" id="fShadeName" class="form-input" placeholder="Red Passion">
-              </div>
-              <div class="form-group">
-                <label class="form-label">Couleur HEX</label>
-                <input type="color" id="fColorHex" class="form-input" value="#CC0000" style="height:44px; padding:4px 8px;">
-              </div>
-              <div class="form-group">
-                <label class="form-label">Prix (€)</label>
-                <input type="number" id="fPrice" class="form-input" placeholder="11.50" step="0.01" min="0">
-              </div>
-              <div class="form-group">
-                <label class="form-label">Note /5</label>
-                <input type="number" id="fRating" class="form-input" placeholder="4.5" step="0.1" min="0" max="5">
-              </div>
+
               <div class="form-group full">
-                <label class="form-label">URL Amazon (auto-remplie avec tag affilié)</label>
-                <input type="text" id="fAmazonUrl" class="form-input" placeholder="https://www.amazon.fr/dp/B000FKG4TI?tag=kand10ar-21">
+                <label class="form-label">🖼️ Chemin vers l'image (assets/) *</label>
+                <input type="text" id="fImageUrl" class="form-input" placeholder="assets/loreal-color-riche.jpg">
+                <small style="font-size:0.75rem; color:var(--muted); margin-top:4px; display:block;">Mets d'abord la photo dans /assets/, puis écris le chemin ici</small>
               </div>
-              <div class="form-group full">
-                <label class="form-label">URL image Amazon</label>
-                <input type="text" id="fImageUrl" class="form-input" placeholder="https://m.media-amazon.com/images/I/...">
-              </div>
-              <div class="form-group full">
-                <label class="form-label">Description</label>
-                <textarea id="fDescription" class="form-textarea" placeholder="Description courte du produit..."></textarea>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Finition</label>
-                <select id="fFinish" class="form-select">
-                  <option value="mat">Mat</option>
-                  <option value="satin">Satiné</option>
-                  <option value="brillant">Brillant</option>
-                  <option value="crème">Crème</option>
-                  <option value="poudré">Poudré</option>
-                  <option value="naturel">Naturel</option>
-                  <option value="lumineux">Lumineux</option>
-                  <option value="nacré">Nacré</option>
-                  <option value="volume">Volume</option>
-                  <option value="allongeant">Allongeant</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Notes admin</label>
-                <input type="text" id="fNotes" class="form-input" placeholder="Bestseller, viral, etc.">
-              </div>
-              <div class="form-group">
-                <label class="form-label" style="margin-bottom:4px;">Statut</label>
-                <label class="form-checkbox-row">
-                  <input type="checkbox" id="fActive" checked>
-                  <span>Actif (visible sur le site)</span>
-                </label>
-              </div>
-              <div class="form-group">
-                <label class="form-label" style="margin-bottom:4px;">Mise en avant</label>
-                <label class="form-checkbox-row">
-                  <input type="checkbox" id="fFeatured">
-                  <span>★ Produit vedette</span>
-                </label>
-              </div>
+
+              <!-- SECTION: INFOS MASQUÉES (mais existantes pour compatibilité) -->
+              <input type="hidden" id="fAsin">
+              <input type="hidden" id="fId">
+              <select id="fCategory" class="form-select" style="display:none;">
+                <option value="lipstick">Rouge à lèvres</option>
+              </select>
+              <input type="hidden" id="fShadeName">
+              <input type="hidden" id="fColorHex" value="#CC0000">
+              <input type="hidden" id="fPrice">
+              <input type="hidden" id="fRating">
+              <textarea id="fDescription" style="display:none;"></textarea>
+              <select id="fFinish" style="display:none;">
+                <option value="mat">Mat</option>
+              </select>
+              <input type="hidden" id="fNotes">
+              <input type="hidden" id="fActive" value="on" checked>
+              <input type="hidden" id="fFeatured">
             </div>
+
             <div class="form-actions">
-              <button class="btn btn-dark" onclick="Admin.saveProduct()">Enregistrer</button>
+              <button class="btn btn-dark" onclick="Admin.saveProduct()">✓ Enregistrer</button>
               <button class="btn btn-outline" onclick="Admin.cancelForm()">Annuler</button>
             </div>
           </div>
