@@ -34,7 +34,35 @@ const ProductCatalog = (() => {
   // ─── Charger les produits ─────────────────────────────────────
   async function load() {
     try {
-      const products = (typeof CATALOGUE !== 'undefined' ? CATALOGUE : [])
+      // 1. Charger le catalogue statique
+      let products = (typeof CATALOGUE !== 'undefined' ? CATALOGUE : []);
+
+      // 2. Charger les produits manuels depuis GitHub
+      try {
+        const res = await fetch('data/products-manual.json');
+        if (res.ok) {
+          const data = await res.json();
+          const manualProducts = Array.isArray(data) ? data : (data.products || []);
+
+          // Fusionner : manual prioritaire
+          const map = new Map();
+          manualProducts.forEach(p => {
+            const key = p.asin || p.id;
+            map.set(key, p);
+          });
+          products.forEach(p => {
+            const key = p.asin || p.id;
+            if (!map.has(key)) map.set(key, p);
+          });
+          products = Array.from(map.values());
+        }
+      } catch (err) {
+        console.log('[Catalog] Pas de products-manual.json (normal en Phase 0):', err.message);
+        // Continue avec le catalogue statique uniquement
+      }
+
+      // 3. Filtrer les actifs et ajouter tag affilié
+      products = products
         .filter(p => p.active !== false)
         .map(p => ({ ...p, amazonUrl: ensureTag(p.amazonUrl) }));
 
