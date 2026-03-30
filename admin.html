@@ -257,12 +257,21 @@
                 <small style="font-size:0.75rem; color:var(--muted); margin-top:4px; display:block;">Mets d'abord la photo dans /assets/, puis écris le chemin ici</small>
               </div>
 
+              <div class="form-group full">
+                <label class="form-label">📂 Catégorie *</label>
+                <select id="fCategory" class="form-select">
+                  <option value="lipstick">Rouge à lèvres</option>
+                  <option value="blush">Blush</option>
+                  <option value="foundation">Fond de teint</option>
+                  <option value="mascara">Mascara</option>
+                  <option value="concealer">Correcteur</option>
+                  <option value="eyeshadow">Fard à paupières</option>
+                </select>
+              </div>
+
               <!-- SECTION: INFOS MASQUÉES (mais existantes pour compatibilité) -->
               <input type="hidden" id="fAsin">
               <input type="hidden" id="fId">
-              <select id="fCategory" class="form-select" style="display:none;">
-                <option value="lipstick">Rouge à lèvres</option>
-              </select>
               <input type="hidden" id="fShadeName">
               <input type="hidden" id="fColorHex" value="#CC0000">
               <input type="hidden" id="fPrice">
