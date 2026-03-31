@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-03-31",
-    "totalProducts": 108
+    "totalProducts": 109
   },
   "products": [
     {
@@ -1632,6 +1632,33 @@
       "currency": "EUR",
       "rating": 4.3,
       "reviews": 849,
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "concernTags": [],
+      "isFeatured": false,
+      "active": true,
+      "description": "",
+      "curatedBy": "admin",
+      "curatedAt": "2026-03-31",
+      "notes": ""
+    },
+    {
+      "id": "m109",
+      "asin": "B0CPT722P5",
+      "name": "902",
+      "brand": "L'Oréal Paris",
+      "category": "highlighter",
+      "imageUrl": "assets/LOREAL-LUMIGLOTIONT902.jpg",
+      "amazonUrl": "https://www.amazon.fr/LOr%C3%A9al-Paris-Enlumineur-Multi-Usages-Illumine/dp/B0CPT722P5?__mk_fr_FR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=2K2WFHD9I65T0&dib=eyJ2IjoiMSJ9.R9-UuoTaZIQjL0KjbSfFQUaP_Zs9LDxElZqFSPx7nmictd_3w5DULJyqNqyUcK6huJvr-7xeDfW3yCrkCKDFascX2nETTd7aJl6DAGL5McwoKAqGKYLiYlzFPM0RlkG1lgklGRMPBlvg04BY0isaoU0-eLyqO59ydNal3FonJK0iYwldQo0sY2_z8kQPDBCUQ8eKbnzPB2j0Z-V9OtKgcp6gcoASv3ize9jz54KDgJ1ThEotbr79vH05Fc0uzqBQDZtFOIjzemx2dOZ_C83_bnwYnqKHSFsszVEjLdbSFVU.GBaDdueSgxF3xCJLTxBmGSz_OFqhlG_xQ12bRjbkkN0&dib_tag=se&keywords=lumi%2Bglow%2Bloreal&qid=1774772639&rdc=1&s=beauty&sprefix=lumi%2Bglow%2Blorea%2Cbeauty%2C250&sr=1-4&th=1&linkCode=ll2&tag=kan10ar-21&linkId=a4f04d00ee0ffa5e2680ea8a1b15667d&ref_=as_li_ss_tl",
+      "price": 12,
+      "currency": "EUR",
+      "rating": 4.5,
+      "reviews": 6347,
       "skinTypeTags": [
         "normale",
         "mixte",
