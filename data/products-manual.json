@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-03-31",
-    "totalProducts": 104
+    "totalProducts": 105
   },
   "products": [
     {
@@ -1538,6 +1538,33 @@
       "curatedAt": "2026-03-31",
       "notes": "",
       "reviews": 129
+    },
+    {
+      "id": "m105",
+      "asin": "B0DZPFFHRX",
+      "name": "CAFE LATTE",
+      "brand": "KIKO MILANO",
+      "category": "blush",
+      "imageUrl": "assets/KIKOMILANO-BLUSHMoussecafelatte.jpg",
+      "amazonUrl": "https://www.amazon.fr/gp/product/B0DZPFFHRX?th=1&linkCode=ll2&tag=kan10ar-21&linkId=d9f91feb3b2aa092507f98f7009de909&ref_=as_li_ss_tl",
+      "price": 15,
+      "currency": "EUR",
+      "rating": 4.6,
+      "reviews": 129,
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "concernTags": [],
+      "isFeatured": false,
+      "active": true,
+      "description": "",
+      "curatedBy": "admin",
+      "curatedAt": "2026-03-31",
+      "notes": ""
     }
   ]
 }
