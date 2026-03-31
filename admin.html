@@ -183,9 +183,137 @@
       font-family: 'DM Sans', sans-serif;
     }
     .search-input:focus { outline: none; border-color: var(--nude); }
+
+    /* Image preview */
+    #imagePreview {
+      display: none;
+      width: 80px; height: 80px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 2px solid var(--sand);
+      margin-top: 8px;
+    }
+    .image-input-group { display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap; }
+    .image-input-group .form-input { flex: 1; min-width: 200px; }
+    .btn-picker { padding: 10px 14px; background: var(--cream); border: 1px solid var(--sand); border-radius: 8px; font-size: 0.8rem; cursor: pointer; white-space: nowrap; font-family: 'DM Sans', sans-serif; }
+    .btn-picker:hover { background: var(--sand); }
+    #imageUploadProgress { font-size: 0.8rem; margin-top: 6px; }
+    .upload-label {
+      display: inline-block;
+      padding: 10px 14px;
+      background: white;
+      border: 1px dashed var(--nude);
+      border-radius: 8px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      white-space: nowrap;
+    }
+    .upload-label:hover { background: var(--cream); }
+    #imageFileInput { display: none; }
+
+    /* Checkboxes visibles */
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border: 1px solid var(--sand);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .check-row input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--nude); }
+
+    /* Modal image picker */
+    #imagePickerModal {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .img-picker-inner {
+      background: white;
+      border-radius: 16px;
+      width: 100%; max-width: 780px;
+      max-height: 80vh;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .img-picker-header {
+      padding: 20px 24px 12px;
+      border-bottom: 1px solid var(--sand);
+      display: flex; gap: 12px; align-items: center;
+    }
+    .img-picker-header h3 { font-size: 1rem; margin: 0; flex: 1; }
+    .img-picker-search {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid var(--sand);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .img-picker-search:focus { outline: none; border-color: var(--nude); }
+    #imagePickerGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 12px;
+      padding: 20px 24px;
+      overflow-y: auto;
+    }
+    .img-picker-item {
+      cursor: pointer;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 2px solid transparent;
+      background: var(--cream);
+      transition: 0.18s;
+      text-align: center;
+    }
+    .img-picker-item:hover { border-color: var(--nude); transform: scale(1.03); }
+    .img-picker-item img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
+    .img-picker-label { font-size: 0.68rem; color: var(--muted); padding: 4px 6px 6px; line-height: 1.3; }
+
+    /* Toasts */
+    #toastContainer { position: fixed; bottom: 24px; right: 24px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; }
+    .toast {
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-family: 'DM Sans', sans-serif;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      opacity: 1;
+      transition: opacity 0.4s;
+      max-width: 320px;
+    }
+    .toast-success { background: #d4edda; color: #155724; }
+    .toast-error   { background: #f8d7da; color: #721c24; }
+    .toast-warning { background: #fff3cd; color: #856404; }
+    .toast-hide    { opacity: 0; }
   </style>
 </head>
 <body>
+
+  <!-- Toast container -->
+  <div id="toastContainer"></div>
+
+  <!-- Modal Image Picker -->
+  <div id="imagePickerModal">
+    <div class="img-picker-inner">
+      <div class="img-picker-header">
+        <h3>Choisir une image</h3>
+        <input type="text" id="imagePickerSearch" class="img-picker-search" placeholder="Rechercher marque ou produit…"
+               oninput="Admin.renderImagePicker(this.value)">
+        <button class="btn-sm btn-toggle" onclick="Admin.closeImagePicker()">✕ Fermer</button>
+      </div>
+      <div id="imagePickerGrid"></div>
+    </div>
+  </div>
 
   <!-- Navbar minimale admin -->
   <header class="navbar">
@@ -211,7 +339,10 @@
 
       <div class="admin-header">
         <h1>Tableau de bord</h1>
-        <button class="btn btn-dark" onclick="Admin.showAddForm()">+ Ajouter un produit</button>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-outline" onclick="Admin.exportJSON()">⬇ Export JSON</button>
+          <button class="btn btn-dark" onclick="Admin.showAddForm()">+ Ajouter un produit</button>
+        </div>
       </div>
 
       <!-- Stats -->
@@ -252,37 +383,68 @@
               </div>
 
               <div class="form-group full">
-                <label class="form-label">🖼️ Chemin vers l'image (assets/) *</label>
-                <input type="text" id="fImageUrl" class="form-input" placeholder="assets/loreal-color-riche.jpg">
-                <small style="font-size:0.75rem; color:var(--muted); margin-top:4px; display:block;">Mets d'abord la photo dans /assets/, puis écris le chemin ici</small>
+                <label class="form-label">🖼️ Image *</label>
+                <div class="image-input-group">
+                  <input type="text" id="fImageUrl" class="form-input"
+                         placeholder="assets/loreal-color-riche.jpg"
+                         oninput="Admin.onImageUrlChange()">
+                  <button type="button" class="btn-picker" onclick="Admin.openImagePicker()">📂 Parcourir</button>
+                  <label class="upload-label" for="imageFileInput">⬆ Uploader</label>
+                  <input type="file" id="imageFileInput" accept="image/*"
+                         onchange="Admin.uploadImageFile(this.files[0])">
+                </div>
+                <img id="imagePreview" alt="Aperçu">
+                <div id="imageUploadProgress"></div>
+                <small style="font-size:0.75rem; color:var(--muted); margin-top:4px; display:block;">
+                  Tape le chemin, parcours les images existantes, ou uploade un nouveau fichier
+                </small>
               </div>
 
               <div class="form-group full">
                 <label class="form-label">📂 Catégorie *</label>
                 <select id="fCategory" class="form-select">
-                  <option value="lipstick">Rouge à lèvres</option>
-                  <option value="blush">Blush</option>
+                  <option value="serum">Sérum</option>
+                  <option value="cream">Crème visage</option>
+                  <option value="spf">Crème solaire SPF</option>
+                  <option value="eye">Contour des yeux</option>
+                  <option value="nightmask">Masque de nuit</option>
+                  <option value="primer">Base / Primer</option>
                   <option value="foundation">Fond de teint</option>
+                  <option value="concealer">Correcteur / Anti-cernes</option>
+                  <option value="powder">Poudre</option>
+                  <option value="blush">Blush</option>
+                  <option value="bronzer">Bronzer</option>
+                  <option value="highlighter">Enlumineur</option>
                   <option value="mascara">Mascara</option>
-                  <option value="concealer">Correcteur</option>
+                  <option value="eyeliner">Eyeliner</option>
                   <option value="eyeshadow">Fard à paupières</option>
+                  <option value="lipstick">Rouge à lèvres</option>
+                  <option value="lipgloss">Gloss</option>
+                  <option value="lipbalm">Baume à lèvres</option>
+                  <option value="set">Coffret</option>
+                  <option value="tools">Accessoires</option>
                 </select>
               </div>
 
-              <!-- SECTION: INFOS MASQUÉES (mais existantes pour compatibilité) -->
+              <!-- Statut et vedette — vrais checkboxes -->
+              <div class="form-group">
+                <label class="form-label">Statut</label>
+                <label class="check-row">
+                  <input type="checkbox" id="fActive" checked>
+                  Produit actif (visible sur le site)
+                </label>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Mise en avant</label>
+                <label class="check-row">
+                  <input type="checkbox" id="fFeatured">
+                  ★ Produit vedette
+                </label>
+              </div>
+
+              <!-- Champs internes (non affichés) -->
               <input type="hidden" id="fAsin">
               <input type="hidden" id="fId">
-              <input type="hidden" id="fShadeName">
-              <input type="hidden" id="fColorHex" value="#CC0000">
-              <input type="hidden" id="fPrice">
-              <input type="hidden" id="fRating">
-              <textarea id="fDescription" style="display:none;"></textarea>
-              <select id="fFinish" style="display:none;">
-                <option value="mat">Mat</option>
-              </select>
-              <input type="hidden" id="fNotes">
-              <input type="hidden" id="fActive" value="on" checked>
-              <input type="hidden" id="fFeatured">
             </div>
 
             <div class="form-actions">
@@ -297,10 +459,26 @@
           <input type="text" class="search-input" placeholder="Rechercher par nom, marque, ASIN…" oninput="Admin.search(this.value)" id="searchInput">
           <select class="form-select" style="width:auto;" onchange="Admin.filterCat(this.value)" id="catFilter">
             <option value="all">Toutes catégories</option>
-            <option value="lipstick">Rouge à lèvres</option>
-            <option value="blush">Blush</option>
+            <option value="serum">Sérum</option>
+            <option value="cream">Crème visage</option>
+            <option value="spf">Crème solaire SPF</option>
+            <option value="eye">Contour des yeux</option>
+            <option value="nightmask">Masque de nuit</option>
+            <option value="primer">Base / Primer</option>
             <option value="foundation">Fond de teint</option>
+            <option value="concealer">Correcteur</option>
+            <option value="powder">Poudre</option>
+            <option value="blush">Blush</option>
+            <option value="bronzer">Bronzer</option>
+            <option value="highlighter">Enlumineur</option>
             <option value="mascara">Mascara</option>
+            <option value="eyeliner">Eyeliner</option>
+            <option value="eyeshadow">Fard à paupières</option>
+            <option value="lipstick">Rouge à lèvres</option>
+            <option value="lipgloss">Gloss</option>
+            <option value="lipbalm">Baume à lèvres</option>
+            <option value="set">Coffret</option>
+            <option value="tools">Accessoires</option>
           </select>
         </div>
 

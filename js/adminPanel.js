@@ -1,20 +1,30 @@
 /* ============================================================
-   adminPanel.js — Interface admin GLOW UP Phase 0
-   Mot de passe simple (hardcodé) — pas de Firebase Auth admin
-   CRUD sur products-manual.json (via localStorage en Phase 0)
+   adminPanel.js — Interface admin GLOW UP
    ============================================================ */
 
 'use strict';
 
-const ADMIN_PASSWORD = 'glowup2026';  // ← Change ce mot de passe !
+const ADMIN_PASSWORD = 'glowup2026';
 const TAG            = 'kand10ar-21';
 
 const Admin = (() => {
 
-  let products     = [];
-  let editingId    = null;
-  let searchQuery  = '';
-  let catFilter    = 'all';
+  let products    = [];
+  let editingId   = null;
+  let searchQuery = '';
+  let catFilter   = 'all';
+
+  // ─── Toast notifications ──────────────────────────────────────
+  function toast(msg, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    const el = document.createElement('div');
+    el.className = `toast toast-${type}`;
+    el.textContent = msg;
+    container.appendChild(el);
+    setTimeout(() => el.classList.add('toast-hide'), 3000);
+    setTimeout(() => el.remove(), 3500);
+  }
 
   // ─── Auth ─────────────────────────────────────────────────────
   function login() {
@@ -44,33 +54,26 @@ const Admin = (() => {
     }
   }
 
-  // ─── Extraire ASIN de l'URL Amazon ────────────────────────
+  // ─── Extraire ASIN ────────────────────────────────────────────
+  // BUG FIX: flag /i ajouté + exposée dans le return
   function extractASINFromUrl() {
     const url = document.getElementById('fAmazonUrl').value;
     if (!url) return;
-
-    const asinMatch = url.match(/\/dp\/([A-Z0-9]{10})/);
-    if (asinMatch && asinMatch[1]) {
-      document.getElementById('fAsin').value = asinMatch[1];
-    }
+    const m = url.match(/\/dp\/([A-Z0-9]{10})/i);
+    if (m) document.getElementById('fAsin').value = m[1].toUpperCase();
   }
 
-  // ─── Générer ID automatique depuis le nom et la marque ────
+  // ─── Générer ID ───────────────────────────────────────────────
   function generateProductId() {
-    const name = document.getElementById('fName').value.trim();
+    const name  = document.getElementById('fName').value.trim();
     const brand = document.getElementById('fBrand').value.trim();
-    const asin = document.getElementById('fAsin').value.trim();
-
+    const asin  = document.getElementById('fAsin').value.trim();
     if (!name || !brand || !asin) return null;
-
-    // Créer un slug court et unique
-    const brandSlug = brand.toLowerCase().replace(/\s+/g, '-').slice(0, 8);
-    const nameSlug = name.toLowerCase().replace(/\s+/g, '-').slice(0, 12);
-    const asinShort = asin.slice(-4);
-
-    const id = `${brandSlug}-${nameSlug}-${asinShort}`;
-    return id.replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-');
+    const brandSlug = brand.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 8);
+    const nameSlug  = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 12);
+    return `${brandSlug}-${nameSlug}-${asin.slice(-4)}`.replace(/-+/g, '-').replace(/^-|-$/g, '');
   }
+
   async function initAdmin() {
     await loadProducts();
     renderStats();
@@ -79,33 +82,21 @@ const Admin = (() => {
 
   // ─── Chargement produits ──────────────────────────────────────
   async function loadProducts() {
-    // D'abord localStorage (modifications admin), sinon fichier JSON
     const stored = localStorage.getItem('glow_products_manual');
     if (stored) {
-      try {
-        products = JSON.parse(stored);
-        console.log('[Admin] Produits chargés depuis localStorage:', products.length);
-        return;
-      } catch {}
+      try { products = JSON.parse(stored); return; } catch {}
     }
-
     try {
       const res  = await fetch('data/products-manual.json');
       const data = await res.json();
       products = data.products || [];
-      console.log('[Admin] Produits chargés depuis JSON:', products.length);
-    } catch (err) {
-      console.error('[Admin] Erreur chargement:', err);
-      products = [];
-    }
+    } catch { products = []; }
   }
 
-  // ─── Sauvegarder en localStorage ─────────────────────────────
   function saveToStorage() {
     localStorage.setItem('glow_products_manual', JSON.stringify(products));
   }
 
-  // ─── Persister sur GitHub via Netlify Function ──────────────────
   async function persistToGitHub() {
     try {
       const res = await fetch('/.netlify/functions/saveProducts', {
@@ -113,25 +104,20 @@ const Admin = (() => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ products })
       });
-      if (!res.ok) {
-        const err = await res.json();
-        console.warn('[Admin] Erreur sauvegarde GitHub:', err);
+      if (res.ok) {
+        toast('Sauvegardé sur GitHub ✓');
       } else {
-        const data = await res.json();
-        console.log('[Admin] Sauvegardé sur GitHub:', data.message);
+        toast('Sauvegarde GitHub échouée', 'warning');
       }
-    } catch (e) {
-      console.warn('[Admin] Impossible d\'appeler saveProducts function:', e.message);
-    }
+    } catch { /* silencieux en local */ }
   }
 
   // ─── Stats ────────────────────────────────────────────────────
   function renderStats() {
     const total    = products.length;
-    const active   = products.filter(p => p.active).length;
+    const active   = products.filter(p => p.active !== false).length;
     const featured = products.filter(p => p.isFeatured).length;
     const cats     = [...new Set(products.map(p => p.category))].length;
-
     document.getElementById('adminStats').innerHTML = `
       <div class="stat-card"><div class="stat-number">${total}</div><div class="stat-label">Produits total</div></div>
       <div class="stat-card"><div class="stat-number">${active}</div><div class="stat-label">Actifs</div></div>
@@ -142,7 +128,6 @@ const Admin = (() => {
   // ─── Table produits ───────────────────────────────────────────
   function renderTable() {
     let list = [...products];
-
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       list = list.filter(p =>
@@ -152,10 +137,7 @@ const Admin = (() => {
         p.id?.toLowerCase().includes(q)
       );
     }
-
-    if (catFilter !== 'all') {
-      list = list.filter(p => p.category === catFilter);
-    }
+    if (catFilter !== 'all') list = list.filter(p => p.category === catFilter);
 
     const tbody = document.getElementById('productsTableBody');
     if (!tbody) return;
@@ -169,13 +151,10 @@ const Admin = (() => {
       const colorCell = p.colorHex
         ? `<div class="color-pill"><span class="color-pill-dot" style="background:${p.colorHex}"></span>${p.shadeName || p.colorHex}</div>`
         : '—';
-      const statusBadge = p.active
+      const statusBadge = (p.active !== false)
         ? '<span class="badge-active">Actif</span>'
         : '<span class="badge-inactive">Inactif</span>';
-      const featuredBadge = p.isFeatured
-        ? ' <span class="badge-featured">★ Vedette</span>'
-        : '';
-
+      const featuredBadge = p.isFeatured ? ' <span class="badge-featured">★ Vedette</span>' : '';
       return `
         <tr>
           <td style="font-family:monospace; font-size:0.75rem; color:var(--muted);">${p.id}</td>
@@ -191,14 +170,14 @@ const Admin = (() => {
           <td style="font-family:monospace; font-size:0.75rem;">${p.asin || '—'}</td>
           <td>${getCatLabel(p.category)}</td>
           <td>${colorCell}</td>
-          <td>${p.price ? p.price.toFixed(2) + ' €' : '—'}</td>
+          <td>${p.price != null ? Number(p.price).toFixed(2) + ' €' : '—'}</td>
           <td>${p.rating || '—'}</td>
           <td>${statusBadge}${featuredBadge}</td>
           <td>
             <div class="btn-actions">
-              <button class="btn-sm btn-edit" onclick="Admin.editProduct('${p.id}')">Modifier</button>
-              <button class="btn-sm btn-toggle" onclick="Admin.toggleFeatured('${p.id}')" title="Basculer produit vedette">★</button>
-              <button class="btn-sm btn-toggle" onclick="Admin.toggleActive('${p.id}')" title="Activer/Désactiver">${p.active ? 'Désact.' : 'Activ.'}</button>
+              <button class="btn-sm btn-edit"   onclick="Admin.editProduct('${p.id}')">Modifier</button>
+              <button class="btn-sm btn-toggle" onclick="Admin.toggleFeatured('${p.id}')" title="Produit vedette">★</button>
+              <button class="btn-sm btn-toggle" onclick="Admin.toggleActive('${p.id}')">${p.active !== false ? 'Désact.' : 'Activ.'}</button>
               <button class="btn-sm btn-delete" onclick="Admin.deleteProduct('${p.id}')">Suppr.</button>
             </div>
           </td>
@@ -211,8 +190,9 @@ const Admin = (() => {
     editingId = null;
     document.getElementById('formTitle').textContent = 'Ajouter un produit';
     clearForm();
-    // Générer un ID auto
-    const nextNum = Math.max(...products.map(p => parseInt(p.id?.replace('m', '') || 0)), 50) + 1;
+    // BUG FIX: Math.max sécurisé si products est vide
+    const ids = products.map(p => parseInt(p.id?.replace(/\D/g, '') || '0')).filter(n => !isNaN(n) && n > 0);
+    const nextNum = ids.length > 0 ? Math.max(...ids) + 1 : 51;
     document.getElementById('fId').value = 'm' + String(nextNum).padStart(3, '0');
     document.getElementById('productFormWrap').style.display = 'block';
     document.getElementById('productFormWrap').scrollIntoView({ behavior: 'smooth' });
@@ -223,23 +203,17 @@ const Admin = (() => {
     if (!p) return;
     editingId = id;
     document.getElementById('formTitle').textContent = 'Modifier le produit';
-    document.getElementById('fId').value          = p.id || '';
-    document.getElementById('fAsin').value        = p.asin || '';
-    document.getElementById('fName').value        = p.name || '';
-    document.getElementById('fBrand').value       = p.brand || '';
-    document.getElementById('fCategory').value    = p.category || 'lipstick';
-    document.getElementById('fShadeName').value   = p.shadeName || '';
-    document.getElementById('fColorHex').value    = p.colorHex || '#CC0000';
-    document.getElementById('fPrice').value       = p.price || '';
-    document.getElementById('fRating').value      = p.rating || '';
-    document.getElementById('fAmazonUrl').value   = p.amazonUrl || '';
-    document.getElementById('fImageUrl').value    = p.imageUrl || '';
-    document.getElementById('fDescription').value = p.description || '';
-    document.getElementById('fFinish').value      = p.finish || 'mat';
-    document.getElementById('fNotes').value       = p.notes || '';
-    document.getElementById('fActive').checked    = p.active !== false;
-    document.getElementById('fFeatured').checked  = p.isFeatured === true;
-
+    document.getElementById('fId').value        = p.id || '';
+    document.getElementById('fAsin').value      = p.asin || '';
+    document.getElementById('fName').value      = p.name || '';
+    document.getElementById('fBrand').value     = p.brand || '';
+    document.getElementById('fCategory').value  = p.category || 'serum';
+    document.getElementById('fAmazonUrl').value = p.amazonUrl || '';
+    document.getElementById('fImageUrl').value  = p.imageUrl || '';
+    // BUG FIX: fActive et fFeatured sont maintenant de vrais checkboxes
+    document.getElementById('fActive').checked   = p.active !== false;
+    document.getElementById('fFeatured').checked = p.isFeatured === true;
+    previewImage(p.imageUrl || '');
     document.getElementById('productFormWrap').style.display = 'block';
     document.getElementById('productFormWrap').scrollIntoView({ behavior: 'smooth' });
   }
@@ -251,110 +225,93 @@ const Admin = (() => {
   }
 
   function clearForm() {
-    ['fId','fAsin','fName','fBrand','fShadeName','fPrice','fRating','fAmazonUrl','fImageUrl','fDescription','fNotes'].forEach(id => {
+    ['fId', 'fAsin', 'fName', 'fBrand', 'fAmazonUrl', 'fImageUrl'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
-    document.getElementById('fColorHex').value    = '#CC0000';
-    document.getElementById('fCategory').value    = 'lipstick';
-    document.getElementById('fFinish').value      = 'mat';
-    document.getElementById('fActive').checked    = true;
-    document.getElementById('fFeatured').checked  = false;
-  }
-
-  function autoFillAmazonUrl() {
-    const asin = document.getElementById('fAsin').value.trim().toUpperCase();
-    if (asin.length === 10) {
-      document.getElementById('fAmazonUrl').value = `https://www.amazon.fr/dp/${asin}?tag=${TAG}`;
-    }
+    document.getElementById('fCategory').value   = 'serum';
+    // BUG FIX: utiliser .checked sur de vrais checkboxes
+    document.getElementById('fActive').checked   = true;
+    document.getElementById('fFeatured').checked = false;
+    previewImage('');
+    const prog = document.getElementById('imageUploadProgress');
+    if (prog) prog.textContent = '';
   }
 
   async function saveProduct() {
-    const amazonUrl = document.getElementById('fAmazonUrl').value.trim();
-    const name = document.getElementById('fName').value.trim();
-    const brand = document.getElementById('fBrand').value.trim();
-    const imageUrl = document.getElementById('fImageUrl').value.trim();
+    const amazonUrl  = document.getElementById('fAmazonUrl').value.trim();
+    const name       = document.getElementById('fName').value.trim();
+    const brand      = document.getElementById('fBrand').value.trim();
+    const imageUrl   = document.getElementById('fImageUrl').value.trim();
+    const category   = document.getElementById('fCategory').value;
+    // BUG FIX: lire les vrais checkboxes
+    const isActive   = document.getElementById('fActive').checked;
+    const isFeatured = document.getElementById('fFeatured').checked;
 
-    // Validation des champs obligatoires
     if (!amazonUrl || !name || !brand || !imageUrl) {
-      alert('Merci de remplir tous les champs obligatoires :\n- Lien affilié Amazon\n- Nom du produit\n- Marque\n- Chemin image');
+      toast('Remplis tous les champs obligatoires (lien, nom, marque, image)', 'error');
       return;
     }
 
-    // Extraire ASIN de l'URL
     extractASINFromUrl();
     let asin = document.getElementById('fAsin').value.trim();
-
     if (!asin) {
-      const asinMatch = amazonUrl.match(/\/dp\/([A-Z0-9]{10})/);
-      if (asinMatch && asinMatch[1]) {
-        asin = asinMatch[1];
-        document.getElementById('fAsin').value = asin;
-      } else {
-        alert('Impossible d\'extraire l\'ASIN. Vérifie que le lien Amazon est au bon format : https://www.amazon.fr/dp/[ASIN]');
-        return;
-      }
+      const m = amazonUrl.match(/\/dp\/([A-Z0-9]{10})/i);
+      if (m) { asin = m[1].toUpperCase(); document.getElementById('fAsin').value = asin; }
+      else { toast('Impossible d\'extraire l\'ASIN — vérifie le lien Amazon', 'error'); return; }
     }
 
-    // Générer ou utiliser l'ID existant
     let id = document.getElementById('fId').value.trim();
-    if (!id) {
-      id = generateProductId();
-      if (!id) {
-        alert('Erreur lors de la génération de l\'ID');
-        return;
-      }
-      document.getElementById('fId').value = id;
-    }
-
-    // Vérifier unicité
     if (!editingId && products.some(p => p.id === id)) {
-      if (!confirm(`Un produit avec l'ID "${id}" existe déjà. Changer l'ID ? (nouvelle génération)`)) return;
-      // Rajouter un suffixe pour le rendre unique
-      id = `${id}-${Date.now().toString().slice(-4)}`;
+      id = generateProductId() || `${id}-${Date.now().toString().slice(-4)}`;
       document.getElementById('fId').value = id;
     }
+    if (!id) { toast('Erreur lors de la génération de l\'ID', 'error'); return; }
 
-    // Construire l'URL Amazon avec le tag si manquant
     let finalAmazonUrl = amazonUrl;
     if (!amazonUrl.includes('tag=')) {
-      finalAmazonUrl = amazonUrl.includes('?')
-        ? `${amazonUrl}&tag=${TAG}`
-        : `${amazonUrl}?tag=${TAG}`;
+      finalAmazonUrl = amazonUrl.includes('?') ? `${amazonUrl}&tag=${TAG}` : `${amazonUrl}?tag=${TAG}`;
     }
 
-    const product = {
-      id,
-      asin,
-      name,
-      brand,
-      category: document.getElementById('fCategory').value,
-      subcategory: document.getElementById('fCategory').value,
-      shadeName: null,
-      colorHex: null,
-      imageUrl,
-      amazonUrl: finalAmazonUrl,
-      price: null,
-      currency: 'EUR',
-      rating: null,
-      skinTypeTags: ['normale', 'mixte', 'seche', 'grasse', 'sensible'],
-      concernTags: [],
-      makeupCategory: document.getElementById('fCategory').value,
-      finish: 'mat',
-      coverage: null,
-      isFeatured: false,
-      active: true,
-      skinTonePreview: {
-        mode: 'images',
-        light: `assets/previews/${id}_light.jpg`,
-        medium: `assets/previews/${id}_medium.jpg`,
-        dark: `assets/previews/${id}_dark.jpg`
-      },
-      description: '',
-      curatedBy: 'admin',
-      curatedAt: new Date().toISOString().split('T')[0],
-      notes: ''
-    };
+    let product;
+    if (editingId) {
+      // BUG FIX CRITIQUE: préserver price, rating, description, reviews, badge, etc.
+      // On ne remplace que les champs du formulaire, le reste est conservé.
+      const existing = products.find(p => p.id === editingId);
+      product = {
+        ...existing,
+        name,
+        brand,
+        category,
+        imageUrl,
+        amazonUrl: finalAmazonUrl,
+        asin,
+        active: isActive,
+        isFeatured,
+        curatedAt: new Date().toISOString().split('T')[0]
+      };
+    } else {
+      product = {
+        id,
+        asin,
+        name,
+        brand,
+        category,
+        imageUrl,
+        amazonUrl: finalAmazonUrl,
+        price: null,
+        currency: 'EUR',
+        rating: null,
+        skinTypeTags: ['normale', 'mixte', 'seche', 'grasse', 'sensible'],
+        concernTags: [],
+        isFeatured,
+        active: isActive,
+        description: '',
+        curatedBy: 'admin',
+        curatedAt: new Date().toISOString().split('T')[0],
+        notes: ''
+      };
+    }
 
     if (editingId) {
       const idx = products.findIndex(p => p.id === editingId);
@@ -368,103 +325,172 @@ const Admin = (() => {
     cancelForm();
     renderStats();
     renderTable();
-    alert(`✓ Produit ${editingId ? 'modifié' : 'ajouté'} avec succès !\nID: ${id}\nASIN: ${asin}`);
+    toast(`✓ Produit ${editingId ? 'modifié' : 'ajouté'} — ${name}`);
+  }
+
+  // ─── Image : aperçu live ──────────────────────────────────────
+  function previewImage(path) {
+    const preview = document.getElementById('imagePreview');
+    if (!preview) return;
+    if (!path) { preview.style.display = 'none'; return; }
+    preview.src = path;
+    preview.style.display = 'block';
+    preview.onerror = () => { preview.style.display = 'none'; };
+    preview.onload  = () => { preview.style.display = 'block'; };
+  }
+
+  function onImageUrlChange() {
+    previewImage(document.getElementById('fImageUrl').value.trim());
+  }
+
+  // ─── Image : upload fichier → GitHub via Netlify function ─────
+  async function uploadImageFile(file) {
+    if (!file) return;
+    const prog = document.getElementById('imageUploadProgress');
+    prog.innerHTML = '<span style="color:var(--muted)">⏳ Upload en cours…</span>';
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const base64   = e.target.result.split(',')[1];
+      const filename = file.name.replace(/\s+/g, '-');
+      try {
+        const res = await fetch('/.netlify/functions/uploadImage', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filename, contentBase64: base64 })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('fImageUrl').value = data.path;
+          previewImage(data.path);
+          prog.innerHTML = '<span style="color:var(--success)">✅ Image uploadée !</span>';
+        } else {
+          const err = await res.json().catch(() => ({}));
+          prog.innerHTML = `<span style="color:var(--error)">❌ ${err.error || 'Erreur upload'}</span>`;
+        }
+      } catch (ex) {
+        prog.innerHTML = `<span style="color:var(--error)">❌ ${ex.message}</span>`;
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ─── Image : picker (images déjà dans le catalogue) ──────────
+  function openImagePicker() {
+    const s = document.getElementById('imagePickerSearch');
+    if (s) s.value = '';
+    renderImagePicker('');
+    document.getElementById('imagePickerModal').style.display = 'flex';
+  }
+
+  function closeImagePicker() {
+    document.getElementById('imagePickerModal').style.display = 'none';
+  }
+
+  function renderImagePicker(query) {
+    const q = (query || '').toLowerCase();
+    const imageMap = {};
+    products.forEach(p => {
+      if (!p.imageUrl) return;
+      const match = !q ||
+        p.name?.toLowerCase().includes(q) ||
+        p.brand?.toLowerCase().includes(q) ||
+        p.imageUrl.toLowerCase().includes(q);
+      if (match) imageMap[p.imageUrl] = { brand: p.brand, name: p.name };
+    });
+    const entries = Object.entries(imageMap);
+    const grid = document.getElementById('imagePickerGrid');
+    if (!grid) return;
+    if (entries.length === 0) {
+      grid.innerHTML = '<p style="color:var(--muted); grid-column:1/-1; font-size:0.82rem; padding:16px 0;">Aucune image trouvée</p>';
+      return;
+    }
+    grid.innerHTML = entries.map(([path, info]) => `
+      <div class="img-picker-item" onclick="Admin.selectImage(${JSON.stringify(path)})">
+        <img src="${path}" alt="${info.name}" loading="lazy" onerror="this.parentElement.style.display='none'">
+        <div class="img-picker-label">${info.brand}</div>
+      </div>`).join('');
+  }
+
+  function selectImage(path) {
+    document.getElementById('fImageUrl').value = path;
+    previewImage(path);
+    closeImagePicker();
   }
 
   // ─── Toggle active / featured ─────────────────────────────────
   async function toggleActive(id) {
     const p = products.find(x => x.id === id);
     if (!p) return;
-    p.active = !p.active;
-    saveToStorage();
-    persistToGitHub();
-    renderStats();
-    renderTable();
+    // BUG FIX: gérer correctement active=undefined (= true par défaut)
+    p.active = p.active === false ? true : false;
+    saveToStorage(); persistToGitHub(); renderStats(); renderTable();
   }
 
   async function toggleFeatured(id) {
     const p = products.find(x => x.id === id);
     if (!p) return;
     p.isFeatured = !p.isFeatured;
-    saveToStorage();
-    persistToGitHub();
-    renderStats();
-    renderTable();
+    saveToStorage(); persistToGitHub(); renderStats(); renderTable();
   }
 
   // ─── Supprimer ────────────────────────────────────────────────
   async function deleteProduct(id) {
     const p = products.find(x => x.id === id);
     if (!p) return;
-    if (!confirm(`Supprimer "${p.name}" ? Cette action est irréversible.`)) return;
+    if (!confirm(`Supprimer "${p.name}" ? Action irréversible.`)) return;
     products = products.filter(x => x.id !== id);
-    saveToStorage();
-    persistToGitHub();
-    renderStats();
-    renderTable();
+    saveToStorage(); persistToGitHub(); renderStats(); renderTable();
   }
 
   // ─── Recherche et filtres ─────────────────────────────────────
-  function search(q) {
-    searchQuery = q;
-    renderTable();
-  }
+  function search(q) { searchQuery = q; renderTable(); }
 
   function filterCat(cat) {
     catFilter = cat;
-    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+    // BUG FIX: ne jamais toucher aux classes des onglets de navigation
     renderTable();
   }
 
   // ─── Onglets ──────────────────────────────────────────────────
   let currentTab = 'products';
+  const TAB_IDS  = ['products', 'analytics', 'asin', 'coach'];
 
   function showTab(tab) {
     currentTab = tab;
     document.querySelectorAll('.admin-tab').forEach((t, i) => {
-      t.classList.toggle('active', i === ['products', 'analytics', 'asin', 'coach'].indexOf(tab));
+      t.classList.toggle('active', TAB_IDS[i] === tab);
     });
-    document.getElementById('tabProducts').style.display  = tab === 'products'  ? 'block' : 'none';
-    document.getElementById('tabAnalytics').style.display = tab === 'analytics' ? 'block' : 'none';
-    document.getElementById('tabAsin').style.display      = tab === 'asin'      ? 'block' : 'none';
-    document.getElementById('tabCoach').style.display     = tab === 'coach'     ? 'block' : 'none';
+    TAB_IDS.forEach(t => {
+      const el = document.getElementById(`tab${t.charAt(0).toUpperCase() + t.slice(1)}`);
+      if (el) el.style.display = t === tab ? 'block' : 'none';
+    });
     if (tab === 'analytics') renderAnalytics();
     if (tab === 'coach')     renderCoachKeyStatus();
   }
 
-  // ─── Coach IA — gestion clé API ──────────────────────────────
-  const COACH_KEY_STORE = 'glow_coach_key';
-
+  // ─── Coach IA ─────────────────────────────────────────────────
   function renderCoachKeyStatus() {
     const el = document.getElementById('coachKeyStatus');
     if (!el) return;
-    el.innerHTML = `<span style="color:var(--muted); font-size:0.82rem;">La clé API est configurée dans les variables d'environnement Netlify — elle n'est jamais exposée côté navigateur.</span>`;
+    el.innerHTML = `<span style="color:var(--muted); font-size:0.82rem;">La clé API est configurée dans les variables d'environnement Netlify — jamais exposée côté navigateur.</span>`;
   }
 
   function saveCoachKey() {
     const inp = document.getElementById('coachApiKeyInput');
     const key = inp?.value?.trim();
-    if (!key) { alert('Colle ta clé API avant d\'enregistrer.'); return; }
-    if (!key.startsWith('sk-ant-')) {
-      alert('Cette clé ne ressemble pas à une clé Claude (elle doit commencer par sk-ant-…). Vérifie et réessaie.');
-      return;
-    }
-    localStorage.setItem(COACH_KEY_STORE, key);
+    if (!key) { toast('Colle ta clé API avant d\'enregistrer', 'error'); return; }
+    if (!key.startsWith('sk-ant-')) { toast('Clé invalide (doit commencer par sk-ant-…)', 'error'); return; }
+    localStorage.setItem('glow_coach_key', key);
     inp.value = '';
     renderCoachKeyStatus();
-    alert('✅ Clé enregistrée avec succès !');
+    toast('Clé enregistrée ✓');
   }
 
   function deleteCoachKey() {
-    if (!confirm('Supprimer la clé API ? Le Coach reviendra en mode sans IA.')) return;
-    localStorage.removeItem(COACH_KEY_STORE);
+    if (!confirm('Supprimer la clé API ?')) return;
+    localStorage.removeItem('glow_coach_key');
     renderCoachKeyStatus();
-  }
-
-  function toggleKeyVisibility() {
-    const inp = document.getElementById('coachApiKeyInput');
-    if (!inp) return;
-    inp.type = inp.type === 'password' ? 'text' : 'password';
   }
 
   async function testCoachKey() {
@@ -482,14 +508,13 @@ const Admin = (() => {
       });
       if (res.ok) {
         const data = await res.json();
-        const reply = data.content?.[0]?.text || '?';
-        result.innerHTML = `<span style="color:var(--success);">✅ Connexion réussie ! Réponse Claude : <em>${reply}</em></span>`;
+        result.innerHTML = `<span style="color:var(--success);">✅ Connexion réussie ! Réponse : <em>${data.content?.[0]?.text || '?'}</em></span>`;
       } else {
         const err = await res.json().catch(() => ({}));
-        result.innerHTML = `<span style="color:var(--error);">❌ Erreur ${res.status} : ${err?.error?.message || 'Clé API manquante ou invalide dans Netlify.'}</span>`;
+        result.innerHTML = `<span style="color:var(--error);">❌ Erreur ${res.status} : ${err?.error?.message || 'Clé API manquante ou invalide.'}</span>`;
       }
-    } catch (e) {
-      result.innerHTML = `<span style="color:var(--error);">❌ Fonction proxy non disponible — déploie le site sur Netlify d'abord.</span>`;
+    } catch {
+      result.innerHTML = `<span style="color:var(--error);">❌ Fonction proxy non disponible — déploie sur Netlify d'abord.</span>`;
     }
   }
 
@@ -507,36 +532,18 @@ const Admin = (() => {
 
   function renderAnalytics() {
     if (typeof Tracker === 'undefined') {
-      document.getElementById('analyticsKpis').innerHTML = '<p style="color:var(--muted); font-size:0.85rem;">Le module tracker n\'est pas chargé.</p>';
+      document.getElementById('analyticsKpis').innerHTML = '<p style="color:var(--muted); font-size:0.85rem;">Module tracker non chargé.</p>';
       return;
     }
-
     const s = Tracker.getStats(analyticsPeriod);
 
-    // KPIs
     document.getElementById('analyticsKpis').innerHTML = `
-      <div class="kpi-card">
-        <div class="kpi-value">${s.sessions}</div>
-        <div class="kpi-label">Sessions</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-value">${s.views}</div>
-        <div class="kpi-label">Vues produits</div>
-      </div>
-      <div class="kpi-card highlight">
-        <div class="kpi-value">${s.buys}</div>
-        <div class="kpi-label">Clics Acheter</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-value">${s.tryons}</div>
-        <div class="kpi-label">Essais virtuels</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-value">${s.convRate}%</div>
-        <div class="kpi-label">Taux vue → achat</div>
-      </div>`;
+      <div class="kpi-card"><div class="kpi-value">${s.sessions}</div><div class="kpi-label">Sessions</div></div>
+      <div class="kpi-card"><div class="kpi-value">${s.views}</div><div class="kpi-label">Vues produits</div></div>
+      <div class="kpi-card highlight"><div class="kpi-value">${s.buys}</div><div class="kpi-label">Clics Acheter</div></div>
+      <div class="kpi-card"><div class="kpi-value">${s.tryons}</div><div class="kpi-label">Essais virtuels</div></div>
+      <div class="kpi-card"><div class="kpi-value">${s.convRate}%</div><div class="kpi-label">Taux vue → achat</div></div>`;
 
-    // Timeline 7 jours
     const maxVal = Math.max(1, ...s.timeline.map(d => Math.max(d.sessions, d.views, d.buys)));
     document.getElementById('analyticsTimeline').innerHTML = s.timeline.map(d => `
       <div class="timeline-col">
@@ -548,41 +555,27 @@ const Admin = (() => {
         <div class="timeline-label">${d.label}</div>
       </div>`).join('');
 
-    // Top vues
-    const maxViews = s.topViews[0]?.[1] || 1;
-    document.getElementById('analyticsTopViews').innerHTML = s.topViews.length
-      ? s.topViews.map(([pid, count], i) => {
-          const p = products.find(x => x.id === pid);
-          const name = p ? `${p.brand} — ${p.name.slice(0, 28)}` : pid;
-          return `<tr>
-            <td class="top-rank">#${i + 1}</td>
-            <td style="font-size:0.78rem;">${name}</td>
-            <td class="top-bar-wrap"><div class="top-bar" style="width:${Math.round((count / maxViews) * 80)}px"></div></td>
-            <td class="top-count">${count}</td>
-          </tr>`;
-        }).join('')
-      : '<tr><td colspan="4" style="color:var(--muted); padding:12px 0; font-size:0.8rem;">Aucune vue enregistrée</td></tr>';
+    const renderTopTable = (elId, data, max) => {
+      document.getElementById(elId).innerHTML = data.length
+        ? data.map(([pid, count], i) => {
+            const p    = products.find(x => x.id === pid);
+            const name = p ? `${p.brand} — ${p.name.slice(0, 28)}` : pid;
+            return `<tr>
+              <td class="top-rank">#${i + 1}</td>
+              <td style="font-size:0.78rem;">${name}</td>
+              <td class="top-bar-wrap"><div class="top-bar" style="width:${Math.round((count / max) * 80)}px"></div></td>
+              <td class="top-count">${count}</td>
+            </tr>`;
+          }).join('')
+        : '<tr><td colspan="4" style="color:var(--muted); padding:12px 0; font-size:0.8rem;">Aucune donnée</td></tr>';
+    };
+    renderTopTable('analyticsTopViews', s.topViews, s.topViews[0]?.[1] || 1);
+    renderTopTable('analyticsTopBuys',  s.topBuys,  s.topBuys[0]?.[1]  || 1);
 
-    // Top achats
-    const maxBuys = s.topBuys[0]?.[1] || 1;
-    document.getElementById('analyticsTopBuys').innerHTML = s.topBuys.length
-      ? s.topBuys.map(([pid, count], i) => {
-          const p = products.find(x => x.id === pid);
-          const name = p ? `${p.brand} — ${p.name.slice(0, 28)}` : pid;
-          return `<tr>
-            <td class="top-rank">#${i + 1}</td>
-            <td style="font-size:0.78rem;">${name}</td>
-            <td class="top-bar-wrap"><div class="top-bar" style="width:${Math.round((count / maxBuys) * 80)}px"></div></td>
-            <td class="top-count">${count}</td>
-          </tr>`;
-        }).join('')
-      : '<tr><td colspan="4" style="color:var(--muted); padding:12px 0; font-size:0.8rem;">Aucun clic enregistré</td></tr>';
-
-    // Écrans
     const screenLabels = {
       home: 'Accueil', shop: 'Boutique', capture: 'Photo', 'skin-analysis': 'Analyse peau',
       questionnaire: 'Questionnaire', results: 'Résultats', tryon: 'Essai virtuel',
-      products: 'Produits recommandés', makeup: 'Routine makeup', intention: 'Intention', journey: 'Mon parcours'
+      products: 'Produits', makeup: 'Routine makeup', intention: 'Intention', journey: 'Mon parcours'
     };
     const maxScreen = s.topScreens[0]?.[1] || 1;
     document.getElementById('analyticsScreens').innerHTML = s.topScreens.length
@@ -594,10 +587,9 @@ const Admin = (() => {
           </div>`).join('')
       : '<p style="color:var(--muted); font-size:0.8rem;">Aucune navigation enregistrée</p>';
 
-    // Produits froids
     document.getElementById('analyticsCold').innerHTML = s.coldProducts.length
       ? s.coldProducts.map(({ pid, views }, i) => {
-          const p = products.find(x => x.id === pid);
+          const p    = products.find(x => x.id === pid);
           const name = p ? `${p.brand} — ${p.name.slice(0, 30)}` : pid;
           return `<tr>
             <td class="top-rank">#${i + 1}</td>
@@ -605,7 +597,7 @@ const Admin = (() => {
             <td class="top-count" style="color:#856404;">${views} vues</td>
           </tr>`;
         }).join('')
-      : '<tr><td colspan="3" style="color:var(--muted); padding:12px 0; font-size:0.8rem;">Aucun produit froid détecté</td></tr>';
+      : '<tr><td colspan="3" style="color:var(--muted); padding:12px 0; font-size:0.8rem;">Aucun produit froid</td></tr>';
   }
 
   function exportStatsCSV() {
@@ -613,24 +605,25 @@ const Admin = (() => {
   }
 
   function clearStats() {
-    if (!confirm('Effacer toutes les statistiques ? Cette action est irréversible.')) return;
+    if (!confirm('Effacer toutes les statistiques ? Action irréversible.')) return;
     if (typeof Tracker !== 'undefined') Tracker.clearAll();
     renderAnalytics();
   }
 
   // ─── Extracteur ASIN ──────────────────────────────────────────
   function extractASIN() {
-    const url   = document.getElementById('asinInput').value.trim();
-    const match = url.match(/\/dp\/([A-Z0-9]{10})/i) || url.match(/\/gp\/product\/([A-Z0-9]{10})/i);
+    const url    = document.getElementById('asinInput').value.trim();
+    const match  = url.match(/\/dp\/([A-Z0-9]{10})/i) || url.match(/\/gp\/product\/([A-Z0-9]{10})/i);
     const result = document.getElementById('asinResult');
-
     if (match) {
-      const asin       = match[1].toUpperCase();
-      const cleanUrl   = `https://www.amazon.fr/dp/${asin}?tag=${TAG}`;
-      result.innerHTML = `<strong>ASIN :</strong> ${asin}<br><strong>URL affiliée :</strong> ${cleanUrl}<br><button class="btn-sm btn-edit" style="margin-top:8px;" onclick="navigator.clipboard.writeText('${cleanUrl}'); this.textContent='Copié !'">Copier l'URL</button>`;
+      const asin     = match[1].toUpperCase();
+      const cleanUrl = `https://www.amazon.fr/dp/${asin}?tag=${TAG}`;
+      result.innerHTML = `<strong>ASIN :</strong> ${asin}<br><strong>URL affiliée :</strong> ${cleanUrl}<br>
+        <button class="btn-sm btn-edit" style="margin-top:8px;"
+          onclick="navigator.clipboard.writeText(${JSON.stringify(cleanUrl)}); this.textContent='Copié !'">Copier l'URL</button>`;
       result.style.display = 'block';
     } else {
-      result.innerHTML = '❌ ASIN non trouvé dans cette URL. Vérifie que c\'est bien une URL Amazon.';
+      result.innerHTML = '❌ ASIN non trouvé. Vérifie que c\'est une URL Amazon.';
       result.style.display = 'block';
     }
   }
@@ -639,10 +632,11 @@ const Admin = (() => {
     const url    = document.getElementById('tagInput').value.trim();
     const result = document.getElementById('tagResult');
     const fixed  = ensureTag(url);
-    const hasCorrectTag = url.includes(`tag=${TAG}`);
-    result.innerHTML = hasCorrectTag
+    result.innerHTML = url.includes(`tag=${TAG}`)
       ? `✅ Le tag ${TAG} est déjà correct.<br>${url}`
-      : `⚠️ Tag corrigé :<br>${fixed}<br><button class="btn-sm btn-edit" style="margin-top:8px;" onclick="navigator.clipboard.writeText('${fixed}'); this.textContent='Copié !'">Copier</button>`;
+      : `⚠️ Tag corrigé :<br>${fixed}<br>
+         <button class="btn-sm btn-edit" style="margin-top:8px;"
+           onclick="navigator.clipboard.writeText(${JSON.stringify(fixed)}); this.textContent='Copié !'">Copier</button>`;
     result.style.display = 'block';
   }
 
@@ -651,44 +645,78 @@ const Admin = (() => {
     if (!url) return url;
     try {
       url = url.replace(/\/ref=[^?&]*/g, '');
-      const asinMatch = url.match(/\/dp\/([A-Z0-9]{10})/i);
-      if (asinMatch) return `https://www.amazon.fr/dp/${asinMatch[1].toUpperCase()}?tag=${TAG}`;
-      const urlObj = new URL(url.startsWith('http') ? url : 'https://' + url);
-      urlObj.searchParams.set('tag', TAG);
-      return urlObj.toString();
+      const m = url.match(/\/dp\/([A-Z0-9]{10})/i);
+      if (m) return `https://www.amazon.fr/dp/${m[1].toUpperCase()}?tag=${TAG}`;
+      const u = new URL(url.startsWith('http') ? url : 'https://' + url);
+      u.searchParams.set('tag', TAG);
+      return u.toString();
     } catch { return url; }
   }
 
+  // BUG FIX: liste complète des 19+ catégories réelles du catalogue
   function getCatLabel(cat) {
-    const m = { lipstick: 'Rouge à lèvres', blush: 'Blush', foundation: 'Fond de teint', mascara: 'Mascara' };
+    const m = {
+      blush:       'Blush',
+      bronzer:     'Bronzer',
+      concealer:   'Correcteur / Anti-cernes',
+      cream:       'Crème visage',
+      eye:         'Contour des yeux',
+      eyeliner:    'Eyeliner',
+      eyeshadow:   'Fard à paupières',
+      foundation:  'Fond de teint',
+      highlighter: 'Enlumineur',
+      lipbalm:     'Baume à lèvres',
+      lipgloss:    'Gloss',
+      lipstick:    'Rouge à lèvres',
+      mascara:     'Mascara',
+      nightmask:   'Masque de nuit',
+      powder:      'Poudre',
+      primer:      'Base / Primer',
+      serum:       'Sérum',
+      set:         'Coffret',
+      skincare:    'Soin',
+      spf:         'Crème solaire SPF',
+      tools:       'Accessoires'
+    };
     return m[cat] || cat;
   }
 
-  // ─── Export JSON ──────────────────────────────────────────────
+  function autoFillAmazonUrl() {
+    const asin = document.getElementById('fAsin').value.trim().toUpperCase();
+    if (asin.length === 10) {
+      document.getElementById('fAmazonUrl').value = `https://www.amazon.fr/dp/${asin}?tag=${TAG}`;
+    }
+  }
+
   function exportJSON() {
     const data = {
       _meta: { version: '1.0', source: 'manual', tag: TAG, lastUpdated: new Date().toISOString().split('T')[0], totalProducts: products.length },
       products
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const a    = document.createElement('a');
-    a.href     = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
     a.download = 'products-manual.json';
     a.click();
   }
 
-  // ─── Init au chargement ───────────────────────────────────────
+  // ─── Init ─────────────────────────────────────────────────────
   window.addEventListener('DOMContentLoaded', checkAuth);
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') cancelForm();
+    if (e.key === 'Escape') { cancelForm(); closeImagePicker(); }
   });
 
   return {
-    login, logout, initAdmin, showAddForm, editProduct, cancelForm,
-    saveProduct, toggleActive, toggleFeatured, deleteProduct,
-    search, filterCat, showTab, setPeriod, exportStatsCSV, clearStats,
-    extractASIN, checkTag, autoFillAmazonUrl, exportJSON,
-    saveCoachKey, deleteCoachKey, toggleKeyVisibility, testCoachKey
+    login, logout,
+    showAddForm, editProduct, cancelForm, saveProduct,
+    toggleActive, toggleFeatured, deleteProduct,
+    search, filterCat, showTab,
+    extractASIN, extractASINFromUrl, checkTag, autoFillAmazonUrl, exportJSON,
+    setPeriod, exportStatsCSV, clearStats,
+    saveCoachKey, deleteCoachKey, testCoachKey,
+    previewImage, onImageUrlChange,
+    openImagePicker, closeImagePicker, selectImage, renderImagePicker,
+    uploadImageFile
   };
 
 })();
