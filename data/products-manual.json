@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-03-31",
-    "totalProducts": 107
+    "totalProducts": 108
   },
   "products": [
     {
@@ -1602,6 +1602,33 @@
       "imageUrl": "assets/ERBORIAN-AnticernesT2.jpg",
       "amazonUrl": "https://www.amazon.fr/Erborian-Anticernes-soin-Niacinamide-Correcteur-Cosm%C3%A9tique/dp/B0CQPBBQK5?__mk_fr_FR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=1U3V2OZKOQG1W&dib=eyJ2IjoiMSJ9.ycCw2zGzU9cclusNnCLN6Ple1DTfvx-3Ec7HuBpwvnQBEYpp6Mh2qTbcvqvqSIYfW7IBjA36pz-DUIImAYgkhSE3GO21Gg_XYVGd3aNOwORdXb2_DDrg8iUgBzOrgIcl1Kd1pNQmPg-q6lzB_vW3Xli0ax8Gz98K_IsHqrsE6d1C0vjmnGb-XfD-1OPbClLLVGHE_sUv570Me3HUDHzlgJCn8jy66u-00G43ch_DRdZ1mTYwljyvUVnKY2xKt4aNsB387WcDjuP09XKHpjwOJmH36JOGdQ9F4t-QASd72eg.BEmihMvrFRHGRYDQ95OWmKcWizAFxAzLdf-3nLfDbA4&dib_tag=se&keywords=nars&qid=1774772506&s=beauty&sprefix=na%2Cbeauty%2C244&sr=1-4-spons&aref=hIpgA1QJKd&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&th=1&linkCode=ll2&tag=kan10ar-21&linkId=cf63de82538b1ece2e9ef09f4f755913&ref_=as_li_ss_tl",
       "price": 29,
+      "currency": "EUR",
+      "rating": 4.3,
+      "reviews": 849,
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "concernTags": [],
+      "isFeatured": false,
+      "active": true,
+      "description": "",
+      "curatedBy": "admin",
+      "curatedAt": "2026-03-31",
+      "notes": ""
+    },
+    {
+      "id": "m108",
+      "asin": "B0CQP8J8QC",
+      "name": "NUDE",
+      "brand": "ERBORIAN",
+      "category": "concealer",
+      "imageUrl": "assets/ERBORIAN-AnticernesTnude.jpg",
+      "amazonUrl": "https://www.amazon.fr/Erborian-Anticernes-soin-Niacinamide-Correcteur-Cosm%C3%A9tique/dp/B0CQP8J8QC?__mk_fr_FR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=1U3V2OZKOQG1W&dib=eyJ2IjoiMSJ9.ycCw2zGzU9cclusNnCLN6Ple1DTfvx-3Ec7HuBpwvnQBEYpp6Mh2qTbcvqvqSIYfW7IBjA36pz-DUIImAYgkhSE3GO21Gg_XYVGd3aNOwORdXb2_DDrg8iUgBzOrgIcl1Kd1pNQmPg-q6lzB_vW3Xli0ax8Gz98K_IsHqrsE6d1C0vjmnGb-XfD-1OPbClLLVGHE_sUv570Me3HUDHzlgJCn8jy66u-00G43ch_DRdZ1mTYwljyvUVnKY2xKt4aNsB387WcDjuP09XKHpjwOJmH36JOGdQ9F4t-QASd72eg.BEmihMvrFRHGRYDQ95OWmKcWizAFxAzLdf-3nLfDbA4&dib_tag=se&keywords=nars&qid=1774772506&s=beauty&sprefix=na%2Cbeauty%2C244&sr=1-4-spons&aref=hIpgA1QJKd&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&th=1&linkCode=ll2&tag=kan10ar-21&linkId=5a56ba5824c4444c657194edb55e8de7&ref_=as_li_ss_tl",
+      "price": 32,
       "currency": "EUR",
       "rating": 4.3,
       "reviews": 849,
