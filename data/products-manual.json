@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-03-31",
-    "totalProducts": 105
+    "totalProducts": 106
   },
   "products": [
     {
@@ -1551,6 +1551,33 @@
       "currency": "EUR",
       "rating": 4.6,
       "reviews": 129,
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "concernTags": [],
+      "isFeatured": false,
+      "active": true,
+      "description": "",
+      "curatedBy": "admin",
+      "curatedAt": "2026-03-31",
+      "notes": ""
+    },
+    {
+      "id": "m106",
+      "asin": "B0D35YYW7H",
+      "name": "03",
+      "brand": "KIKO MILANO",
+      "category": "concealer",
+      "imageUrl": "assets/KIKOMILANO-correcteurlightbeige.jpg",
+      "amazonUrl": "https://www.amazon.fr/KIKO-Milano-Skin-Tone-Concealer/dp/B0D35YYW7H?crid=2J4DTXX8R3W2F&dib=eyJ2IjoiMSJ9.SoPXw__l-spQuOjc-JExCDjA0_peqb1JoM-JQWWJsY8qztKCBOEF27imvSs-kzeqwR3Z6pUzjy78Ax08hLQvVMRPy5eTo3BeMjJsHWkuJGZyiaj2-2qdBgpL5yhED_LOPrzBYIIHsj_A0FwkK3iCAZ4OTFO9t5CM4CPif5LqIiqwn9H-7Oo9tBgaUVKuAKsX54STMJDQApaBwncxqK1kEyrsGhDY7oz6iu4mYvhKerjjeeMe6dZwvXXrBYyTsR_WPrqj2gBLej5_aVmJvAo0UHj9B1GzGxlTV7wbNWdKgfE.-K3go8OIglX3NNGPfnrVsSnHhfZHhQHXATWFnLHFJFQ&dib_tag=se&keywords=correcteur%2Bpeche&qid=1774006199&s=beauty&sprefix=corr%2Cbeauty%2C312&sr=1-7&th=1&linkCode=ll2&tag=kan10ar-21&linkId=b74a571430d271271d9e71b71e420094&ref_=as_li_ss_tl",
+      "price": 8,
+      "currency": "EUR",
+      "rating": 4.1,
+      "reviews": 1145,
       "skinTypeTags": [
         "normale",
         "mixte",
