@@ -3,8 +3,8 @@
     "version": "1.0",
     "source": "admin",
     "tag": "kand10ar-21",
-    "lastUpdated": "2026-03-30",
-    "totalProducts": 102
+    "lastUpdated": "2026-03-31",
+    "totalProducts": 104
   },
   "products": [
     {
@@ -1472,6 +1472,70 @@
       "description": "",
       "curatedBy": "admin",
       "curatedAt": "2026-03-30",
+      "notes": ""
+    },
+    {
+      "id": "m103",
+      "asin": "B0CTG3VSTH",
+      "name": "Blush liquide - Afterglow",
+      "brand": "NARS",
+      "category": "lipstick",
+      "subcategory": "lipstick",
+      "shadeName": null,
+      "colorHex": null,
+      "imageUrl": "assets/NARS-Aftregloxwliquid",
+      "amazonUrl": "https://www.amazon.fr/Afterglow-Liquid-Blush-Secret-Lover/dp/B0CTG3VSTH?__mk_fr_FR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=FSEEHB00KKP6&dib=eyJ2IjoiMSJ9.Gbpzpq6pbHPhnmVYVSfSzopGB9uErOBrZMpBd1Yfz_BB4qqcbPJuOC-0U0OMo2_DT_dc2wbfU3B0teKYWQX340wGJ2BovcZ2Cfb-2StBrldzfPlpoWdYOk6s4gPzB6xmhvRk3RrVUHm-hVPulGCPHHZHCp1ndueDRdika3jTBRsRkZNpijIJMVwvtRU78oVSTNlsLhCWTbCKcFbFKbrHw_-1QnF859vY_H0KA4cQl6pMyhqxKWQDc7yabE4Pb1VW-OVtM6HP3cbihd4zksNlcd_G6j0GBVNifY5b1wNkvsU.S7bcBut7qp_VEeFVGieevyu5HKiUIIRqHkxdIqCutew&dib_tag=se&keywords=after%2Bglow%2Bliquid%2Bblush%2Bnars&qid=1774772410&s=beauty&sprefix=after%2Bglow%2Bliquid%2Bblush%2Bna%2Cbeauty%2C232&sr=1-1&th=1&linkCode=ll2&tag=kan10ar-21&linkId=7db57186ede6fa7eb15552fc6fd4c969&ref_=as_li_ss_tl",
+      "price": null,
+      "currency": "EUR",
+      "rating": null,
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "concernTags": [],
+      "makeupCategory": "lipstick",
+      "finish": "mat",
+      "coverage": null,
+      "isFeatured": false,
+      "active": true,
+      "skinTonePreview": {
+        "mode": "images",
+        "light": "assets/previews/m103_light.jpg",
+        "medium": "assets/previews/m103_medium.jpg",
+        "dark": "assets/previews/m103_dark.jpg"
+      },
+      "description": "",
+      "curatedBy": "admin",
+      "curatedAt": "2026-03-30",
+      "notes": ""
+    },
+    {
+      "id": "m104",
+      "asin": "B0DZPFZZCK",
+      "name": "PINK",
+      "brand": "KIKO MILANO",
+      "category": "blush",
+      "imageUrl": "assets/KIKOMILANO-BLUSHMousse.jpg",
+      "amazonUrl": "https://www.amazon.fr/gp/product/B0DZPFZZCK?smid=A1X6FK5RDHNB96&th=1&linkCode=ll2&tag=kan10ar-21&linkId=602cb675e36089571cca5f49a8b6ead3&ref_=as_li_ss_tl",
+      "price": null,
+      "currency": "EUR",
+      "rating": null,
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "concernTags": [],
+      "isFeatured": false,
+      "active": true,
+      "description": "",
+      "curatedBy": "admin",
+      "curatedAt": "2026-03-31",
       "notes": ""
     }
   ]
