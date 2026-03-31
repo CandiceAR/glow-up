@@ -1520,9 +1520,9 @@
       "category": "blush",
       "imageUrl": "assets/KIKOMILANO-BLUSHMousse.jpg",
       "amazonUrl": "https://www.amazon.fr/gp/product/B0DZPFZZCK?smid=A1X6FK5RDHNB96&th=1&linkCode=ll2&tag=kan10ar-21&linkId=602cb675e36089571cca5f49a8b6ead3&ref_=as_li_ss_tl",
-      "price": null,
+      "price": 15,
       "currency": "EUR",
-      "rating": null,
+      "rating": 4.6,
       "skinTypeTags": [
         "normale",
         "mixte",
@@ -1536,7 +1536,8 @@
       "description": "",
       "curatedBy": "admin",
       "curatedAt": "2026-03-31",
-      "notes": ""
+      "notes": "",
+      "reviews": 129
     }
   ]
 }
