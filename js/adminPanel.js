@@ -59,7 +59,9 @@ const Admin = (() => {
   function extractASINFromUrl() {
     const url = document.getElementById('fAmazonUrl').value;
     if (!url) return;
-    const m = url.match(/\/dp\/([A-Z0-9]{10})/i);
+    const m = url.match(/\/dp\/([A-Z0-9]{10})/i)
+           || url.match(/\/gp\/product\/([A-Z0-9]{10})/i)
+           || url.match(/[?&](?:dp|ASIN)=([A-Z0-9]{10})/i);
     if (m) document.getElementById('fAsin').value = m[1].toUpperCase();
   }
 
