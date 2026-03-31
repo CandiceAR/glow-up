@@ -213,8 +213,11 @@ const Admin = (() => {
     document.getElementById('fAmazonUrl').value = p.amazonUrl || '';
     document.getElementById('fImageUrl').value  = p.imageUrl || '';
     // BUG FIX: fActive et fFeatured sont maintenant de vrais checkboxes
-    document.getElementById('fActive').checked   = p.active !== false;
-    document.getElementById('fFeatured').checked = p.isFeatured === true;
+    document.getElementById('fPrice').value       = p.price != null ? p.price : '';
+    document.getElementById('fRating').value      = p.rating != null ? p.rating : '';
+    document.getElementById('fReviews').value     = p.reviews != null ? p.reviews : '';
+    document.getElementById('fActive').checked    = p.active !== false;
+    document.getElementById('fFeatured').checked  = p.isFeatured === true;
     previewImage(p.imageUrl || '');
     document.getElementById('productFormWrap').style.display = 'block';
     document.getElementById('productFormWrap').scrollIntoView({ behavior: 'smooth' });
@@ -227,7 +230,7 @@ const Admin = (() => {
   }
 
   function clearForm() {
-    ['fId', 'fAsin', 'fName', 'fBrand', 'fAmazonUrl', 'fImageUrl'].forEach(id => {
+    ['fId', 'fAsin', 'fName', 'fBrand', 'fAmazonUrl', 'fImageUrl', 'fPrice', 'fRating', 'fReviews'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
@@ -247,6 +250,12 @@ const Admin = (() => {
     const imageUrl   = document.getElementById('fImageUrl').value.trim();
     const category   = document.getElementById('fCategory').value;
     // BUG FIX: lire les vrais checkboxes
+    const priceRaw   = document.getElementById('fPrice').value.trim();
+    const ratingRaw  = document.getElementById('fRating').value.trim();
+    const reviewsRaw = document.getElementById('fReviews').value.trim();
+    const price      = priceRaw   ? parseFloat(priceRaw)   : null;
+    const rating     = ratingRaw  ? parseFloat(ratingRaw)  : null;
+    const reviews    = reviewsRaw ? parseInt(reviewsRaw, 10) : null;
     const isActive   = document.getElementById('fActive').checked;
     const isFeatured = document.getElementById('fFeatured').checked;
 
@@ -288,6 +297,9 @@ const Admin = (() => {
         imageUrl,
         amazonUrl: finalAmazonUrl,
         asin,
+        price,
+        rating,
+        reviews,
         active: isActive,
         isFeatured,
         curatedAt: new Date().toISOString().split('T')[0]
@@ -301,9 +313,10 @@ const Admin = (() => {
         category,
         imageUrl,
         amazonUrl: finalAmazonUrl,
-        price: null,
+        price,
         currency: 'EUR',
-        rating: null,
+        rating,
+        reviews,
         skinTypeTags: ['normale', 'mixte', 'seche', 'grasse', 'sensible'],
         concernTags: [],
         isFeatured,
