@@ -3,8 +3,8 @@
     "version": "1.0",
     "source": "admin",
     "tag": "kand10ar-21",
-    "lastUpdated": "2026-03-31",
-    "totalProducts": 110
+    "lastUpdated": "2026-04-02",
+    "totalProducts": 111
   },
   "products": [
     {
@@ -1699,6 +1699,33 @@
       "description": "",
       "curatedBy": "admin",
       "curatedAt": "2026-03-31",
+      "notes": ""
+    },
+    {
+      "id": "m111",
+      "asin": "B0C7W6GW8P",
+      "name": "Fraise",
+      "brand": "E.L.F.",
+      "category": "lipgloss",
+      "imageUrl": "assets/ELF-glosshydratant.jpg",
+      "amazonUrl": "https://www.amazon.fr/l-f-maquillage-multi-usage-anti-cernes-v%C3%A9g%C3%A9taliennes/dp/B0C7W6GW8P?__mk_fr_FR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=1ZQ4TWFSZBVVT&dib=eyJ2IjoiMSJ9.1CJq9-cODJN6olzJkCRuCxFw5omUc0mxzNyguOXyyTbCd0mIzbIx_XXdQxYre_B3bMcV-5nFoIGuyHRj2u1utlymA0YTQ7y9mCteR74diJGB_xqzk833D3Z7aEVMk_0TldcRzCr-2ZElgiwZRny8WS6oFwrVCNFSzPdy8j_wFk82ifruuy3CailOvLQI7Vo8R5t9QT64HkwGdUhu0a7Gjb3Kd4480jCOPgFUqEOpWFGGe3q3HXfSZZhmT8_8G_8aG-8q5jhd51wLGCjMQz72iRrKCC_MZxj12Nq96gx_sRY.g68qE0AwSiSF5pcyY4xg7DGBBe2yk-ZOvZfF2OrLaEU&dib_tag=se&keywords=ELF%2BGLOSS&qid=1774771498&rdc=1&s=beauty&sprefix=elf%2Bgloss%2Cbeauty%2C254&sr=1-4&th=1&linkCode=ll2&tag=kan10ar-21&linkId=35be76dbed6cdd3b91b313fa41475484&ref_=as_li_ss_tl",
+      "price": 6,
+      "currency": "EUR",
+      "rating": 4.5,
+      "reviews": 13000,
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "concernTags": [],
+      "isFeatured": false,
+      "active": true,
+      "description": "",
+      "curatedBy": "admin",
+      "curatedAt": "2026-04-02",
       "notes": ""
     }
   ]
