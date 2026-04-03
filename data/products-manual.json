@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-04-03",
-    "totalProducts": 124
+    "totalProducts": 125
   },
   "products": [
     {
@@ -2064,6 +2064,33 @@
       "currency": "EUR",
       "rating": 4.6,
       "reviews": 612,
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "concernTags": [],
+      "isFeatured": false,
+      "active": true,
+      "description": "",
+      "curatedBy": "admin",
+      "curatedAt": "2026-04-03",
+      "notes": ""
+    },
+    {
+      "id": "m125",
+      "asin": "B0BPXT3GBN",
+      "name": "anti ride et crème hydratante visage",
+      "brand": "Médicube",
+      "category": "cream",
+      "imageUrl": "assets/MEDICUBE-cr-mejour.jpg",
+      "amazonUrl": "https://www.amazon.fr/Medicube-collagene-hyaluronique-l%C3%A9lastine-premium/dp/B0BPXT3GBN?crid=OVZ818S5FBG8&dib=eyJ2IjoiMSJ9.PEZp6QQKoUZ5gMY72f9AZAFeDDpIcEZ6KlQdJg5XqfEVnp5n_LyLgIUFLMeqWWDm14ceT1u4tMj9u8buPSEZw3iDHnAxZof5tnxT5bkk1MnklnF6CMERteLQbfsNeAX_MAo2x4BGrMVwMXSfQQj77G0QBBZlepOJdMjMeq-g1I4c7k1qnXelLpiSH57H6rwO88qXPXaLQzoSGb8fBwuMh9nYXh8XQaErDB4Ys4pBqNa6bGNS7oAGqvaej3MZ92fS0glUye3Gce5gKgg45Bs0RBGmNJOBzeBjJE3Wsv5slVI.Xsp4jia4eiGb9CNnKy7jFhlKxBoJIyIZ5aAP8uXJ3Mo&dib_tag=se&keywords=medicube+triple+collagen+cream&qid=1775211254&sprefix=medicube+TRIPLE+C%2Caps%2C233&sr=8-1&linkCode=ll2&tag=kan10ar-21&linkId=29bcfe5ad9eb3669182fcd91563b66dd&ref_=as_li_ss_tl",
+      "price": 17.7,
+      "currency": "EUR",
+      "rating": 4.5,
+      "reviews": 5800,
       "skinTypeTags": [
         "normale",
         "mixte",
