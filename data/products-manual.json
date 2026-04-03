@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-04-03",
-    "totalProducts": 115
+    "totalProducts": 116
   },
   "products": [
     {
@@ -1821,6 +1821,33 @@
       "currency": "EUR",
       "rating": 4.5,
       "reviews": 19028,
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "concernTags": [],
+      "isFeatured": false,
+      "active": true,
+      "description": "",
+      "curatedBy": "admin",
+      "curatedAt": "2026-04-03",
+      "notes": ""
+    },
+    {
+      "id": "m116",
+      "asin": "B0CRZ92MFR",
+      "name": "Highlighter - TEINTE 02 FAIR LIGHT",
+      "brand": "RIMMEL LONDON",
+      "category": "highlighter",
+      "imageUrl": "assets/RIMMELLONDON-MULTITASKERT002FAIRLIGHT.jpg",
+      "amazonUrl": "https://www.amazon.fr/Rimmel-Multi-Tasker-Filters-Booster-Highlighter/dp/B0CRZ92MFR?__mk_fr_FR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=3BHH1Z26ZZFCG&dib=eyJ2IjoiMSJ9.7T7EmCNcXQiB04d1l_E5S0bNO7bDIrs0ihhnWnnHjLbqqSDUQ2cQAvOvrbHmq1wZ5YljWPInW0bqD0Ffqa3Vu_o9MID6VVb0qvC5eU3kLLyY1WDbt5D8VfSP0CLs_-EDXqXNmAuyRKXo7feFupeLGV01ORnGbM99V4LaH4-CbF4DrNo7NyZ1yRg7T_RvWi8S1Bhy9Krnrck_3Hm-GWHQc0yOxfnzroACjAUcHKsijBCrsU85oefmVySEChbE9WcmlLuhCS83G_UUkiRrz36iwVvGLLBVh8NImT0F07ZirQ8.Fr4MU0ER9JM_yzVzBt142zYud8STltiw6chjM5yeJZE&dib_tag=se&keywords=rimmel%2Blondon%2Bbase&qid=1774771858&s=beauty&sprefix=rimmel%2Blondon%2Bbase%2Cbeauty%2C237&sr=1-6&th=1&linkCode=ll2&tag=kan10ar-21&linkId=068a9cc38c474e4ce14dcfb7100f64c7&ref_=as_li_ss_tl",
+      "price": 25,
+      "currency": "EUR",
+      "rating": 4.2,
+      "reviews": 1700,
       "skinTypeTags": [
         "normale",
         "mixte",
