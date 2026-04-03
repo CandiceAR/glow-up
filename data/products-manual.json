@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-04-03",
-    "totalProducts": 121
+    "totalProducts": 122
   },
   "products": [
     {
@@ -1983,6 +1983,33 @@
       "currency": "EUR",
       "rating": 4.4,
       "reviews": 17375,
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "concernTags": [],
+      "isFeatured": false,
+      "active": true,
+      "description": "",
+      "curatedBy": "admin",
+      "curatedAt": "2026-04-03",
+      "notes": ""
+    },
+    {
+      "id": "m122",
+      "asin": "B085VWWJJT",
+      "name": "Sérum Triple collagène",
+      "brand": "Médicube",
+      "category": "serum",
+      "imageUrl": "assets/MEDICUBE-s-rumtriplecollagen.jpg",
+      "amazonUrl": "https://www.amazon.fr/medicube-Collag%C3%A8ne-Nourrissez-Niacinamide-Hyaluronique/dp/B085VWWJJT?crid=19SQ1FXG9AR3I&dib=eyJ2IjoiMSJ9.RTtqGdyyE_5mflkr1vhTek_PJHLlGTFWaUE-C72qwilHH6su0fbPqpdLyTYCKNrGhaG44O76nNx8-oiM2mUEfOUFj0cIRX_eGwD3UQAgYz0Zvz-xaGurgu7INOPva_24ADOSeng2D2L59B5qLOgN7UOhUJuc0B5HGHH5wUqZLuwmB26y9g4fSbgjpe9TQC_b4tYfolW88e_CeCuBqCL3GeS4v7sDgFPBDGOLITytW3VyyzfObWC_5f1-zauw9zoDKpQyWZ70U83XCMinRusTTNTz3aAQG1Ga8AlTzmOqRfw.vUrR4uWfyvrqMsXNvnd13Ny8ciHjQAXf7HDGsDF3HVc&dib_tag=se&keywords=medicube+triple+collag%C3%A8ne&qid=1775210942&sprefix=m%C3%A9dicube+TRIPL%2Caps%2C224&sr=8-3&linkCode=ll2&tag=kan10ar-21&linkId=b66d0011cd18939ff7aad28011dd7c9a&ref_=as_li_ss_tl",
+      "price": 16.6,
+      "currency": "EUR",
+      "rating": 4.6,
+      "reviews": 2000,
       "skinTypeTags": [
         "normale",
         "mixte",
