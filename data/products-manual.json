@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-04-03",
-    "totalProducts": 125
+    "totalProducts": 126
   },
   "products": [
     {
@@ -2091,6 +2091,33 @@
       "currency": "EUR",
       "rating": 4.5,
       "reviews": 5800,
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "concernTags": [],
+      "isFeatured": false,
+      "active": true,
+      "description": "",
+      "curatedBy": "admin",
+      "curatedAt": "2026-04-03",
+      "notes": ""
+    },
+    {
+      "id": "m126",
+      "asin": "B07JR42WZH",
+      "name": "Poudre libre - couleur chaud pain banane",
+      "brand": "HUDA BEAUTY",
+      "category": "serum",
+      "imageUrl": "assets/HUDA-BEAUTY---poudre-libre.jpg",
+      "amazonUrl": "https://www.amazon.fr/Huda-Beauty-Easy-Bake-Poudre/dp/B07JR42WZH?crid=283MUS71FZC1Y&dib=eyJ2IjoiMSJ9.2V1vktdgIGuMEUzU9TocSC1xQePUPR6EUfs9c53QrXKmOcWe3b4S-TxgnWB9oieOHw12NE3zKRrwr_WNFrgUFtwzHQ5iHDhvDVkjBW5s0VuQyrkmW02BeuS2GDnhf_2tDoZVrTPl-cY3h1tZtsdtgc5stPLoEbmgrPbU9J3X7LZqRbsYrMhi7jBXTZ3ReSob2NHFIZwCTsb2UhC5IBq1QyzmD_5aQKoGIrfprtH49rdR7bKkiLGJcYEAaH1gnxx0mIFpCf7AK9DKYsXrJfoi8pcsY_MORQeLw55yUi0OM40.R5pl0xHsbZdOP08xWEyFRzSWIDJ1ELFv9cEjNP2Z6aY&dib_tag=se&keywords=poudre%2Blibre%2Bhuda%2Bbeauty&qid=1775211518&sprefix=poudre%2Blibre%2B%2Caps%2C235&sr=8-1&th=1&linkCode=ll2&tag=kan10ar-21&linkId=02557c6f55d35d9d1838eecd5cada5b8&ref_=as_li_ss_tl",
+      "price": 52,
+      "currency": "EUR",
+      "rating": 4.6,
+      "reviews": null,
       "skinTypeTags": [
         "normale",
         "mixte",
