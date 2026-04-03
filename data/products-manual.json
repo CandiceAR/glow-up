@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-04-03",
-    "totalProducts": 114
+    "totalProducts": 115
   },
   "products": [
     {
@@ -1790,6 +1790,33 @@
       "category": "concealer",
       "imageUrl": "assets/ELF-HALOGLOWT3LIGHT.jpg",
       "amazonUrl": "https://www.amazon.fr/l-f-Cosmetics-illuminateur-%C3%A9clatant-hyaluronique/dp/B0B5MGBDHZ?__mk_fr_FR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=2ESNXQA3YCX9G&dib=eyJ2IjoiMSJ9.X5oRXlVI7PVUb459sEvDh5CvQITxRrRFPHrOzJLZ_Y8lR_Oa0Ba-XhR-u1ZCoML-ol5GjrHuVj2Vkjwyr2WFcYQJ9MiebFr6P3Ftgyz95Xi_ZXnbx_uogPnw59EfmIcuHapzMEwJjLycaBSW_9barjrg-Dv93cZxbO_9fNYXyz3CSoS4HhpDfO98eVQTvTB9osYh9MjfwO_olnZHUAnSGVnR8b0fW0-Lu7gSZBb5Fni_9yxawiTp9wMpQaFsEknKtT1E4EREQC7DXGvL_ScRj3v9ziB5A3OBmjrfGfRNK_8.I_qg8AWdmmLzKJ5X5bK2tV_vf0HxzbfcuRdAUWsKSAo&dib_tag=se&keywords=ELF%2BGLOW&qid=1774771719&s=beauty&sprefix=elf%2Bglow%2Cbeauty%2C250&sr=1-1&th=1&linkCode=ll2&tag=kan10ar-21&linkId=f37c4ad62b9628dee38497661518b044&ref_=as_li_ss_tl",
+      "price": 16,
+      "currency": "EUR",
+      "rating": 4.5,
+      "reviews": 19028,
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "concernTags": [],
+      "isFeatured": false,
+      "active": true,
+      "description": "",
+      "curatedBy": "admin",
+      "curatedAt": "2026-04-03",
+      "notes": ""
+    },
+    {
+      "id": "m115",
+      "asin": "B0B5MG15B2",
+      "name": "HALOW GLOW - Teinte 1 FAIR",
+      "brand": "E.L.F.",
+      "category": "concealer",
+      "imageUrl": "assets/ELF-HALOGLOWT1FAIR.jpg",
+      "amazonUrl": "https://www.amazon.fr/l-f-Cosmetics-illuminateur-%C3%A9clatant-hyaluronique/dp/B0B5MG15B2?__mk_fr_FR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=2ESNXQA3YCX9G&dib=eyJ2IjoiMSJ9.X5oRXlVI7PVUb459sEvDh5CvQITxRrRFPHrOzJLZ_Y8lR_Oa0Ba-XhR-u1ZCoML-ol5GjrHuVj2Vkjwyr2WFcYQJ9MiebFr6P3Ftgyz95Xi_ZXnbx_uogPnw59EfmIcuHapzMEwJjLycaBSW_9barjrg-Dv93cZxbO_9fNYXyz3CSoS4HhpDfO98eVQTvTB9osYh9MjfwO_olnZHUAnSGVnR8b0fW0-Lu7gSZBb5Fni_9yxawiTp9wMpQaFsEknKtT1E4EREQC7DXGvL_ScRj3v9ziB5A3OBmjrfGfRNK_8.I_qg8AWdmmLzKJ5X5bK2tV_vf0HxzbfcuRdAUWsKSAo&dib_tag=se&keywords=ELF%2BGLOW&qid=1774771719&s=beauty&sprefix=elf%2Bglow%2Cbeauty%2C250&sr=1-1&th=1&linkCode=ll2&tag=kan10ar-21&linkId=64abd739c882c21a3b269bd972f5f421&ref_=as_li_ss_tl",
       "price": 16,
       "currency": "EUR",
       "rating": 4.5,
