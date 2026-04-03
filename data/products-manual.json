@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-04-03",
-    "totalProducts": 117
+    "totalProducts": 118
   },
   "products": [
     {
@@ -1875,6 +1875,33 @@
       "currency": "EUR",
       "rating": 4.2,
       "reviews": 1700,
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "concernTags": [],
+      "isFeatured": false,
+      "active": true,
+      "description": "",
+      "curatedBy": "admin",
+      "curatedAt": "2026-04-03",
+      "notes": ""
+    },
+    {
+      "id": "m118",
+      "asin": "B0C7WJMRYZ",
+      "name": "GLOSS - bonbon rose",
+      "brand": "RIMMEL LONDON",
+      "category": "lipgloss",
+      "imageUrl": "assets/RIMMELLONDON-glosscandypink.jpg",
+      "amazonUrl": "https://www.amazon.fr/Rimmel-London-Thrill-Seeker-Glassy/dp/B0C7WJMRYZ?__mk_fr_FR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=XBS0O5YPO4MC&dib=eyJ2IjoiMSJ9.QjvMDJ6AoSO9_0HZG7NmJ89u6t0tekmh9B7Rf-EtxpYRfGjmuILlWv-By8JXqxCuxOVCEl6QpIbxeTcoH50wippuIWi-qwTwfLks2n-h9zXM01eUc13Jf7RHCB46DbhcC8EMDEo03nUZnmIIgbP3aiTt7n5ngfLVRJn3Ne4jkOemy1M32qoqhwaCyUVoJr0rSpHd-tBy-jpcvhTxveN66Pad-us6pXsnYZizGU00f1v6Z4WU2pda33vIrO-JXIio0oWZ8IjoQXGDtBwX5-Cag0K3eTAku7qIhlfAj5KqYXQ.WEO10e6HfAwo3jdlFJ-Eaqw6M_AnTkETMGYSd_v3hBE&dib_tag=se&keywords=rimmel%2Blondon%2Bglassy%2Bgloss&qid=1774772063&s=beauty&sprefix=rimmel%2Blondon%2Bglassy%2Bgloss%2Cbeauty%2C261&sr=1-2&th=1&linkCode=ll2&tag=kan10ar-21&linkId=76574636f38b4f2da9ff25e1b633d144&ref_=as_li_ss_tl",
+      "price": 10.12,
+      "currency": "EUR",
+      "rating": 4.4,
+      "reviews": 262,
       "skinTypeTags": [
         "normale",
         "mixte",
