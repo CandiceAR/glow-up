@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-04-03",
-    "totalProducts": 123
+    "totalProducts": 124
   },
   "products": [
     {
@@ -2037,6 +2037,33 @@
       "currency": "EUR",
       "rating": 4.5,
       "reviews": 1040,
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "concernTags": [],
+      "isFeatured": false,
+      "active": true,
+      "description": "",
+      "curatedBy": "admin",
+      "curatedAt": "2026-04-03",
+      "notes": ""
+    },
+    {
+      "id": "m124",
+      "asin": "B0DXV9WQ7L",
+      "name": "Hyaluronic Multi Peptide Serum - H20",
+      "brand": "Médicube",
+      "category": "serum",
+      "imageUrl": "assets/MEDICUBE-H20.jpg",
+      "amazonUrl": "https://www.amazon.fr/Medicube-Hyaluronic-Multi-Peptide-Serum/dp/B0DXV9WQ7L?crid=2T3P4HC9CAQK7&dib=eyJ2IjoiMSJ9.UCxTJoT4G132vE06cGHamUPQkpXG70zF2XDOatrtNkEp9FjNFoebZ5VcxtEai2c6X1iXS59kSmDRrBKNKXzTsZLOmQBFbBMGwOMF--loyMsqJ4c-I91UsaMFVRjnz1T0iuMehq12SF6gDl73MPYTbVIAJ92nLVKjWGJ3W2uGsAvWTD_T1J9yATZ72_civqbudr4x_yAFgY2CXFp3tQQMagaRB2RhkMMfCO76zqgGAMq9ngoApxkoC-PRVtPzAcQ3XwcZ7fDHnK5eE5oMbTewNhGmNJOBzeBjJE3Wsv5slVI.XLXiTkALGLUWJ3ZcAqkKRW3BeN1DAFYq87FDrwf2riU&dib_tag=se&keywords=medicube+hyaluronic+multi+peptide+serum&qid=1775211149&sprefix=medicube+hyaluronic+multi%2Caps%2C225&sr=8-5&linkCode=ll2&tag=kan10ar-21&linkId=5fd6cdb7c46e7351743ee3f3e7d852a0&ref_=as_li_ss_tl",
+      "price": 30.3,
+      "currency": "EUR",
+      "rating": 4.6,
+      "reviews": 612,
       "skinTypeTags": [
         "normale",
         "mixte",
