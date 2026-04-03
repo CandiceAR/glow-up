@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-04-03",
-    "totalProducts": 118
+    "totalProducts": 119
   },
   "products": [
     {
@@ -1902,6 +1902,33 @@
       "currency": "EUR",
       "rating": 4.4,
       "reviews": 262,
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "concernTags": [],
+      "isFeatured": false,
+      "active": true,
+      "description": "",
+      "curatedBy": "admin",
+      "curatedAt": "2026-04-03",
+      "notes": ""
+    },
+    {
+      "id": "m119",
+      "asin": "B0DPB871SX",
+      "name": "Baume à lèvre - hydratant",
+      "brand": "CATRICE",
+      "category": "lipbalm",
+      "imageUrl": "assets/CATRICE-huilelevre.jpg",
+      "amazonUrl": "https://www.amazon.fr/Cosmetics-Humidifiant-Hydratant-Protecteur-Lumineux/dp/B0DPB871SX?__mk_fr_FR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=30LQ488SX8RN8&dib=eyJ2IjoiMSJ9.xFoVLr0fMYXXjTzzg1tO2-k3nNCenn2Ixfxvc4R_W2balZvtDjXDgMkJxVv-rlNyDCd2WiyB8N13kiLfTqI2N__tTURb6JigpAafCm7320Y_1rc1AUJ7iTGcXEwA0gB55TYghUUkJ_VlGOWVoa76UOBTl-AcnxpgLF5lXA31W6h3RExu7w-x-r7RLLR-DJIcsPvTvte5zR_8XjvSW5sSi_bSvh9dviXsWXwbfu_ucipRGmVQzP_QFlIJqAgD97LzelbU1GISN8XCDGzTiFQ88rrt7RTK7phJGXT48VsIBHs.Riz8Ig9JC8hOaKeokMYanC7Y5bDWL25DY4sHyOSVMNw&dib_tag=se&keywords=huile%2Ba%2Blevre%2Bbaton&qid=1774772180&rdc=1&s=beauty&sprefix=huile%2Ba%2Blevre%2Bba%2Cbeauty%2C254&sr=1-5&th=1&linkCode=ll2&tag=kan10ar-21&linkId=26743edd3b8a9b7c7a7e264063d01fd5&ref_=as_li_ss_tl",
+      "price": 5.9,
+      "currency": "EUR",
+      "rating": 3.6,
+      "reviews": null,
       "skinTypeTags": [
         "normale",
         "mixte",
