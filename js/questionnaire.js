@@ -281,6 +281,9 @@ const Questionnaire = (() => {
     // Recommandation produits
     ProductCatalog.getRecommended(AppState.questionnaire.answers);
 
+    // Sauvegarder le profil (questionnaire + analyse photo si disponible)
+    if (typeof RoutineSaver !== 'undefined') RoutineSaver.saveProfile();
+
     showScreen('results');
   }
 

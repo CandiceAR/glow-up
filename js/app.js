@@ -172,8 +172,13 @@ async function initApp() {
   if (typeof Auth !== 'undefined') Auth.init();
   updateAuthUI(); // Afficher le bouton immédiatement, même sans Firebase
 
-  // 3. Questionnaire — reset si nécessaire
-  Questionnaire.reset();
+  // 3. Profil — restaurer si existant, sinon reset questionnaire
+  const _profileRestored = typeof RoutineSaver !== 'undefined' && RoutineSaver.restoreProfile();
+  if (!_profileRestored) {
+    Questionnaire.reset(); // Nouveau visiteur : questionnaire vierge
+  } else {
+    RoutineSaver.showResumeBanner(); // Visiteur connu : bannière de reprise
+  }
 
   // 4. Event listeners
   setupGlobalListeners();

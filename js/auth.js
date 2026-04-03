@@ -31,8 +31,9 @@ const Auth = (() => {
 
       auth.onAuthStateChanged(user => {
         if (user) {
-          // Migrer la routine guest vers le compte avant de mettre à jour AppState
+          // Migrer les données guest vers le compte connecté
           if (typeof RoutineSaver !== 'undefined') RoutineSaver.migrateGuestToUser(user.uid);
+
           AppState.user = {
             uid:         user.uid,
             email:       user.email,
@@ -41,9 +42,32 @@ const Auth = (() => {
             isGuest:     false
           };
           console.log('[Auth] Connecté:', user.email);
+
+          // Restaurer le profil ou lancer le questionnaire si nouveau compte
+          if (typeof RoutineSaver !== 'undefined') {
+            const profileRestored = RoutineSaver.restoreProfile();
+            if (profileRestored) {
+              // Profil existant → restauré silencieusement
+              RoutineSaver.showResumeBanner();
+              const prenom = user.displayName ? ` ${user.displayName.split(' ')[0]}` : '';
+              showToast(`Bon retour${prenom} ✦ Ton profil est prêt`, 'success', 3000);
+            } else {
+              // Nouveau compte → proposer le questionnaire
+              setTimeout(() => {
+                if (AppState.screen === 'home' || AppState.screen === 'intention') {
+                  showToast('Bienvenue ! Crée ton profil beauté personnalisé ✦', 'success', 4000);
+                  setTimeout(() => {
+                    if (typeof showScreen === 'function') showScreen('questionnaire');
+                  }, 2000);
+                }
+              }, 800);
+            }
+          }
         } else {
           AppState.user = { uid: null, email: null, displayName: null, photoURL: null, isGuest: true };
           console.log('[Auth] Mode guest');
+          // Tenter de restaurer un profil guest
+          if (typeof RoutineSaver !== 'undefined') RoutineSaver.restoreProfile();
         }
         updateAuthUI();
       });

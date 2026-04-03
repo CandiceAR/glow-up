@@ -8,12 +8,18 @@
 
 const RoutineSaver = (() => {
 
-  const KEY_GUEST = 'glow_routine_v1';
+  const KEY_GUEST         = 'glow_routine_v1';
+  const KEY_PROFILE_GUEST = 'glow_profile_v1';
 
-  // ─── Clé de stockage selon l'état de connexion ───────────────
+  // ─── Clés de stockage ────────────────────────────────────────
   function _getKey() {
     const uid = AppState?.user?.uid;
     return uid ? `glow_routine_${uid}` : KEY_GUEST;
+  }
+
+  function _getProfileKey() {
+    const uid = AppState?.user?.uid;
+    return uid ? `glow_profile_${uid}` : KEY_PROFILE_GUEST;
   }
 
   // ─── Sauvegarder la routine courante ─────────────────────────
@@ -67,6 +73,58 @@ const RoutineSaver = (() => {
     console.log('[RoutineSaver] Routine effacée');
   }
 
+  // ─── Sauvegarder uniquement le profil (questionnaire + analyse) ─
+  function saveProfile() {
+    if (!AppState.questionnaire?.completed) return;
+    const data = {
+      answers:     AppState.questionnaire.answers || {},
+      completed:   true,
+      skinAnalysis: AppState.face?.skinAnalysis || null,
+      savedAt:     new Date().toISOString()
+    };
+    try {
+      localStorage.setItem(_getProfileKey(), JSON.stringify(data));
+      console.log('[RoutineSaver] Profil sauvegardé →', _getProfileKey());
+    } catch (e) {
+      console.warn('[RoutineSaver] Erreur saveProfile:', e);
+    }
+  }
+
+  // ─── Charger le profil sauvegardé ─────────────────────────────
+  function loadProfile() {
+    try {
+      const uid = AppState?.user?.uid;
+      const raw = (uid && localStorage.getItem(`glow_profile_${uid}`))
+               || localStorage.getItem(KEY_PROFILE_GUEST);
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  }
+
+  // ─── Le profil est-il complet ? ───────────────────────────────
+  function hasCompletedProfile() {
+    return !!loadProfile()?.completed;
+  }
+
+  // ─── Restaurer le profil complet dans AppState ────────────────
+  function restoreProfile() {
+    const profile = loadProfile();
+    if (!profile?.completed) return false;
+
+    AppState.questionnaire.answers   = profile.answers || {};
+    AppState.questionnaire.completed = true;
+
+    if (profile.skinAnalysis) {
+      AppState.face = AppState.face || {};
+      AppState.face.skinAnalysis = profile.skinAnalysis;
+    }
+
+    // Restaurer aussi la routine si elle existe
+    restore();
+
+    console.log('[RoutineSaver] Profil restauré ✓');
+    return true;
+  }
+
   // ─── Migrer routine guest → compte connecté ──────────────────
   function migrateGuestToUser(uid) {
     if (!uid) return;
@@ -75,6 +133,12 @@ const RoutineSaver = (() => {
       localStorage.setItem(`glow_routine_${uid}`, guestData);
       localStorage.removeItem(KEY_GUEST);
       console.log('[RoutineSaver] Routine migrée vers le compte utilisateur');
+    }
+    const guestProfile = localStorage.getItem(KEY_PROFILE_GUEST);
+    if (guestProfile) {
+      localStorage.setItem(`glow_profile_${uid}`, guestProfile);
+      localStorage.removeItem(KEY_PROFILE_GUEST);
+      console.log('[RoutineSaver] Profil migré vers le compte utilisateur');
     }
   }
 
@@ -126,6 +190,8 @@ const RoutineSaver = (() => {
     document.getElementById('resumeBanner')?.remove();
   }
 
-  return { save, load, restore, clear, migrateGuestToUser, showResumeBanner, resumeNow, dismissBanner };
+  return { save, load, restore, clear, migrateGuestToUser,
+           saveProfile, loadProfile, hasCompletedProfile, restoreProfile,
+           showResumeBanner, resumeNow, dismissBanner };
 
 })();
