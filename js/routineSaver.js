@@ -88,6 +88,11 @@ const RoutineSaver = (() => {
     } catch (e) {
       console.warn('[RoutineSaver] Erreur saveProfile:', e);
     }
+    // Sync Firestore si connecté (cross-device)
+    const uid = AppState?.user?.uid;
+    if (uid && typeof FirestoreProfile !== 'undefined') {
+      FirestoreProfile.save(uid, data); // async non-bloquant
+    }
   }
 
   // ─── Charger le profil sauvegardé ─────────────────────────────

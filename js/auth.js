@@ -6,20 +6,19 @@
 
 const Auth = (() => {
 
-  // Config Firebase — à remplacer par ta config réelle
   const FIREBASE_CONFIG = {
-    apiKey:            "REPLACE_WITH_YOUR_API_KEY",
-    authDomain:        "REPLACE_WITH_YOUR_AUTH_DOMAIN",
-    projectId:         "REPLACE_WITH_YOUR_PROJECT_ID",
-    storageBucket:     "REPLACE_WITH_YOUR_STORAGE_BUCKET",
-    messagingSenderId: "REPLACE_WITH_YOUR_MESSAGING_SENDER_ID",
-    appId:             "REPLACE_WITH_YOUR_APP_ID"
+    apiKey:            "AIzaSyDrpKPZf8qA_M86pOlChzBbOddGjGQoYiM",
+    authDomain:        "glow-up-9f0d2.firebaseapp.com",
+    projectId:         "glow-up-9f0d2",
+    storageBucket:     "glow-up-9f0d2.firebasestorage.app",
+    messagingSenderId: "808394116548",
+    appId:             "1:808394116548:web:6075126d3d7a41edff6891",
+    measurementId:     "G-HLB50Z689S"
   };
 
   let auth = null;
 
   function init() {
-    // Vérifier que Firebase est chargé
     if (typeof firebase === 'undefined') {
       console.warn('[Auth] Firebase SDK non trouvé — mode guest seulement');
       return;
@@ -28,6 +27,12 @@ const Auth = (() => {
     try {
       if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
       auth = firebase.auth();
+
+      // Initialiser Firestore pour la sauvegarde cross-device
+      if (typeof firebase.firestore === 'function') {
+        const db = firebase.firestore();
+        if (typeof FirestoreProfile !== 'undefined') FirestoreProfile.init(db);
+      }
 
       auth.onAuthStateChanged(user => {
         if (user) {
@@ -43,25 +48,30 @@ const Auth = (() => {
           };
           console.log('[Auth] Connecté:', user.email);
 
-          // Restaurer le profil ou lancer le questionnaire si nouveau compte
-          if (typeof RoutineSaver !== 'undefined') {
-            const profileRestored = RoutineSaver.restoreProfile();
-            if (profileRestored) {
-              // Profil existant → restauré silencieusement
-              RoutineSaver.showResumeBanner();
-              const prenom = user.displayName ? ` ${user.displayName.split(' ')[0]}` : '';
-              showToast(`Bon retour${prenom} ✦ Ton profil est prêt`, 'success', 3000);
-            } else {
-              // Nouveau compte → proposer le questionnaire
-              setTimeout(() => {
-                if (AppState.screen === 'home' || AppState.screen === 'intention') {
-                  showToast('Bienvenue ! Crée ton profil beauté personnalisé ✦', 'success', 4000);
-                  setTimeout(() => {
-                    if (typeof showScreen === 'function') showScreen('questionnaire');
-                  }, 2000);
-                }
-              }, 800);
-            }
+          // Charger le profil Firestore (cross-device), puis restaurer
+          if (typeof FirestoreProfile !== 'undefined' && typeof RoutineSaver !== 'undefined') {
+            FirestoreProfile.load(user.uid).then(cloudProfile => {
+              if (cloudProfile) {
+                // Profil cloud trouvé → écrire en localStorage puis restaurer
+                localStorage.setItem(`glow_profile_${user.uid}`, JSON.stringify(cloudProfile));
+              }
+              const profileRestored = RoutineSaver.restoreProfile();
+              if (profileRestored) {
+                RoutineSaver.showResumeBanner();
+                const prenom = user.displayName ? ` ${user.displayName.split(' ')[0]}` : '';
+                showToast(`Bon retour${prenom} ✦ Ton profil est prêt`, 'success', 3000);
+              } else {
+                // Nouveau compte → lancer le questionnaire automatiquement
+                setTimeout(() => {
+                  if (AppState.screen === 'home' || AppState.screen === 'intention') {
+                    showToast('Bienvenue ! Crée ton profil beauté personnalisé ✦', 'success', 4000);
+                    setTimeout(() => {
+                      if (typeof showScreen === 'function') showScreen('questionnaire');
+                    }, 2000);
+                  }
+                }, 800);
+              }
+            });
           }
         } else {
           AppState.user = { uid: null, email: null, displayName: null, photoURL: null, isGuest: true };
