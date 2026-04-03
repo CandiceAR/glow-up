@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-04-03",
-    "totalProducts": 122
+    "totalProducts": 123
   },
   "products": [
     {
@@ -2010,6 +2010,33 @@
       "currency": "EUR",
       "rating": 4.6,
       "reviews": 2000,
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "concernTags": [],
+      "isFeatured": false,
+      "active": true,
+      "description": "",
+      "curatedBy": "admin",
+      "curatedAt": "2026-04-03",
+      "notes": ""
+    },
+    {
+      "id": "m123",
+      "asin": "B0D1G8MZMF",
+      "name": "Sérum booster - yeux",
+      "brand": "Médicube",
+      "category": "serum",
+      "imageUrl": "assets/MEDICUBE-s-rumbooster.jpg",
+      "amazonUrl": "https://www.amazon.fr/medicube-Collagen-Glow-Booster-Serum/dp/B0D1G8MZMF?__mk_fr_FR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=262I73A06WAYE&dib=eyJ2IjoiMSJ9.4zeSiqzF-m-ttvsPQERoo0W6BENl_6ywYbTIuvAr7bvZ0oz6xCliqmTdjuNtNMCL8ko_ZAUrBiGlI50oZTPtqpENc01zqbz9wHIywkeekyPXHQXy-6hDkqQBBS1edZI3nebIoiHZ-x0o0JoEZUGWUAKTVkgc-HdXzqz9ZlATGRf6qnkBw-PIQFZ3MjBJ3ajx2-pQPd8CdHZ0Lfj3A7qYmroi5MEWecXN9WUyNhfHeMG_K2L_C3Du9vWK-Uu0kI26bz6CdR-GtRuNGSLfmS1z0z0zBlx19JnzxJGRVgabx1E.W_XpRINWLy1rSMiJnT-tsr6V9tn7QXCAV3zRbzScCpk&dib_tag=se&keywords=s%C3%A9rum+booster+medicube&qid=1775211032&sprefix=s%C3%A9rum+booster+m%C3%A9dicu%2Caps%2C227&sr=8-4&linkCode=ll2&tag=kan10ar-21&linkId=6af3d299bd5d8cdfee4ae7a951060d5f&ref_=as_li_ss_tl",
+      "price": 22.62,
+      "currency": "EUR",
+      "rating": 4.5,
+      "reviews": 1040,
       "skinTypeTags": [
         "normale",
         "mixte",
