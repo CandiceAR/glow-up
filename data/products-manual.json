@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-04-03",
-    "totalProducts": 126
+    "totalProducts": 127
   },
   "products": [
     {
@@ -2118,6 +2118,33 @@
       "currency": "EUR",
       "rating": 4.6,
       "reviews": null,
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "concernTags": [],
+      "isFeatured": false,
+      "active": true,
+      "description": "",
+      "curatedBy": "admin",
+      "curatedAt": "2026-04-03",
+      "notes": ""
+    },
+    {
+      "id": "m127",
+      "asin": "B00062ADKO",
+      "name": "Sans talc pour éviter les irritations Testée dermatologiquement et non comédogène Formule douce qui respecte l'équilibre naturel de la peau Texture ultra-fine qui s'applique sans friction excessive",
+      "brand": "Laura Mercier",
+      "category": "serum",
+      "imageUrl": "assets/LAURAMERCIER-Poudrelibre.jpg",
+      "amazonUrl": "https://www.amazon.fr/Laura-Mercier-Poudre-Translucide-29/dp/B00062ADKO?__mk_fr_FR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=3U5SHMWZ1RG3Z&dib=eyJ2IjoiMSJ9.4NCW_ncBWiHAZYRzJsCaM3CwwJbtBfFrwDBTcBG0SmfbLrPaZqT--2vAe5gdmzVtekWUllwXWWd3f8zCcJi-NU0Lm8uSSrKdqmSUe4ZclJqUg2LqPv_cmdNUALUB1PvXmTDUgmcOjPMmO16gGIefUBzo_KaFjyRcRaFyKenGV7qbvL4y-6JoqHnvtnr0nx6I8B3JawSHaM0TOdTpsz6I7xlin59fd4JA62FpDSFBN1uciFFKzYjJxnp0ZT7EZ8ZT_-NhcFn_DJfvLx1t7Jjh62zpDzwnXRmncJSb2G3jBPM.JjdtS8LryS5F3zKAcF7w1qGO3nil4qx3nXEBZ3Yi36Q&dib_tag=se&keywords=poudre%2Blibre%2BLAURA%2BMERCIER&qid=1775211681&sprefix=poudre%2Blibre%2Blaura%2Bmerci%2Caps%2C238&sr=8-1&th=1&linkCode=ll2&tag=kan10ar-21&linkId=d282afd20ceb48dc43c4d7422713f7be&ref_=as_li_ss_tl",
+      "price": 40,
+      "currency": "EUR",
+      "rating": 4.5,
+      "reviews": 3000,
       "skinTypeTags": [
         "normale",
         "mixte",
