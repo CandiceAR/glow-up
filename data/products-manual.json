@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-04-03",
-    "totalProducts": 112
+    "totalProducts": 113
   },
   "products": [
     {
@@ -1740,6 +1740,33 @@
       "currency": "EUR",
       "rating": 4.3,
       "reviews": 1378,
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "concernTags": [],
+      "isFeatured": false,
+      "active": true,
+      "description": "",
+      "curatedBy": "admin",
+      "curatedAt": "2026-04-03",
+      "notes": ""
+    },
+    {
+      "id": "m113",
+      "asin": "B07GFPY6V9",
+      "name": "Correcteur anti-cerne -  Light Natural",
+      "brand": "IT COSMETIC",
+      "category": "concealer",
+      "imageUrl": "assets/ITCOSMESTIC-BYEBYECONCEALER.jpg",
+      "amazonUrl": "https://www.amazon.fr/gp/product/B07GFPY6V9?smid=A1X6FK5RDHNB96&th=1&linkCode=ll2&tag=kan10ar-21&linkId=e97e952d575eaf31bce3de537d6223a0&ref_=as_li_ss_tl",
+      "price": 29.64,
+      "currency": "EUR",
+      "rating": 4.4,
+      "reviews": 7128,
       "skinTypeTags": [
         "normale",
         "mixte",
