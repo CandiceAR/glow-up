@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-04-03",
-    "totalProducts": 119
+    "totalProducts": 120
   },
   "products": [
     {
@@ -1929,6 +1929,33 @@
       "currency": "EUR",
       "rating": 3.6,
       "reviews": null,
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "concernTags": [],
+      "isFeatured": false,
+      "active": true,
+      "description": "",
+      "curatedBy": "admin",
+      "curatedAt": "2026-04-03",
+      "notes": ""
+    },
+    {
+      "id": "m120",
+      "asin": "B0FSPNRX2D",
+      "name": "Baume lèvres et Masque de nuit hydratant 2-en-1",
+      "brand": "RIMMEL LONDON - TEINTE HAZELNUT LATTE 6",
+      "category": "lipbalm",
+      "imageUrl": "assets/RIMMELLONDON-masquelevres.jpg",
+      "amazonUrl": "https://www.amazon.fr/dp/B0FSPNRX2D?pd_rd_i=B0FSPNRX2D&pd_rd_w=GcTVO&content-id=amzn1.sym.d28e3d6a-4412-4be7-a4f8-1c4a85ce86d9&pf_rd_p=d28e3d6a-4412-4be7-a4f8-1c4a85ce86d9&pf_rd_r=PSB1Y3VX5AHE2HPNH06X&pd_rd_wg=R7t2V&pd_rd_r=c6e336f0-e91b-4b42-8105-485f396dd221&s=beauty&aref=YTGXJE6sDs&sp_csd=d2lkZ2V0TmFtZT1zcF9kZXRhaWw&th=1&linkCode=ll2&tag=kan10ar-21&linkId=3064e991f5c71173e91ae95a154cef59&ref_=as_li_ss_tl",
+      "price": 10,
+      "currency": "EUR",
+      "rating": 4.5,
+      "reviews": 247,
       "skinTypeTags": [
         "normale",
         "mixte",
