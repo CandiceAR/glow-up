@@ -18,9 +18,18 @@ const MakeupRoutine = (() => {
   async function loadCatalogue() {
     if (isLoaded) return catalogue;
     try {
-      const res = await fetch('data/products-manual.json');
-      const data = await res.json();
-      catalogue = data.products.filter(p => p.active !== false);
+      let allProducts = null;
+      // 1. Firestore (source de vérité)
+      if (typeof FirestoreProducts !== 'undefined') {
+        allProducts = await FirestoreProducts.loadAll();
+      }
+      // 2. Fallback JSON statique
+      if (!allProducts) {
+        const res = await fetch('data/products-manual.json');
+        const data = await res.json();
+        allProducts = data.products || [];
+      }
+      catalogue = allProducts.filter(p => p.active !== false);
       isLoaded = true;
       console.log('[MakeupRoutine] Catalogue chargé:', catalogue.length, 'produits');
     } catch (e) {

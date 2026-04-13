@@ -84,10 +84,37 @@ const Admin = (() => {
 
   // ─── Chargement produits ──────────────────────────────────────
   async function loadProducts() {
+    // 1. Essayer Firestore (source de vérité)
+    if (typeof FirestoreProducts !== 'undefined') {
+      const fp = await FirestoreProducts.loadAll();
+      if (fp?.length) {
+        products = fp;
+        saveToStorage();
+        return;
+      }
+      // Firestore vide → migration one-time depuis localStorage ou JSON
+      const stored = localStorage.getItem('glow_products_manual');
+      if (stored) {
+        try {
+          products = JSON.parse(stored);
+          await FirestoreProducts.migrateFromJSON(products);
+          return;
+        } catch {}
+      }
+      try {
+        const res  = await fetch('data/products-manual.json');
+        const data = await res.json();
+        products = data.products || [];
+        if (products.length) await FirestoreProducts.migrateFromJSON(products);
+        return;
+      } catch {}
+    }
+    // 2. Fallback localStorage
     const stored = localStorage.getItem('glow_products_manual');
     if (stored) {
       try { products = JSON.parse(stored); return; } catch {}
     }
+    // 3. Fallback JSON statique
     try {
       const res  = await fetch('data/products-manual.json');
       const data = await res.json();
@@ -99,19 +126,17 @@ const Admin = (() => {
     localStorage.setItem('glow_products_manual', JSON.stringify(products));
   }
 
-  async function persistToGitHub() {
-    try {
-      const res = await fetch('/.netlify/functions/saveProducts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ products })
-      });
-      if (res.ok) {
-        toast('Sauvegardé sur GitHub ✓');
-      } else {
-        toast('Sauvegarde GitHub échouée', 'warning');
-      }
-    } catch { /* silencieux en local */ }
+  async function persistProduct(product) {
+    if (typeof FirestoreProducts !== 'undefined') {
+      await FirestoreProducts.save(product);
+      toast('Sauvegardé ✓');
+    }
+  }
+
+  async function removeProduct(id) {
+    if (typeof FirestoreProducts !== 'undefined') {
+      await FirestoreProducts.remove(id);
+    }
   }
 
   // ─── Stats ────────────────────────────────────────────────────
@@ -336,7 +361,7 @@ const Admin = (() => {
     }
 
     saveToStorage();
-    persistToGitHub();
+    persistProduct(product);
     cancelForm();
     renderStats();
     renderTable();
@@ -473,14 +498,14 @@ const Admin = (() => {
     if (!p) return;
     // BUG FIX: gérer correctement active=undefined (= true par défaut)
     p.active = p.active === false ? true : false;
-    saveToStorage(); persistToGitHub(); renderStats(); renderTable();
+    saveToStorage(); persistProduct(p); renderStats(); renderTable();
   }
 
   async function toggleFeatured(id) {
     const p = products.find(x => x.id === id);
     if (!p) return;
     p.isFeatured = !p.isFeatured;
-    saveToStorage(); persistToGitHub(); renderStats(); renderTable();
+    saveToStorage(); persistProduct(p); renderStats(); renderTable();
   }
 
   // ─── Supprimer ────────────────────────────────────────────────
@@ -489,7 +514,7 @@ const Admin = (() => {
     if (!p) return;
     if (!confirm(`Supprimer "${p.name}" ? Action irréversible.`)) return;
     products = products.filter(x => x.id !== id);
-    saveToStorage(); persistToGitHub(); renderStats(); renderTable();
+    saveToStorage(); removeProduct(id); renderStats(); renderTable();
   }
 
   // ─── Recherche et filtres ─────────────────────────────────────

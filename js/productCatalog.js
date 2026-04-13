@@ -37,13 +37,21 @@ const ProductCatalog = (() => {
       // 1. Charger le catalogue statique
       let products = (typeof CATALOGUE !== 'undefined' ? CATALOGUE : []);
 
-      // 2. Charger les produits manuels depuis GitHub
+      // 2. Charger les produits depuis Firestore (prioritaire)
       try {
-        const res = await fetch('data/products-manual.json');
-        if (res.ok) {
-          const data = await res.json();
-          const manualProducts = Array.isArray(data) ? data : (data.products || []);
-
+        let manualProducts = null;
+        if (typeof FirestoreProducts !== 'undefined') {
+          manualProducts = await FirestoreProducts.loadAll();
+        }
+        if (!manualProducts) {
+          // Fallback JSON statique
+          const res = await fetch('data/products-manual.json');
+          if (res.ok) {
+            const data = await res.json();
+            manualProducts = Array.isArray(data) ? data : (data.products || []);
+          }
+        }
+        if (manualProducts?.length) {
           // Fusionner : manual prioritaire
           const map = new Map();
           manualProducts.forEach(p => {
@@ -57,8 +65,7 @@ const ProductCatalog = (() => {
           products = Array.from(map.values());
         }
       } catch (err) {
-        console.log('[Catalog] Pas de products-manual.json (normal en Phase 0):', err.message);
-        // Continue avec le catalogue statique uniquement
+        console.log('[Catalog] Erreur chargement produits:', err.message);
       }
 
       // 3. Filtrer les actifs et ajouter tag affilié
