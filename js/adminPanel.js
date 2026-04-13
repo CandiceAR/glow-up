@@ -381,7 +381,21 @@ const Admin = (() => {
     });
   }
 
-  // ─── Image : upload fichier → GitHub via Netlify function ─────
+  // ─── Firebase config (Storage) ───────────────────────────────
+  const FIREBASE_CONFIG = {
+    apiKey:        'AIzaSyDrpKPZf8qA_M86pOlChzBbOddGjGQoYiM',
+    authDomain:    'glow-up-9f0d2.firebaseapp.com',
+    projectId:     'glow-up-9f0d2',
+    storageBucket: 'glow-up-9f0d2.firebasestorage.app'
+  };
+
+  function _getStorage() {
+    if (typeof firebase === 'undefined') return null;
+    if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    return firebase.storage();
+  }
+
+  // ─── Image : upload fichier → Firebase Storage ───────────────
   async function uploadImageFile(file) {
     if (!file) return;
     const prog = document.getElementById('imageUploadProgress');
@@ -390,50 +404,24 @@ const Admin = (() => {
     // Compression côté navigateur (max 900px, JPEG 85%)
     const compressed = await compressImage(file);
     const sizeMB = (compressed.size / 1024 / 1024).toFixed(1);
+    prog.innerHTML = `<span style="color:var(--muted)">⏳ Upload (${sizeMB} Mo)…</span>`;
 
-    if (compressed.size > 900 * 1024) {
-      prog.innerHTML = `<span style="color:var(--muted)">⏳ Upload (${sizeMB} Mo)…</span>`;
-    } else {
-      prog.innerHTML = `<span style="color:var(--muted)">⏳ Upload (${sizeMB} Mo)…</span>`;
+    const filename = file.name.replace(/\.[^.]+$/, '.jpg').replace(/\s+/g, '-');
+
+    try {
+      const storage = _getStorage();
+      if (!storage) throw new Error('Firebase Storage non disponible');
+
+      const ref = storage.ref(`products/${filename}`);
+      await ref.put(compressed);
+      const url = await ref.getDownloadURL();
+
+      document.getElementById('fImageUrl').value = url;
+      previewImage(url);
+      prog.innerHTML = '<span style="color:var(--success)">✅ Image uploadée !</span>';
+    } catch (ex) {
+      prog.innerHTML = `<span style="color:var(--error)">❌ ${ex.message}</span>`;
     }
-
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const base64   = e.target.result.split(',')[1];
-      // Toujours .jpg après compression JPEG
-      const filename = file.name.replace(/\.[^.]+$/, '.jpg').replace(/\s+/g, '-');
-
-      // Timeout 25s pour éviter l'attente infinie
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 25000);
-
-      try {
-        const res = await fetch('/.netlify/functions/uploadImage', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ filename, contentBase64: base64 }),
-          signal: controller.signal
-        });
-        clearTimeout(timeout);
-
-        if (res.ok) {
-          const data = await res.json();
-          document.getElementById('fImageUrl').value = data.path;
-          previewImage(data.path);
-          prog.innerHTML = '<span style="color:var(--success)">✅ Image uploadée !</span>';
-        } else {
-          const err = await res.json().catch(() => ({}));
-          prog.innerHTML = `<span style="color:var(--error)">❌ ${err.error || 'Erreur upload'}</span>`;
-        }
-      } catch (ex) {
-        clearTimeout(timeout);
-        const msg = ex.name === 'AbortError'
-          ? 'Délai dépassé — réessaie avec une image plus légère'
-          : ex.message;
-        prog.innerHTML = `<span style="color:var(--error)">❌ ${msg}</span>`;
-      }
-    };
-    reader.readAsDataURL(compressed);
   }
 
   // ─── Image : picker (images déjà dans le catalogue) ──────────
