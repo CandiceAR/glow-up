@@ -1,0 +1,9 @@
+{
+  "name": "glow-up",
+  "version": "1.0.0",
+  "description": "GLOW UP — Application beauté personnalisée",
+  "dependencies": {
+    "stripe": "^14.0.0",
+    "firebase-admin": "^12.0.0"
+  }
+}

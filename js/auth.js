@@ -44,9 +44,13 @@ const Auth = (() => {
             email:       user.email,
             displayName: user.displayName,
             photoURL:    user.photoURL,
-            isGuest:     false
+            isGuest:     false,
+            plan:        'free'
           };
           console.log('[Auth] Connecté:', user.email);
+
+          // Charger le plan d'abonnement
+          if (typeof Subscription !== 'undefined') Subscription.loadPlan(user.uid);
 
           // Charger le profil Firestore (cross-device), puis restaurer
           if (typeof FirestoreProfile !== 'undefined' && typeof RoutineSaver !== 'undefined') {

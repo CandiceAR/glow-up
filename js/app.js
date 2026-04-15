@@ -192,6 +192,9 @@ async function initApp() {
 
   // 7. Bannière de reprise si une routine est sauvegardée
   if (typeof RoutineSaver !== 'undefined') RoutineSaver.showResumeBanner();
+
+  // 8. Retour depuis Stripe Checkout
+  if (typeof Subscription !== 'undefined') Subscription.handleCheckoutReturn();
 }
 
 function setupGlobalListeners() {
