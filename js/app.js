@@ -92,9 +92,27 @@ function showScreen(name) {
   if (name === 'questionnaire') Questionnaire.render();
   if (name === 'skin-analysis')   SkinAnalysis.initScreen();
   if (name === 'journey')         SkinJourney.initScreen();
-  if (name === 'makeup')          MakeupRoutine.initScreen();
   if (name === 'skinpedia')       Skinpedia.initScreen();
-  if (name === 'coach')           GlowCoach.initScreen();
+  if (name === 'plans')           { if (typeof Subscription !== 'undefined') Subscription.renderPlansPage(); }
+
+  // ─── Écrans avec gating ───────────────────────────────────────
+  if (name === 'makeup') {
+    const firstChoice = AppState.routineChoice || null;
+    if (firstChoice === 'skincare' && typeof Subscription !== 'undefined' && !Subscription.canAccess('routine_second')) {
+      Subscription.showPaywall('routine_second');
+      return;
+    }
+    MakeupRoutine.initScreen();
+  }
+
+  if (name === 'coach') {
+    if (typeof Subscription !== 'undefined' && !Subscription.canAccess('coach')) {
+      Subscription.showPaywall('coach');
+      return;
+    }
+    GlowCoach.initScreen();
+  }
+
   if (name === 'routine-choice')  initRoutineChoiceScreen();
 }
 
