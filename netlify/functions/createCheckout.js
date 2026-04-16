@@ -4,7 +4,13 @@
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-const PRICE_IDS = {
+const isTestMode = process.env.STRIPE_SECRET_KEY?.startsWith('sk_test_');
+
+const PRICE_IDS = isTestMode ? {
+  glow_monthly: 'price_1TMp8JJeKx7T3paERKVr8oFx',
+  glow_yearly:  'price_1TMp8lJeKx7T3paEC2DxJx6j',
+  glowplus:     'price_1TMp9CJeKx7T3paE1o7Ml1rO'
+} : {
   glow_monthly: 'price_1TM1rqJeKx7T3paEB3gqZnxF',
   glow_yearly:  'price_1TM1tTJeKx7T3paEmWdCIWXE',
   glowplus:     'price_1TM1ttJeKx7T3paEN7e7CZDa'

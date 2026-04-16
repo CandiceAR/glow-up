@@ -5,11 +5,14 @@
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-// Map price_id → plan
+// Map price_id → plan (live + test)
 const PRICE_TO_PLAN = {
   'price_1TM1rqJeKx7T3paEB3gqZnxF': 'glow',
   'price_1TM1tTJeKx7T3paEmWdCIWXE': 'glow',
-  'price_1TM1ttJeKx7T3paEN7e7CZDa': 'glowplus'
+  'price_1TM1ttJeKx7T3paEN7e7CZDa': 'glowplus',
+  'price_1TMp8JJeKx7T3paERKVr8oFx': 'glow',
+  'price_1TMp8lJeKx7T3paEC2DxJx6j': 'glow',
+  'price_1TMp9CJeKx7T3paE1o7Ml1rO': 'glowplus'
 };
 
 async function updateUserPlan(uid, plan) {
