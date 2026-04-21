@@ -170,7 +170,7 @@ const Admin = (() => {
     if (!tbody) return;
 
     if (list.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:32px; color:var(--muted);">Aucun produit trouvé</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:32px; color:var(--muted);">Aucun produit trouvé</td></tr>';
       return;
     }
 
@@ -178,6 +178,16 @@ const Admin = (() => {
       const colorCell = p.colorHex
         ? `<div class="color-pill"><span class="color-pill-dot" style="background:${p.colorHex}"></span>${p.shadeName || p.colorHex}</div>`
         : '—';
+      const UT_LABELS = { warm: '🌡 Chaud', cool: '❄ Froid', neutral: '⚖ Neutre' };
+      const carnStr   = Array.isArray(p.carnation) && p.carnation.length && p.carnation.length < 3
+        ? p.carnation.map(c => c === 'clair' ? 'Claire' : c === 'medium' ? 'Medium' : 'Foncée').join(', ')
+        : null;
+      const profilCell = (p.undertone || carnStr)
+        ? `<div style="font-size:0.72rem;line-height:1.6">
+             ${p.undertone ? `<span style="color:var(--nude);font-weight:500">${UT_LABELS[p.undertone] || p.undertone}</span>` : ''}
+             ${carnStr ? `<br><span style="color:var(--muted)">${carnStr}</span>` : ''}
+           </div>`
+        : '<span style="color:var(--muted);font-size:0.72rem">—</span>';
       const statusBadge = (p.active !== false)
         ? '<span class="badge-active">Actif</span>'
         : '<span class="badge-inactive">Inactif</span>';
@@ -197,6 +207,7 @@ const Admin = (() => {
           <td style="font-family:monospace; font-size:0.75rem;">${p.asin || '—'}</td>
           <td>${getCatLabel(p.category)}</td>
           <td>${colorCell}</td>
+          <td>${profilCell}</td>
           <td>${p.price != null ? Number(p.price).toFixed(2) + ' €' : '—'}</td>
           <td>${p.rating || '—'}</td>
           <td>${statusBadge}${featuredBadge}</td>
