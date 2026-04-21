@@ -440,6 +440,19 @@
                 <input type="number" id="fReviews" class="form-input" placeholder="1200" min="0" step="1">
               </div>
 
+              <!-- Couleur / Teinte -->
+              <div class="form-group">
+                <label class="form-label">🎨 Couleur (hex)</label>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <input type="color" id="fColorHex" style="width:44px;height:36px;padding:2px;border:1px solid var(--sand);border-radius:6px;cursor:pointer" oninput="document.getElementById('fColorHexText').value=this.value">
+                  <input type="text" id="fColorHexText" class="form-input" placeholder="#B05A5A" style="flex:1" oninput="if(/^#[0-9a-fA-F]{6}$/.test(this.value))document.getElementById('fColorHex').value=this.value">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">💄 Nom de la teinte</label>
+                <input type="text" id="fShadeName" class="form-input" placeholder="ex: Fair Light, 110 Beige...">
+              </div>
+
               <!-- Statut et vedette — vrais checkboxes -->
               <div class="form-group">
                 <label class="form-label">Statut</label>

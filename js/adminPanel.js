@@ -243,6 +243,9 @@ const Admin = (() => {
     document.getElementById('fReviews').value     = p.reviews != null ? p.reviews : '';
     document.getElementById('fActive').checked    = p.active !== false;
     document.getElementById('fFeatured').checked  = p.isFeatured === true;
+    document.getElementById('fColorHex').value     = p.colorHex || '#ffffff';
+    document.getElementById('fColorHexText').value = p.colorHex || '';
+    document.getElementById('fShadeName').value    = p.shadeName || '';
     previewImage(p.imageUrl || '');
     document.getElementById('productFormWrap').style.display = 'block';
     document.getElementById('productFormWrap').scrollIntoView({ behavior: 'smooth' });
@@ -255,12 +258,12 @@ const Admin = (() => {
   }
 
   function clearForm() {
-    ['fId', 'fAsin', 'fName', 'fBrand', 'fAmazonUrl', 'fImageUrl', 'fPrice', 'fRating', 'fReviews'].forEach(id => {
+    ['fId', 'fAsin', 'fName', 'fBrand', 'fAmazonUrl', 'fImageUrl', 'fPrice', 'fRating', 'fReviews', 'fColorHexText', 'fShadeName'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
     document.getElementById('fCategory').value   = 'serum';
-    // BUG FIX: utiliser .checked sur de vrais checkboxes
+    document.getElementById('fColorHex').value   = '#ffffff';
     document.getElementById('fActive').checked   = true;
     document.getElementById('fFeatured').checked = false;
     previewImage('');
@@ -283,6 +286,9 @@ const Admin = (() => {
     const reviews    = reviewsRaw ? parseInt(reviewsRaw, 10) : null;
     const isActive   = document.getElementById('fActive').checked;
     const isFeatured = document.getElementById('fFeatured').checked;
+    const colorHexText = document.getElementById('fColorHexText').value.trim();
+    const colorHex   = colorHexText || document.getElementById('fColorHex').value;
+    const shadeName  = document.getElementById('fShadeName').value.trim();
 
     if (!amazonUrl || !name || !brand || !imageUrl) {
       toast('Remplis tous les champs obligatoires (lien, nom, marque, image)', 'error');
@@ -327,6 +333,8 @@ const Admin = (() => {
         reviews,
         active: isActive,
         isFeatured,
+        colorHex:  colorHex  || null,
+        shadeName: shadeName || null,
         curatedAt: new Date().toISOString().split('T')[0]
       };
     } else {
@@ -342,6 +350,8 @@ const Admin = (() => {
         currency: 'EUR',
         rating,
         reviews,
+        colorHex:  colorHex  || null,
+        shadeName: shadeName || null,
         skinTypeTags: ['normale', 'mixte', 'seche', 'grasse', 'sensible'],
         concernTags: [],
         isFeatured,
