@@ -1031,9 +1031,26 @@ const SkinAnalysis = (() => {
 
     function getProductsHTML(categories, limit) {
       const catalog = AppState?.products?.catalog || [];
-      // Prendre le top 8 par pertinence, puis mélanger pour varier à chaque analyse
-      let pool = catalog
-        .filter(p => categories.includes(p.category) && p.active !== false && p.imageUrl)
+
+      function buildPool(filterUndertone, filterCarnation) {
+        return catalog.filter(p => {
+          if (!categories.includes(p.category)) return false;
+          if (p.active === false) return false;
+          if (!p.imageUrl) return false;
+          if (filterUndertone && p.undertone && p.undertone !== 'neutral' && p.undertone !== filterUndertone) return false;
+          if (filterCarnation && Array.isArray(p.carnation) && p.carnation.length && !p.carnation.includes(filterCarnation)) return false;
+          return true;
+        });
+      }
+
+      // Essai 1 : filtre strict (sous-ton + carnation)
+      let pool = buildPool(ut, ca);
+      // Essai 2 : si moins de 2 résultats, relâcher la carnation
+      if (pool.length < 2) pool = buildPool(ut, null);
+      // Essai 3 : si toujours moins de 2, relâcher le sous-ton aussi
+      if (pool.length < 2) pool = buildPool(null, null);
+
+      pool = pool
         .sort((a, b) => {
           if (b.isFeatured !== a.isFeatured) return b.isFeatured ? 1 : -1;
           return (b.rating || 0) - (a.rating || 0);

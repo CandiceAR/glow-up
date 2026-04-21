@@ -247,6 +247,11 @@ const Admin = (() => {
     document.getElementById('fColorHex').value     = p.colorHex || '#ffffff';
     document.getElementById('fColorHexText').value = p.colorHex || '';
     document.getElementById('fShadeName').value    = p.shadeName || '';
+    document.getElementById('fUndertone').value    = p.undertone || '';
+    document.getElementById('fCarnClair').checked  = Array.isArray(p.carnation) ? p.carnation.includes('clair')  : true;
+    document.getElementById('fCarnMedium').checked = Array.isArray(p.carnation) ? p.carnation.includes('medium') : true;
+    document.getElementById('fCarnFonce').checked  = Array.isArray(p.carnation) ? p.carnation.includes('fonce')  : true;
+    document.getElementById('fFinish').value       = p.finish || 'naturel';
     previewImage(p.imageUrl || '');
     document.getElementById('productFormWrap').style.display = 'block';
     document.getElementById('productFormWrap').scrollIntoView({ behavior: 'smooth' });
@@ -267,6 +272,11 @@ const Admin = (() => {
     document.getElementById('fColorHex').value   = '#ffffff';
     document.getElementById('fActive').checked   = true;
     document.getElementById('fFeatured').checked = false;
+    document.getElementById('fUndertone').value    = '';
+    document.getElementById('fCarnClair').checked  = true;
+    document.getElementById('fCarnMedium').checked = true;
+    document.getElementById('fCarnFonce').checked  = true;
+    document.getElementById('fFinish').value       = 'naturel';
     previewImage('');
     const prog = document.getElementById('imageUploadProgress');
     if (prog) prog.textContent = '';
@@ -290,6 +300,9 @@ const Admin = (() => {
     const colorHexText = document.getElementById('fColorHexText').value.trim();
     const colorHex   = colorHexText || document.getElementById('fColorHex').value;
     const shadeName  = document.getElementById('fShadeName').value.trim();
+    const undertone  = document.getElementById('fUndertone').value || null;
+    const carnation  = ['clair','medium','fonce'].filter(v => document.getElementById('fCarn' + v.charAt(0).toUpperCase() + v.slice(1)).checked);
+    const finish     = document.getElementById('fFinish').value || 'naturel';
 
     if (!amazonUrl || !name || !brand || !imageUrl) {
       toast('Remplis tous les champs obligatoires (lien, nom, marque, image)', 'error');
@@ -336,6 +349,9 @@ const Admin = (() => {
         isFeatured,
         colorHex:  colorHex  || null,
         shadeName: shadeName || null,
+        undertone: undertone || null,
+        carnation: carnation.length === 3 ? null : (carnation.length ? carnation : null),
+        finish:    finish || 'naturel',
         curatedAt: new Date().toISOString().split('T')[0]
       };
     } else {
@@ -353,6 +369,9 @@ const Admin = (() => {
         reviews,
         colorHex:  colorHex  || null,
         shadeName: shadeName || null,
+        undertone: undertone || null,
+        carnation: carnation.length === 3 ? null : (carnation.length ? carnation : null),
+        finish:    finish || 'naturel',
         skinTypeTags: ['normale', 'mixte', 'seche', 'grasse', 'sensible'],
         concernTags: [],
         isFeatured,
@@ -825,6 +844,87 @@ const Admin = (() => {
     a.click();
   }
 
+  // ─── Auto-tag produits maquillage ────────────────────────────
+  async function autoTagAll() {
+    const MAKEUP_CATS = ['foundation', 'lipstick', 'lipbalm', 'mascara', 'blush', 'bronzer', 'eye', 'powder', 'concealer'];
+    let count = 0;
+
+    function detectUndertone(p) {
+      if (p.undertone) return p.undertone;
+      const text = [p.name, p.shadeName, p.description].filter(Boolean).join(' ').toLowerCase();
+      const warmKw = ['warm','chaud','doré','dore','golden','gold','honey','miel','coral','corail','peach','pêche','peche','orange','terracotta','bronze','caramel','ginger','chai','amber'];
+      const coolKw = ['cool','froid','rose','pink','rosy','berry','mauve','plum','prune','violet','framboise','porcelain','porcelaine','ivoire','ivory','lilac','lavender'];
+      const neutKw = ['neutral','neutre','nude','natural','naturel','beige','sand','sable','taupe'];
+      if (warmKw.some(k => text.includes(k))) return 'warm';
+      if (coolKw.some(k => text.includes(k))) return 'cool';
+      if (neutKw.some(k => text.includes(k))) return 'neutral';
+      // Shade prefix (W10, C20, N30)
+      const shade = (p.shadeName || '').toLowerCase();
+      if (/^w\d|\bw\b/.test(shade)) return 'warm';
+      if (/^c\d|\bc\b/.test(shade)) return 'cool';
+      if (/^n\d|\bn\b/.test(shade)) return 'neutral';
+      // colorHex heuristic for lips
+      if (p.colorHex && ['lipstick','lipbalm'].includes(p.category)) {
+        const h = p.colorHex.replace('#','');
+        const r = parseInt(h.slice(0,2),16), g = parseInt(h.slice(2,4),16), b = parseInt(h.slice(4,6),16);
+        if (!isNaN(r)) {
+          if (r > 160 && b > 100) return 'cool';
+          if (r > 160 && g < 100) return 'warm';
+        }
+      }
+      if (p.category === 'mascara') return 'neutral';
+      if (p.category === 'bronzer') return 'warm';
+      return 'neutral';
+    }
+
+    function detectCarnation(p) {
+      if (Array.isArray(p.carnation) && p.carnation.length) return p.carnation;
+      if (p.concealerDepth) return [p.concealerDepth];
+      const shade = (p.shadeName || '').toLowerCase();
+      const clairKw = ['light','clair','fair','porcelain','ivory','pale','n10','w10','c10','010','1w','1n','1c','vanilla','beige clair'];
+      const medKw   = ['medium','beige','sand','sable','n20','n30','w20','w30','020','030','2w','2n','3n','natural','buff','bisque'];
+      const fonceKw = ['deep','dark','fonce','foncé','tan','mahogany','ebony','espresso','n40','w40','040','050','4n','5w','mocha'];
+      if (fonceKw.some(k => shade.includes(k))) return ['fonce'];
+      if (clairKw.some(k => shade.includes(k))) return ['clair'];
+      if (medKw.some(k => shade.includes(k))) return ['clair','medium'];
+      return null; // universal — null means all carnations
+    }
+
+    function detectFinish(p) {
+      if (p.finish && p.finish !== 'naturel') return p.finish;
+      const text = [p.name, p.description].filter(Boolean).join(' ').toLowerCase();
+      if (/lumineux|luminous|glow|éclat|eclat|illumin|radiant|highlight/.test(text)) return 'lumineux';
+      if (/\bmat\b|matte|sans brillance/.test(text)) return 'mat';
+      if (/couvrant|full cover|high cover/.test(text)) return 'couvrant';
+      if (/léger|leger|light|sheer|tinted|\bbb\b|\bcc\b/.test(text)) return 'leger';
+      return 'naturel';
+    }
+
+    const toUpdate = products.filter(p => MAKEUP_CATS.includes(p.category));
+    if (!toUpdate.length) { toast('Aucun produit maquillage trouvé', 'error'); return; }
+
+    if (!confirm(`Auto-tagger ${toUpdate.length} produits maquillage ?\n\nCela ajoutera sous-ton, carnation et fini selon les noms et descriptions existants.\nTu pourras corriger manuellement ensuite.`)) return;
+
+    for (const p of toUpdate) {
+      const updated = {
+        ...p,
+        undertone: detectUndertone(p),
+        carnation: detectCarnation(p),
+        finish:    detectFinish(p)
+      };
+      const idx = products.findIndex(x => x.id === p.id);
+      if (idx !== -1) products[idx] = updated;
+      if (typeof FirestoreProducts !== 'undefined') {
+        await FirestoreProducts.save(updated);
+        count++;
+      }
+    }
+
+    saveToStorage();
+    renderTable();
+    toast(`✓ ${count} produits taggés — vérifie et corrige dans l'admin`, 'success');
+  }
+
   // ─── Init ─────────────────────────────────────────────────────
   window.addEventListener('DOMContentLoaded', checkAuth);
   document.addEventListener('keydown', e => {
@@ -834,6 +934,7 @@ const Admin = (() => {
   return {
     login, logout,
     showAddForm, editProduct, duplicateProduct, cancelForm, saveProduct,
+    autoTagAll,
     toggleActive, toggleFeatured, deleteProduct,
     search, filterCat, showTab,
     extractASIN, extractASINFromUrl, checkTag, autoFillAmazonUrl, exportJSON,

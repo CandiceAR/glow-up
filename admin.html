@@ -453,6 +453,35 @@
                 <input type="text" id="fShadeName" class="form-input" placeholder="ex: Fair Light, 110 Beige...">
               </div>
 
+              <!-- Personnalisation maquillage -->
+              <div class="form-group">
+                <label class="form-label">🌡 Sous-ton compatible</label>
+                <select id="fUndertone" class="form-select">
+                  <option value="">Tous / Non défini</option>
+                  <option value="warm">Chaud — reflets dorés, pêche, corail</option>
+                  <option value="cool">Froid — reflets rosés, mauves, bleutés</option>
+                  <option value="neutral">Neutre — convient à tous les sous-tons</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">🎨 Carnations compatibles</label>
+                <div style="display:flex;gap:16px;align-items:center;padding:8px 0">
+                  <label class="check-row"><input type="checkbox" id="fCarnClair" value="clair"> Claire</label>
+                  <label class="check-row"><input type="checkbox" id="fCarnMedium" value="medium"> Medium</label>
+                  <label class="check-row"><input type="checkbox" id="fCarnFonce" value="fonce"> Foncée</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">✨ Fini / Type de produit</label>
+                <select id="fFinish" class="form-select">
+                  <option value="naturel">Naturel</option>
+                  <option value="lumineux">Lumineux / Éclat</option>
+                  <option value="mat">Mat / Sans brillance</option>
+                  <option value="couvrant">Couvrant / Full Coverage</option>
+                  <option value="leger">Léger / Sheer / BB</option>
+                </select>
+              </div>
+
               <!-- Statut et vedette — vrais checkboxes -->
               <div class="form-group">
                 <label class="form-label">Statut</label>
@@ -479,6 +508,14 @@
               <button class="btn btn-outline" onclick="Admin.cancelForm()">Annuler</button>
             </div>
           </div>
+        </div>
+
+        <!-- Auto-tag button -->
+        <div style="margin-bottom:12px;">
+          <button class="btn btn-outline" onclick="Admin.autoTagAll()" style="font-size:0.82rem;">
+            🏷 Auto-tagger les produits maquillage
+          </button>
+          <span style="font-size:0.78rem; color:var(--muted); margin-left:10px;">Ajoute sous-ton, carnation et fini automatiquement selon les noms/descriptions</span>
         </div>
 
         <!-- Toolbar recherche -->
