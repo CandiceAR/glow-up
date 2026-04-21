@@ -1138,7 +1138,7 @@ const SkinAnalysis = (() => {
               <p class="mkr-why-note">Ce produit correspond à ton sous-ton et ta carnation — il fondra naturellement sur ta peau.</p>
             </div>
             <div class="mkr-reco-grid">
-              ${getProductsHTML(['foundation', 'eye'], 3)}
+              ${getProductsHTML(['foundation', 'eye'], 2)}
             </div>
           </div>
 
@@ -1149,7 +1149,7 @@ const SkinAnalysis = (() => {
               <p>Mascara recommandé : <strong>${MASCARA_TIP[ec].type}</strong>. ${MASCARA_TIP[ec].why}</p>
             </div>
             <div class="mkr-reco-grid">
-              ${getProductsHTML(['mascara', 'blush'], 3)}
+              ${getProductsHTML(['mascara', 'blush'], 2)}
             </div>
           </div>
 
@@ -1159,7 +1159,7 @@ const SkinAnalysis = (() => {
               <p>${LIP_TIPS[ut].why}</p>
             </div>
             <div class="mkr-reco-grid">
-              ${getProductsHTML(['lipstick', 'lipbalm'], 3)}
+              ${getProductsHTML(['lipstick', 'lipbalm'], 2)}
             </div>
           </div>
         </div>
