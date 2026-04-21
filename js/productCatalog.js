@@ -196,7 +196,7 @@ const ProductCatalog = (() => {
       <div class="modal-paired">
         <p class="modal-paired-label">🖌️ Utilise avec</p>
         <div class="modal-paired-card">
-          <img src="${paired.imageUrl}" alt="${paired.name}" onerror="this.src='assets/images/placeholder.jpg'">
+          <img src="${paired.imageUrl}" alt="${paired.name}" onerror="this.onerror=null;this.style.opacity='0'">
           <div class="modal-paired-info">
             <span class="product-brand">${paired.brand}</span>
             <p class="modal-paired-name">${paired.name}</p>
@@ -210,9 +210,9 @@ const ProductCatalog = (() => {
       <button class="modal-close" onclick="closeModal()">×</button>
       <div class="modal-product">
         <div class="modal-product-img">
-          <img src="${p.imageUrl || 'assets/images/placeholder.jpg'}"
+          <img src="${p.imageUrl || ''}"
                alt="${p.name}"
-               onerror="this.src='assets/images/placeholder.jpg'">
+               onerror="this.onerror=null;this.style.opacity='0'">
         </div>
         <div class="modal-product-info">
           <span class="product-brand">${p.brand}</span>
