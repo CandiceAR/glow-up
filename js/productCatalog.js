@@ -154,9 +154,9 @@ const ProductCatalog = (() => {
     return `
       <div class="product-card" data-id="${product.id}" onclick="ProductCatalog.openProductModal('${product.id}')">
         <div class="product-card-img">
-          <img src="${product.imageUrl || 'assets/images/placeholder.jpg'}"
+          <img src="${product.imageUrl || ''}"
                alt="${product.name}"
-               onerror="this.src='assets/images/placeholder.jpg'">
+               onerror="this.onerror=null;this.style.opacity='0'">
           ${badgeHTML}
         </div>
         <div class="product-card-body">
