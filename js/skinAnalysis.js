@@ -1055,21 +1055,27 @@ const SkinAnalysis = (() => {
         return (b.rating || 0) - (a.rating || 0);
       });
 
-      // Dédupliquer : un seul produit par marque + nom de base (évite 2 teintes du même produit)
-      const seen = new Set();
-      pool = pool.filter(p => {
-        const key = (p.brand + p.name.slice(0, 22)).toLowerCase().replace(/\s+/g, '');
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      }).slice(0, 8);
-
-      // Fisher-Yates shuffle
+      // Shuffle d'abord pour varier à chaque analyse
       for (let i = pool.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [pool[i], pool[j]] = [pool[j], pool[i]];
       }
-      pool = pool.slice(0, limit || 2);
+
+      // Sélectionner (limit) produits de marques différentes
+      const usedBrands = new Set();
+      const usedNames  = new Set();
+      const selected   = [];
+      for (const p of pool) {
+        const brand    = p.brand.toLowerCase().trim();
+        const nameKey  = (p.brand + p.name.slice(0, 22)).toLowerCase().replace(/\s+/g, '');
+        if (usedBrands.has(brand)) continue;   // pas 2 fois la même marque
+        if (usedNames.has(nameKey)) continue;  // pas 2 fois le même produit
+        usedBrands.add(brand);
+        usedNames.add(nameKey);
+        selected.push(p);
+        if (selected.length >= (limit || 2)) break;
+      }
+      pool = selected;
 
       if (!pool.length) {
         return '<p class="mkr-reco-empty">Produits bientôt disponibles dans cette catégorie.</p>';
