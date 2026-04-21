@@ -51,6 +51,7 @@ self.addEventListener('fetch', event => {
   // Ignorer les requêtes externes (Firebase, Stripe, Netlify Functions, etc.)
   if (url.origin !== self.location.origin) return;
   if (url.pathname.startsWith('/.netlify/')) return;
+  if (url.pathname === '/admin.html' || url.pathname === '/admin') return;
 
   event.respondWith(
     fetch(event.request)
