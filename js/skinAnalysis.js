@@ -395,12 +395,23 @@ const SkinAnalysis = (() => {
 
     const faceShape = detectFaceShape(landmarks, w, h);
 
-    const refR = allSkinPixels.length ? allSkinPixels.reduce((s, p) => s + p[0], 0) / allSkinPixels.length : 180;
-    const refG = allSkinPixels.length ? allSkinPixels.reduce((s, p) => s + p[1], 0) / allSkinPixels.length : 140;
-    const refB = allSkinPixels.length ? allSkinPixels.reduce((s, p) => s + p[2], 0) / allSkinPixels.length : 120;
+    const refR = allSkinPixels.length ? allSkinPixels.reduce((s, p) => s + (p.r ?? p[0] ?? 180), 0) / allSkinPixels.length : 180;
+    const refG = allSkinPixels.length ? allSkinPixels.reduce((s, p) => s + (p.g ?? p[1] ?? 140), 0) / allSkinPixels.length : 140;
+    const refB = allSkinPixels.length ? allSkinPixels.reduce((s, p) => s + (p.b ?? p[2] ?? 120), 0) / allSkinPixels.length : 120;
     const cernes = analyzeCernes(sourceCanvas, landmarks, w, h, refR, refG, refB);
 
-    return { zones: zoneResults, undertone, skinType, globalScore, faceShape, cernes };
+    // Carnation (clair / medium / foncé) depuis luminosité LAB
+    const skinLabs  = allSkinPixels.slice(0, 500).map(p => rgbToLab(p.r ?? p[0] ?? 180, p.g ?? p[1] ?? 140, p.b ?? p[2] ?? 120));
+    const skinMeanL = avg(skinLabs.map(l => l.L));
+    const carnation = detectCarnation(skinMeanL);
+
+    // Contraste yeux
+    const skinLumNorm = allSkinPixels.length
+      ? avg(allSkinPixels.slice(0, 200).map(p => 0.299 * (p.r ?? p[0] ?? 180) / 255 + 0.587 * (p.g ?? p[1] ?? 140) / 255 + 0.114 * (p.b ?? p[2] ?? 120) / 255))
+      : 0.5;
+    const eyeContrast = detectEyeContrast(sourceCanvas, landmarks, w, h, skinLumNorm);
+
+    return { zones: zoneResults, undertone, skinType, globalScore, faceShape, cernes, carnation, eyeContrast };
   }
 
   // ─── Extraction pixels par zone (polygon clipping) ───────────
@@ -572,6 +583,46 @@ const SkinAnalysis = (() => {
   }
 
   // ─── Détection forme du visage ────────────────────────────────
+
+  // ─── Carnation : clair / medium / foncé ──────────────────────
+  function detectCarnation(meanL) {
+    if (meanL > 62) return { type: 'clair',  label: 'Claire'  };
+    if (meanL > 46) return { type: 'medium', label: 'Medium'  };
+    return           { type: 'fonce',  label: 'Foncée'  };
+  }
+
+  // ─── Contraste yeux (iris vs peau) ───────────────────────────
+  function detectEyeContrast(sourceCanvas, landmarks, w, h, skinLumNorm) {
+    if (!landmarks || landmarks.length < 478) return { level: 'moyen', label: 'Moyen' };
+    const ctx = sourceCanvas.getContext('2d', { willReadFrequently: true });
+
+    function sampleIrisCenter(idx) {
+      const lm = landmarks[idx];
+      if (!lm) return null;
+      const cx = Math.round(lm.x * w), cy = Math.round(lm.y * h);
+      const r  = Math.max(5, Math.round(Math.min(w, h) * 0.014));
+      const x0 = Math.max(0, cx - r), y0 = Math.max(0, cy - r);
+      const pw = Math.min(r * 2, w - x0), ph = Math.min(r * 2, h - y0);
+      if (pw < 4 || ph < 4) return null;
+      const data = ctx.getImageData(x0, y0, pw, ph).data;
+      let sum = 0, cnt = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        if (data[i + 3] < 128) continue;
+        sum += 0.299 * data[i] / 255 + 0.587 * data[i + 1] / 255 + 0.114 * data[i + 2] / 255;
+        cnt++;
+      }
+      return cnt ? sum / cnt : null;
+    }
+
+    const samples = [sampleIrisCenter(468), sampleIrisCenter(473)].filter(v => v !== null);
+    if (!samples.length) return { level: 'moyen', label: 'Moyen' };
+
+    const irisLum  = avg(samples);
+    const contrast = Math.abs(skinLumNorm - irisLum);
+    if (contrast > 0.30) return { level: 'fort',   label: 'Fort'   };
+    if (contrast > 0.15) return { level: 'moyen',  label: 'Moyen'  };
+    return                      { level: 'faible', label: 'Faible' };
+  }
 
   function detectFaceShape(landmarks, w, h) {
     const pt   = idx => ({ x: landmarks[idx].x * w, y: landmarks[idx].y * h });
@@ -934,59 +985,205 @@ const SkinAnalysis = (() => {
   }
 
   function renderReport(result, content) {
-    const { zones, undertone, skinType, faceShape, globalScore, cernes } = result;
+    const { zones, undertone, skinType, faceShape, globalScore, cernes, carnation, eyeContrast } = result;
 
-    const diagnostics = generateDiagnostics(zones, skinType, undertone, faceShape, cernes);
-    const scoreLabel  = globalScore >= 75 ? 'Excellente' : globalScore >= 58 ? 'Bonne' : globalScore >= 42 ? 'Moyenne' : 'À améliorer';
+    const ut  = undertone?.type  || 'neutral';
+    const ca  = carnation?.type  || 'medium';
+    const cer = cernes?.detected ? cernes.type : 'none';
+    const ec  = eyeContrast?.level || 'moyen';
+
+    const UNDERTONE_EXPLAIN = {
+      warm:    'Ta peau a des reflets dorés et légèrement pêchés — c\'est ce qu\'on appelle un sous-ton chaud. Les teintes chaudes comme l\'or et le corail te subliment naturellement.',
+      cool:    'Ta peau a des reflets rosés ou légèrement bleutés — c\'est ce qu\'on appelle un sous-ton froid. Les teintes froides comme le mauve et l\'argent te mettent en valeur.',
+      neutral: 'Ta peau n\'est ni très rosée ni très dorée — elle est neutre. Tu as la chance de pouvoir porter aussi bien les teintes chaudes que les teintes froides.'
+    };
+
+    const FOUNDATION_TIP = {
+      warm:    { shade: 'warm ou W',    note: 'Évite les teintes C ou P (Cool/Pink) qui donneraient un effet grisâtre.' },
+      cool:    { shade: 'cool ou C',    note: 'Évite les teintes W ou Y (Warm/Yellow) qui peuvent paraître orangées.' },
+      neutral: { shade: 'neutral ou N', note: 'Les teintes N (Neutral) sont faites pour toi — polyvalence maximale.' }
+    };
+
+    const CONCEALER_TIP = {
+      bleu:   'Applique un correcteur <strong>pêche ou orangé</strong> avant ton anti-cernes pour neutraliser le bleu.',
+      rouge:  'Applique un correcteur <strong>jaune</strong> pour neutraliser les rougeurs sous l\'œil.',
+      marron: 'Un anti-cernes <strong>légèrement plus clair</strong> que ton teint atténue efficacement.',
+      none:   'Choisis un anti-cernes <strong>1 à 2 tons plus clair</strong> que ton fond de teint pour illuminer.'
+    };
+
+    const EYE_TIPS = {
+      warm:    { colors: 'doré, bronze, marron chaud, terracotta',              why: 'Ces couleurs chaudes renforcent tes reflets naturels et réchauffent ton regard.' },
+      cool:    { colors: 'rose, taupe, prune, violet doux',                     why: 'Ces teintes s\'harmonisent avec tes sous-tons rosés pour un look lumineux.' },
+      neutral: { colors: 'marron naturel, gris chaud, nude, terracotta',        why: 'Ta polyvalence te permet de jouer aussi bien avec des tons chauds que froids.' }
+    };
+
+    const MASCARA_TIP = {
+      fort:   { type: 'volumateur',             why: 'Ton contraste naturel est fort — un mascara volumateur accentue encore plus l\'intensité de ton regard.' },
+      moyen:  { type: 'allongeant + volumateur', why: 'Avec un contraste moyen, associe longueur et volume pour un regard équilibré.' },
+      faible: { type: 'allongeant',              why: 'Un mascara allongeant crée une illusion de profondeur pour un regard plus défini.' }
+    };
+
+    const LIP_TIPS = {
+      warm:    { shades: 'pêche, corail, nude doré, rouge orangé',  why: 'Ces teintes chaudes sont alignées avec tes sous-tons et réchauffent ton sourire.' },
+      cool:    { shades: 'rose, framboise, rouge vif, mauve',        why: 'Ces teintes froides s\'harmonisent avec tes reflets rosés.' },
+      neutral: { shades: 'nude rosé, beige, nude pêche',             why: 'Les nudes polyvalents s\'adaptent à toutes les occasions.' }
+    };
+
+    function getProductsHTML(categories, limit) {
+      const catalog = AppState?.products?.catalog || [];
+      let pool = catalog
+        .filter(p => categories.includes(p.category) && p.active !== false && p.imageUrl)
+        .sort((a, b) => {
+          if (b.isFeatured !== a.isFeatured) return b.isFeatured ? 1 : -1;
+          return (b.rating || 0) - (a.rating || 0);
+        })
+        .slice(0, limit || 3);
+
+      if (!pool.length) {
+        return '<p class="mkr-reco-empty">Produits bientôt disponibles dans cette catégorie.</p>';
+      }
+      return pool.map(p => `
+        <div class="mkr-reco-card" onclick="ProductCatalog.openProductModal('${p.id}')">
+          <div class="mkr-reco-img">
+            <img src="${p.imageUrl}" alt="${p.name}" onerror="this.onerror=null;this.style.opacity='0'">
+            ${p.colorHex ? `<span class="mkr-reco-dot" style="background:${p.colorHex}" title="${p.shadeName || ''}"></span>` : ''}
+          </div>
+          <div class="mkr-reco-body">
+            <span class="mkr-reco-brand">${p.brand}</span>
+            <p class="mkr-reco-name">${p.name}</p>
+            ${p.shadeName ? `<span class="mkr-reco-shade">${p.shadeName}</span>` : ''}
+            <span class="mkr-reco-price">${p.price ? p.price.toFixed(2) + ' €' : ''}</span>
+          </div>
+          <a class="btn btn-amazon mkr-reco-buy"
+             href="${p.amazonUrl}" target="_blank" rel="noopener nofollow sponsored"
+             onclick="event.stopPropagation(); if(typeof Tracker!=='undefined') Tracker.trackBuyClick('${p.id}')">
+            Acheter →
+          </a>
+        </div>`).join('');
+    }
+
+    const makeupWarn = AppState?.face?.hasMakeup
+      ? '<div class="mkr-makeup-warn">⚠ Photo prise avec maquillage — le résultat peut être moins précis.</div>'
+      : '';
 
     content.innerHTML = `
-      <div class="diag-report">
+      <div class="makeup-report">
 
-        <div class="diag-header">
-          <span class="section-tag">Diagnostic · Analyse IA locale</span>
-          <h1>Ton Analyse de Peau</h1>
-          <p class="diag-header-sub">4 zones analysées · ${scoreLabel} santé cutanée · Aucune donnée envoyée</p>
+        <div class="mkr-header">
+          <span class="section-tag">Analyse personnalisée</span>
+          <h1>Ton profil maquillage</h1>
+          <p class="mkr-header-sub">Résultat basé sur l'analyse colorimétrique de ta peau</p>
+          ${makeupWarn}
         </div>
 
-        <!-- Tags profil rapide -->
-        <div class="diag-tags">
-          <span class="diag-tag">${skinType.icon} ${skinType.label}</span>
-          <span class="diag-tag" style="border-color:${undertone.colorHex}; color:${undertone.colorHex}">
-            ${undertone.label.split('·')[0].trim()}
-          </span>
-          ${faceShape ? `<span class="diag-tag">⬡ ${faceShape.label}</span>` : ''}
-          ${cernes && cernes.detected ? `<span class="diag-tag diag-tag--cernes">◐ Cernes ${cernes.type}s</span>` : ''}
-          <span class="diag-tag diag-tag--score">${globalScore}/100</span>
+        <!-- BLOC 1 — RÉSULTAT -->
+        <div class="mkr-bloc">
+          <h2 class="mkr-bloc-title">✦ Ton profil</h2>
+          <div class="mkr-chips">
+            <div class="mkr-chip">
+              <span class="mkr-chip-label">Carnation</span>
+              <span class="mkr-chip-value">${carnation?.label || 'Medium'}</span>
+            </div>
+            <div class="mkr-chip mkr-chip--undertone" style="--chip-color:${undertone?.colorHex || '#C8A882'}">
+              <span class="mkr-chip-label">Sous-ton</span>
+              <span class="mkr-chip-value" style="color:${undertone?.colorHex || '#C8A882'}">${undertone?.label?.split('·')[0]?.trim() || 'Neutre'}</span>
+            </div>
+            ${cernes?.detected ? `
+            <div class="mkr-chip">
+              <span class="mkr-chip-label">Cernes</span>
+              <span class="mkr-chip-value">${cernes.type}s · ${cernes.intensity}s</span>
+            </div>` : ''}
+            <div class="mkr-chip">
+              <span class="mkr-chip-label">Contraste yeux</span>
+              <span class="mkr-chip-value">${eyeContrast?.label || 'Moyen'}</span>
+            </div>
+          </div>
         </div>
 
-        <!-- 4 cartes de diagnostic -->
-        <div class="diag-zones">
-          ${diagnostics.map(d => `
-            <div class="diag-zone-card">
-              <div class="diag-zone-header">
-                <span class="diag-zone-icon">${d.icon}</span>
-                <span class="diag-zone-name">${d.name}</span>
-              </div>
-              <p class="diag-zone-text">${d.text}</p>
-              <p class="diag-zone-rec">✦ ${d.correction}</p>
-            </div>`).join('')}
+        <!-- BLOC 2 — EXPLICATION SIMPLE -->
+        <div class="mkr-bloc mkr-bloc-explain">
+          <h2 class="mkr-bloc-title">💡 Pourquoi ce sous-ton ?</h2>
+          <p class="mkr-explain-text">${UNDERTONE_EXPLAIN[ut]}</p>
+        </div>
+
+        <!-- BLOC 3 — APPLICATION CONCRÈTE -->
+        <div class="mkr-bloc">
+          <h2 class="mkr-bloc-title">🎨 Comment l'appliquer</h2>
+          <div class="mkr-apply-grid">
+            <div class="mkr-apply-item">
+              <span class="mkr-apply-label">Fond de teint</span>
+              <p>Choisis une teinte <strong>${FOUNDATION_TIP[ut].shade}</strong>. ${FOUNDATION_TIP[ut].note}</p>
+            </div>
+            <div class="mkr-apply-item">
+              <span class="mkr-apply-label">Anti-cernes</span>
+              <p>${CONCEALER_TIP[cer]}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- BLOC 4 — ROUTINES PERSONNALISÉES -->
+        <div class="mkr-bloc">
+          <h2 class="mkr-bloc-title">✨ Tes routines personnalisées</h2>
+          <div class="mkr-tabs">
+            <button class="mkr-tab active" onclick="switchMkrTab(this,'teint')">Teint</button>
+            <button class="mkr-tab" onclick="switchMkrTab(this,'yeux')">Yeux</button>
+            <button class="mkr-tab" onclick="switchMkrTab(this,'levres')">Lèvres</button>
+          </div>
+
+          <div id="mkr-tab-teint" class="mkr-tab-panel active">
+            <div class="mkr-zone-tip">
+              <p>Pour ton teint <strong>${carnation?.label}</strong> avec sous-ton <strong>${undertone?.label?.split('·')[0]?.trim()}</strong>,
+              un fond de teint <strong>${FOUNDATION_TIP[ut].shade}</strong> t'offrira le rendu le plus naturel.</p>
+              ${cernes?.detected ? `<p class="mkr-cernes-note">◐ Cernes <strong>${cernes.type}s</strong> : ${CONCEALER_TIP[cer]}</p>` : ''}
+              <p class="mkr-why-note">Ce produit correspond à ton sous-ton et ta carnation — il fondra naturellement sur ta peau.</p>
+            </div>
+            <div class="mkr-reco-grid">
+              ${getProductsHTML(['foundation', 'eye'], 3)}
+            </div>
+          </div>
+
+          <div id="mkr-tab-yeux" class="mkr-tab-panel">
+            <div class="mkr-zone-tip">
+              <p>Avec un sous-ton <strong>${undertone?.label?.split('·')[0]?.trim()}</strong>, mise sur : <strong>${EYE_TIPS[ut].colors}</strong>.</p>
+              <p>${EYE_TIPS[ut].why}</p>
+              <p>Mascara recommandé : <strong>${MASCARA_TIP[ec].type}</strong>. ${MASCARA_TIP[ec].why}</p>
+            </div>
+            <div class="mkr-reco-grid">
+              ${getProductsHTML(['mascara', 'blush'], 3)}
+            </div>
+          </div>
+
+          <div id="mkr-tab-levres" class="mkr-tab-panel">
+            <div class="mkr-zone-tip">
+              <p>Pour ton sous-ton <strong>${undertone?.label?.split('·')[0]?.trim()}</strong>, les teintes <strong>${LIP_TIPS[ut].shades}</strong> sont tes meilleures alliées.</p>
+              <p>${LIP_TIPS[ut].why}</p>
+            </div>
+            <div class="mkr-reco-grid">
+              ${getProductsHTML(['lipstick', 'lipbalm'], 3)}
+            </div>
+          </div>
         </div>
 
         <!-- CTA -->
         <div class="diag-cta">
           <button class="btn btn-dark" onclick="showScreen('routine-choice')">
-            Créer ma routine personnalisée ✦
+            Créer ma routine soin ✦
           </button>
           <button class="btn btn-outline" onclick="showScreen('capture')" style="margin-top:10px">
             ← Refaire l'analyse
           </button>
         </div>
 
-        <p class="diag-disclaimer">
-          Analyse colorimétrique locale par MediaPipe — indicatif, non médical.
-        </p>
-
+        <p class="diag-disclaimer">Analyse colorimétrique locale par MediaPipe — indicatif, non médical.</p>
       </div>`;
+
+    window.switchMkrTab = function(btn, tab) {
+      document.querySelectorAll('.mkr-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.mkr-tab-panel').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      const el = document.getElementById('mkr-tab-' + tab);
+      if (el) el.classList.add('active');
+    };
   }
 
   // ─── Helpers mathématiques ────────────────────────────────────

@@ -82,6 +82,12 @@ function showScreen(name) {
   });
 
   // Actions spécifiques à chaque écran
+  if (name === 'capture') {
+    const overlay = document.getElementById('prephotoOverlay');
+    if (overlay && !sessionStorage.getItem('prephoto_seen')) {
+      overlay.style.display = 'flex';
+    }
+  }
   if (name === 'shop')          renderShop();
   if (name === 'tryon')         TryOn.initTryOnScreen();
   if (name === 'results') {
@@ -115,6 +121,15 @@ function showScreen(name) {
 
   if (name === 'routine-choice')  initRoutineChoiceScreen();
 }
+
+// ─── Pre-photo overlay ────────────────────────────────────────
+window.dismissPrephoto = function(hasMakeup) {
+  const overlay = document.getElementById('prephotoOverlay');
+  if (overlay) overlay.style.display = 'none';
+  if (hasMakeup) AppState.face = AppState.face || {};
+  if (hasMakeup) AppState.face.hasMakeup = true;
+  sessionStorage.setItem('prephoto_seen', '1');
+};
 
 // ─── Toast ────────────────────────────────────────────────────
 function showToast(msg, type = 'info', duration = 3000) {

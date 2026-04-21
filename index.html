@@ -110,6 +110,19 @@
 
     <!-- ======== CAPTURE ======== -->
     <div class="screen" id="screen-capture">
+
+      <!-- Pre-photo overlay -->
+      <div id="prephotoOverlay" class="prephoto-overlay" style="display:none;">
+        <div class="prephoto-card">
+          <div class="prephoto-icon">🌿</div>
+          <h2>Pour une analyse parfaite</h2>
+          <p>Prends ta photo <strong>sans maquillage</strong><br>et à la <strong>lumière naturelle</strong>.</p>
+          <p class="prephoto-note">Le maquillage peut modifier la couleur de ta peau et fausser le résultat.</p>
+          <button class="btn btn-dark" onclick="dismissPrephoto(false)">Je suis prête →</button>
+          <button class="prephoto-skip" onclick="dismissPrephoto(true)">J'ai du maquillage</button>
+        </div>
+      </div>
+
       <div class="capture-container">
         <div class="section-head" style="margin-bottom:32px">
           <span class="section-tag">Étape 1</span>
