@@ -1031,13 +1031,20 @@ const SkinAnalysis = (() => {
 
     function getProductsHTML(categories, limit) {
       const catalog = AppState?.products?.catalog || [];
+      // Prendre le top 8 par pertinence, puis mélanger pour varier à chaque analyse
       let pool = catalog
         .filter(p => categories.includes(p.category) && p.active !== false && p.imageUrl)
         .sort((a, b) => {
           if (b.isFeatured !== a.isFeatured) return b.isFeatured ? 1 : -1;
           return (b.rating || 0) - (a.rating || 0);
         })
-        .slice(0, limit || 3);
+        .slice(0, 8);
+      // Fisher-Yates shuffle
+      for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+      }
+      pool = pool.slice(0, limit || 2);
 
       if (!pool.length) {
         return '<p class="mkr-reco-empty">Produits bientôt disponibles dans cette catégorie.</p>';
