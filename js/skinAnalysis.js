@@ -1050,12 +1050,20 @@ const SkinAnalysis = (() => {
       // Essai 3 : si toujours moins de 2, relâcher le sous-ton aussi
       if (pool.length < 2) pool = buildPool(null, null);
 
-      pool = pool
-        .sort((a, b) => {
-          if (b.isFeatured !== a.isFeatured) return b.isFeatured ? 1 : -1;
-          return (b.rating || 0) - (a.rating || 0);
-        })
-        .slice(0, 8);
+      pool = pool.sort((a, b) => {
+        if (b.isFeatured !== a.isFeatured) return b.isFeatured ? 1 : -1;
+        return (b.rating || 0) - (a.rating || 0);
+      });
+
+      // Dédupliquer : un seul produit par marque + nom de base (évite 2 teintes du même produit)
+      const seen = new Set();
+      pool = pool.filter(p => {
+        const key = (p.brand + p.name.slice(0, 22)).toLowerCase().replace(/\s+/g, '');
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      }).slice(0, 8);
+
       // Fisher-Yates shuffle
       for (let i = pool.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -1156,7 +1164,7 @@ const SkinAnalysis = (() => {
 
           <div id="mkr-tab-teint" class="mkr-tab-panel active">
             <div class="mkr-zone-tip">
-              <p>Pour ton teint <strong>${carnation?.label}</strong> avec sous-ton <strong>${undertone?.label?.split('·')[0]?.trim()}</strong>,
+              <p>Pour ton teint <strong>${carnation?.label || 'Medium'}</strong> avec sous-ton <strong>${undertone?.label?.split('·')[0]?.trim() || 'Neutre'}</strong>,
               un fond de teint <strong>${FOUNDATION_TIP[ut].shade}</strong> t'offrira le rendu le plus naturel.</p>
               ${cernes?.detected ? `<p class="mkr-cernes-note">◐ Cernes <strong>${cernes.type}s</strong> : ${CONCEALER_TIP[cer]}</p>` : ''}
               <p class="mkr-why-note">Ce produit correspond à ton sous-ton et ta carnation — il fondra naturellement sur ta peau.</p>
