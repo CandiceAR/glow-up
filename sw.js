@@ -1,10 +1,9 @@
-const CACHE_NAME = 'glowup-v6';
+const CACHE_NAME = 'glowup-v8';
 
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/style.css',
-  '/script.js',
   '/manifest.json',
   '/glow-up-icon.jpg',
   '/js/app.js',
@@ -16,8 +15,8 @@ const STATIC_ASSETS = [
   '/js/skinAnalysis.js',
   '/js/skinJourney.js',
   '/js/makeupRoutine.js',
-  '/data/products-manual.json',
-  '/data/catalogue.json'
+  '/js/firestoreProducts.js',
+  '/js/subscription.js'
 ];
 
 // Installation : mise en cache des ressources statiques
@@ -26,7 +25,7 @@ self.addEventListener('install', event => {
     caches.open(CACHE_NAME).then(cache => {
       return cache.addAll(STATIC_ASSETS.map(url => new Request(url, { cache: 'reload' })));
     }).catch(err => {
-      console.warn('Certains fichiers n\'ont pas pu être mis en cache :', err);
+      console.warn('[SW] Certains fichiers n\'ont pas pu être mis en cache :', err);
     })
   );
   self.skipWaiting();
@@ -44,26 +43,26 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// Fetch : stratégie Network First (réseau d'abord, cache en fallback)
+// Fetch : stratégie Network First
 self.addEventListener('fetch', event => {
-  // Ignorer les requêtes non-GET et les requêtes externes (Firebase, Stripe, etc.)
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
+
+  // Ignorer les requêtes externes (Firebase, Stripe, Netlify Functions, etc.)
   if (url.origin !== self.location.origin) return;
+  if (url.pathname.startsWith('/.netlify/')) return;
 
   event.respondWith(
     fetch(event.request)
       .then(response => {
-        // Mettre à jour le cache avec la nouvelle version
+        if (!response || !response.ok) return response;
         const clone = response.clone();
         caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         return response;
       })
       .catch(() => {
-        // En cas d'absence de réseau, utiliser le cache
         return caches.match(event.request).then(cached => {
           if (cached) return cached;
-          // Fallback vers index.html pour la navigation
           if (event.request.mode === 'navigate') {
             return caches.match('/index.html');
           }
