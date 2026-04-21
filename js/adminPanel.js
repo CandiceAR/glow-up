@@ -202,10 +202,11 @@ const Admin = (() => {
           <td>${statusBadge}${featuredBadge}</td>
           <td>
             <div class="btn-actions">
-              <button class="btn-sm btn-edit"   onclick="Admin.editProduct('${p.id}')">Modifier</button>
-              <button class="btn-sm btn-toggle" onclick="Admin.toggleFeatured('${p.id}')" title="Produit vedette">★</button>
-              <button class="btn-sm btn-toggle" onclick="Admin.toggleActive('${p.id}')">${p.active !== false ? 'Désact.' : 'Activ.'}</button>
-              <button class="btn-sm btn-delete" onclick="Admin.deleteProduct('${p.id}')">Suppr.</button>
+              <button class="btn-sm btn-edit"      onclick="Admin.editProduct('${p.id}')">Modifier</button>
+              <button class="btn-sm btn-duplicate" onclick="Admin.duplicateProduct('${p.id}')" title="Dupliquer">⧉</button>
+              <button class="btn-sm btn-toggle"    onclick="Admin.toggleFeatured('${p.id}')" title="Produit vedette">★</button>
+              <button class="btn-sm btn-toggle"    onclick="Admin.toggleActive('${p.id}')">${p.active !== false ? 'Désact.' : 'Activ.'}</button>
+              <button class="btn-sm btn-delete"    onclick="Admin.deleteProduct('${p.id}')">Suppr.</button>
             </div>
           </td>
         </tr>`;
@@ -507,6 +508,41 @@ const Admin = (() => {
     closeImagePicker();
   }
 
+  // ─── Dupliquer un produit ────────────────────────────────────
+  function duplicateProduct(id) {
+    const p = products.find(x => x.id === id);
+    if (!p) return;
+    editingId = null;
+    document.getElementById('formTitle').textContent = 'Dupliquer le produit';
+
+    // Nouveau ID unique
+    const ids = products.map(p => parseInt(p.id?.replace(/\D/g, '') || '0')).filter(n => !isNaN(n) && n > 0);
+    const nextNum = ids.length > 0 ? Math.max(...ids) + 1 : 51;
+    const newId = 'm' + String(nextNum).padStart(3, '0');
+
+    // Pré-remplir avec les données du produit source
+    document.getElementById('fId').value          = newId;
+    document.getElementById('fAsin').value        = '';
+    document.getElementById('fName').value        = p.name || '';
+    document.getElementById('fBrand').value       = p.brand || '';
+    document.getElementById('fCategory').value    = p.category || 'serum';
+    document.getElementById('fAmazonUrl').value   = '';
+    document.getElementById('fImageUrl').value    = '';
+    document.getElementById('fPrice').value       = p.price != null ? p.price : '';
+    document.getElementById('fRating').value      = p.rating != null ? p.rating : '';
+    document.getElementById('fReviews').value     = p.reviews != null ? p.reviews : '';
+    document.getElementById('fActive').checked    = p.active !== false;
+    document.getElementById('fFeatured').checked  = false;
+    document.getElementById('fColorHex').value    = p.colorHex || '#ffffff';
+    document.getElementById('fColorHexText').value = p.colorHex || '';
+    document.getElementById('fShadeName').value   = '';
+    previewImage('');
+
+    document.getElementById('productFormWrap').style.display = 'block';
+    document.getElementById('productFormWrap').scrollIntoView({ behavior: 'smooth' });
+    toast('Produit dupliqué — change la teinte, l\'image et le lien Amazon ✦');
+  }
+
   // ─── Toggle active / featured ─────────────────────────────────
   async function toggleActive(id) {
     const p = products.find(x => x.id === id);
@@ -797,7 +833,7 @@ const Admin = (() => {
 
   return {
     login, logout,
-    showAddForm, editProduct, cancelForm, saveProduct,
+    showAddForm, editProduct, duplicateProduct, cancelForm, saveProduct,
     toggleActive, toggleFeatured, deleteProduct,
     search, filterCat, showTab,
     extractASIN, extractASINFromUrl, checkTag, autoFillAmazonUrl, exportJSON,
