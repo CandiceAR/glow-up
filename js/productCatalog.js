@@ -284,12 +284,17 @@ const ProductCatalog = (() => {
       spf:        'Protection solaire',
       nightmask:  'Masque de nuit',
       // Maquillage
-      lipstick:   'Rouge à lèvres',
-      blush:      'Blush',
-      foundation: 'Fond de teint',
-      mascara:    'Mascara',
-      // Lèvres
-      lipbalm:    'Baume à lèvres'
+      lipstick:    'Rouge à lèvres',
+      lipgloss:    'Gloss',
+      lipliner:    'Crayon à lèvres',
+      lipprimer:   'Base lèvres',
+      lipplumper:  'Repulpeur lèvres',
+      blush:       'Blush',
+      foundation:  'Fond de teint',
+      mascara:     'Mascara',
+      // Lèvres / Soin
+      lipbalm:     'Baume à lèvres',
+      demaquillant:'Démaquillant'
     };
     return map[cat] || cat;
   }

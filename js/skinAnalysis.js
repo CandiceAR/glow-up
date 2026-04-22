@@ -1210,7 +1210,8 @@ const SkinAnalysis = (() => {
               <p>${LIP_TIPS[ut].why}</p>
             </div>
             <div class="mkr-reco-grid">
-              ${getProductsHTML(['lipstick', 'lipbalm'], 2)}
+              ${getProductsHTML(['lipliner'], 1)}
+              ${getProductsHTML(['lipstick', 'lipgloss'], 1)}
             </div>
           </div>
         </div>
