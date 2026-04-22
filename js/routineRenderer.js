@@ -314,7 +314,14 @@ const RoutineRenderer = (() => {
 
   // ─── CTA produits (utilisateurs premium) ─────────────────────
   function renderProductsCTA() {
-    const products = AppState.products.recommended || [];
+    // Section skincare → afficher uniquement les produits de soin (jamais de maquillage)
+    const all = AppState.products.recommended || [];
+    const skincare = all.filter(p =>
+      typeof ProductCatalog !== 'undefined'
+        ? ProductCatalog.getProductType(p) === 'skincare'
+        : true
+    );
+    const products = skincare.length ? skincare : all;
     const top = products.slice(0, 6);
 
     const gridHtml = top.length > 0

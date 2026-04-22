@@ -9,6 +9,33 @@ const ProductCatalog = (() => {
 
   const TAG = 'kan10ar-21';
 
+  // ─── Classification makeup / skincare ─────────────────────────
+  const _SKINCARE_CATS = new Set([
+    'cleanser', 'serum', 'eye', 'cream', 'spf', 'nightmask', 'demaquillant'
+  ]);
+  const _MAKEUP_CATS = new Set([
+    'foundation', 'concealer', 'powder', 'blush', 'bronzer', 'highlighter',
+    'mascara', 'eyeliner', 'eyeshadow', 'lipstick', 'lipgloss',
+    'lipliner', 'lipprimer', 'lipplumper', 'set', 'tools'
+  ]);
+
+  /**
+   * Retourne 'makeup' | 'skincare' | null.
+   * productType manuel (Firestore) a la priorité absolue.
+   * lipbalm coloré → makeup ; lipbalm soin → skincare.
+   */
+  function getProductType(p) {
+    if (!p) return null;
+    if (p.productType) return p.productType;
+    if (p.category === 'lipbalm') {
+      const hex = (p.colorHex || '').replace('#', '').toLowerCase();
+      return (hex && hex !== 'ffffff') ? 'makeup' : 'skincare';
+    }
+    if (_SKINCARE_CATS.has(p.category)) return 'skincare';
+    if (_MAKEUP_CATS.has(p.category))   return 'makeup';
+    return null;
+  }
+
   // ─── Injecter/normaliser le tag affilié dans une URL Amazon ──
   function ensureTag(url) {
     if (!url) return url;
@@ -112,7 +139,7 @@ const ProductCatalog = (() => {
   function getRecommended(answers) {
     const { skinType, makeupUsed = [], makeupFrequency } = answers;
 
-    const skincareCategories = ['cleanser', 'serum', 'eye', 'cream', 'spf', 'lipbalm'];
+    const skincareCategories = ['cleanser', 'serum', 'eye', 'cream', 'spf', 'nightmask', 'demaquillant', 'lipbalm'];
     const makeupCategories   = makeupFrequency !== 'jamais' ? (makeupUsed || []) : [];
     const allowed = [...skincareCategories, ...makeupCategories];
 
@@ -321,6 +348,6 @@ const ProductCatalog = (() => {
     if (typeof Tracker !== 'undefined') Tracker.trackBuyClick(productId);
   };
 
-  return { load, getRecommended, getMaturityPreference, getByCategory, renderCard, openProductModal, ensureTag, mergeProducts };
+  return { load, getRecommended, getMaturityPreference, getProductType, getByCategory, renderCard, openProductModal, ensureTag, mergeProducts };
 
 })();

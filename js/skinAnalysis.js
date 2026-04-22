@@ -1039,6 +1039,9 @@ const SkinAnalysis = (() => {
           if (!categories.includes(p.category)) return false;
           if (p.active === false) return false;
           if (!p.imageUrl) return false;
+          // Rapport photo = maquillage uniquement — exclure tout produit soin
+          const pt = typeof ProductCatalog !== 'undefined' ? ProductCatalog.getProductType(p) : null;
+          if (pt === 'skincare') return false;
           if (filterUndertone && p.undertone && p.undertone !== 'neutral' && p.undertone !== filterUndertone) return false;
           if (filterCarnation && Array.isArray(p.carnation) && p.carnation.length && !p.carnation.includes(filterCarnation)) return false;
           return true;
@@ -1197,7 +1200,7 @@ const SkinAnalysis = (() => {
               <p class="mkr-why-note">Ce produit correspond à ton sous-ton et ta carnation — il fondra naturellement sur ta peau.</p>
             </div>
             <div class="mkr-reco-grid">
-              ${getProductsHTML(['foundation', 'eye'], 2)}
+              ${getProductsHTML(['foundation', 'concealer'], 2)}
             </div>
           </div>
 

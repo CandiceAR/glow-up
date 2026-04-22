@@ -182,11 +182,14 @@ const Admin = (() => {
       const carnStr   = Array.isArray(p.carnation) && p.carnation.length && p.carnation.length < 3
         ? p.carnation.map(c => c === 'clair' ? 'Claire' : c === 'medium' ? 'Medium' : 'Foncée').join(', ')
         : null;
-      const MAT_LABELS = { jeune: '🌱 Jeune', mature: '🌸 Mature', all: '' };
-      const matStr     = p.maturity && p.maturity !== 'all' ? MAT_LABELS[p.maturity] || '' : '';
-      const profilCell = (p.undertone || carnStr || matStr)
+      const MAT_LABELS  = { jeune: '🌱 Jeune', mature: '🌸 Mature', all: '' };
+      const matStr      = p.maturity && p.maturity !== 'all' ? MAT_LABELS[p.maturity] || '' : '';
+      const PT_LABELS   = { makeup: '💄 Makeup', skincare: '🧴 Soin' };
+      const ptStr       = p.productType ? (PT_LABELS[p.productType] || p.productType) : '';
+      const profilCell  = (p.undertone || carnStr || matStr || ptStr)
         ? `<div style="font-size:0.72rem;line-height:1.6">
-             ${p.undertone ? `<span style="color:var(--nude);font-weight:500">${UT_LABELS[p.undertone] || p.undertone}</span>` : ''}
+             ${ptStr   ? `<span style="font-weight:600;color:${p.productType==='makeup'?'#b05080':'#3a7a5a'}">${ptStr}</span>` : ''}
+             ${p.undertone ? `<br><span style="color:var(--nude);font-weight:500">${UT_LABELS[p.undertone] || p.undertone}</span>` : ''}
              ${carnStr ? `<br><span style="color:var(--muted)">${carnStr}</span>` : ''}
              ${matStr  ? `<br><span style="color:var(--muted)">${matStr}</span>`  : ''}
            </div>`
@@ -267,6 +270,7 @@ const Admin = (() => {
     document.getElementById('fCarnFonce').checked  = Array.isArray(p.carnation) ? p.carnation.includes('fonce')  : true;
     document.getElementById('fFinish').value       = p.finish || 'naturel';
     document.getElementById('fMaturity').value     = p.maturity || 'all';
+    document.getElementById('fProductType').value  = p.productType || '';
     previewImage(p.imageUrl || '');
     document.getElementById('productFormWrap').style.display = 'block';
     document.getElementById('productFormWrap').scrollIntoView({ behavior: 'smooth' });
@@ -293,6 +297,7 @@ const Admin = (() => {
     document.getElementById('fCarnFonce').checked  = true;
     document.getElementById('fFinish').value       = 'naturel';
     document.getElementById('fMaturity').value     = 'all';
+    document.getElementById('fProductType').value  = '';
     previewImage('');
     const prog = document.getElementById('imageUploadProgress');
     if (prog) prog.textContent = '';
@@ -318,8 +323,9 @@ const Admin = (() => {
     const shadeName  = document.getElementById('fShadeName').value.trim();
     const undertone  = document.getElementById('fUndertone').value || null;
     const carnation  = ['clair','medium','fonce'].filter(v => document.getElementById('fCarn' + v.charAt(0).toUpperCase() + v.slice(1)).checked);
-    const finish     = document.getElementById('fFinish').value || 'naturel';
-    const maturity   = document.getElementById('fMaturity').value || 'all';
+    const finish      = document.getElementById('fFinish').value || 'naturel';
+    const maturity    = document.getElementById('fMaturity').value || 'all';
+    const productType = document.getElementById('fProductType').value || null;
 
     if (!amazonUrl || !name || !brand || !imageUrl) {
       toast('Remplis tous les champs obligatoires (lien, nom, marque, image)', 'error');
@@ -368,8 +374,9 @@ const Admin = (() => {
         shadeName: shadeName || null,
         undertone: undertone || null,
         carnation: carnation.length === 3 ? null : (carnation.length ? carnation : null),
-        finish:    finish || 'naturel',
-        maturity:  maturity || 'all',
+        finish:       finish || 'naturel',
+        maturity:     maturity || 'all',
+        productType:  productType || null,
         curatedAt: new Date().toISOString().split('T')[0]
       };
     } else {
@@ -385,12 +392,13 @@ const Admin = (() => {
         currency: 'EUR',
         rating,
         reviews,
-        colorHex:  colorHex  || null,
-        shadeName: shadeName || null,
-        undertone: undertone || null,
-        carnation: carnation.length === 3 ? null : (carnation.length ? carnation : null),
-        finish:    finish || 'naturel',
-        maturity:  maturity || 'all',
+        colorHex:    colorHex  || null,
+        shadeName:   shadeName || null,
+        undertone:   undertone || null,
+        carnation:   carnation.length === 3 ? null : (carnation.length ? carnation : null),
+        finish:      finish || 'naturel',
+        maturity:    maturity || 'all',
+        productType: productType || null,
         skinTypeTags: ['normale', 'mixte', 'seche', 'grasse', 'sensible'],
         concernTags: [],
         isFeatured,
@@ -933,18 +941,31 @@ const Admin = (() => {
       return 'all';
     }
 
+    const SKINCARE_SET = new Set(['cleanser','serum','eye','cream','spf','nightmask','demaquillant']);
+
+    function detectProductType(p) {
+      if (p.productType) return p.productType;   // override manuel
+      if (p.category === 'lipbalm') {
+        const hex = (p.colorHex || '').replace('#','').toLowerCase();
+        return (hex && hex !== 'ffffff') ? 'makeup' : 'skincare';
+      }
+      if (SKINCARE_SET.has(p.category)) return 'skincare';
+      return 'makeup';
+    }
+
     const toUpdate = products.filter(p => MAKEUP_CATS.includes(p.category));
     if (!toUpdate.length) { toast('Aucun produit maquillage trouvé', 'error'); return; }
 
-    if (!confirm(`Auto-tagger ${toUpdate.length} produits maquillage ?\n\nCela ajoutera sous-ton, carnation et fini selon les noms et descriptions existants.\nTu pourras corriger manuellement ensuite.`)) return;
+    if (!confirm(`Auto-tagger ${toUpdate.length} produits maquillage ?\n\nCela ajoutera sous-ton, carnation, fini et type makeup/soin selon les noms et descriptions existants.\nTu pourras corriger manuellement ensuite.`)) return;
 
     for (const p of toUpdate) {
       const updated = {
         ...p,
-        undertone: detectUndertone(p),
-        carnation: detectCarnation(p),
-        finish:    detectFinish(p),
-        maturity:  detectMaturity(p)
+        undertone:   detectUndertone(p),
+        carnation:   detectCarnation(p),
+        finish:      detectFinish(p),
+        maturity:    detectMaturity(p),
+        productType: detectProductType(p)
       };
       const idx = products.findIndex(x => x.id === p.id);
       if (idx !== -1) products[idx] = updated;
