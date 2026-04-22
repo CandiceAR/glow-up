@@ -174,7 +174,8 @@ const MakeupRoutine = (() => {
   }
 
   function selectLips(profile) {
-    const lips = getByCategories(['lipstick', 'lipbalm', 'lipgloss']);
+    // lipbalm = soin → jamais dans une routine maquillage
+    const lips = getByCategories(['lipstick', 'lipgloss', 'lipliner']);
     if (!lips.length) return null;
 
     const { undertone, lipShape, carnation } = profile;
@@ -256,6 +257,8 @@ const MakeupRoutine = (() => {
       if (plumping) selected = [plumping, ...selected];
     }
 
+    // Filet de sécurité : exclure tout lipbalm qui aurait pu glisser via getById
+    selected = selected.filter(p => p && p.category !== 'lipbalm');
     return selected.slice(0, 2);
   }
 
