@@ -1055,27 +1055,40 @@ const SkinAnalysis = (() => {
         return (b.rating || 0) - (a.rating || 0);
       });
 
-      // Shuffle d'abord pour varier à chaque analyse
-      for (let i = pool.length - 1; i > 0; i--) {
+      // Récupérer les produits déjà montrés récemment (par catégorie)
+      const cacheKey   = 'mkr_shown_' + categories.join('_');
+      const shownIds   = new Set(JSON.parse(sessionStorage.getItem(cacheKey) || '[]'));
+      // Si tous les produits ont été montrés, réinitialiser
+      const freshPool  = pool.filter(p => !shownIds.has(p.id));
+      const activePool = freshPool.length >= (limit || 2) ? freshPool : pool;
+
+      // Shuffle pour varier à chaque analyse
+      for (let i = activePool.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [pool[i], pool[j]] = [pool[j], pool[i]];
+        [activePool[i], activePool[j]] = [activePool[j], activePool[i]];
       }
 
       // Sélectionner (limit) produits de marques différentes
       const usedBrands = new Set();
       const usedNames  = new Set();
       const selected   = [];
-      for (const p of pool) {
+      for (const p of activePool) {
         const brand    = p.brand.toLowerCase().trim();
         const nameKey  = (p.brand + p.name.slice(0, 22)).toLowerCase().replace(/\s+/g, '');
-        if (usedBrands.has(brand)) continue;   // pas 2 fois la même marque
-        if (usedNames.has(nameKey)) continue;  // pas 2 fois le même produit
+        if (usedBrands.has(brand)) continue;
+        if (usedNames.has(nameKey)) continue;
         usedBrands.add(brand);
         usedNames.add(nameKey);
         selected.push(p);
         if (selected.length >= (limit || 2)) break;
       }
       pool = selected;
+
+      // Mémoriser les produits montrés pour ne pas les répéter
+      if (pool.length) {
+        const nowShown = [...shownIds, ...pool.map(p => p.id)];
+        sessionStorage.setItem(cacheKey, JSON.stringify(nowShown));
+      }
 
       if (!pool.length) {
         return '<p class="mkr-reco-empty">Produits bientôt disponibles dans cette catégorie.</p>';
