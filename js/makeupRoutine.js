@@ -174,8 +174,7 @@ const MakeupRoutine = (() => {
   }
 
   function selectLips(profile) {
-    // lipbalm = soin uniquement → exclus des routines maquillage
-    const lips = getByCategories(['lipstick', 'lipgloss', 'lipliner']);
+    const lips = getByCategories(['lipstick', 'lipbalm', 'lipgloss']);
     if (!lips.length) return null;
 
     const { undertone, lipShape, carnation } = profile;
@@ -257,9 +256,7 @@ const MakeupRoutine = (() => {
       if (plumping) selected = [plumping, ...selected];
     }
 
-    // Filet de sécurité : exclure tout produit soin (lipbalm non coloré)
-    const makeupOnly = selected.filter(p => p && p.category !== 'lipbalm');
-    return (makeupOnly.length ? makeupOnly : selected).slice(0, 2);
+    return selected.slice(0, 2);
   }
 
   function selectEyeliner(profile) {
