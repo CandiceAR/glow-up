@@ -29,9 +29,15 @@ const MakeupRoutine = (() => {
         const data = await res.json();
         allProducts = data.products || [];
       }
-      catalogue = allProducts.filter(p => p.active !== false);
+      // Garder UNIQUEMENT les produits maquillage — jamais de soin
+      const SKINCARE_CATS = new Set([
+        'cleanser', 'serum', 'eye', 'cream', 'spf', 'nightmask', 'demaquillant', 'lipbalm'
+      ]);
+      catalogue = allProducts.filter(p =>
+        p.active !== false && !SKINCARE_CATS.has(p.category)
+      );
       isLoaded = true;
-      console.log('[MakeupRoutine] Catalogue chargé:', catalogue.length, 'produits');
+      console.log('[MakeupRoutine] Catalogue chargé:', catalogue.length, 'produits maquillage');
     } catch (e) {
       console.error('[MakeupRoutine] Erreur chargement catalogue:', e);
       catalogue = [];
