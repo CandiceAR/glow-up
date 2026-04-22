@@ -133,6 +133,35 @@ const Questionnaire = (() => {
     },
     {
       id: 'q10',
+      key: 'makeupFocus',
+      question: 'Quelle zone aimes-tu le plus mettre en valeur ?',
+      subtitle: 'Ta routine se terminera par cette zone — comme une signature',
+      type: 'single',
+      required: false,
+      options: [
+        { value: 'yeux',   label: 'Les yeux',   desc: 'Regard intense ou naturel' },
+        { value: 'levres', label: 'Les lèvres',  desc: 'Couleur, volume, brillance' },
+        { value: 'teint',  label: 'Le teint',    desc: 'Peau nette et lumineuse' },
+        { value: 'joues',  label: 'Les joues',   desc: 'Bonne mine, éclat, structure' }
+      ]
+    },
+    {
+      id: 'q11',
+      key: 'makeupAvoid',
+      question: 'Y a-t-il une zone que tu préfères moins maquiller ?',
+      subtitle: 'On te donnera des conseils personnalisés pour l\'apprivoiser',
+      type: 'single',
+      required: false,
+      options: [
+        { value: 'yeux',   label: 'Les yeux',   desc: 'Liner, mascara, fard' },
+        { value: 'levres', label: 'Les lèvres',  desc: 'Rouge à lèvres, gloss' },
+        { value: 'teint',  label: 'Le teint',    desc: 'Fond de teint, anti-cernes' },
+        { value: 'joues',  label: 'Les joues',   desc: 'Blush, bronzer, enlumineur' },
+        { value: 'aucune', label: 'Aucune',      desc: 'J\'aime tout maquiller' }
+      ]
+    },
+    {
+      id: 'q12',
       key: 'ageGroup',
       question: 'Pour affiner tes recommandations, dans quelle tranche te situes-tu ?',
       type: 'single',
@@ -146,7 +175,7 @@ const Questionnaire = (() => {
       ]
     },
     {
-      id: 'q11',
+      id: 'q13',
       key: 'skinMaturity',
       question: 'Comment décrirais-tu ta peau en ce moment ?',
       type: 'single',
@@ -160,7 +189,7 @@ const Questionnaire = (() => {
       ]
     },
     {
-      id: 'q12',
+      id: 'q14',
       key: 'skinTone',
       question: 'Quelle est ta carnation ?',
       subtitle: 'Pour personnaliser les aperçus de maquillage',

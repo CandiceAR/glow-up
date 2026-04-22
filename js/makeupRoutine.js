@@ -71,6 +71,51 @@ const MakeupRoutine = (() => {
     return shuffle(products.filter(Boolean)).slice(0, count);
   }
 
+  // ─── Filtre par budget ────────────────────────────────────────
+  const BUDGET_MAX = { low: 20, medium: 50, high: 100, premium: Infinity };
+
+  function filterByBudget(products, budget) {
+    if (!budget || !products?.length) return products;
+    const max = BUDGET_MAX[budget] ?? Infinity;
+    if (max === Infinity) return products;
+    const filtered = products.filter(p => !p.price || p.price <= max);
+    return filtered.length >= 1 ? filtered : products; // fallback si trop restrictif
+  }
+
+  // ─── Conseil personnalisé pour zone évitée ───────────────────
+  function getAvoidTip(zone, profile) {
+    const { undertone, faceShape, eyeShape, carnation } = profile;
+
+    const carLabel  = carnation === 'light' ? 'claire' : carnation === 'dark' ? 'foncée' : 'medium';
+    const toneWarm  = 'dorés et terracotta';
+    const toneCool  = 'mauves et gris fumé';
+    const toneNutr  = 'nude et taupe';
+    const toneLabel = undertone === 'warm' ? toneWarm : undertone === 'cool' ? toneCool : toneNutr;
+
+    if (zone === 'yeux') {
+      const eyeGoal = eyeShape === 'round' ? 'allonger et intensifier'
+                    : eyeShape === 'narrow' ? 'ouvrir et agrandir'
+                    : 'sublimer le galbe naturel';
+      return `Même 30 secondes suffisent. Un trait de crayon nude en waterline et un mascara volumisant permettent d'${eyeGoal} sans effort. Les teintes ${toneLabel} sont naturelles et sans risque d'erreur.`;
+    }
+    if (zone === 'levres') {
+      const shades = undertone === 'warm' ? 'pêche, corail ou nude caramel'
+                   : undertone === 'cool' ? 'rose poudré, mauve ou berry'
+                   : 'nude rosé ou brun doux';
+      return `Un gloss ou baume teinté en ${shades} redonnes de l'éclat en 5 secondes — sans trait précis, sans contrainte. L'effet naturel est tout aussi élégant.`;
+    }
+    if (zone === 'teint') {
+      return `Une BB crème fluide appliquée au doigt en 30 secondes unifie le teint sans effet masque. Avec ta carnation ${carLabel}, les textures légères donnent le rendu le plus naturel.`;
+    }
+    if (zone === 'joues') {
+      const placement = faceShape === 'round'  ? 'en diagonale vers les tempes pour affiner'
+                      : faceShape === 'square' ? 'sur les pommettes pour adoucir la mâchoire'
+                      : 'sur les pommettes en sweep léger';
+      return `Un voile de blush crème posé ${placement} apporte de la vie au teint en 5 secondes — sans pinceau, juste au doigt.`;
+    }
+    return '';
+  }
+
   // ══════════════════════════════════════════════════════════════
   // SÉLECTION INTELLIGENTE DES PRODUITS
   // Basée sur le profil peau — retourne des produits du catalogue
@@ -115,7 +160,7 @@ const MakeupRoutine = (() => {
       if (cool.length >= 2) candidates = cool;
     }
 
-    return pickRandom(candidates, 2);
+    return pickRandom(filterByBudget(candidates, profile.budget), 2);
   }
 
   function selectConcealer(profile) {
@@ -142,7 +187,7 @@ const MakeupRoutine = (() => {
       selected = [clinique, ...selected.filter(p => p?.id !== 'm038')];
     }
 
-    return selected.slice(0, 2);
+    return filterByBudget(selected, profile.budget).slice(0, 2);
   }
 
   function selectMascara(profile) {
@@ -259,7 +304,7 @@ const MakeupRoutine = (() => {
 
     // Filet de sécurité : exclure tout lipbalm qui aurait pu glisser via getById
     selected = selected.filter(p => p && p.category !== 'lipbalm');
-    return selected.slice(0, 2);
+    return filterByBudget(selected, profile.budget).slice(0, 2);
   }
 
   function selectEyeliner(profile) {
@@ -277,57 +322,58 @@ const MakeupRoutine = (() => {
       selected = getById('m036'); // Éclair de Nuit (noir)
     }
 
-    return selected ? [selected] : [eyeliners[0]];
+    const result = selected ? [selected] : [eyeliners[0]];
+    return filterByBudget(result, profile.budget).slice(0, 1);
   }
 
   function selectBronzer(profile) {
     const bronzers = getByCategory('bronzer');
     if (!bronzers.length) return null;
 
-    // Best-sellers
-    return [getById('m093'), getById('m089')].filter(Boolean).slice(0, 1); // NYX Butter Bronzer
+    const pool = [getById('m093'), getById('m089')].filter(Boolean);
+    return filterByBudget(pool, profile.budget).slice(0, 1);
   }
 
   function selectBlush(profile) {
     const products = getByCategory('blush');
     if (!products.length) return null;
 
-    const { undertone } = profile;
+    const { undertone, budget } = profile;
     let pool = products.filter(p =>
       !p.undertone || p.undertone === 'neutral' || p.undertone === undertone
     );
     if (pool.length < 1) pool = products;
-    return pickRandom(pool, 2);
+    return pickRandom(filterByBudget(pool, budget), 2);
   }
 
   function selectHighlighter(profile) {
     const products = getByCategory('highlighter');
     if (!products.length) return null;
 
-    const { undertone } = profile;
+    const { undertone, budget } = profile;
     let pool = products.filter(p =>
       !p.undertone || p.undertone === 'neutral' || p.undertone === undertone
     );
     if (pool.length < 1) pool = products;
-    return pickRandom(pool, 1);
+    return pickRandom(filterByBudget(pool, budget), 1);
   }
 
   function selectEyeshadow(profile) {
     const products = getByCategory('eyeshadow');
     if (!products.length) return null;
 
-    const { undertone } = profile;
+    const { undertone, budget } = profile;
     let pool = products.filter(p =>
       !p.undertone || p.undertone === 'neutral' || p.undertone === undertone
     );
     if (pool.length < 1) pool = products;
-    return pickRandom(pool, 2);
+    return pickRandom(filterByBudget(pool, budget), 2);
   }
 
   function selectPowder(profile) {
     const products = getByCategory('powder');
     if (!products.length) return null;
-    return pickRandom(products, 1);
+    return pickRandom(filterByBudget(products, profile.budget), 1);
   }
 
   // ══════════════════════════════════════════════════════════════
@@ -483,27 +529,68 @@ const MakeupRoutine = (() => {
       return;
     }
 
+    // ─── Groupes de sections par zone ──────────────────────────
+    const { makeupFocus, makeupAvoid } = profile;
+
+    // Tip enrichi pour la zone évitée (conseil personnalisé bienveillant)
+    function tipForZone(zone, cat, defaultTip) {
+      if (makeupAvoid && makeupAvoid !== 'aucune' && zoneOf(cat) === makeupAvoid) {
+        const avoidTip = getAvoidTip(makeupAvoid, profile);
+        return avoidTip
+          ? `<span class="avoid-zone-badge">💛 On t'aide à apprivoiser cette zone</span> ${avoidTip}`
+          : defaultTip;
+      }
+      return defaultTip;
+    }
+
+    function zoneOf(cat) {
+      if (['foundation','concealer','powder'].includes(cat)) return 'teint';
+      if (['blush','bronzer','highlighter'].includes(cat))   return 'joues';
+      if (['eyeshadow','eyeliner','mascara'].includes(cat))  return 'yeux';
+      if (['lips','lipstick','lipgloss','lipliner'].includes(cat)) return 'levres';
+      return null;
+    }
+
+    // Toutes les sections dans l'ordre par défaut
+    const allSections = [
+      { zone:'teint',   html: renderSection('Teint',             '◇', tipForZone('teint',   'foundation',  getTip('foundation',  profile)), foundations)  },
+      { zone:'teint',   html: renderSection('Anti-cernes',       '◉', tipForZone('teint',   'concealer',   getTip('concealer',   profile)), concealers)   },
+      { zone:'teint',   html: renderSection('Poudre',            '○', tipForZone('teint',   'powder',      getTip('powder',      profile)), powders)      },
+      { zone:'joues',   html: renderSection('Blush & Joues',     '❋', tipForZone('joues',   'blush',       getTip('blush',       profile)), blushes)      },
+      { zone:'joues',   html: renderSection('Bronzer',           '☀', tipForZone('joues',   'bronzer',     getTip('bronzer',     profile)), bronzers)     },
+      { zone:'joues',   html: renderSection('Enlumineur',        '✦', tipForZone('joues',   'highlighter', getTip('highlighter', profile)), highlighters) },
+      { zone:'yeux',    html: renderSection('Fard à paupières',  '◈', tipForZone('yeux',    'eyeshadow',   getTip('eyeshadow',   profile)), eyeshadows)   },
+      { zone:'yeux',    html: renderSection('Liner',             '◈', tipForZone('yeux',    'eyeliner',    getTip('eyeliner',    profile)), eyeliners)    },
+      { zone:'yeux',    html: renderSection('Mascara',           '○', tipForZone('yeux',    'mascara',     getTip('mascara',     profile)), mascaras)     },
+      { zone:'levres',  html: renderSection('Lèvres',            '❋', tipForZone('levres',  'lips',        getTip('lips',        profile)), lips)         }
+    ];
+
+    // Zone évitée : mise en avant en premier (avec conseil)
+    // Zone préférée : toujours en dernier (comme une signature)
+    const avoidZone = (makeupAvoid && makeupAvoid !== 'aucune') ? makeupAvoid : null;
+    const focusZone = makeupFocus || null;
+
+    const avoidSections  = avoidZone  ? allSections.filter(s => s.zone === avoidZone)  : [];
+    const focusSections  = focusZone  ? allSections.filter(s => s.zone === focusZone)  : [];
+    const middleSections = allSections.filter(s =>
+      s.zone !== avoidZone && s.zone !== focusZone
+    );
+
+    const ordered = [...avoidSections, ...middleSections, ...focusSections];
+    const sectionsHtml = ordered.map(s => s.html).join('');
+
     container.innerHTML = `
       <div class="premium-routine">
 
         <header class="premium-header">
           <span class="premium-tag">Ta sélection personnalisée</span>
           <h1 class="premium-title">Routine Make-up</h1>
-          <p class="premium-subtitle">Produits sélectionnés selon ton analyse</p>
+          <p class="premium-subtitle">Produits sélectionnés selon ton profil et ton analyse</p>
         </header>
 
         ${renderProfile(profile)}
 
-        ${renderSection('Teint',        '◇', getTip('foundation',  profile), foundations)}
-        ${renderSection('Anti-cernes',  '◉', getTip('concealer',   profile), concealers)}
-        ${renderSection('Poudre',       '○', getTip('powder',      profile), powders)}
-        ${renderSection('Blush & Joues','❋', getTip('blush',       profile), blushes)}
-        ${renderSection('Bronzer',      '☀', getTip('bronzer',     profile), bronzers)}
-        ${renderSection('Enlumineur',   '✦', getTip('highlighter', profile), highlighters)}
-        ${renderSection('Fard à paupières', '◈', getTip('eyeshadow', profile), eyeshadows)}
-        ${renderSection('Liner',        '◈', getTip('eyeliner',    profile), eyeliners)}
-        ${renderSection('Mascara',      '○', getTip('mascara',     profile), mascaras)}
-        ${renderSection('Lèvres',       '❋', getTip('lips',        profile), lips)}
+        ${sectionsHtml}
 
         <footer class="premium-footer">
           <p>Liens affiliés Amazon · Même commission sur tous les produits</p>
@@ -539,17 +626,28 @@ const MakeupRoutine = (() => {
       return;
     }
 
-    const analysis = AppState?.face?.skinAnalysis;
-    const questionnaire = AppState?.questionnaire?.answers;
+    const analysis      = AppState?.face?.skinAnalysis;
+    const questionnaire = AppState?.questionnaire?.answers || {};
+
+    // Carnation : analyse photo en priorité, sinon questionnaire skinTone
+    const carnationRaw = analysis?.carnation?.type || questionnaire?.skinTone || 'medium';
+    const carnationMap = { light: 'light', clair: 'light', medium: 'medium', fonce: 'dark', dark: 'dark' };
+    const carnation    = carnationMap[carnationRaw] || 'medium';
 
     const profile = {
-      faceShape:  analysis?.faceShape?.shape || 'oval',
-      skinType:   analysis?.skinType?.type   || questionnaire?.skinType || 'normale',
-      undertone:  analysis?.undertone?.type  || 'neutral',
-      eyeShape:   analysis?.eyeShape  || 'almond',
-      lipShape:   analysis?.lipShape  || 'medium',
-      // Carnation depuis le questionnaire (claire / medium / dark)
-      carnation:  questionnaire?.carnation   || 'medium'
+      // ── Analyse visuelle (priorité) ──
+      faceShape:    analysis?.faceShape?.shape  || 'oval',
+      skinType:     analysis?.skinType?.type    || questionnaire?.skinType  || 'normale',
+      undertone:    analysis?.undertone?.type   || 'neutral',
+      eyeShape:     analysis?.eyeShape          || 'almond',
+      lipShape:     analysis?.lipShape          || 'medium',
+      carnation,
+      // ── Questionnaire ──
+      budget:       questionnaire?.budget       || null,
+      ageGroup:     questionnaire?.ageGroup     || null,
+      skinMaturity: questionnaire?.skinMaturity || null,
+      makeupFocus:  questionnaire?.makeupFocus  || null,
+      makeupAvoid:  questionnaire?.makeupAvoid  || null
     };
 
     console.log('[MakeupRoutine] Profil:', profile);
