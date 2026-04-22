@@ -288,6 +288,48 @@ const MakeupRoutine = (() => {
     return [getById('m093'), getById('m089')].filter(Boolean).slice(0, 1); // NYX Butter Bronzer
   }
 
+  function selectBlush(profile) {
+    const products = getByCategory('blush');
+    if (!products.length) return null;
+
+    const { undertone } = profile;
+    let pool = products.filter(p =>
+      !p.undertone || p.undertone === 'neutral' || p.undertone === undertone
+    );
+    if (pool.length < 1) pool = products;
+    return pickRandom(pool, 2);
+  }
+
+  function selectHighlighter(profile) {
+    const products = getByCategory('highlighter');
+    if (!products.length) return null;
+
+    const { undertone } = profile;
+    let pool = products.filter(p =>
+      !p.undertone || p.undertone === 'neutral' || p.undertone === undertone
+    );
+    if (pool.length < 1) pool = products;
+    return pickRandom(pool, 1);
+  }
+
+  function selectEyeshadow(profile) {
+    const products = getByCategory('eyeshadow');
+    if (!products.length) return null;
+
+    const { undertone } = profile;
+    let pool = products.filter(p =>
+      !p.undertone || p.undertone === 'neutral' || p.undertone === undertone
+    );
+    if (pool.length < 1) pool = products;
+    return pickRandom(pool, 2);
+  }
+
+  function selectPowder(profile) {
+    const products = getByCategory('powder');
+    if (!products.length) return null;
+    return pickRandom(products, 1);
+  }
+
   // ══════════════════════════════════════════════════════════════
   // TIPS CONTEXTUELS
   // ══════════════════════════════════════════════════════════════
@@ -303,9 +345,13 @@ const MakeupRoutine = (() => {
       },
       concealer: 'Tapote doucement sous les yeux en triangle inversé.',
       mascara: 'Zigzague la brosse de la racine vers les pointes.',
-      lips: 'Applique au doigt pour un effet naturel.',
+      lips: 'Applique au doigt pour un effet naturel, ou au pinceau pour plus de précision.',
       eyeliner: 'Trace près des cils. Estompe pour un effet smoky.',
-      bronzer: 'Applique en 3 : tempes, pommettes, mâchoire.'
+      bronzer: 'Applique en 3 : tempes, pommettes, mâchoire.',
+      blush: 'Souris légèrement et applique sur les rondeurs des joues vers les tempes.',
+      highlighter: 'Dépose sur le haut des pommettes, la pointe du nez et l\'arc de Cupidon.',
+      eyeshadow: 'Commence par la paupière mobile, estompe vers l\'arcade sourcilière.',
+      powder: 'Applique en tapotant sur la zone T pour fixer et matifier.'
     };
 
     if (category === 'foundation') {
@@ -413,12 +459,16 @@ const MakeupRoutine = (() => {
   // ══════════════════════════════════════════════════════════════
 
   function render(container, profile) {
-    const foundations = selectFoundation(profile);
-    const concealers = selectConcealer(profile);
-    const mascaras = selectMascara(profile);
-    const lips = selectLips(profile);
-    const eyeliners = selectEyeliner(profile);
-    const bronzers = selectBronzer(profile);
+    const foundations   = selectFoundation(profile);
+    const concealers    = selectConcealer(profile);
+    const powders       = selectPowder(profile);
+    const blushes       = selectBlush(profile);
+    const bronzers      = selectBronzer(profile);
+    const highlighters  = selectHighlighter(profile);
+    const eyeshadows    = selectEyeshadow(profile);
+    const eyeliners     = selectEyeliner(profile);
+    const mascaras      = selectMascara(profile);
+    const lips          = selectLips(profile);
 
     const hasProducts = foundations?.length || concealers?.length || mascaras?.length || lips?.length;
 
@@ -444,12 +494,16 @@ const MakeupRoutine = (() => {
 
         ${renderProfile(profile)}
 
-        ${renderSection('Teint', '◇', getTip('foundation', profile), foundations)}
-        ${renderSection('Anti-cernes', '◉', getTip('concealer', profile), concealers)}
-        ${renderSection('Mascara', '○', getTip('mascara', profile), mascaras)}
-        ${renderSection('Lèvres', '❋', getTip('lips', profile), lips)}
-        ${renderSection('Liner', '◈', getTip('eyeliner', profile), eyeliners)}
-        ${renderSection('Bronzer', '☀', getTip('bronzer', profile), bronzers)}
+        ${renderSection('Teint',        '◇', getTip('foundation',  profile), foundations)}
+        ${renderSection('Anti-cernes',  '◉', getTip('concealer',   profile), concealers)}
+        ${renderSection('Poudre',       '○', getTip('powder',      profile), powders)}
+        ${renderSection('Blush & Joues','❋', getTip('blush',       profile), blushes)}
+        ${renderSection('Bronzer',      '☀', getTip('bronzer',     profile), bronzers)}
+        ${renderSection('Enlumineur',   '✦', getTip('highlighter', profile), highlighters)}
+        ${renderSection('Fard à paupières', '◈', getTip('eyeshadow', profile), eyeshadows)}
+        ${renderSection('Liner',        '◈', getTip('eyeliner',    profile), eyeliners)}
+        ${renderSection('Mascara',      '○', getTip('mascara',     profile), mascaras)}
+        ${renderSection('Lèvres',       '❋', getTip('lips',        profile), lips)}
 
         <footer class="premium-footer">
           <p>Liens affiliés Amazon · Même commission sur tous les produits</p>
