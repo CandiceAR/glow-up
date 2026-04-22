@@ -133,6 +133,34 @@ const Questionnaire = (() => {
     },
     {
       id: 'q10',
+      key: 'ageGroup',
+      question: 'Pour affiner tes recommandations, dans quelle tranche te situes-tu ?',
+      type: 'single',
+      required: true,
+      options: [
+        { value: 'moins-20', label: 'Moins de 20 ans', desc: 'Peau jeune, éclat naturel' },
+        { value: '20-25',    label: '20 – 25 ans',     desc: 'Prévention & légèreté' },
+        { value: '25-30',    label: '25 – 30 ans',     desc: 'Premiers soins ciblés' },
+        { value: '30-40',    label: '30 – 40 ans',     desc: 'Soin actif & hydratation' },
+        { value: '40+',      label: '40 ans et plus',  desc: 'Confort, éclat & fermeté' }
+      ]
+    },
+    {
+      id: 'q11',
+      key: 'skinMaturity',
+      question: 'Comment décrirais-tu ta peau en ce moment ?',
+      type: 'single',
+      required: true,
+      options: [
+        { value: 'lisse',   label: 'Peau lisse',                  desc: 'Texture uniforme, peu de marques' },
+        { value: 'fatigue', label: 'Premiers signes de fatigue',  desc: 'Teint un peu terne, légères marques' },
+        { value: 'eclat',   label: 'Manque d\'éclat',             desc: 'Peau terne, teint à raviver' },
+        { value: 'ridules', label: 'Ridules / perte de fermeté',  desc: 'Besoin de soutien et de densité' },
+        { value: 'unknown', label: 'Je ne sais pas encore',       desc: 'Laisse-moi découvrir ce qui me convient' }
+      ]
+    },
+    {
+      id: 'q12',
       key: 'skinTone',
       question: 'Quelle est ta carnation ?',
       subtitle: 'Pour personnaliser les aperçus de maquillage',

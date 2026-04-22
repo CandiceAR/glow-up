@@ -991,6 +991,8 @@ const SkinAnalysis = (() => {
     const ca  = carnation?.type  || 'medium';
     const cer = cernes?.detected ? cernes.type : 'none';
     const ec  = eyeContrast?.level || 'moyen';
+    const answers = AppState?.questionnaire?.answers || {};
+    const mp  = ProductCatalog.getMaturityPreference(answers);
 
     const UNDERTONE_EXPLAIN = {
       warm:    'Ta peau a des reflets dorés et légèrement pêchés — c\'est ce qu\'on appelle un sous-ton chaud. Les teintes chaudes comme l\'or et le corail te subliment naturellement.',
@@ -1049,6 +1051,12 @@ const SkinAnalysis = (() => {
       if (pool.length < 2) pool = buildPool(ut, null);
       // Essai 3 : si toujours moins de 2, relâcher le sous-ton aussi
       if (pool.length < 2) pool = buildPool(null, null);
+
+      // Filtre maturité peau (soft — appliqué après, ne jamais vider)
+      if (mp && mp !== 'all') {
+        const matFiltered = pool.filter(p => !p.maturity || p.maturity === 'all' || p.maturity === mp);
+        if (matFiltered.length >= (limit || 2)) pool = matFiltered;
+      }
 
       pool = pool.sort((a, b) => {
         if (b.isFeatured !== a.isFeatured) return b.isFeatured ? 1 : -1;

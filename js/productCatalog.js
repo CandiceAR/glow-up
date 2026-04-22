@@ -101,6 +101,14 @@ const ProductCatalog = (() => {
   }
 
   // ─── Obtenir produits recommandés selon les réponses ─────────
+  // ─── Détecter la maturité peau à partir des réponses ─────────
+  function getMaturityPreference(answers) {
+    const { ageGroup, skinMaturity } = answers || {};
+    if (ageGroup === '40+' || skinMaturity === 'ridules') return 'mature';
+    if ((ageGroup === 'moins-20' || ageGroup === '20-25') && skinMaturity === 'lisse') return 'jeune';
+    return 'all';
+  }
+
   function getRecommended(answers) {
     const { skinType, makeupUsed = [], makeupFrequency } = answers;
 
@@ -117,6 +125,15 @@ const ProductCatalog = (() => {
         p.skinTypeTags.includes(skinType)
       );
       if (filtered.length >= 4) pool = filtered;
+    }
+
+    // Filtrer par maturité peau (soft preference — ne jamais vider)
+    const matPref = getMaturityPreference(answers);
+    if (matPref !== 'all') {
+      const matFiltered = pool.filter(p =>
+        !p.maturity || p.maturity === 'all' || p.maturity === matPref
+      );
+      if (matFiltered.length >= 4) pool = matFiltered;
     }
 
     // Trier : featured d'abord, puis par rating
@@ -304,6 +321,6 @@ const ProductCatalog = (() => {
     if (typeof Tracker !== 'undefined') Tracker.trackBuyClick(productId);
   };
 
-  return { load, getRecommended, getByCategory, renderCard, openProductModal, ensureTag, mergeProducts };
+  return { load, getRecommended, getMaturityPreference, getByCategory, renderCard, openProductModal, ensureTag, mergeProducts };
 
 })();
