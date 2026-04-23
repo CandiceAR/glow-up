@@ -209,6 +209,7 @@ const RoutineRenderer = (() => {
         </div>
         ${AppState.user.isGuest ? `<button class="btn btn-outline save-banner-btn" onclick="openAuthModal()">Créer mon compte →</button>` : ''}
       </div>`;
+  }
 
   // ─── Section libre ────────────────────────────────────────────
   function renderRoutineSection(title, steps, emoji) {
