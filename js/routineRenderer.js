@@ -116,10 +116,9 @@ const RoutineRenderer = (() => {
   }
 
   // ─── Mini carte produit inline dans la routine ────────────────
-  function renderStepProduct(product, stepType) {
+  function renderStepProduct(product) {
     if (!product) return '';
     const stars = '★'.repeat(Math.floor(product.rating || 0)) + (product.rating % 1 >= 0.5 ? '½' : '');
-    const molIdx = Math.floor(_seededRandom((stepType || '') + '_mol') * 5);
     return `
       <div class="step-product-card" onclick="event.stopPropagation(); ProductCatalog.openProductModal('${product.id}')">
         <img class="step-product-img"
@@ -141,9 +140,7 @@ const RoutineRenderer = (() => {
            onclick="event.stopPropagation(); trackAmazonClick('${product.id}')">
           🛒 Ajouter au panier
         </a>
-      </div>
-      ${typeof Skinpedia !== 'undefined' ? Skinpedia.renderRoutineImprovement(product, stepType, molIdx) : ''}
-      ${typeof Skinpedia !== 'undefined' ? Skinpedia.renderMoleculeChips(product, stepType) : ''}`;
+      </div>`;
   }
 
   // ─── Rendu principal ──────────────────────────────────────────
@@ -190,8 +187,28 @@ const RoutineRenderer = (() => {
       ${isLocked ? renderPaywallCTA() : renderProductsCTA()}
 
       ${renderDebugLog(routine.log)}
+
+      <!-- Bannière sauvegarde -->
+      ${renderSaveBanner()}
     `;
   }
+
+  function renderSaveBanner() {
+    const hasSave  = typeof RoutineSaver !== 'undefined' && RoutineSaver.hasCompletedProfile();
+    const hasPhoto = !!AppState?.face?.skinAnalysis;
+    const parts    = [];
+    if (hasPhoto) parts.push('Analyse photo');
+    parts.push('Questionnaire');
+    parts.push('Routine');
+    return `
+      <div class="save-banner">
+        <span class="save-banner-icon">✓</span>
+        <div class="save-banner-text">
+          <strong>${parts.join(' · ')} enregistrés</strong>
+          <span>${AppState.user.isGuest ? 'Crée un compte pour retrouver ton profil sur tous tes appareils.' : 'Retrouve ton profil dans <strong>Mon compte</strong>.'}</span>
+        </div>
+        ${AppState.user.isGuest ? `<button class="btn btn-outline save-banner-btn" onclick="openAuthModal()">Créer mon compte →</button>` : ''}
+      </div>`;
 
   // ─── Section libre ────────────────────────────────────────────
   function renderRoutineSection(title, steps, emoji) {
@@ -213,8 +230,12 @@ const RoutineRenderer = (() => {
               </div>
               <div class="step-type">${formatStepType(step.step)}</div>
             </div>
-            ${renderStepProduct(product, step.step)}
-            ${applyTip ? `<div class="step-apply-tip">${applyTip}</div>` : ''}
+            ${renderStepProduct(product)}
+            ${applyTip ? `
+            <details class="step-tip-details">
+              <summary class="step-tip-toggle">💡 Comment appliquer</summary>
+              <div class="step-apply-tip">${applyTip}</div>
+            </details>` : ''}
           </div>`;
       }).join('');
 

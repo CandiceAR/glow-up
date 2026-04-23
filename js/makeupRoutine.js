@@ -536,19 +536,9 @@ const MakeupRoutine = (() => {
     }
 
     // ─── Groupes de sections par zone ──────────────────────────
-    const { makeupFocus, makeupAvoid } = profile;
+    const { mkFocus, mkTime } = profile;
 
-    // Tip enrichi pour la zone évitée (conseil personnalisé bienveillant)
-    function tipForZone(zone, cat, defaultTip) {
-      if (makeupAvoid && makeupAvoid !== 'aucune' && zoneOf(cat) === makeupAvoid) {
-        const avoidTip = getAvoidTip(makeupAvoid, profile);
-        return avoidTip
-          ? `<span class="avoid-zone-badge">💛 On t'aide à apprivoiser cette zone</span> ${avoidTip}`
-          : defaultTip;
-      }
-      return defaultTip;
-    }
-
+    // Zone à améliorer : affichée en premier avec conseil personnalisé
     function zoneOf(cat) {
       if (['foundation','concealer','powder'].includes(cat)) return 'teint';
       if (['blush','bronzer','highlighter'].includes(cat))   return 'joues';
@@ -557,32 +547,40 @@ const MakeupRoutine = (() => {
       return null;
     }
 
+    function tipForZone(cat, defaultTip) {
+      if (mkFocus && zoneOf(cat) === mkFocus) {
+        const t = getAvoidTip(mkFocus, profile);
+        return t
+          ? `<span class="avoid-zone-badge">💛 On t'aide à sublimer cette zone</span> ${t}`
+          : defaultTip;
+      }
+      return defaultTip;
+    }
+
     // Toutes les sections dans l'ordre par défaut
     const allSections = [
-      { zone:'teint',   html: renderSection('Teint',             '◇', tipForZone('teint',   'foundation',  getTip('foundation',  profile)), foundations)  },
-      { zone:'teint',   html: renderSection('Anti-cernes',       '◉', tipForZone('teint',   'concealer',   getTip('concealer',   profile)), concealers)   },
-      { zone:'teint',   html: renderSection('Poudre',            '○', tipForZone('teint',   'powder',      getTip('powder',      profile)), powders)      },
-      { zone:'joues',   html: renderSection('Blush & Joues',     '❋', tipForZone('joues',   'blush',       getTip('blush',       profile)), blushes)      },
-      { zone:'joues',   html: renderSection('Bronzer',           '☀', tipForZone('joues',   'bronzer',     getTip('bronzer',     profile)), bronzers)     },
-      { zone:'joues',   html: renderSection('Enlumineur',        '✦', tipForZone('joues',   'highlighter', getTip('highlighter', profile)), highlighters) },
-      { zone:'yeux',    html: renderSection('Fard à paupières',  '◈', tipForZone('yeux',    'eyeshadow',   getTip('eyeshadow',   profile)), eyeshadows)   },
-      { zone:'yeux',    html: renderSection('Liner',             '◈', tipForZone('yeux',    'eyeliner',    getTip('eyeliner',    profile)), eyeliners)    },
-      { zone:'yeux',    html: renderSection('Mascara',           '○', tipForZone('yeux',    'mascara',     getTip('mascara',     profile)), mascaras)     },
-      { zone:'levres',  html: renderSection('Lèvres',            '❋', tipForZone('levres',  'lips',        getTip('lips',        profile)), lips)         }
+      { zone:'teint',   html: renderSection('Teint',            '◇', tipForZone('foundation',  getTip('foundation',  profile)), foundations)  },
+      { zone:'teint',   html: renderSection('Anti-cernes',      '◉', tipForZone('concealer',   getTip('concealer',   profile)), concealers)   },
+      { zone:'teint',   html: renderSection('Poudre',           '○', tipForZone('powder',      getTip('powder',      profile)), powders)      },
+      { zone:'joues',   html: renderSection('Blush & Joues',    '❋', tipForZone('blush',       getTip('blush',       profile)), blushes)      },
+      { zone:'joues',   html: renderSection('Bronzer',          '☀', tipForZone('bronzer',     getTip('bronzer',     profile)), bronzers)     },
+      { zone:'joues',   html: renderSection('Enlumineur',       '✦', tipForZone('highlighter', getTip('highlighter', profile)), highlighters) },
+      { zone:'yeux',    html: renderSection('Fard à paupières', '◈', tipForZone('eyeshadow',   getTip('eyeshadow',   profile)), eyeshadows)   },
+      { zone:'yeux',    html: renderSection('Liner',            '◈', tipForZone('eyeliner',    getTip('eyeliner',    profile)), eyeliners)    },
+      { zone:'yeux',    html: renderSection('Mascara',          '○', tipForZone('mascara',     getTip('mascara',     profile)), mascaras)     },
+      { zone:'levres',  html: renderSection('Lèvres',           '❋', tipForZone('lips',        getTip('lips',        profile)), lips)         }
     ];
 
-    // Zone évitée : mise en avant en premier (avec conseil)
-    // Zone préférée : toujours en dernier (comme une signature)
-    const avoidZone = (makeupAvoid && makeupAvoid !== 'aucune') ? makeupAvoid : null;
-    const focusZone = makeupFocus || null;
+    // Zone à améliorer (mkFocus) : toujours affichée en premier
+    const focusSections  = mkFocus ? allSections.filter(s => s.zone === mkFocus) : [];
+    const otherSections  = allSections.filter(s => s.zone !== mkFocus);
+    let ordered = [...focusSections, ...otherSections];
 
-    const avoidSections  = avoidZone  ? allSections.filter(s => s.zone === avoidZone)  : [];
-    const focusSections  = focusZone  ? allSections.filter(s => s.zone === focusZone)  : [];
-    const middleSections = allSections.filter(s =>
-      s.zone !== avoidZone && s.zone !== focusZone
-    );
+    // Limiter le nombre de sections selon le temps disponible (mkTime)
+    const timeLimits = { rapide: 4, moyen: 7, complet: Infinity };
+    const maxSect    = timeLimits[mkTime] ?? Infinity;
+    if (maxSect !== Infinity) ordered = ordered.slice(0, maxSect);
 
-    const ordered = [...avoidSections, ...middleSections, ...focusSections];
     const sectionsHtml = ordered.map(s => s.html).join('');
 
     container.innerHTML = `
@@ -600,8 +598,27 @@ const MakeupRoutine = (() => {
 
         <footer class="premium-footer">
           <p>Liens affiliés Amazon · Même commission sur tous les produits</p>
+          ${_renderSaveBanner()}
         </footer>
 
+      </div>`;
+  }
+
+  function _renderSaveBanner() {
+    const hasPhoto = !!AppState?.face?.skinAnalysis;
+    const parts    = [];
+    if (hasPhoto) parts.push('Analyse photo');
+    parts.push('Questionnaire');
+    parts.push('Routine make-up');
+    const isGuest  = AppState?.user?.isGuest !== false;
+    return `
+      <div class="save-banner">
+        <span class="save-banner-icon">✓</span>
+        <div class="save-banner-text">
+          <strong>${parts.join(' · ')} enregistrés</strong>
+          <span>${isGuest ? 'Crée un compte pour retrouver ton profil partout.' : 'Retrouve ton profil dans <strong>Mon compte</strong>.'}</span>
+        </div>
+        ${isGuest ? `<button class="btn btn-outline save-banner-btn" onclick="openAuthModal()">Créer mon compte →</button>` : ''}
       </div>`;
   }
 
@@ -632,28 +649,35 @@ const MakeupRoutine = (() => {
       return;
     }
 
-    const analysis      = AppState?.face?.skinAnalysis;
-    const questionnaire = AppState?.questionnaire?.answers || {};
+    const analysis    = AppState?.face?.skinAnalysis;
+    const skinQuiz    = AppState?.questionnaire?.answers || {};
+    const mkQuiz      = AppState?.makeupQuiz || {};
 
-    // Carnation : analyse photo en priorité, sinon questionnaire skinTone
-    const carnationRaw = analysis?.carnation?.type || questionnaire?.skinTone || 'medium';
+    // Carnation : analyse photo en priorité, sinon skinTone skincare
+    const carnationRaw = analysis?.carnation?.type || skinQuiz?.skinTone || 'medium';
     const carnationMap = { light: 'light', clair: 'light', medium: 'medium', fonce: 'dark', dark: 'dark' };
     const carnation    = carnationMap[carnationRaw] || 'medium';
+
+    // Budget : quiz makeup en priorité, sinon quiz skincare
+    const budgetMap  = { 'petits-prix': 'low', 'bon-rapport': 'medium', 'premium': 'premium' };
+    const budget     = budgetMap[mkQuiz.mkBudget] || skinQuiz?.budget || null;
 
     const profile = {
       // ── Analyse visuelle (priorité) ──
       faceShape:    analysis?.faceShape?.shape  || 'oval',
-      skinType:     analysis?.skinType?.type    || questionnaire?.skinType  || 'normale',
+      skinType:     mkQuiz.mkSkinType || analysis?.skinType?.type || skinQuiz?.skinType || 'normale',
       undertone:    analysis?.undertone?.type   || 'neutral',
       eyeShape:     analysis?.eyeShape          || 'almond',
       lipShape:     analysis?.lipShape          || 'medium',
       carnation,
-      // ── Questionnaire ──
-      budget:       questionnaire?.budget       || null,
-      ageGroup:     questionnaire?.ageGroup     || null,
-      skinMaturity: questionnaire?.skinMaturity || null,
-      makeupFocus:  questionnaire?.makeupFocus  || null,
-      makeupAvoid:  questionnaire?.makeupAvoid  || null
+      // ── Quiz makeup ──
+      budget,
+      mkFocus:      mkQuiz.mkFocus  || null,   // zone à améliorer (affichée en premier)
+      mkLook:       mkQuiz.mkLook   || null,   // naturel / soigne / glam
+      mkTime:       mkQuiz.mkTime   || null,   // rapide / moyen / complet
+      // ── Quiz skincare (contexte) ──
+      ageGroup:     skinQuiz?.ageGroup     || null,
+      skinMaturity: skinQuiz?.skinMaturity || null
     };
 
     console.log('[MakeupRoutine] Profil:', profile);

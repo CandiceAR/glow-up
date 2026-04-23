@@ -55,7 +55,9 @@ const AppState = {
 
   routineChoice: null,  // 'skincare' | 'makeup' | null
   pendingRoute:  null,  // Route à ouvrir après l'écran d'intention
-  intention:     null   // { key, label, emoji, tone, skincareIntro, makeupIntro, color }
+  intention:     null,  // { key, label, emoji, tone, skincareIntro, makeupIntro, color }
+
+  makeupQuiz: {}        // Réponses au questionnaire makeup (mkSkinType, mkLook, mkFocus, mkTime, mkBudget)
 };
 
 // ─── Navigation ───────────────────────────────────────────────
@@ -479,6 +481,15 @@ function handleCaptureNext() {
 
 // ─── Lancer le flow principal ─────────────────────────────────
 function startGlowUp() {
+  // Si l'utilisatrice est en mode invité, proposer la connexion d'abord
+  if (AppState.user.isGuest) {
+    Auth.openAuthModal('login', _doStartGlowUp);
+    return;
+  }
+  _doStartGlowUp();
+}
+
+function _doStartGlowUp() {
   if (AppState.face.photo && AppState.face.skinAnalysis) {
     showScreen('routine-choice');
   } else if (AppState.face.photo) {
@@ -525,7 +536,11 @@ function pickRoutine(type) {
     return;
   }
   AppState.routineChoice = type;
-  showScreen(type === 'skincare' ? 'questionnaire' : 'makeup');
+  if (type === 'skincare') {
+    Questionnaire.startSkincare();
+  } else {
+    Questionnaire.startMakeup();
+  }
 }
 
 // ─── Paywall ──────────────────────────────────────────────────

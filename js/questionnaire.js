@@ -1,5 +1,5 @@
 /* ============================================================
-   questionnaire.js — 10 questions + progression
+   questionnaire.js — Questionnaire skincare (5 q) + makeup (5 q)
    GLOW UP Phase 0
    ============================================================ */
 
@@ -7,23 +7,26 @@
 
 const Questionnaire = (() => {
 
-  const QUESTIONS = [
+  // ─── Questions Skincare ───────────────────────────────────────
+  const SKINCARE_QUESTIONS = [
     {
-      id: 'q1',
+      id: 'q0',
       key: 'skinType',
+      // Affiché uniquement si l'analyse photo n'a pas détecté le type de peau
+      condition: () => !AppState?.face?.skinAnalysis?.skinType?.type,
       question: 'Quel est ton type de peau ?',
       type: 'single',
       required: true,
       options: [
-        { value: 'normale',   label: 'Normale',   desc: 'Ni trop grasse, ni trop sèche' },
-        { value: 'grasse',    label: 'Grasse',     desc: 'Brillances, pores dilatés' },
-        { value: 'seche',     label: 'Sèche',      desc: 'Tiraillements, peaux fines' },
-        { value: 'mixte',     label: 'Mixte',      desc: 'Zone T grasse, joues sèches' },
-        { value: 'sensible',  label: 'Sensible',   desc: 'Rougeurs, réactions fréquentes' }
+        { value: 'normale',  label: 'Normale',  desc: 'Ni trop grasse, ni trop sèche' },
+        { value: 'grasse',   label: 'Grasse',   desc: 'Brillances, pores dilatés' },
+        { value: 'seche',    label: 'Sèche',    desc: 'Tiraillements, peaux fines' },
+        { value: 'mixte',    label: 'Mixte',    desc: 'Zone T grasse, joues sèches' },
+        { value: 'sensible', label: 'Sensible', desc: 'Rougeurs, réactions fréquentes' }
       ]
     },
     {
-      id: 'q2',
+      id: 'q1',
       key: 'concerns',
       question: 'Quelles sont tes principales préoccupations ?',
       subtitle: 'Jusqu\'à 3 réponses',
@@ -31,139 +34,34 @@ const Questionnaire = (() => {
       max: 3,
       required: true,
       options: [
-        { value: 'acne',          label: 'Acné / Boutons' },
-        { value: 'rougeurs',      label: 'Rougeurs / Irritations' },
-        { value: 'rides',         label: 'Rides / Fermeté' },
-        { value: 'pores',         label: 'Pores dilatés' },
-        { value: 'eclat_terne',   label: 'Teint terne / sans éclat' },
-        { value: 'taches',        label: 'Taches / Hyperpigmentation' },
-        { value: 'cernes',        label: 'Cernes / Poches' },
-        { value: 'deshydration',  label: 'Déshydratation' }
+        { value: 'acne',         label: 'Acné / Boutons' },
+        { value: 'rougeurs',     label: 'Rougeurs / Irritations' },
+        { value: 'rides',        label: 'Rides / Fermeté' },
+        { value: 'pores',        label: 'Pores dilatés' },
+        { value: 'eclat_terne',  label: 'Teint terne / sans éclat' },
+        { value: 'taches',       label: 'Taches / Hyperpigmentation' },
+        { value: 'cernes',       label: 'Cernes / Poches' },
+        { value: 'deshydration', label: 'Déshydratation' }
       ]
     },
     {
-      id: 'q3',
+      id: 'q2',
       key: 'objectives',
       question: 'Quel est ton objectif principal ?',
       type: 'single',
       required: true,
       options: [
-        { value: 'anti-age',        label: 'Anti-âge',       desc: 'Prévenir et réduire les rides' },
-        { value: 'eclat',           label: 'Éclat',          desc: 'Peau lumineuse, bonne mine' },
-        { value: 'hydratation',     label: 'Hydratation',    desc: 'Peau souple et confortable' },
-        { value: 'purification',    label: 'Purification',   desc: 'Réduire imperfections et pores' },
-        { value: 'uniformisation',  label: 'Uniformisation', desc: 'Unifier le teint, estomper taches' }
+        { value: 'anti-age',       label: 'Anti-âge',       desc: 'Prévenir et réduire les rides' },
+        { value: 'eclat',          label: 'Éclat',          desc: 'Peau lumineuse, bonne mine' },
+        { value: 'hydratation',    label: 'Hydratation',    desc: 'Peau souple et confortable' },
+        { value: 'purification',   label: 'Purification',   desc: 'Réduire imperfections et pores' },
+        { value: 'uniformisation', label: 'Uniformisation', desc: 'Unifier le teint, estomper taches' }
       ]
     },
     {
-      id: 'q4',
-      key: 'budget',
-      question: 'Quel est ton budget mensuel skincare ?',
-      type: 'single',
-      required: true,
-      options: [
-        { value: 'low',    label: 'Moins de 20 €',   desc: 'Budget serré, maxi efficacité' },
-        { value: 'medium', label: '20 – 50 €',       desc: 'Le juste milieu qualité/prix' },
-        { value: 'high',   label: '50 – 100 €',      desc: 'Je mise sur ma peau' },
-        { value: 'premium',label: 'Plus de 100 €',   desc: 'Premium et sélectif' }
-      ]
-    },
-    {
-      id: 'q5',
-      key: 'frequency',
-      question: 'À quelle fréquence fais-tu ta routine ?',
-      type: 'single',
-      required: true,
-      options: [
-        { value: 'matin-soir',    label: 'Matin & soir',         desc: 'Routine complète deux fois/jour' },
-        { value: 'matin',         label: 'Matin seulement',      desc: 'Je me concentre sur le matin' },
-        { value: 'soir',          label: 'Soir seulement',       desc: 'Préférence pour la routine nuit' },
-        { value: 'occasionnel',   label: 'Occasionnellement',    desc: 'Quelques fois par semaine' }
-      ]
-    },
-    {
-      id: 'q6',
-      key: 'activeTolerance',
-      question: 'Ta tolérance aux actifs cosmétiques ?',
-      type: 'single',
-      required: true,
-      options: [
-        { value: 'debutante',     label: 'Débutante',            desc: 'Premiers pas dans le skincare' },
-        { value: 'intermediaire', label: 'Intermédiaire',        desc: 'J\'utilise déjà AHA/BHA, Vit C...' },
-        { value: 'experte',       label: 'Experte',              desc: 'Rétinol, acides forts, etc.' }
-      ]
-    },
-    {
-      id: 'q7',
-      key: 'fragranceSensitive',
-      question: 'Es-tu sensible aux parfums dans les soins ?',
-      type: 'single',
-      required: true,
-      options: [
-        { value: 'oui',  label: 'Oui',  desc: 'Je réagis souvent aux parfums' },
-        { value: 'non',  label: 'Non',  desc: 'Aucun problème avec les parfums' }
-      ]
-    },
-    {
-      id: 'q8',
-      key: 'makeupFrequency',
-      question: 'Tu portes du maquillage ?',
-      type: 'single',
-      required: true,
-      options: [
-        { value: 'jamais',       label: 'Jamais',           desc: 'Je préfère le naturel' },
-        { value: 'parfois',      label: 'Parfois',          desc: 'Selon les occasions' },
-        { value: 'tous-les-jours', label: 'Tous les jours', desc: 'Partie de ma routine quotidienne' }
-      ]
-    },
-    {
-      id: 'q9',
-      key: 'makeupUsed',
-      question: 'Quels produits maquillage utilises-tu ?',
-      subtitle: 'Sélectionne tout ce que tu utilises',
-      type: 'multiple',
-      max: 4,
-      required: false,
-      options: [
-        { value: 'lipstick',    label: 'Rouge à lèvres / Gloss' },
-        { value: 'blush',       label: 'Blush / Fard à joues' },
-        { value: 'foundation',  label: 'Fond de teint / BB Cream' },
-        { value: 'mascara',     label: 'Mascara' }
-      ]
-    },
-    {
-      id: 'q10',
-      key: 'makeupFocus',
-      question: 'Quelle zone aimes-tu le plus mettre en valeur ?',
-      subtitle: 'Ta routine se terminera par cette zone — comme une signature',
-      type: 'single',
-      required: false,
-      options: [
-        { value: 'yeux',   label: 'Les yeux',   desc: 'Regard intense ou naturel' },
-        { value: 'levres', label: 'Les lèvres',  desc: 'Couleur, volume, brillance' },
-        { value: 'teint',  label: 'Le teint',    desc: 'Peau nette et lumineuse' },
-        { value: 'joues',  label: 'Les joues',   desc: 'Bonne mine, éclat, structure' }
-      ]
-    },
-    {
-      id: 'q11',
-      key: 'makeupAvoid',
-      question: 'Y a-t-il une zone que tu préfères moins maquiller ?',
-      subtitle: 'On te donnera des conseils personnalisés pour l\'apprivoiser',
-      type: 'single',
-      required: false,
-      options: [
-        { value: 'yeux',   label: 'Les yeux',   desc: 'Liner, mascara, fard' },
-        { value: 'levres', label: 'Les lèvres',  desc: 'Rouge à lèvres, gloss' },
-        { value: 'teint',  label: 'Le teint',    desc: 'Fond de teint, anti-cernes' },
-        { value: 'joues',  label: 'Les joues',   desc: 'Blush, bronzer, enlumineur' },
-        { value: 'aucune', label: 'Aucune',      desc: 'J\'aime tout maquiller' }
-      ]
-    },
-    {
-      id: 'q12',
+      id: 'q3',
       key: 'ageGroup',
-      question: 'Pour affiner tes recommandations, dans quelle tranche te situes-tu ?',
+      question: 'Dans quelle tranche d\'âge te situes-tu ?',
       type: 'single',
       required: true,
       options: [
@@ -175,35 +73,107 @@ const Questionnaire = (() => {
       ]
     },
     {
-      id: 'q13',
-      key: 'skinMaturity',
-      question: 'Comment décrirais-tu ta peau en ce moment ?',
+      id: 'q4',
+      key: 'activeTolerance',
+      question: 'Ta tolérance aux actifs cosmétiques ?',
       type: 'single',
       required: true,
       options: [
-        { value: 'lisse',   label: 'Peau lisse',                  desc: 'Texture uniforme, peu de marques' },
-        { value: 'fatigue', label: 'Premiers signes de fatigue',  desc: 'Teint un peu terne, légères marques' },
-        { value: 'eclat',   label: 'Manque d\'éclat',             desc: 'Peau terne, teint à raviver' },
-        { value: 'ridules', label: 'Ridules / perte de fermeté',  desc: 'Besoin de soutien et de densité' },
-        { value: 'unknown', label: 'Je ne sais pas encore',       desc: 'Laisse-moi découvrir ce qui me convient' }
+        { value: 'debutante',     label: 'Débutante',     desc: 'Premiers pas dans le skincare' },
+        { value: 'intermediaire', label: 'Intermédiaire', desc: 'J\'utilise déjà AHA/BHA, Vit C...' },
+        { value: 'experte',       label: 'Experte',       desc: 'Rétinol, acides forts, etc.' }
       ]
     },
     {
-      id: 'q14',
-      key: 'skinTone',
-      question: 'Quelle est ta carnation ?',
-      subtitle: 'Pour personnaliser les aperçus de maquillage',
+      id: 'q5',
+      key: 'budget',
+      question: 'Quel est ton budget mensuel skincare ?',
       type: 'single',
       required: true,
       options: [
-        { value: 'light',   label: 'Claire',   desc: 'Peau très claire à claire' },
-        { value: 'medium',  label: 'Medium',   desc: 'Carnation intermédiaire' },
-        { value: 'dark',    label: 'Foncée',   desc: 'Peau foncée à très foncée' }
+        { value: 'low',     label: 'Moins de 20 €', desc: 'Budget serré, maxi efficacité' },
+        { value: 'medium',  label: '20 – 50 €',     desc: 'Le juste milieu qualité/prix' },
+        { value: 'high',    label: '50 – 100 €',    desc: 'Je mise sur ma peau' },
+        { value: 'premium', label: 'Plus de 100 €', desc: 'Premium et sélectif' }
       ]
     }
   ];
 
+  // ─── Questions Makeup ─────────────────────────────────────────
+  const MAKEUP_QUESTIONS = [
+    {
+      id: 'mq1',
+      key: 'mkSkinType',
+      question: 'Ma peau au réveil est plutôt :',
+      type: 'single',
+      required: true,
+      options: [
+        { value: 'normale',  label: 'Normale',  desc: 'Équilibrée, sans excès' },
+        { value: 'grasse',   label: 'Grasse',   desc: 'Brillances, pores visibles' },
+        { value: 'seche',    label: 'Sèche',    desc: 'Tiraillements, desquamations' },
+        { value: 'mixte',    label: 'Mixte',    desc: 'Zone T grasse, joues sèches' },
+        { value: 'sensible', label: 'Sensible', desc: 'Réactive, rougeurs possibles' }
+      ]
+    },
+    {
+      id: 'mq2',
+      key: 'mkLook',
+      question: 'Aujourd\'hui, je veux un maquillage :',
+      type: 'single',
+      required: true,
+      options: [
+        { value: 'naturel', label: 'Naturel', desc: 'No-makeup makeup, peau nue améliorée' },
+        { value: 'soigne',  label: 'Soigné',  desc: 'Everyday chic, bien fini' },
+        { value: 'glam',    label: 'Glam',    desc: 'Full glam, impact maximal' }
+      ]
+    },
+    {
+      id: 'mq3',
+      key: 'mkFocus',
+      question: 'La zone que je veux le plus améliorer est :',
+      type: 'single',
+      required: true,
+      options: [
+        { value: 'yeux',   label: 'Les yeux',   desc: 'Regard, mascara, liner' },
+        { value: 'levres', label: 'Les lèvres', desc: 'Couleur, volume, brillance' },
+        { value: 'teint',  label: 'Le teint',   desc: 'Peau nette et lumineuse' },
+        { value: 'joues',  label: 'Les joues',  desc: 'Bonne mine, structure' }
+      ]
+    },
+    {
+      id: 'mq4',
+      key: 'mkTime',
+      question: 'Le matin, j\'ai plutôt :',
+      type: 'single',
+      required: true,
+      options: [
+        { value: 'rapide',  label: 'Moins de 5 min', desc: 'Routine express, l\'essentiel' },
+        { value: 'moyen',   label: '5 – 10 min',     desc: 'Un peu de temps pour moi' },
+        { value: 'complet', label: 'Plus de 10 min', desc: 'Je prends le temps de me sublimer' }
+      ]
+    },
+    {
+      id: 'mq5',
+      key: 'mkBudget',
+      question: 'Je préfère :',
+      type: 'single',
+      required: true,
+      options: [
+        { value: 'petits-prix', label: 'Petits prix',     desc: 'Maxi effet, mini budget' },
+        { value: 'bon-rapport', label: 'Bon rapport Q/P', desc: 'Qualité accessible' },
+        { value: 'premium',     label: 'Premium',         desc: 'Je choisis les meilleurs' }
+      ]
+    }
+  ];
+
+  let mode = 'skincare'; // 'skincare' | 'makeup'
+  let activeQuestions = [];
   let currentIndex = 0;
+
+  // ─── Calculer les questions actives (avec conditions) ────────
+  function computeActiveQuestions(questions) {
+    return questions.filter(q => !q.condition || q.condition());
+  }
 
   // ─── Réinitialiser ────────────────────────────────────────────
   function reset() {
@@ -211,26 +181,50 @@ const Questionnaire = (() => {
     AppState.questionnaire = { answers: {}, completed: false, currentQ: 0 };
   }
 
-  // ─── Démarrer le questionnaire ────────────────────────────────
-  function start() {
+  // ─── Démarrer questionnaire skincare ─────────────────────────
+  function startSkincare() {
+    mode = 'skincare';
     reset();
+    activeQuestions = computeActiveQuestions(SKINCARE_QUESTIONS);
     showScreen('questionnaire');
-    render();
+  }
+
+  // ─── Démarrer questionnaire makeup ───────────────────────────
+  function startMakeup() {
+    mode = 'makeup';
+    currentIndex = 0;
+    AppState.makeupQuiz = {};
+    activeQuestions = MAKEUP_QUESTIONS;
+    showScreen('questionnaire');
   }
 
   // ─── Rendre la question courante ──────────────────────────────
   function render() {
-    const q = QUESTIONS[currentIndex];
+    // Garantir que les questions actives sont initialisées
+    if (!activeQuestions || activeQuestions.length === 0) {
+      activeQuestions = mode === 'makeup'
+        ? MAKEUP_QUESTIONS
+        : computeActiveQuestions(SKINCARE_QUESTIONS);
+    }
+
+    const q = activeQuestions[currentIndex];
+    if (!q) return;
+
     const container = document.getElementById('questionnaireContent');
     if (!container) return;
 
-    const progress = Math.round(((currentIndex + 1) / QUESTIONS.length) * 100);
+    const answers  = mode === 'makeup' ? (AppState.makeupQuiz || {}) : AppState.questionnaire.answers;
+    const progress = Math.round(((currentIndex + 1) / activeQuestions.length) * 100);
+    const isLast   = currentIndex === activeQuestions.length - 1;
+    const ctaLabel = isLast
+      ? (mode === 'makeup' ? 'Voir ma routine ✦' : 'Voir mes résultats ✦')
+      : 'Continuer →';
 
     container.innerHTML = `
       <div class="q-progress-bar">
         <div class="q-progress-fill" style="width:${progress}%"></div>
       </div>
-      <div class="q-counter">${currentIndex + 1} / ${QUESTIONS.length}</div>
+      <div class="q-counter">${currentIndex + 1} / ${activeQuestions.length}</div>
       <div class="q-card">
         <h2 class="q-question">${q.question}</h2>
         ${q.subtitle ? `<p class="q-subtitle">${q.subtitle}</p>` : ''}
@@ -243,12 +237,12 @@ const Questionnaire = (() => {
           ? '<button class="btn btn-outline q-back" onclick="Questionnaire.prev()">← Retour</button>'
           : ''}
         <button class="btn btn-dark q-next" id="qNextBtn" onclick="Questionnaire.next()">
-          ${currentIndex < QUESTIONS.length - 1 ? 'Continuer →' : 'Voir mes résultats ✦'}
+          ${ctaLabel}
         </button>
       </div>`;
 
-    // Restaurer réponses déjà données
-    const existing = AppState.questionnaire.answers[q.key];
+    // Restaurer les réponses déjà données
+    const existing = answers[q.key];
     if (existing) {
       const vals = Array.isArray(existing) ? existing : [existing];
       vals.forEach(v => {
@@ -270,51 +264,54 @@ const Questionnaire = (() => {
 
   // ─── Sélectionner une option ──────────────────────────────────
   function selectOption(key, value, type, max) {
+    const answers = mode === 'makeup' ? AppState.makeupQuiz : AppState.questionnaire.answers;
+
     if (type === 'single') {
       document.querySelectorAll('.q-option').forEach(el => el.classList.remove('selected'));
       document.querySelector(`[data-value="${value}"]`)?.classList.add('selected');
-      AppState.questionnaire.answers[key] = value;
+      answers[key] = value;
     } else {
-      // Multiple
-      const el = document.querySelector(`[data-value="${value}"]`);
-      const current = AppState.questionnaire.answers[key] || [];
+      const el      = document.querySelector(`[data-value="${value}"]`);
+      const current = answers[key] || [];
       if (el.classList.contains('selected')) {
         el.classList.remove('selected');
-        AppState.questionnaire.answers[key] = current.filter(v => v !== value);
+        answers[key] = current.filter(v => v !== value);
       } else {
         if (current.length >= max) {
           showToast(`Maximum ${max} réponses`, 'warning');
           return;
         }
         el.classList.add('selected');
-        AppState.questionnaire.answers[key] = [...current, value];
+        answers[key] = [...current, value];
       }
     }
     updateNextBtn();
   }
 
   function updateNextBtn() {
-    const q = QUESTIONS[currentIndex];
+    const q   = activeQuestions[currentIndex];
     const btn = document.getElementById('qNextBtn');
-    if (!btn) return;
-    const answer = AppState.questionnaire.answers[q.key];
-    const valid = !q.required || (Array.isArray(answer) ? answer.length > 0 : !!answer);
-    btn.disabled = !valid;
+    if (!btn || !q) return;
+    const answers = mode === 'makeup' ? AppState.makeupQuiz : AppState.questionnaire.answers;
+    const answer  = answers[q.key];
+    const valid   = !q.required || (Array.isArray(answer) ? answer.length > 0 : !!answer);
+    btn.disabled      = !valid;
     btn.style.opacity = valid ? '1' : '0.5';
   }
 
   // ─── Navigation ───────────────────────────────────────────────
   function next() {
-    const q = QUESTIONS[currentIndex];
-    const answer = AppState.questionnaire.answers[q.key];
+    const q       = activeQuestions[currentIndex];
+    const answers = mode === 'makeup' ? AppState.makeupQuiz : AppState.questionnaire.answers;
+    const answer  = answers[q.key];
     if (q.required && (Array.isArray(answer) ? answer.length === 0 : !answer)) {
       showToast('Merci de sélectionner une réponse', 'warning');
       return;
     }
 
-    if (currentIndex < QUESTIONS.length - 1) {
+    if (currentIndex < activeQuestions.length - 1) {
       currentIndex++;
-      AppState.questionnaire.currentQ = currentIndex;
+      if (mode === 'skincare') AppState.questionnaire.currentQ = currentIndex;
       render();
     } else {
       submit();
@@ -324,26 +321,31 @@ const Questionnaire = (() => {
   function prev() {
     if (currentIndex > 0) {
       currentIndex--;
-      AppState.questionnaire.currentQ = currentIndex;
+      if (mode === 'skincare') AppState.questionnaire.currentQ = currentIndex;
       render();
     }
   }
 
-  // ─── Soumettre et générer la routine ─────────────────────────
+  // ─── Soumettre ────────────────────────────────────────────────
   function submit() {
-    AppState.questionnaire.completed = true;
-    const { routine, log } = RulesEngine.evaluate(AppState.questionnaire.answers);
-    AppState.routine = { ...routine, log };
-
-    // Recommandation produits
-    ProductCatalog.getRecommended(AppState.questionnaire.answers);
-
-    // Sauvegarder le profil (questionnaire + analyse photo si disponible)
-    if (typeof RoutineSaver !== 'undefined') RoutineSaver.saveProfile();
-
-    showScreen('results');
+    if (mode === 'skincare') {
+      AppState.questionnaire.completed = true;
+      const { routine, log } = RulesEngine.evaluate(AppState.questionnaire.answers);
+      AppState.routine = { ...routine, log };
+      ProductCatalog.getRecommended(AppState.questionnaire.answers);
+      if (typeof RoutineSaver !== 'undefined') RoutineSaver.saveProfile();
+      showScreen('results');
+    } else {
+      // Makeup : AppState.makeupQuiz est déjà à jour, aller vers la routine
+      showScreen('makeup');
+    }
   }
 
-  return { start, reset, render, selectOption, next, prev, submit, QUESTIONS };
+  return {
+    startSkincare, startMakeup,
+    reset, render,
+    selectOption, next, prev, submit,
+    SKINCARE_QUESTIONS, MAKEUP_QUESTIONS
+  };
 
 })();

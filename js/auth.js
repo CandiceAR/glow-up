@@ -17,6 +17,15 @@ const Auth = (() => {
   };
 
   let auth = null;
+  let _authFlowCallback = null; // callback à déclencher après auth ou "continuer sans compte"
+
+  function _runAuthFlowCallback() {
+    if (typeof _authFlowCallback === 'function') {
+      const cb = _authFlowCallback;
+      _authFlowCallback = null;
+      cb();
+    }
+  }
 
   function init() {
     if (typeof firebase === 'undefined') {
@@ -91,12 +100,13 @@ const Auth = (() => {
   }
 
   async function signInWithGoogle() {
-    if (!auth) return;
+    if (!auth) { closeModal(); _runAuthFlowCallback(); return; }
     try {
       const provider = new firebase.auth.GoogleAuthProvider();
       await auth.signInWithPopup(provider);
       closeModal();
       showToast('Connexion réussie !', 'success');
+      _runAuthFlowCallback();
     } catch (err) {
       console.error('[Auth] Google sign-in error:', err);
       showToast('Erreur de connexion Google', 'error');
@@ -104,14 +114,14 @@ const Auth = (() => {
   }
 
   async function signInWithEmail(email, password) {
-    if (!auth) return;
+    if (!auth) { closeModal(); _runAuthFlowCallback(); return; }
     try {
       await auth.signInWithEmailAndPassword(email, password);
       closeModal();
       showToast('Connexion réussie !', 'success');
+      _runAuthFlowCallback();
     } catch (err) {
       if (err.code === 'auth/user-not-found') {
-        // Tenter inscription
         await signUpWithEmail(email, password);
       } else {
         showToast('Email ou mot de passe incorrect', 'error');
@@ -120,11 +130,12 @@ const Auth = (() => {
   }
 
   async function signUpWithEmail(email, password) {
-    if (!auth) return;
+    if (!auth) { closeModal(); _runAuthFlowCallback(); return; }
     try {
       await auth.createUserWithEmailAndPassword(email, password);
       closeModal();
       showToast('Compte créé ! Bienvenue sur Glow Up ✦', 'success');
+      _runAuthFlowCallback();
     } catch (err) {
       showToast('Erreur lors de la création du compte', 'error');
     }
@@ -140,7 +151,14 @@ const Auth = (() => {
     }
   }
 
-  function openAuthModal(mode = 'login') {
+  // Continuer sans compte — déclenche le callback de flow si défini
+  function continueFlow() {
+    closeModal();
+    _runAuthFlowCallback();
+  }
+
+  function openAuthModal(mode = 'login', onContinue = null) {
+    if (onContinue) _authFlowCallback = onContinue;
     const googleSVG = `<svg width="18" height="18" viewBox="0 0 24 24">
       <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
       <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -172,7 +190,7 @@ const Auth = (() => {
             : `<button class="btn btn-dark full-width" onclick="Auth.submitLogin()">Se connecter</button>
                <button class="btn-ghost auth-forgot" onclick="Auth.openAuthModal('reset')">Mot de passe oublié ?</button>`
           }
-          <button class="btn-ghost auth-guest" onclick="closeModal()">Continuer sans compte →</button>
+          <button class="btn-ghost auth-guest" onclick="Auth.continueFlow()">Continuer sans compte →</button>
         `}
       </div>`;
     openModal(html);
@@ -216,12 +234,38 @@ const Auth = (() => {
 
   function openProfileMenu() {
     const { displayName, email } = AppState.user;
+    const profile = typeof RoutineSaver !== 'undefined' ? RoutineSaver.loadProfile() : null;
+    const sa      = profile?.skinAnalysis || AppState.face?.skinAnalysis || null;
+
+    const skinTypeLabels    = { normale: 'Normale', grasse: 'Grasse', seche: 'Sèche', mixte: 'Mixte', sensible: 'Sensible' };
+    const undertoneLabels   = { warm: 'Chaud ☀️', cool: 'Froid 🌙', neutral: 'Neutre' };
+    const carnationLabels   = { light: 'Claire', medium: 'Medium', dark: 'Foncée' };
+    const faceShapeLabels   = { oval: 'Ovale', round: 'Rond', square: 'Carré', heart: 'Cœur', long: 'Allongé' };
+
+    const recapHtml = sa ? `
+      <div class="profile-recap">
+        <div class="profile-recap-title">✦ Mon analyse de peau</div>
+        <div class="profile-recap-grid">
+          ${sa.skinType?.type    ? `<div class="profile-recap-item"><span class="recap-label">Type de peau</span><span class="recap-val">${skinTypeLabels[sa.skinType.type] || sa.skinType.type}</span></div>` : ''}
+          ${sa.undertone?.type   ? `<div class="profile-recap-item"><span class="recap-label">Sous-ton</span><span class="recap-val">${undertoneLabels[sa.undertone.type] || sa.undertone.type}</span></div>` : ''}
+          ${sa.carnation?.type   ? `<div class="profile-recap-item"><span class="recap-label">Carnation</span><span class="recap-val">${carnationLabels[sa.carnation.type] || sa.carnation.type}</span></div>` : ''}
+          ${sa.faceShape?.shape  ? `<div class="profile-recap-item"><span class="recap-label">Forme du visage</span><span class="recap-val">${faceShapeLabels[sa.faceShape.shape] || sa.faceShape.shape}</span></div>` : ''}
+          ${sa.eyeShape          ? `<div class="profile-recap-item"><span class="recap-label">Yeux</span><span class="recap-val">${sa.eyeShape}</span></div>` : ''}
+        </div>
+        ${profile?.savedAt ? `<p class="profile-recap-date">Analysée le ${new Date(profile.savedAt).toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' })}</p>` : ''}
+      </div>` : `
+      <div class="profile-recap profile-recap--empty">
+        <p>Aucune analyse de peau enregistrée.</p>
+        <button class="btn btn-outline" onclick="closeModal(); startGlowUp();">Commencer mon analyse ✦</button>
+      </div>`;
+
     const html = `
       <button class="modal-close" onclick="closeModal()">×</button>
       <div class="auth-modal">
         <h2>Mon profil</h2>
-        <p>${displayName || email}</p>
-        <button class="btn btn-outline full-width" onclick="Auth.signOut(); closeModal();">
+        <p class="profile-email">${displayName || email}</p>
+        ${recapHtml}
+        <button class="btn btn-outline full-width" style="margin-top:16px" onclick="Auth.signOut(); closeModal();">
           Se déconnecter
         </button>
       </div>`;
@@ -354,7 +398,7 @@ const Auth = (() => {
     }
   }
 
-  return { init, signInWithGoogle, signInWithEmail, signOut, openAuthModal, submitEmail, submitLogin, submitRegister, submitReset, openProfileMenu, openJourneyAuthModal, journeyGoogle, submitJourney, startJourneyGuest };
+  return { init, signInWithGoogle, signInWithEmail, signOut, openAuthModal, continueFlow, submitEmail, submitLogin, submitRegister, submitReset, openProfileMenu, openJourneyAuthModal, journeyGoogle, submitJourney, startJourneyGuest };
 
 })();
 

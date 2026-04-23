@@ -5737,3 +5737,131 @@ em { font-style: italic; color: var(--nude); }
   font-size: 0.85rem;
   padding: 24px 0;
 }
+
+/* ── Bannière sauvegarde (résultats skincare + makeup) ─────── */
+.save-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #f5f1ec;
+  border: 1px solid #e8dfd4;
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin: 32px 0 8px;
+  flex-wrap: wrap;
+}
+.save-banner-icon {
+  width: 32px;
+  height: 32px;
+  background: var(--nude, #c9a98a);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.save-banner-text {
+  flex: 1;
+  min-width: 160px;
+}
+.save-banner-text strong {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--dark, #1a1917);
+  margin-bottom: 2px;
+}
+.save-banner-text span {
+  font-size: 0.82rem;
+  color: var(--muted, #888);
+}
+.save-banner-btn {
+  font-size: 0.82rem;
+  padding: 8px 14px;
+  flex-shrink: 0;
+}
+
+/* ── Tips collapsibles dans la routine skincare ─────────────── */
+.step-tip-details {
+  margin-top: 6px;
+}
+.step-tip-toggle {
+  font-size: 0.82rem;
+  color: var(--muted, #888);
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+}
+.step-tip-toggle::-webkit-details-marker { display: none; }
+.step-tip-toggle::after {
+  content: '›';
+  font-size: 1rem;
+  transition: transform 0.2s;
+}
+.step-tip-details[open] .step-tip-toggle::after {
+  transform: rotate(90deg);
+}
+.step-apply-tip {
+  font-size: 0.82rem;
+  color: var(--muted, #888);
+  padding: 8px 0 4px 20px;
+  border-left: 2px solid #e8dfd4;
+  margin-top: 4px;
+}
+
+/* ── Fiche récap profil ──────────────────────────────────────── */
+.profile-email {
+  color: var(--muted, #888);
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+.profile-recap {
+  background: #f9f6f2;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 4px;
+}
+.profile-recap--empty {
+  text-align: center;
+  color: var(--muted, #888);
+  font-size: 0.88rem;
+}
+.profile-recap-title {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--nude, #c9a98a);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.profile-recap-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.profile-recap-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.recap-label {
+  font-size: 0.72rem;
+  color: var(--muted, #888);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.recap-val {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--dark, #1a1917);
+}
+.profile-recap-date {
+  font-size: 0.75rem;
+  color: var(--muted, #888);
+  margin-top: 12px;
+  text-align: right;
+}
