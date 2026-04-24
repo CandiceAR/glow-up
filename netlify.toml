@@ -1,4 +1,3 @@
 [build]
   publish = "."
   functions = "netlify/functions"
-  ignore = "git diff --quiet HEAD^ HEAD -- . ':!assets'"
