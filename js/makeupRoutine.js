@@ -77,15 +77,28 @@ const MakeupRoutine = (() => {
     return shuffle(products.filter(Boolean)).slice(0, count);
   }
 
-  // ─── Filtre par budget ────────────────────────────────────────
+  // ─── Filtre et tri par budget ─────────────────────────────────
   const BUDGET_MAX = { low: 20, medium: 50, high: 100, premium: Infinity };
 
   function filterByBudget(products, budget) {
     if (!budget || !products?.length) return products;
     const max = BUDGET_MAX[budget] ?? Infinity;
-    if (max === Infinity) return products;
-    const filtered = products.filter(p => !p.price || p.price <= max);
-    return filtered.length >= 1 ? filtered : products; // fallback si trop restrictif
+
+    let pool = products;
+    if (max !== Infinity) {
+      const filtered = products.filter(p => !p.price || p.price <= max);
+      pool = filtered.length >= 1 ? filtered : products; // fallback si trop restrictif
+    }
+
+    // Trier par prix selon le budget :
+    // premium → plus chers en premier | low → moins chers en premier
+    if (budget === 'premium') {
+      pool = [...pool].sort((a, b) => (b.price || 0) - (a.price || 0));
+    } else if (budget === 'low') {
+      pool = [...pool].sort((a, b) => (a.price || 0) - (b.price || 0));
+    }
+
+    return pool;
   }
 
   // ─── Conseil personnalisé pour zone évitée ───────────────────

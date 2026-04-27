@@ -111,13 +111,21 @@ const ProductCatalog = (() => {
   }
 
   function getRecommended(answers) {
-    const { skinType, makeupUsed = [], makeupFrequency } = answers;
+    const { skinType, makeupUsed = [], makeupFrequency, budget } = answers;
 
     const skincareCategories = ['cleanser', 'serum', 'eye', 'cream', 'spf', 'lipbalm'];
     const makeupCategories   = makeupFrequency !== 'jamais' ? (makeupUsed || []) : [];
     const allowed = [...skincareCategories, ...makeupCategories];
 
     let pool = AppState.products.catalog.filter(p => allowed.includes(p.category));
+
+    // Filtrer par budget
+    const BUDGET_MAX = { 'petits-prix': 20, 'bon-rapport': 50, 'premium': Infinity };
+    const maxPrice = BUDGET_MAX[budget] ?? Infinity;
+    if (maxPrice !== Infinity) {
+      const budgetFiltered = pool.filter(p => !p.price || p.price <= maxPrice);
+      if (budgetFiltered.length >= 4) pool = budgetFiltered;
+    }
 
     // Filtrer par type de peau
     if (skinType) {
@@ -131,7 +139,6 @@ const ProductCatalog = (() => {
     // Filtrer par maturité peau (soft preference — ne jamais vider)
     const matPref = getMaturityPreference(answers);
     if (matPref !== 'all') {
-      // teen : priorité aux produits teen + jeune + all (jamais mature)
       const allowedMat = matPref === 'teen'
         ? (p) => !p.maturity || p.maturity === 'all' || p.maturity === 'jeune' || p.maturity === 'teen'
         : (p) => !p.maturity || p.maturity === 'all' || p.maturity === matPref;
@@ -140,7 +147,7 @@ const ProductCatalog = (() => {
       if (matFiltered.length >= 4) pool = matFiltered;
     }
 
-    // Trier : teen en tête si profil ado, puis featured, puis rating
+    // Trier : teen en tête si profil ado, puis par budget (premium → cher en premier, petits-prix → pas cher en premier), puis featured, puis rating
     pool.sort((a, b) => {
       const matPref = getMaturityPreference(answers);
       if (matPref === 'teen') {
@@ -148,6 +155,8 @@ const ProductCatalog = (() => {
         const bT = b.maturity === 'teen' ? 1 : 0;
         if (bT !== aT) return bT - aT;
       }
+      if (budget === 'premium')     return (b.price || 0) - (a.price || 0);
+      if (budget === 'petits-prix') return (a.price || 0) - (b.price || 0);
       if (b.isFeatured !== a.isFeatured) return b.isFeatured ? 1 : -1;
       return (b.rating || 0) - (a.rating || 0);
     });
