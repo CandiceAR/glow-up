@@ -559,6 +559,7 @@ const LookGenerator = (() => {
 
   // Sélection d'un look dans le carousel
   window.LookGenerator = window.LookGenerator || {};
+  window.LookGenerator.generate = generate;
   window.LookGenerator.selectLook = function(lookId) {
     document.querySelectorAll('.look-card').forEach(c => {
       c.classList.toggle('look-card--active', c.dataset.look === lookId);

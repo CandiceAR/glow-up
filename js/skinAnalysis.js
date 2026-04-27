@@ -929,10 +929,10 @@ const SkinAnalysis = (() => {
 
     if (AppState.face.skinAnalysis) {
       renderReport(AppState.face.skinAnalysis, content);
-      if (typeof LookGenerator !== 'undefined' && AppState.face.sourceCanvas && AppState.face.landmarks) {
+      if (typeof window.LookGenerator !== 'undefined' && window.LookGenerator.generate && AppState.face.sourceCanvas && AppState.face.landmarks) {
         const looksEl = document.createElement('div');
         content.appendChild(looksEl);
-        LookGenerator.generate(looksEl, AppState.face.sourceCanvas, AppState.face.landmarks, AppState.face.skinAnalysis);
+        window.LookGenerator.generate(looksEl, AppState.face.sourceCanvas, AppState.face.landmarks, AppState.face.skinAnalysis);
       }
       return;
     }
@@ -969,10 +969,10 @@ const SkinAnalysis = (() => {
 
       AppState.face.skinAnalysis = result;
       renderReport(result, content);
-      if (typeof LookGenerator !== 'undefined') {
+      if (typeof window.LookGenerator !== 'undefined' && window.LookGenerator.generate) {
         const looksEl = document.createElement('div');
         content.appendChild(looksEl);
-        LookGenerator.generate(looksEl, AppState.face.sourceCanvas, AppState.face.landmarks, result);
+        window.LookGenerator.generate(looksEl, AppState.face.sourceCanvas, AppState.face.landmarks, result);
       }
       if (typeof SkinJourney !== 'undefined' && SkinJourney.isActive()) {
         SkinJourney.addAnalysis();
