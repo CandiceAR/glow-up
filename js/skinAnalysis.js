@@ -1034,11 +1034,19 @@ const SkinAnalysis = (() => {
     function getProductsHTML(categories, limit) {
       const catalog = AppState?.products?.catalog || [];
 
+      // Catégories strictement interdites selon le contexte
+      const LIP_CATS  = new Set(['lipstick','lipgloss','lipliner','lipprimer','lipplumper']);
+      const EYE_CATS  = new Set(['mascara','eyeliner','eyeshadow','eyebrow']);
+      const SKIN_CATS = new Set(['foundation','concealer','powder','blush','bronzer','highlighter']);
+
       function buildPool(filterUndertone, filterCarnation) {
         return catalog.filter(p => {
           if (!categories.includes(p.category)) return false;
           if (p.active === false) return false;
           if (!p.imageUrl) return false;
+          // Sécurité : pas de blush/bronzer dans les lèvres ou les yeux
+          if (LIP_CATS.has(categories[0]) && SKIN_CATS.has(p.category) && !LIP_CATS.has(p.category)) return false;
+          if (EYE_CATS.has(categories[0]) && SKIN_CATS.has(p.category) && !EYE_CATS.has(p.category)) return false;
           if (filterUndertone && p.undertone && p.undertone !== 'neutral' && p.undertone !== filterUndertone) return false;
           if (filterCarnation && Array.isArray(p.carnation) && p.carnation.length && !p.carnation.includes(filterCarnation)) return false;
           return true;
