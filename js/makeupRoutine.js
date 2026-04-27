@@ -31,7 +31,7 @@ const MakeupRoutine = (() => {
       }
       // Garder UNIQUEMENT les produits maquillage — jamais de soin
       const SKINCARE_CATS = new Set([
-        'cleanser', 'serum', 'eye', 'cream', 'spf', 'nightmask', 'demaquillant', 'lipbalm'
+        'cleanser', 'serum', 'eye', 'eyepatch', 'cream', 'spf', 'nightmask', 'demaquillant', 'lipbalm'
       ]);
       catalogue = allProducts.filter(p =>
         p.active !== false && !SKINCARE_CATS.has(p.category)

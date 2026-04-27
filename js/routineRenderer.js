@@ -32,6 +32,7 @@ const RoutineRenderer = (() => {
     serum:       '✨',
     treatment:   '⚗️',
     eye:         '👁️',
+    eyepatch:    '🩹',
     moisturizer: '🌿',
     oil:         '🌸',
     exfoliant:   '🔬',
@@ -51,7 +52,9 @@ const RoutineRenderer = (() => {
     oil:         '🌸 2 à 3 gouttes à réchauffer entre les paumes. Presser sur le visage en dernier, après la crème.',
     exfoliant:   '🔬 2 fois par semaine, le soir sur peau sèche. Éviter le contour des yeux. Rincer après 10 min.',
     spf:         '☀️ Dernière étape du matin, sur visage, cou et oreilles. Quantité généreuse — environ 1/4 de cuillère à café.',
-    lipbalm:     '💋 Appliquer sur les lèvres matin et soir, et dès que tu en ressens le besoin. Insister sur le contour.'
+    lipbalm:     '💋 Appliquer sur les lèvres matin et soir, et dès que tu en ressens le besoin. Insister sur le contour.',
+    eyepatch_matin: '🧊 Place les patchs froids (conserve-les au réfrigérateur pour un effet anti-poches décuplé) directement sous les yeux. Laisse poser 10 à 15 minutes — le temps de ton café. Retire délicatement et tapote le résidu de sérum avec l\'annulaire sans rincer. ✦ Bienfaits : effet décongestionnant immédiat, regard reposé et lumineux.',
+    eyepatch_soir:  '🌙 Applique les patchs après ton démaquillage, avant le sérum et la crème. Laisse poser 15 à 20 minutes (certains patchs peuvent rester jusqu\'à 30 min). La peau se régénère la nuit, les actifs pénètrent 2x mieux le soir. ✦ Bienfaits selon le produit : acide hyaluronique → hydratation profonde · caféine → drainage · rétinol → anti-rides · vitamine C → éclat.'
   };
 
   // Mapping étape routine → catégorie(s) catalogue (ordre de priorité)
@@ -61,6 +64,7 @@ const RoutineRenderer = (() => {
     serum:       ['serum'],
     treatment:   ['serum', 'retinol', 'niacinamide'],
     eye:         ['eye'],
+    eyepatch:    ['eyepatch'],
     moisturizer: ['cream'],
     oil:         ['cream'],
     exfoliant:   ['cleanser', 'serum'],
@@ -215,30 +219,60 @@ const RoutineRenderer = (() => {
   function renderRoutineSection(title, steps, emoji) {
     if (!steps || steps.length === 0) return '';
 
-    const stepsHtml = steps
-      .sort((a, b) => a.order - b.order)
-      .map((step, i) => {
-        const product  = findBestProductForStep(step.step);
-        const applyTip = STEP_APPLY_TIPS[step.step] || '';
-        return `
-          <div class="routine-step-block">
-            <div class="routine-step">
-              <div class="step-number">${i + 1}</div>
-              <div class="step-icon">${STEP_ICONS[step.step] || STEP_ICONS.default}</div>
-              <div class="step-info">
-                <div class="step-label">${step.label}</div>
-                ${step.note ? `<div class="step-note">${step.note}</div>` : ''}
-              </div>
-              <div class="step-type">${formatStepType(step.step)}</div>
+    const isMatin   = title.toLowerCase().includes('matin');
+    const patchTipKey = isMatin ? 'eyepatch_matin' : 'eyepatch_soir';
+    const patchProduct = findBestProductForStep('eyepatch');
+
+    const sortedSteps = steps.sort((a, b) => a.order - b.order);
+    let stepIndex = 0;
+    const blocks = [];
+
+    for (const step of sortedSteps) {
+      const product  = findBestProductForStep(step.step);
+      const applyTip = STEP_APPLY_TIPS[step.step] || '';
+      stepIndex++;
+
+      blocks.push(`
+        <div class="routine-step-block">
+          <div class="routine-step">
+            <div class="step-number">${stepIndex}</div>
+            <div class="step-icon">${STEP_ICONS[step.step] || STEP_ICONS.default}</div>
+            <div class="step-info">
+              <div class="step-label">${step.label}</div>
+              ${step.note ? `<div class="step-note">${step.note}</div>` : ''}
             </div>
-            ${renderStepProduct(product)}
-            ${applyTip ? `
+            <div class="step-type">${formatStepType(step.step)}</div>
+          </div>
+          ${renderStepProduct(product)}
+          ${applyTip ? `
+          <details class="step-tip-details">
+            <summary class="step-tip-toggle">💡 Comment appliquer</summary>
+            <div class="step-apply-tip">${applyTip}</div>
+          </details>` : ''}
+        </div>`);
+
+      // Injecter les patchs yeux juste après l'étape contour des yeux
+      if (step.step === 'eye' && patchProduct) {
+        stepIndex++;
+        blocks.push(`
+          <div class="routine-step-block eyepatch-block">
+            <div class="routine-step">
+              <div class="step-number">${stepIndex}</div>
+              <div class="step-icon">${STEP_ICONS.eyepatch}</div>
+              <div class="step-info">
+                <div class="step-label">Patchs yeux</div>
+                <div class="step-note">${isMatin ? '10-15 min · Anti-poches · Regard frais' : '15-20 min · Hydratation · Anti-rides'}</div>
+              </div>
+              <div class="step-type">Patchs yeux</div>
+            </div>
+            ${renderStepProduct(patchProduct)}
             <details class="step-tip-details">
-              <summary class="step-tip-toggle">💡 Comment appliquer</summary>
-              <div class="step-apply-tip">${applyTip}</div>
-            </details>` : ''}
-          </div>`;
-      }).join('');
+              <summary class="step-tip-toggle">💡 Quand et comment les poser</summary>
+              <div class="step-apply-tip">${STEP_APPLY_TIPS[patchTipKey]}</div>
+            </details>
+          </div>`);
+      }
+    }
 
     return `
       <div class="routine-section">
@@ -246,7 +280,7 @@ const RoutineRenderer = (() => {
           <span class="routine-emoji">${emoji}</span>
           <h2>${title}</h2>
         </div>
-        <div class="routine-steps">${stepsHtml}</div>
+        <div class="routine-steps">${blocks.join('')}</div>
       </div>`;
   }
 
@@ -480,6 +514,7 @@ const RoutineRenderer = (() => {
       serum:       'Sérum',
       treatment:   'Traitement',
       eye:         'Contour yeux',
+      eyepatch:    'Patchs yeux',
       moisturizer: 'Hydratant',
       oil:         'Huile',
       exfoliant:   'Exfoliant',

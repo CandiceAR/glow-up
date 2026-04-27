@@ -853,6 +853,7 @@ const Admin = (() => {
       concealer:   'Correcteur / Anti-cernes',
       cream:       'Crème visage',
       eye:         'Contour des yeux',
+      eyepatch:    'Patchs yeux',
       eyeliner:    'Eyeliner',
       eyeshadow:   'Fard à paupières',
       foundation:  'Fond de teint',

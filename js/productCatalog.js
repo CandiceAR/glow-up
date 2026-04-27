@@ -326,6 +326,7 @@ const ProductCatalog = (() => {
       cleanser:   'Démaquillant',
       serum:      'Sérum',
       eye:        'Contour yeux',
+      eyepatch:   'Patchs yeux',
       cream:      'Crème hydratante',
       spf:        'Protection solaire',
       nightmask:  'Masque de nuit',
