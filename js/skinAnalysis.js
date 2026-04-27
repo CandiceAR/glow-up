@@ -1198,6 +1198,7 @@ const SkinAnalysis = (() => {
             </div>
             <div class="mkr-reco-grid">
               ${getProductsHTML(['foundation', 'concealer'], 2)}
+              ${getProductsHTML(['blush'], 1)}
             </div>
           </div>
 
