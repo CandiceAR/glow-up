@@ -402,7 +402,7 @@
 
               <div class="form-group full">
                 <label class="form-label">📂 Catégorie *</label>
-                <select id="fCategory" class="form-select">
+                <select id="fCategory" class="form-select" onchange="document.getElementById('fFormatGroup').style.display=this.value==='eyeshadow'?'flex':'none'">
                   <option value="serum">Sérum</option>
                   <option value="cream">Crème visage</option>
                   <option value="spf">Crème solaire SPF</option>
@@ -484,6 +484,17 @@
                   <option value="mat">Mat / Sans brillance</option>
                   <option value="couvrant">Couvrant / Full Coverage</option>
                   <option value="leger">Léger / Sheer / BB</option>
+                </select>
+              </div>
+
+              <!-- Format produit (fard à paupières uniquement) -->
+              <div class="form-group" id="fFormatGroup" style="display:none">
+                <label class="form-label">🖌️ Format (fard à paupières)</label>
+                <select id="fFormat" class="form-select">
+                  <option value="">Non défini</option>
+                  <option value="palette">Palette</option>
+                  <option value="mono">Fard individuel / Mono</option>
+                  <option value="crayon">Crayon paupières</option>
                 </select>
               </div>
 

@@ -272,6 +272,8 @@ const Admin = (() => {
     document.getElementById('fCarnFonce').checked  = Array.isArray(p.carnation) ? p.carnation.includes('fonce')  : true;
     document.getElementById('fFinish').value       = p.finish || 'naturel';
     document.getElementById('fMaturity').value     = p.maturity || 'all';
+    document.getElementById('fFormat').value        = p.format || '';
+    document.getElementById('fFormatGroup').style.display = p.category === 'eyeshadow' ? 'flex' : 'none';
     // Type de peau — si skinTypeTags vide ou tous = tout coché
     const st = Array.isArray(p.skinTypeTags) && p.skinTypeTags.length > 0 ? p.skinTypeTags : [];
     document.getElementById('fSkinNormale').checked  = st.length === 0 || st.includes('normale');
@@ -305,6 +307,8 @@ const Admin = (() => {
     document.getElementById('fCarnFonce').checked  = true;
     document.getElementById('fFinish').value       = 'naturel';
     document.getElementById('fMaturity').value     = 'all';
+    document.getElementById('fFormat').value        = '';
+    document.getElementById('fFormatGroup').style.display = 'none';
     ['fSkinNormale','fSkinGrasse','fSkinSeche','fSkinMixte','fSkinSensible'].forEach(id => {
       document.getElementById(id).checked = false;
     });
@@ -341,6 +345,7 @@ const Admin = (() => {
     });
     // Si tous cochés ou aucun coché = null (convient à tous)
     const skinTypeTags = skinTypes.length > 0 && skinTypes.length < 5 ? skinTypes : null;
+    const format = category === 'eyeshadow' ? (document.getElementById('fFormat').value || null) : null;
 
     if (!amazonUrl || !name || !brand || !imageUrl) {
       toast('Remplis tous les champs obligatoires (lien, nom, marque, image)', 'error');
@@ -392,6 +397,7 @@ const Admin = (() => {
         finish:      finish || 'naturel',
         maturity:    maturity || 'all',
         skinTypeTags: skinTypeTags,
+        format:      format || null,
         curatedAt:   new Date().toISOString().split('T')[0]
       };
     } else {
@@ -414,6 +420,7 @@ const Admin = (() => {
         finish:      finish || 'naturel',
         maturity:    maturity || 'all',
         skinTypeTags: skinTypeTags,
+        format:      format || null,
         concernTags: [],
         isFeatured,
         active: isActive,
@@ -497,7 +504,7 @@ const Admin = (() => {
       const timeout = setTimeout(() => controller.abort(), 25000);
 
       try {
-        const res = await fetch('/.netlify/functions/uploadImage', {
+        const res = await fetch('/api/uploadImage', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ filename, contentBase64: base64 }),
@@ -682,7 +689,7 @@ const Admin = (() => {
     const result = document.getElementById('coachTestResult');
     result.innerHTML = '<span style="color:var(--muted);">⏳ Test en cours…</span>';
     try {
-      const res = await fetch('/.netlify/functions/coach', {
+      const res = await fetch('/api/coach', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

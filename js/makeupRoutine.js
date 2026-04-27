@@ -380,7 +380,17 @@ const MakeupRoutine = (() => {
       !p.undertone || p.undertone === 'neutral' || p.undertone === undertone
     );
     if (pool.length < 1) pool = products;
-    return pickRandom(filterByBudget(pool, budget), 2);
+    pool = filterByBudget(pool, budget);
+
+    // Un produit par format (palette, mono, crayon) — max 3
+    const result = [];
+    for (const fmt of ['palette', 'mono', 'crayon']) {
+      const match = pool.filter(p => p.format === fmt);
+      if (match.length) result.push(match[Math.floor(Math.random() * match.length)]);
+    }
+    // Si aucun format renseigné, retomber sur 2 aléatoires
+    if (!result.length) return pickRandom(pool, 2);
+    return result;
   }
 
   function selectPowder(profile) {

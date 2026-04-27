@@ -61,7 +61,7 @@ const Subscription = (() => {
     showToast('Redirection vers le paiement…', 'info', 2000);
 
     try {
-      const res = await fetch('/.netlify/functions/createCheckout', {
+      const res = await fetch('/api/createCheckout', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ priceKey, uid, email })
