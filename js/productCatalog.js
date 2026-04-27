@@ -329,6 +329,7 @@ const ProductCatalog = (() => {
       blush:       'Blush',
       foundation:  'Fond de teint',
       mascara:     'Mascara',
+      eyebrow:     'Sourcils',
       // Lèvres / Soin
       lipbalm:     'Baume à lèvres',
       demaquillant:'Démaquillant'

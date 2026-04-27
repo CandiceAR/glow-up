@@ -221,7 +221,14 @@ const MakeupRoutine = (() => {
       selected.push(skyHigh);
     }
 
-    return selected.slice(0, 2);
+    // Toujours 1 seul mascara
+    return selected.slice(0, 1);
+  }
+
+  function selectEyebrow(profile) {
+    const products = getByCategory('eyebrow');
+    if (!products.length) return null;
+    return pickRandom(filterByBudget(products, profile.budget), 1);
   }
 
   function selectLips(profile) {
@@ -403,6 +410,7 @@ const MakeupRoutine = (() => {
       blush: 'Souris légèrement et applique sur les rondeurs des joues vers les tempes.',
       highlighter: 'Dépose sur le haut des pommettes, la pointe du nez et l\'arc de Cupidon.',
       eyeshadow: 'Commence par la paupière mobile, estompe vers l\'arcade sourcilière.',
+      eyebrow: 'Brosse les sourcils vers le haut, remplis les zones creuses par petits traits. Fixe avec un gel transparent.',
       powder: 'Applique en tapotant sur la zone T pour fixer et matifier.'
     };
 
@@ -518,6 +526,7 @@ const MakeupRoutine = (() => {
     const bronzers      = selectBronzer(profile);
     const highlighters  = selectHighlighter(profile);
     const eyeshadows    = selectEyeshadow(profile);
+    const eyebrows      = selectEyebrow(profile);
     const eyeliners     = selectEyeliner(profile);
     const mascaras      = selectMascara(profile);
     const lips          = selectLips(profile);
@@ -542,7 +551,7 @@ const MakeupRoutine = (() => {
     function zoneOf(cat) {
       if (['foundation','concealer','powder'].includes(cat)) return 'teint';
       if (['blush','bronzer','highlighter'].includes(cat))   return 'joues';
-      if (['eyeshadow','eyeliner','mascara'].includes(cat))  return 'yeux';
+      if (['eyeshadow','eyeliner','mascara','eyebrow'].includes(cat)) return 'yeux';
       if (['lips','lipstick','lipgloss','lipliner'].includes(cat)) return 'levres';
       return null;
     }
@@ -565,9 +574,10 @@ const MakeupRoutine = (() => {
       { zone:'joues',   html: renderSection('Blush & Joues',    '❋', tipForZone('blush',       getTip('blush',       profile)), blushes)      },
       { zone:'joues',   html: renderSection('Bronzer',          '☀', tipForZone('bronzer',     getTip('bronzer',     profile)), bronzers)     },
       { zone:'joues',   html: renderSection('Enlumineur',       '✦', tipForZone('highlighter', getTip('highlighter', profile)), highlighters) },
+      { zone:'yeux',    html: renderSection('Mascara',           '○', tipForZone('mascara',     getTip('mascara',     profile)), mascaras)     },
+      { zone:'yeux',    html: renderSection('Sourcils',         '〜', tipForZone('eyebrow',    getTip('eyebrow',     profile)), eyebrows)     },
       { zone:'yeux',    html: renderSection('Fard à paupières', '◈', tipForZone('eyeshadow',   getTip('eyeshadow',   profile)), eyeshadows)   },
       { zone:'yeux',    html: renderSection('Liner',            '◈', tipForZone('eyeliner',    getTip('eyeliner',    profile)), eyeliners)    },
-      { zone:'yeux',    html: renderSection('Mascara',          '○', tipForZone('mascara',     getTip('mascara',     profile)), mascaras)     },
       { zone:'levres',  html: renderSection('Lèvres',           '❋', tipForZone('lips',        getTip('lips',        profile)), lips)         }
     ];
 
