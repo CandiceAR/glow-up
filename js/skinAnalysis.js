@@ -345,6 +345,7 @@ const SkinAnalysis = (() => {
     sourceCanvas.height = h;
     const srcCtx = sourceCanvas.getContext('2d', { willReadFrequently: true });
     srcCtx.drawImage(img, 0, 0);
+    AppState.face.sourceCanvas = sourceCanvas;
 
     let landmarks = AppState.face.landmarks;
     if (!landmarks) {
@@ -928,6 +929,11 @@ const SkinAnalysis = (() => {
 
     if (AppState.face.skinAnalysis) {
       renderReport(AppState.face.skinAnalysis, content);
+      if (typeof LookGenerator !== 'undefined' && AppState.face.sourceCanvas && AppState.face.landmarks) {
+        const looksEl = document.createElement('div');
+        content.appendChild(looksEl);
+        LookGenerator.generate(looksEl, AppState.face.sourceCanvas, AppState.face.landmarks, AppState.face.skinAnalysis);
+      }
       return;
     }
 
@@ -963,6 +969,11 @@ const SkinAnalysis = (() => {
 
       AppState.face.skinAnalysis = result;
       renderReport(result, content);
+      if (typeof LookGenerator !== 'undefined') {
+        const looksEl = document.createElement('div');
+        content.appendChild(looksEl);
+        LookGenerator.generate(looksEl, AppState.face.sourceCanvas, AppState.face.landmarks, result);
+      }
       if (typeof SkinJourney !== 'undefined' && SkinJourney.isActive()) {
         SkinJourney.addAnalysis();
       }
@@ -994,41 +1005,102 @@ const SkinAnalysis = (() => {
     const answers = AppState?.questionnaire?.answers || {};
     const mp  = ProductCatalog.getMaturityPreference(answers);
 
-    const UNDERTONE_EXPLAIN = {
-      warm:    'Ta peau a des reflets dorés et légèrement pêchés — c\'est ce qu\'on appelle un sous-ton chaud. Les teintes chaudes comme l\'or et le corail te subliment naturellement.',
-      cool:    'Ta peau a des reflets rosés ou légèrement bleutés — c\'est ce qu\'on appelle un sous-ton froid. Les teintes froides comme le mauve et l\'argent te mettent en valeur.',
-      neutral: 'Ta peau n\'est ni très rosée ni très dorée — elle est neutre. Tu as la chance de pouvoir porter aussi bien les teintes chaudes que les teintes froides.'
+    const skinTypeLbl = skinType?.type || 'normale';
+    const cernesType  = cernes?.detected ? cernes.type : null;
+    const cernesInt   = cernes?.detected ? cernes.intensity : null;
+
+    // ─── Explication sous-ton enrichie (carnation + undertone) ────
+    const UNDERTONE_EXPLAIN_CA = {
+      warm: {
+        clair:  'Ta peau claire a des reflets dorés et légèrement pêchés — les teintes chaudes comme le corail, l\'abricot et l\'or champagne t\'illuminent sans effet masque.',
+        medium: 'Ta peau medium a des reflets dorés et bronzés — les teintes terracotta, pêche et cuivre s\'harmonisent parfaitement avec ta carnation.',
+        fonce:  'Ta peau foncée a des reflets dorés très intenses — les teintes bronze, cuivré et miel subliment particulièrement bien tes nuances naturelles.'
+      },
+      cool: {
+        clair:  'Ta peau claire a des reflets rosés et légèrement bleutés — les teintes froides comme le rose poudré, le lilas et le blanc rosé te donnent un éclat naturel.',
+        medium: 'Ta peau medium a des reflets rosés et mauve — les teintes bordeaux, fuchsia et prune s\'harmonisent parfaitement avec tes sous-tons.',
+        fonce:  'Ta peau foncée a des reflets bleutés profonds — les teintes prune intense, violet et framboise foncée créent un contraste sublime.'
+      },
+      neutral: {
+        clair:  'Ta peau claire est équilibrée — ni trop dorée, ni trop rosée. Tu peux porter aussi bien des teintes chaudes que froides, ce qui te donne une flexibilité rare.',
+        medium: 'Ta peau medium est parfaitement équilibrée — une grande polyvalence te permet de jouer avec toutes les palettes de couleurs sans risque d\'erreur.',
+        fonce:  'Ta peau foncée est parfaitement équilibrée — les teintes terracotta, bordeaux et bronze fonctionnent toutes à merveille sur toi.'
+      }
     };
 
-    const FOUNDATION_TIP = {
-      warm:    { shade: 'warm ou W',    note: 'Évite les teintes C ou P (Cool/Pink) qui donneraient un effet grisâtre.' },
-      cool:    { shade: 'cool ou C',    note: 'Évite les teintes W ou Y (Warm/Yellow) qui peuvent paraître orangées.' },
-      neutral: { shade: 'neutral ou N', note: 'Les teintes N (Neutral) sont faites pour toi — polyvalence maximale.' }
+    // ─── Conseil fond de teint (undertone + skin type) ────────────
+    const FDT_SHADE = { warm: 'warm, W ou Y', cool: 'cool, C ou P', neutral: 'neutral ou N' };
+    const FDT_AVOID = {
+      warm:    'Évite les teintes C ou P (Cool/Pink) qui créent un effet grisâtre sur ta peau.',
+      cool:    'Évite les teintes W ou Y (Warm/Yellow) qui peuvent paraître orangées sur toi.',
+      neutral: 'Tu peux essayer les deux — mais les teintes N (Neutral) seront toujours ta valeur sûre.'
+    };
+    const FDT_TEXTURE = {
+      grasse:   'Privilégie une formule <strong>matifiante, longue tenue</strong> pour contrôler les brillances.',
+      mixte:    'Choisis une formule <strong>équilibrante</strong> — matifiante sur la zone T, hydratante sur les joues.',
+      seche:    'Opte pour une formule <strong>hydratante et lumineuse</strong> pour éviter l\'effet écailleux.',
+      sensible: 'Choisis une formule <strong>sans parfum, hypoallergénique</strong> pour éviter les réactions.',
+      normale:  'Toutes les textures te conviennent — choisis selon le rendu que tu recherches.'
     };
 
-    const CONCEALER_TIP = {
-      bleu:   'Applique un correcteur <strong>pêche ou orangé</strong> avant ton anti-cernes pour neutraliser le bleu.',
-      rouge:  'Applique un correcteur <strong>jaune</strong> pour neutraliser les rougeurs sous l\'œil.',
-      marron: 'Un anti-cernes <strong>légèrement plus clair</strong> que ton teint atténue efficacement.',
-      none:   'Choisis un anti-cernes <strong>1 à 2 tons plus clair</strong> que ton fond de teint pour illuminer.'
+    // ─── Conseil correcteur (cernes + undertone) ──────────────────
+    function getConcealerTip() {
+      if (!cernesType) return `Choisis un anti-cernes <strong>1 à 2 tons plus clair</strong> que ton fond de teint pour illuminer la zone sous l'œil.`;
+      const correct = {
+        bleu:   'pêche ou orangé',
+        rouge:  'jaune ou beige',
+        marron: 'saumon ou orangé'
+      }[cernesType] || 'légèrement plus clair';
+      const intensity = cernesInt === 'marqués' ? ' — tes cernes sont marqués, préfère une couvrance totale' : '';
+      return `Tes cernes sont <strong>${cernesType}s${cernesInt ? ' · ' + cernesInt + 's' : ''}</strong>. Applique un correcteur <strong>${correct}</strong> avant ton anti-cernes pour neutraliser${intensity}.`;
+    }
+
+    // ─── Conseils yeux (undertone + eye contrast + skin type) ─────
+    const EYE_COLORS = {
+      warm: {
+        fort:   'doré, bronze intense, marron fumé, terracotta profond',
+        moyen:  'marron chaud, bronze doux, terracotta, cuivré',
+        faible: 'nude doré, beige chaud, marron clair, champagne'
+      },
+      cool: {
+        fort:   'prune intense, violet profond, gris anthracite, bordeaux',
+        moyen:  'rose taupe, mauve, gris doux, prune',
+        faible: 'rose pâle, lilas, taupe rosé, gris clair'
+      },
+      neutral: {
+        fort:   'marron intense, kaki, gris chaud, terracotta foncé',
+        moyen:  'marron naturel, taupe, gris chaud, nude',
+        faible: 'nude, beige rosé, gris très clair, pêche doux'
+      }
+    };
+    const EYE_WHY = {
+      fort:   `Ton contraste naturel est <strong>fort</strong> — des teintes intenses accentuent l'intensité de ton regard sans surcharger.`,
+      moyen:  `Ton contraste est <strong>moyen</strong> — des teintes équilibrées définissent ton regard tout en restant naturelles.`,
+      faible: `Ton contraste est <strong>doux</strong> — des teintes légères créent de la profondeur sans alourdir.`
+    };
+    const MASCARA_TYPE = {
+      fort:   'volumateur longue tenue',
+      moyen:  'allongeant + volumateur',
+      faible: 'allongeant effet sérum'
     };
 
-    const EYE_TIPS = {
-      warm:    { colors: 'doré, bronze, marron chaud, terracotta',              why: 'Ces couleurs chaudes renforcent tes reflets naturels et réchauffent ton regard.' },
-      cool:    { colors: 'rose, taupe, prune, violet doux',                     why: 'Ces teintes s\'harmonisent avec tes sous-tons rosés pour un look lumineux.' },
-      neutral: { colors: 'marron naturel, gris chaud, nude, terracotta',        why: 'Ta polyvalence te permet de jouer aussi bien avec des tons chauds que froids.' }
-    };
-
-    const MASCARA_TIP = {
-      fort:   { type: 'volumateur',             why: 'Ton contraste naturel est fort — un mascara volumateur accentue encore plus l\'intensité de ton regard.' },
-      moyen:  { type: 'allongeant + volumateur', why: 'Avec un contraste moyen, associe longueur et volume pour un regard équilibré.' },
-      faible: { type: 'allongeant',              why: 'Un mascara allongeant crée une illusion de profondeur pour un regard plus défini.' }
-    };
-
-    const LIP_TIPS = {
-      warm:    { shades: 'pêche, corail, nude doré, rouge orangé',  why: 'Ces teintes chaudes sont alignées avec tes sous-tons et réchauffent ton sourire.' },
-      cool:    { shades: 'rose, framboise, rouge vif, mauve',        why: 'Ces teintes froides s\'harmonisent avec tes reflets rosés.' },
-      neutral: { shades: 'nude rosé, beige, nude pêche',             why: 'Les nudes polyvalents s\'adaptent à toutes les occasions.' }
+    // ─── Conseils lèvres (undertone + carnation) ──────────────────
+    const LIP_SHADES_FULL = {
+      warm: {
+        clair:  'nude pêche, corail clair, rose abricoté, rouge orangé doux',
+        medium: 'corail, pêche intense, nude caramel, rouge brique',
+        fonce:  'terracotta, miel, chocolat chaud, rouge orangé profond'
+      },
+      cool: {
+        clair:  'rose pâle, mauve lilas, rouge vif, framboise légère',
+        medium: 'rose fushia, framboise, bordeaux doux, prune',
+        fonce:  'bordeaux intense, prune profond, violet, rouge à lèvres foncé'
+      },
+      neutral: {
+        clair:  'nude rosé, beige léger, rose naturel, pêche clair',
+        medium: 'nude universel, beige rosé, caramel léger, rouge classique',
+        fonce:  'caramel, nude foncé, nude brun, terracotta medium'
+      }
     };
 
     function getProductsHTML(categories, limit) {
@@ -1169,21 +1241,22 @@ const SkinAnalysis = (() => {
 
         <!-- BLOC 2 — EXPLICATION SIMPLE -->
         <div class="mkr-bloc mkr-bloc-explain">
-          <h2 class="mkr-bloc-title">💡 Pourquoi ce sous-ton ?</h2>
-          <p class="mkr-explain-text">${UNDERTONE_EXPLAIN[ut]}</p>
+          <h2 class="mkr-bloc-title">💡 Ton profil colorimétrique</h2>
+          <p class="mkr-explain-text">${(UNDERTONE_EXPLAIN_CA[ut] || UNDERTONE_EXPLAIN_CA.neutral)[ca] || ''}</p>
         </div>
 
         <!-- BLOC 3 — APPLICATION CONCRÈTE -->
         <div class="mkr-bloc">
-          <h2 class="mkr-bloc-title">🎨 Comment l'appliquer</h2>
+          <h2 class="mkr-bloc-title">🎨 Tes conseils personnalisés</h2>
           <div class="mkr-apply-grid">
             <div class="mkr-apply-item">
               <span class="mkr-apply-label">Fond de teint</span>
-              <p>Choisis une teinte <strong>${FOUNDATION_TIP[ut].shade}</strong>. ${FOUNDATION_TIP[ut].note}</p>
+              <p>Teinte <strong>${FDT_SHADE[ut]}</strong>. ${FDT_AVOID[ut]}</p>
+              <p class="mkr-apply-sub">${FDT_TEXTURE[skinTypeLbl] || FDT_TEXTURE.normale}</p>
             </div>
             <div class="mkr-apply-item">
               <span class="mkr-apply-label">Anti-cernes</span>
-              <p>${CONCEALER_TIP[cer]}</p>
+              <p>${getConcealerTip()}</p>
             </div>
           </div>
         </div>
@@ -1199,10 +1272,10 @@ const SkinAnalysis = (() => {
 
           <div id="mkr-tab-teint" class="mkr-tab-panel active">
             <div class="mkr-zone-tip">
-              <p>Pour ton teint <strong>${carnation?.label || 'Medium'}</strong> avec sous-ton <strong>${undertone?.label?.split('·')[0]?.trim() || 'Neutre'}</strong>,
-              un fond de teint <strong>${FOUNDATION_TIP[ut].shade}</strong> t'offrira le rendu le plus naturel.</p>
-              ${cernes?.detected ? `<p class="mkr-cernes-note">◐ Cernes <strong>${cernes.type}s</strong> : ${CONCEALER_TIP[cer]}</p>` : ''}
-              <p class="mkr-why-note">Ce produit correspond à ton sous-ton et ta carnation — il fondra naturellement sur ta peau.</p>
+              <p>Carnation <strong>${carnation?.label || 'Medium'}</strong> · Sous-ton <strong>${undertone?.label?.split('·')[0]?.trim() || 'Neutre'}</strong> · Peau <strong>${skinType?.label || 'Normale'}</strong></p>
+              <p>Teinte idéale : <strong>${FDT_SHADE[ut]}</strong>. ${FDT_AVOID[ut]}</p>
+              <p class="mkr-why-note">${FDT_TEXTURE[skinTypeLbl] || FDT_TEXTURE.normale}</p>
+              ${cernesType ? `<p class="mkr-cernes-note">◐ ${getConcealerTip()}</p>` : ''}
             </div>
             <div class="mkr-reco-grid">
               ${getProductsHTML(['foundation', 'concealer'], 2)}
@@ -1212,9 +1285,9 @@ const SkinAnalysis = (() => {
 
           <div id="mkr-tab-yeux" class="mkr-tab-panel">
             <div class="mkr-zone-tip">
-              <p>Avec un sous-ton <strong>${undertone?.label?.split('·')[0]?.trim()}</strong>, mise sur : <strong>${EYE_TIPS[ut].colors}</strong>.</p>
-              <p>${EYE_TIPS[ut].why}</p>
-              <p>Mascara recommandé : <strong>${MASCARA_TIP[ec].type}</strong>. ${MASCARA_TIP[ec].why}</p>
+              <p>${EYE_WHY[ec]}</p>
+              <p>Fards recommandés pour ton profil : <strong>${(EYE_COLORS[ut] || EYE_COLORS.neutral)[ec] || ''}</strong>.</p>
+              <p>Mascara : <strong>${MASCARA_TYPE[ec]}</strong> — amplifie ton contraste naturel ${ec === 'fort' ? 'déjà intense' : ec === 'moyen' ? 'équilibré' : 'subtil'}.</p>
             </div>
             <div class="mkr-reco-grid">
               ${getProductsHTML(['mascara', 'eyeshadow'], 2)}
@@ -1223,8 +1296,9 @@ const SkinAnalysis = (() => {
 
           <div id="mkr-tab-levres" class="mkr-tab-panel">
             <div class="mkr-zone-tip">
-              <p>Pour ton sous-ton <strong>${undertone?.label?.split('·')[0]?.trim()}</strong>, les teintes <strong>${LIP_TIPS[ut].shades}</strong> sont tes meilleures alliées.</p>
-              <p>${LIP_TIPS[ut].why}</p>
+              <p>Carnation <strong>${carnation?.label}</strong> + sous-ton <strong>${undertone?.label?.split('·')[0]?.trim()}</strong> — tes teintes signature :</p>
+              <p><strong>${(LIP_SHADES_FULL[ut] || LIP_SHADES_FULL.neutral)[ca] || ''}</strong></p>
+              <p class="mkr-why-note">Ces teintes sont sélectionnées à l'intersection de ta carnation et de tes reflets naturels — elles fondent sans contraste artificiel.</p>
             </div>
             <div class="mkr-reco-grid">
               ${getProductsHTML(['lipliner'], 1)}
