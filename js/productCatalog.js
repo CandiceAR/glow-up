@@ -52,7 +52,7 @@ const ProductCatalog = (() => {
           }
         }
         if (manualProducts?.length) {
-          // Fusionner : manual prioritaire
+          // Fusionner : manual prioritaire (par asin || id)
           const map = new Map();
           manualProducts.forEach(p => {
             const key = p.asin || p.id;
@@ -62,7 +62,14 @@ const ProductCatalog = (() => {
             const key = p.asin || p.id;
             if (!map.has(key)) map.set(key, p);
           });
-          products = Array.from(map.values());
+          // Dédupliquer par id — évite les collisions entre catalogue statique et Firestore
+          // (deux produits avec ASINs différents mais même id causeraient openProductModal à retourner le mauvais)
+          const idSeen = new Set();
+          products = Array.from(map.values()).filter(p => {
+            if (!p.id || idSeen.has(p.id)) return false;
+            idSeen.add(p.id);
+            return true;
+          });
         }
       } catch (err) {
         console.log('[Catalog] Erreur chargement produits:', err.message);
