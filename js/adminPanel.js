@@ -182,7 +182,7 @@ const Admin = (() => {
       const carnStr   = Array.isArray(p.carnation) && p.carnation.length && p.carnation.length < 3
         ? p.carnation.map(c => c === 'clair' ? 'Claire' : c === 'medium' ? 'Medium' : 'Foncée').join(', ')
         : null;
-      const MAT_LABELS = { jeune: '🌱 Jeune', mature: '🌸 Mature', all: '' };
+      const MAT_LABELS = { teen: '🧒 Ado -16', jeune: '🌱 Jeune', mature: '🌸 Mature', all: '' };
       const matStr     = p.maturity && p.maturity !== 'all' ? MAT_LABELS[p.maturity] || '' : '';
       const profilCell = (p.undertone || carnStr || matStr)
         ? `<div style="font-size:0.72rem;line-height:1.6">

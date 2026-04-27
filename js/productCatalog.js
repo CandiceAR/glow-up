@@ -104,8 +104,9 @@ const ProductCatalog = (() => {
   // ─── Détecter la maturité peau à partir des réponses ─────────
   function getMaturityPreference(answers) {
     const { ageGroup, skinMaturity } = answers || {};
+    if (ageGroup === 'moins-20') return 'teen';
     if (ageGroup === '40+' || skinMaturity === 'ridules') return 'mature';
-    if ((ageGroup === 'moins-20' || ageGroup === '20-25') && skinMaturity === 'lisse') return 'jeune';
+    if (ageGroup === '20-25' && skinMaturity === 'lisse') return 'jeune';
     return 'all';
   }
 
@@ -130,14 +131,23 @@ const ProductCatalog = (() => {
     // Filtrer par maturité peau (soft preference — ne jamais vider)
     const matPref = getMaturityPreference(answers);
     if (matPref !== 'all') {
-      const matFiltered = pool.filter(p =>
-        !p.maturity || p.maturity === 'all' || p.maturity === matPref
-      );
+      // teen : priorité aux produits teen + jeune + all (jamais mature)
+      const allowedMat = matPref === 'teen'
+        ? (p) => !p.maturity || p.maturity === 'all' || p.maturity === 'jeune' || p.maturity === 'teen'
+        : (p) => !p.maturity || p.maturity === 'all' || p.maturity === matPref;
+
+      const matFiltered = pool.filter(allowedMat);
       if (matFiltered.length >= 4) pool = matFiltered;
     }
 
-    // Trier : featured d'abord, puis par rating
+    // Trier : teen en tête si profil ado, puis featured, puis rating
     pool.sort((a, b) => {
+      const matPref = getMaturityPreference(answers);
+      if (matPref === 'teen') {
+        const aT = a.maturity === 'teen' ? 1 : 0;
+        const bT = b.maturity === 'teen' ? 1 : 0;
+        if (bT !== aT) return bT - aT;
+      }
       if (b.isFeatured !== a.isFeatured) return b.isFeatured ? 1 : -1;
       return (b.rating || 0) - (a.rating || 0);
     });
