@@ -513,26 +513,37 @@ const MakeupRoutine = (() => {
       faceShape:  { oval: 'Ovale', round: 'Rond', square: 'Carré', heart: 'Cœur', long: 'Allongé' },
       undertone:  { warm: 'Chaud', cool: 'Froid', neutral: 'Neutre' },
       skinType:   { grasse: 'Grasse', mixte: 'Mixte', seche: 'Sèche', sensible: 'Sensible', normale: 'Normale' },
-      carnation:  { light: 'Claire', medium: 'Medium', dark: 'Foncée' }
+      carnation:  { light: 'Claire', medium: 'Medium', dark: 'Foncée' },
+      mkLook:     { naturel: 'Naturel', soigne: 'Soigné', glam: 'Glam' },
+      mkFocus:    { yeux: 'Les yeux', levres: 'Les lèvres', teint: 'Le teint', joues: 'Les joues' },
+      mkTime:     { rapide: '< 5 min', moyen: '5–10 min', complet: '10 min+' }
     };
 
     return `
       <div class="premium-profile">
         <div class="premium-profile-item">
-          <span class="premium-profile-label">Visage</span>
-          <span class="premium-profile-value">${labels.faceShape[profile.faceShape] || 'Ovale'}</span>
+          <span class="premium-profile-label">Look</span>
+          <span class="premium-profile-value">${labels.mkLook[profile.mkLook] || '—'}</span>
+        </div>
+        <div class="premium-profile-item">
+          <span class="premium-profile-label">Zone prioritaire</span>
+          <span class="premium-profile-value">${labels.mkFocus[profile.mkFocus] || '—'}</span>
+        </div>
+        <div class="premium-profile-item">
+          <span class="premium-profile-label">Temps</span>
+          <span class="premium-profile-value">${labels.mkTime[profile.mkTime] || '—'}</span>
         </div>
         <div class="premium-profile-item">
           <span class="premium-profile-label">Sous-ton</span>
           <span class="premium-profile-value">${labels.undertone[profile.undertone] || 'Neutre'}</span>
         </div>
         <div class="premium-profile-item">
-          <span class="premium-profile-label">Peau</span>
-          <span class="premium-profile-value">${labels.skinType[profile.skinType] || 'Normale'}</span>
-        </div>
-        <div class="premium-profile-item">
           <span class="premium-profile-label">Carnation</span>
           <span class="premium-profile-value">${labels.carnation[profile.carnation] || 'Medium'}</span>
+        </div>
+        <div class="premium-profile-item">
+          <span class="premium-profile-label">Peau</span>
+          <span class="premium-profile-value">${labels.skinType[profile.skinType] || 'Normale'}</span>
         </div>
       </div>`;
   }
@@ -542,20 +553,46 @@ const MakeupRoutine = (() => {
   // ══════════════════════════════════════════════════════════════
 
   function render(container, profile) {
-    const foundations   = selectFoundation(profile);
-    const concealers    = selectConcealer(profile);
-    const powders       = selectPowder(profile);
-    const blushes       = selectBlush(profile);
-    const bronzers      = selectBronzer(profile);
-    const highlighters  = selectHighlighter(profile);
-    const eyeshadows    = selectEyeshadow(profile);
-    const eyebrows      = selectEyebrow(profile);
-    const eyeliners     = selectEyeliner(profile);
-    const mascaras      = selectMascara(profile);
-    const lips          = selectLips(profile);
+    const { mkLook, mkFocus, mkTime } = profile;
+
+    // ══════════════════════════════════════════════════════════════
+    // SECTIONS ACTIVES SELON mkLook
+    // naturel  → teint léger, mascara, lèvres douces — pas de liner ni fard
+    // soigne   → teint complet, blush, mascara, sourcils, liner léger, lèvres
+    // glam     → tout : fard, liner intense, bronzer, enlumineur, lèvres intenses
+    // ══════════════════════════════════════════════════════════════
+    const LOOK_SECTIONS = {
+      naturel:  new Set(['foundation', 'concealer', 'blush', 'mascara', 'eyebrow', 'lips']),
+      soigne:   new Set(['foundation', 'concealer', 'powder', 'blush', 'mascara', 'eyebrow', 'eyeliner', 'lips']),
+      glam:     new Set(['foundation', 'concealer', 'powder', 'blush', 'bronzer', 'highlighter', 'mascara', 'eyebrow', 'eyeliner', 'eyeshadow', 'lips'])
+    };
+    const activeSections = LOOK_SECTIONS[mkLook] || LOOK_SECTIONS.soigne;
+
+    // Nb de produits proposés par zone : focus → 2, reste → 1 (naturel) ou 2 (glam)
+    function maxForCat(cat) {
+      const zone = zoneOf(cat);
+      if (mkFocus && zone === mkFocus) return 2;
+      if (mkLook === 'naturel')        return 1;
+      if (mkLook === 'glam')           return 2;
+      return 1;
+    }
+
+    const foundations   = activeSections.has('foundation')  ? selectFoundation(profile)  : null;
+    const concealers    = activeSections.has('concealer')    ? selectConcealer(profile)   : null;
+    const powders       = activeSections.has('powder')       ? selectPowder(profile)      : null;
+    const blushes       = activeSections.has('blush')        ? selectBlush(profile)       : null;
+    const bronzers      = activeSections.has('bronzer')      ? selectBronzer(profile)     : null;
+    const highlighters  = activeSections.has('highlighter')  ? selectHighlighter(profile) : null;
+    const eyeshadows    = activeSections.has('eyeshadow')    ? selectEyeshadow(profile)   : null;
+    const eyebrows      = activeSections.has('eyebrow')      ? selectEyebrow(profile)     : null;
+    const eyeliners     = activeSections.has('eyeliner')     ? selectEyeliner(profile)    : null;
+    const mascaras      = activeSections.has('mascara')      ? selectMascara(profile)     : null;
+    const lips          = activeSections.has('lips')         ? selectLips(profile)        : null;
+
+    // Appliquer le max par zone
+    const trim = (arr, cat) => arr ? arr.slice(0, maxForCat(cat)) : null;
 
     const hasProducts = foundations?.length || concealers?.length || mascaras?.length || lips?.length;
-
     if (!hasProducts) {
       container.innerHTML = `
         <div class="premium-routine">
@@ -567,10 +604,14 @@ const MakeupRoutine = (() => {
       return;
     }
 
-    // ─── Groupes de sections par zone ──────────────────────────
-    const { mkFocus, mkTime } = profile;
+    // ─── Labels look ─────────────────────────────────────────────
+    const lookLabel = { naturel: 'No-makeup makeup', soigne: 'Everyday chic', glam: 'Full glam' }[mkLook] || '';
+    const lookSubtitle = {
+      naturel: 'Routine légère — peau nette et regard naturel',
+      soigne:  'Routine équilibrée — fini soigné sans surcharge',
+      glam:    'Routine complète — impact maximal et longue tenue'
+    }[mkLook] || '';
 
-    // Zone à améliorer : affichée en premier avec conseil personnalisé
     function zoneOf(cat) {
       if (['foundation','concealer','powder'].includes(cat)) return 'teint';
       if (['blush','bronzer','highlighter'].includes(cat))   return 'joues';
@@ -589,27 +630,24 @@ const MakeupRoutine = (() => {
       return defaultTip;
     }
 
-    // Toutes les sections dans l'ordre par défaut
     const allSections = [
-      { zone:'teint',   html: renderSection('Teint',            '◇', tipForZone('foundation',  getTip('foundation',  profile)), foundations)  },
-      { zone:'teint',   html: renderSection('Anti-cernes',      '◉', tipForZone('concealer',   getTip('concealer',   profile)), concealers)   },
-      { zone:'teint',   html: renderSection('Poudre',           '○', tipForZone('powder',      getTip('powder',      profile)), powders)      },
-      { zone:'joues',   html: renderSection('Blush & Joues',    '❋', tipForZone('blush',       getTip('blush',       profile)), blushes)      },
-      { zone:'joues',   html: renderSection('Bronzer',          '☀', tipForZone('bronzer',     getTip('bronzer',     profile)), bronzers)     },
-      { zone:'joues',   html: renderSection('Enlumineur',       '✦', tipForZone('highlighter', getTip('highlighter', profile)), highlighters) },
-      { zone:'yeux',    html: renderSection('Mascara',           '○', tipForZone('mascara',     getTip('mascara',     profile)), mascaras)     },
-      { zone:'yeux',    html: renderSection('Sourcils',         '〜', tipForZone('eyebrow',    getTip('eyebrow',     profile)), eyebrows)     },
-      { zone:'yeux',    html: renderSection('Fard à paupières', '◈', tipForZone('eyeshadow',   getTip('eyeshadow',   profile)), eyeshadows)   },
-      { zone:'yeux',    html: renderSection('Liner',            '◈', tipForZone('eyeliner',    getTip('eyeliner',    profile)), eyeliners)    },
-      { zone:'levres',  html: renderSection('Lèvres',           '❋', tipForZone('lips',        getTip('lips',        profile)), lips)         }
+      { zone:'teint',  html: renderSection('Teint',            '◇', tipForZone('foundation',  getTip('foundation',  profile)), trim(foundations,  'foundation'))  },
+      { zone:'teint',  html: renderSection('Anti-cernes',      '◉', tipForZone('concealer',   getTip('concealer',   profile)), trim(concealers,   'concealer'))   },
+      { zone:'teint',  html: renderSection('Poudre',           '○', tipForZone('powder',      getTip('powder',      profile)), trim(powders,      'powder'))      },
+      { zone:'joues',  html: renderSection('Blush & Joues',    '❋', tipForZone('blush',       getTip('blush',       profile)), trim(blushes,      'blush'))       },
+      { zone:'joues',  html: renderSection('Bronzer',          '☀', tipForZone('bronzer',     getTip('bronzer',     profile)), trim(bronzers,     'bronzer'))     },
+      { zone:'joues',  html: renderSection('Enlumineur',       '✦', tipForZone('highlighter', getTip('highlighter', profile)), trim(highlighters, 'highlighter')) },
+      { zone:'yeux',   html: renderSection('Mascara',          '○', tipForZone('mascara',     getTip('mascara',     profile)), trim(mascaras,     'mascara'))     },
+      { zone:'yeux',   html: renderSection('Sourcils',         '〜', tipForZone('eyebrow',    getTip('eyebrow',     profile)), trim(eyebrows,     'eyebrow'))     },
+      { zone:'yeux',   html: renderSection('Fard à paupières', '◈', tipForZone('eyeshadow',   getTip('eyeshadow',   profile)), trim(eyeshadows,   'eyeshadow'))   },
+      { zone:'yeux',   html: renderSection('Liner',            '◈', tipForZone('eyeliner',    getTip('eyeliner',    profile)), trim(eyeliners,    'eyeliner'))    },
+      { zone:'levres', html: renderSection('Lèvres',           '❋', tipForZone('lips',        getTip('lips',        profile)), trim(lips,         'lips'))        }
     ];
 
-    // Zone à améliorer (mkFocus) : toujours affichée en premier
-    const focusSections  = mkFocus ? allSections.filter(s => s.zone === mkFocus) : [];
-    const otherSections  = allSections.filter(s => s.zone !== mkFocus);
+    const focusSections = mkFocus ? allSections.filter(s => s.zone === mkFocus) : [];
+    const otherSections = allSections.filter(s => s.zone !== mkFocus);
     let ordered = [...focusSections, ...otherSections];
 
-    // Limiter le nombre de sections selon le temps disponible (mkTime)
     const timeLimits = { rapide: 4, moyen: 7, complet: Infinity };
     const maxSect    = timeLimits[mkTime] ?? Infinity;
     if (maxSect !== Infinity) ordered = ordered.slice(0, maxSect);
@@ -620,9 +658,9 @@ const MakeupRoutine = (() => {
       <div class="premium-routine">
 
         <header class="premium-header">
-          <span class="premium-tag">Ta sélection personnalisée</span>
+          <span class="premium-tag">${lookLabel ? `Look ${lookLabel}` : 'Ta sélection personnalisée'}</span>
           <h1 class="premium-title">Routine Make-up</h1>
-          <p class="premium-subtitle">Produits sélectionnés selon ton profil et ton analyse</p>
+          <p class="premium-subtitle">${lookSubtitle || 'Produits sélectionnés selon ton profil et ton analyse'}</p>
         </header>
 
         ${renderProfile(profile)}
