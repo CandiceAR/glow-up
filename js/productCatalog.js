@@ -178,6 +178,15 @@ const ProductCatalog = (() => {
       : '';
     const categoryLabel = getCategoryLabel(product.category);
 
+    // Icônes type de peau
+    const ST_ICONS = { normale: '🌿', grasse: '💦', seche: '🌵', mixte: '☯', sensible: '🌸' };
+    const stTags   = Array.isArray(product.skinTypeTags) && product.skinTypeTags.length > 0 && product.skinTypeTags.length < 5
+      ? `<div class="product-skin-tags">${product.skinTypeTags.map(s => `<span class="skin-tag" title="${s}">${ST_ICONS[s] || ''}</span>`).join('')}</div>`
+      : '';
+
+    // Badge ado
+    if (product.maturity === 'teen') badgeParts.push('<span class="badge badge-teen">🧒 Ado</span>');
+
     return `
       <div class="product-card" data-id="${product.id}" onclick="ProductCatalog.openProductModal('${product.id}')">
         <div class="product-card-img">
@@ -197,6 +206,7 @@ const ProductCatalog = (() => {
             <div class="product-rating">${ratingStars} <span>${product.rating || '—'}</span></div>
             <span class="product-price">${product.price ? product.price.toFixed(2) + ' €' : '—'}</span>
           </div>
+          ${stTags}
           ${showBuyButton ? renderBuyButton(product) : ''}
           ${showTryOn ? `<button class="btn btn-tryon" onclick="event.stopPropagation(); TryOn.addProduct('${product.id}')">Essayer</button>` : ''}
         </div>

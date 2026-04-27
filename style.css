@@ -5865,3 +5865,24 @@ em { font-style: italic; color: var(--nude); }
   margin-top: 12px;
   text-align: right;
 }
+
+/* ── Icônes type de peau sur les cartes produit ─────────────── */
+.product-skin-tags {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+.skin-tag {
+  font-size: 0.85rem;
+  line-height: 1;
+  cursor: default;
+}
+.badge-teen {
+  background: #fce4ec;
+  color: #c2185b;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}

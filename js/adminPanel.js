@@ -184,11 +184,16 @@ const Admin = (() => {
         : null;
       const MAT_LABELS = { teen: '🧒 Ado -16', jeune: '🌱 Jeune', mature: '🌸 Mature', all: '' };
       const matStr     = p.maturity && p.maturity !== 'all' ? MAT_LABELS[p.maturity] || '' : '';
-      const profilCell = (p.undertone || carnStr || matStr)
-        ? `<div style="font-size:0.72rem;line-height:1.6">
+      const ST_ICONS   = { normale: '🌿', grasse: '💦', seche: '🌵', mixte: '☯', sensible: '🌸' };
+      const stTags     = Array.isArray(p.skinTypeTags) && p.skinTypeTags.length > 0 && p.skinTypeTags.length < 5
+        ? p.skinTypeTags.map(s => `${ST_ICONS[s] || ''}${s}`).join(' ')
+        : null;
+      const profilCell = (p.undertone || carnStr || matStr || stTags)
+        ? `<div style="font-size:0.72rem;line-height:1.8">
              ${p.undertone ? `<span style="color:var(--nude);font-weight:500">${UT_LABELS[p.undertone] || p.undertone}</span>` : ''}
              ${carnStr ? `<br><span style="color:var(--muted)">${carnStr}</span>` : ''}
              ${matStr  ? `<br><span style="color:var(--muted)">${matStr}</span>`  : ''}
+             ${stTags  ? `<br><span style="color:#5a7a5a;font-weight:500">${stTags}</span>` : ''}
            </div>`
         : '<span style="color:var(--muted);font-size:0.72rem">—</span>';
       const statusBadge = (p.active !== false)
@@ -267,6 +272,13 @@ const Admin = (() => {
     document.getElementById('fCarnFonce').checked  = Array.isArray(p.carnation) ? p.carnation.includes('fonce')  : true;
     document.getElementById('fFinish').value       = p.finish || 'naturel';
     document.getElementById('fMaturity').value     = p.maturity || 'all';
+    // Type de peau — si skinTypeTags vide ou tous = tout coché
+    const st = Array.isArray(p.skinTypeTags) && p.skinTypeTags.length > 0 ? p.skinTypeTags : [];
+    document.getElementById('fSkinNormale').checked  = st.length === 0 || st.includes('normale');
+    document.getElementById('fSkinGrasse').checked   = st.length === 0 || st.includes('grasse');
+    document.getElementById('fSkinSeche').checked    = st.length === 0 || st.includes('seche');
+    document.getElementById('fSkinMixte').checked    = st.length === 0 || st.includes('mixte');
+    document.getElementById('fSkinSensible').checked = st.length === 0 || st.includes('sensible');
     previewImage(p.imageUrl || '');
     document.getElementById('productFormWrap').style.display = 'block';
     document.getElementById('productFormWrap').scrollIntoView({ behavior: 'smooth' });
@@ -293,6 +305,9 @@ const Admin = (() => {
     document.getElementById('fCarnFonce').checked  = true;
     document.getElementById('fFinish').value       = 'naturel';
     document.getElementById('fMaturity').value     = 'all';
+    ['fSkinNormale','fSkinGrasse','fSkinSeche','fSkinMixte','fSkinSensible'].forEach(id => {
+      document.getElementById(id).checked = false;
+    });
     previewImage('');
     const prog = document.getElementById('imageUploadProgress');
     if (prog) prog.textContent = '';
@@ -320,6 +335,12 @@ const Admin = (() => {
     const carnation  = ['clair','medium','fonce'].filter(v => document.getElementById('fCarn' + v.charAt(0).toUpperCase() + v.slice(1)).checked);
     const finish     = document.getElementById('fFinish').value || 'naturel';
     const maturity   = document.getElementById('fMaturity').value || 'all';
+    const skinTypes  = ['normale','grasse','seche','mixte','sensible'].filter(v => {
+      const key = 'fSkin' + v.charAt(0).toUpperCase() + v.slice(1);
+      return document.getElementById(key)?.checked;
+    });
+    // Si tous cochés ou aucun coché = null (convient à tous)
+    const skinTypeTags = skinTypes.length > 0 && skinTypes.length < 5 ? skinTypes : null;
 
     if (!amazonUrl || !name || !brand || !imageUrl) {
       toast('Remplis tous les champs obligatoires (lien, nom, marque, image)', 'error');
@@ -368,9 +389,10 @@ const Admin = (() => {
         shadeName: shadeName || null,
         undertone: undertone || null,
         carnation: carnation.length === 3 ? null : (carnation.length ? carnation : null),
-        finish:    finish || 'naturel',
-        maturity:  maturity || 'all',
-        curatedAt: new Date().toISOString().split('T')[0]
+        finish:      finish || 'naturel',
+        maturity:    maturity || 'all',
+        skinTypeTags: skinTypeTags,
+        curatedAt:   new Date().toISOString().split('T')[0]
       };
     } else {
       product = {
@@ -389,9 +411,9 @@ const Admin = (() => {
         shadeName: shadeName || null,
         undertone: undertone || null,
         carnation: carnation.length === 3 ? null : (carnation.length ? carnation : null),
-        finish:    finish || 'naturel',
-        maturity:  maturity || 'all',
-        skinTypeTags: ['normale', 'mixte', 'seche', 'grasse', 'sensible'],
+        finish:      finish || 'naturel',
+        maturity:    maturity || 'all',
+        skinTypeTags: skinTypeTags,
         concernTags: [],
         isFeatured,
         active: isActive,
