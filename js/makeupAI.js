@@ -420,15 +420,15 @@ const MakeupAI = (() => {
 
     const resized   = resizeTo512(sourceCanvas);
     const scaledLm  = scaleToCanvas(landmarks, sourceCanvas, resized);
-    const eyeMask   = buildCombinedMask(resized, scaledLm, EYE_LEFT_IDX, EYE_RIGHT_IDX, 4);
-    const browMask  = buildCombinedMask(resized, scaledLm, BROW_LEFT_IDX, BROW_RIGHT_IDX, 2);
+    const eyeMask   = buildCombinedMask(resized, scaledLm, EYE_LEFT_IDX, EYE_RIGHT_IDX, 8);
+    const browMask  = buildCombinedMask(resized, scaledLm, BROW_LEFT_IDX, BROW_RIGHT_IDX, 5);
 
     // Masque combiné yeux + sourcils
     const combinedMask = document.createElement('canvas');
     combinedMask.width = 512; combinedMask.height = 512;
     const mCtx = combinedMask.getContext('2d');
     mCtx.drawImage(eyeMask, 0, 0);
-    mCtx.globalCompositeOperation = 'multiply';
+    mCtx.globalCompositeOperation = 'screen';
     mCtx.drawImage(browMask, 0, 0);
 
     const imgB64  = canvasToBase64(resized, 0.92);
