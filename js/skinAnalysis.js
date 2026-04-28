@@ -1611,3 +1611,5 @@ const SkinAnalysis = (() => {
   return { initScreen, startLiveAnalysis, stopLiveAnalysis };
 
 })();
+
+window.SkinAnalysis = SkinAnalysis;
