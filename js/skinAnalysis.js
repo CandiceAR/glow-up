@@ -928,18 +928,26 @@ const SkinAnalysis = (() => {
     }
 
     if (AppState.face.skinAnalysis) {
+      // Si sourceCanvas manque (rechargement de page), le recréer depuis la photo
+      if (!AppState.face.sourceCanvas && AppState.face.photo) {
+        try {
+          const img = new Image();
+          img.src = AppState.face.photo;
+          await new Promise((res, rej) => { img.onload = res; img.onerror = rej; });
+          const sc = document.createElement('canvas');
+          sc.width  = img.naturalWidth;
+          sc.height = img.naturalHeight;
+          sc.getContext('2d', { willReadFrequently: true }).drawImage(img, 0, 0);
+          AppState.face.sourceCanvas = sc;
+        } catch(e) { console.warn('[SkinAnalysis] Recréation sourceCanvas échouée', e); }
+      }
       renderReport(AppState.face.skinAnalysis, content);
-      console.log('[LookGen] CACHE — LookGenerator?', typeof window.LookGenerator, '| sourceCanvas?', !!AppState.face.sourceCanvas, '| landmarks?', !!AppState.face.landmarks);
       if (typeof window.LookGenerator !== 'undefined' && window.LookGenerator.generate && AppState.face.sourceCanvas && AppState.face.landmarks) {
         const looksEl = document.createElement('div');
         content.appendChild(looksEl);
-        try {
-          await window.LookGenerator.generate(looksEl, AppState.face.sourceCanvas, AppState.face.landmarks, AppState.face.skinAnalysis);
-        } catch(e) {
-          console.error('[LookGen] CACHE — Erreur:', e);
-        }
+        try { await window.LookGenerator.generate(looksEl, AppState.face.sourceCanvas, AppState.face.landmarks, AppState.face.skinAnalysis); } catch(e) {}
       }
-      if (typeof window.MakeupAI !== 'undefined') {
+      if (typeof window.MakeupAI !== 'undefined' && AppState.face.sourceCanvas && AppState.face.landmarks) {
         const aiEl = document.createElement('div');
         content.appendChild(aiEl);
         try { window.MakeupAI.generate(aiEl, AppState.face.sourceCanvas, AppState.face.landmarks, AppState.face.skinAnalysis); } catch(e) {}
