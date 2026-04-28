@@ -1007,6 +1007,187 @@ const SkinAnalysis = (() => {
     }
   }
 
+  // ── Analyse détaillée du visage en 3 niveaux ──────────────────
+  function buildFaceObservations(result) {
+    const { zones = {}, undertone, skinType, faceShape, cernes, carnation, eyeContrast } = result;
+    const ut = undertone?.type    || 'neutral';
+    const ca = carnation?.type    || 'medium';
+    const st = skinType?.type     || 'normale';
+    const ec = eyeContrast?.level || 'moyen';
+    const fs = faceShape?.type    || 'oval';
+
+    const zv = Object.values(zones);
+    const n  = zv.length || 1;
+    const m  = key => zv.reduce((s,z) => s + (z[key] || 60), 0) / n;
+    const mPores = m('pores'), mEclat = m('eclat'), mRed = m('redness');
+    const mTex = m('texture'), mTaches = m('taches'), mTeint = m('teint');
+
+    const obs = [];
+
+    // 1 — Grain & pores
+    if (mPores < 45) {
+      obs.push({ icon:'🔬',
+        vois:      `Pores visibles sur la zone T (nez${mPores < 30 ? ' et milieu du front'}), grain légèrement irrégulier`,
+        veut_dire: 'Les textures épaisses s\'incrustent dans les pores et les accentuent — la peau a besoin de légèreté',
+        fait:      'Fond de teint fluide ou BB crème, appliqué en tapotements avec une éponge humide — jamais de formule compacte épaisse'
+      });
+    } else if (mPores < 68) {
+      obs.push({ icon:'🔬',
+        vois:      'Grain de peau légèrement irrégulier par endroits, sans être marqué',
+        veut_dire: 'La peau offre une bonne base — une couvrance légère suffit, la peau n\'a pas besoin d\'être cachée',
+        fait:      'Formule légère à modulable : applique une couvrance minimale et rajoute ponctuellement sur les zones à corriger'
+      });
+    } else {
+      obs.push({ icon:'✨',
+        vois:      `Grain de peau ${mPores > 80 ? 'très fin et serré' : 'régulier'} — belle texture naturelle`,
+        veut_dire: 'La peau n\'a pas besoin d\'être couverte pour paraître uniforme — les textures légères la subliment',
+        fait:      'Skin tint, BB crème ou soin teinté — laisser la peau respirer plutôt que la recouvrir'
+      });
+    }
+
+    // 2 — Éclat & fatigue
+    if (mEclat < 40) {
+      obs.push({ icon:'😴',
+        vois:      `Perte d'éclat visible — teint voilé${mEclat < 28 ? ', peau fatiguée' : ', légèrement terne'}`,
+        veut_dire: 'Certaines zones absorbent la lumière au lieu de la refléter — le visage paraît moins reposé qu\'il ne l\'est réellement',
+        fait:      'Fond de teint finition lumineuse + highlighter liquide sur les pommettes — récupération d\'éclat immédiate'
+      });
+    } else if (mEclat > 72) {
+      obs.push({ icon:'✨',
+        vois:      'Peau lumineuse et rebondie naturellement',
+        veut_dire: 'L\'éclat naturel est déjà présent — une formule chargée l\'éteindrait plutôt que de l\'amplifier',
+        fait:      'Highlighter poudre discret sur les pommettes uniquement — évite les formules très lumineuses qui feraient "too much"'
+      });
+    } else {
+      obs.push({ icon:'🌤',
+        vois:      'Éclat naturel équilibré — ni mat ni brillant',
+        veut_dire: 'La peau a une bonne base mais peut bénéficier d\'un coup d\'éclat ciblé pour plus de dimension',
+        fait:      'Fond de teint satiné + highlighter léger sur les zones hautes : pommettes, nez, arc de Cupidon'
+      });
+    }
+
+    // 3 — Rougeurs
+    if (mRed > 42) {
+      obs.push({ icon:'🌸',
+        vois:      `Rougeurs ${mRed > 58 ? 'diffuses' : 'légères'} visibles${st === 'sensible' ? ', peau réactive' : ''}`,
+        veut_dire: 'Les zones rouges créent une irrégularité qui attire l\'œil et donne un aspect inégal au teint',
+        fait:      `${mRed > 58 ? 'Base correctrice verte sur les zones rouges avant le fond de teint,' : 'Fond de teint à couvrance légère à modulable,'} appliqué par tapotements — jamais en frottant`
+      });
+    }
+
+    // 4 — Taches / irrégularités pigmentaires
+    if (mTaches < 52) {
+      obs.push({ icon:'🔸',
+        vois:      'Irrégularités pigmentaires ou petites imperfections localisées sur le visage',
+        veut_dire: 'Ces zones spécifiques nécessitent une correction ciblée — couvrir tout le visage serait une erreur',
+        fait:      'Anti-cernes ciblé ou fond de teint haute couvrance sur les zones uniquement, fondu dans le teint environnant'
+      });
+    }
+
+    // 5 — Hydratation
+    if (st === 'seche' || mTeint < 46) {
+      obs.push({ icon:'💧',
+        vois:      'Zones de sécheresse visibles — légères irrégularités sur les joues et contour de la bouche',
+        veut_dire: 'La peau qui tire absorbe le fond de teint de manière inégale et accentue les ridules d\'expression',
+        fait:      'Hydratation obligatoire avant le maquillage (laisser absorber 3 min) — fond de teint hydratant ou sérum teinté uniquement'
+      });
+    } else if (st === 'mixte') {
+      obs.push({ icon:'☯',
+        vois:      'Peau mixte visible — zone T légèrement plus grasse, joues normales à sèches',
+        veut_dire: 'Appliquer le même fond de teint partout créera un déséquilibre : la zone T brillera, les joues tireront',
+        fait:      'Zone T : fond de teint matifiant — joues : crème hydratante fine avant un fond léger. Deux zones, deux traitements'
+      });
+    }
+
+    // 6 — Cernes
+    if (cernes?.detected) {
+      const cernesDesc = cernes.type === 'bleu'  ? 'bleutée — signe de fatigue ou de circulation ralentie'
+                       : cernes.type === 'rouge' ? 'rosée — fragilité vasculaire visible'
+                       : 'brun-pigmentée — dépôt pigmentaire';
+      const correcteur = cernes.type === 'bleu'  ? 'pêche ou orangé'
+                       : cernes.type === 'rouge' ? 'jaune ou beige'
+                       : 'saumon ou abricoté';
+      obs.push({ icon:'👁',
+        vois:      `Cernes ${cernes.intensity === 'marqués' ? 'bien marqués' : 'légers'} sous les yeux, tonalité ${cernesDesc}`,
+        veut_dire: 'Cette ombre sous l\'œil fatigue l\'ensemble du regard — c\'est la zone prioritaire numéro 1 à traiter',
+        fait:      `Correcteur ${correcteur} (couche très fine) → anti-cernes en triangle inversé → poudre libre translucide par tapotements`
+      });
+    }
+
+    // 7 — Morphologie
+    const shapeMap = {
+      oval:    { vois:'Morphologie ovale — proportions équilibrées, légèrement plus large aux pommettes', veut_dire:'Toutes les techniques de maquillage s\'appliquent sans correction à faire — c\'est la morphologie la plus polyvalente', fait:'Blush en diagonale sur les pommettes pour accentuer les volumes naturels' },
+      round:   { vois:'Morphologie ronde — joues pleines, lignes douces, front et mâchoire similaires en largeur', veut_dire:'Le visage est visuellement plus large que long — certaines techniques créent de l\'allure et de la structure', fait:'Blush en diagonale vers les tempes + contouring léger sous les pommettes pour allonger visuellement' },
+      square:  { vois:'Morphologie carrée — mâchoire angulaire marquée, front large, lignes droites dominantes', veut_dire:'Les angles attirent l\'œil vers le bas et les côtés — les adoucir visuellement harmonise l\'ensemble', fait:'Blush arrondi sur le dessus des pommettes + contouring doux sur les tempes pour arrondir les angles' },
+      heart:   { vois:'Morphologie en cœur — front large, pommettes hautes, menton pointu', veut_dire:'Le haut du visage est visuellement dominant — équilibrer vers le bas est la priorité pour l\'harmonie', fait:'Blush posé bas sur les pommettes (vers le milieu du visage) — évite les couleurs sombres qui affinent encore le menton' },
+      long:    { vois:'Morphologie allongée — visage nettement plus long que large', veut_dire:'La longueur attire l\'œil verticalement — des techniques horizontales créent une largeur visuelle bienvenue', fait:'Blush horizontal sur les pommettes (pas en diagonale) — évite le highlighter sur l\'arête du nez qui allonge encore' },
+      diamond: { vois:'Morphologie en losange — pommettes larges, front et mâchoire plus étroits', veut_dire:'Les pommettes sont le point focal naturel et l\'atout principal — elles méritent d\'être mises en valeur', fait:'Highlighter + blush lumineux directement sur les pommettes — adoucis le front et la mâchoire avec une touche légère' }
+    };
+    const shape = shapeMap[fs] || shapeMap.oval;
+    obs.push({ icon:'🎯', ...shape });
+
+    // 8 — Regard
+    const ecObs = {
+      fort:   { vois:'Regard naturellement intense — bon contraste entre l\'iris et la peau, sourcils présents', veut_dire:'Le regard s\'exprime seul sans aide — en faire trop alourdirait l\'ensemble', fait:'Eye-liner fin ou mascara seul pour les jours ordinaires — réserve les fards intenses pour les occasions spéciales' },
+      moyen:  { vois:'Regard équilibré — contraste modéré, ni trop doux ni trop marqué', veut_dire:'Le regard peut facilement être amplifié ou gardé naturel — belle flexibilité', fait:'Fard de transition dans le creux de la paupière + mascara allongeant — définit sans alourdir' },
+      faible: { vois:'Regard doux — contraste léger entre iris et peau, paupières claires', veut_dire:'Le regard a besoin d\'un peu de soutien pour s\'exprimer pleinement — c\'est la zone à prioriser', fait:'Fard plus intense dans le creux + eye-liner fin trait supérieur + mascara allongeant — l\'impact sera immédiatement visible' }
+    };
+    obs.push({ icon:'👁️', ...(ecObs[ec] || ecObs.moyen) });
+
+    // 9 — Harmonie globale
+    const harmMap = {
+      warm_fort:    { vois:'Visage "chaud et contrasté" — reflets dorés naturels + regard intense',         veut_dire:'Le visage supporte et même appelle les looks forts — les teintes neutres le sous-exploiteraient',           fait:'Soirée et Sophistiqué sont faits pour toi — terracotta, cuivre, bordeaux créent un rendu exceptionnel' },
+      warm_moyen:   { vois:'Visage "chaud et lumineux" — reflets dorés naturels, regard équilibré',          veut_dire:'L\'éclat est l\'atout principal — il faut l\'amplifier plutôt que le couvrir',                           fait:'Glow ou Naturel en priorité — blush pêche, highlighter doré, lèvres corail' },
+      warm_faible:  { vois:'Visage "chaud et délicat" — tons dorés doux, traits fins',                       veut_dire:'La douceur naturelle est le charme du visage — les looks forts risquent de trahir cette qualité',        fait:'Naturel ou Minimaliste — baume pêche, blush nude, rien d\'agressif' },
+      cool_fort:    { vois:'Visage "frais et intense" — reflets rosés/bleutés + regard marqué',               veut_dire:'La combinaison froid + contraste crée un impact visuel fort — les teintes intenses y trouvent leur place', fait:'Bordeaux, prune, fuchsia créent un contraste exceptionnel sur toi — ose le look Soirée' },
+      cool_moyen:   { vois:'Visage "frais et élégant" — reflets rosés, traits définis',                       veut_dire:'Le visage a une élégance naturelle — les looks structurés l\'accompagnent très bien',                    fait:'Sophistiqué ou Glow — blush rose, fard mauve, lèvres framboise ou nude rosé' },
+      cool_faible:  { vois:'Visage "frais et romantique" — teinte rosée douce, traits fins',                  veut_dire:'La fraîcheur naturelle est l\'atout — les looks trop intenses peuvent paraître forcés',                  fait:'Naturel en priorité — rose pâle, lilas, baume rosé — laisser la peau respirer' },
+      neutral_fort: { vois:'Visage "neutre et expressif" — grande polyvalence, regard intense',                veut_dire:'La neutralité du sous-ton permet de porter pratiquement tous les looks sans risque',                     fait:'Tous les looks te conviennent — laisse-toi guider par l\'occasion' },
+      neutral_moyen:{ vois:'Visage "neutre et harmonieux" — équilibre naturel de tous les traits',             veut_dire:'Cette polyvalence est rare — tu peux changer de style sans contrainte de sous-ton',                     fait:'Explore tous les looks — commence par Naturel et monte en intensité selon l\'envie' },
+      neutral_faible:{ vois:'Visage "neutre et délicat" — harmonie douce, grande douceur naturelle',           veut_dire:'La légèreté naturelle du visage est son charme — les looks lourds la dissimuleraient',                  fait:'Minimaliste ou Naturel — quelques touches légères pour amplifier sans couvrir' }
+    };
+    const harm = harmMap[`${ut}_${ec}`] || harmMap['neutral_moyen'];
+    obs.push({ icon:'⚖️', ...harm });
+
+    return obs;
+  }
+
+  function renderFaceObsHTML(result) {
+    const obs = buildFaceObservations(result);
+    if (!obs.length) return '';
+
+    const rows = obs.map(o => `
+      <div class="fobs-row">
+        <div class="fobs-icon">${o.icon}</div>
+        <div class="fobs-cols">
+          <div class="fobs-col fobs-col--vois">
+            <span class="fobs-col-label">Ce que je vois</span>
+            <p>${o.vois}</p>
+          </div>
+          <div class="fobs-col fobs-col--veut">
+            <span class="fobs-col-label">Ce que ça veut dire</span>
+            <p>${o.veut_dire}</p>
+          </div>
+          <div class="fobs-col fobs-col--fait">
+            <span class="fobs-col-label">Ce qu'on fait</span>
+            <p>${o.fait}</p>
+          </div>
+        </div>
+      </div>`).join('');
+
+    return `
+      <div class="mkr-bloc fobs-bloc">
+        <h2 class="mkr-bloc-title">🔍 Ce que je vois sur ton visage</h2>
+        <p class="fobs-intro">Analyse réelle de ta photo — chaque observation est spécifique à ce que j'ai mesuré.</p>
+        <div class="fobs-legend">
+          <span class="fobs-leg fobs-leg--vois">👁 Observation</span>
+          <span class="fobs-leg fobs-leg--veut">💡 Interprétation</span>
+          <span class="fobs-leg fobs-leg--fait">✦ Action concrète</span>
+        </div>
+        <div class="fobs-list">${rows}</div>
+      </div>`;
+  }
+
   function renderReport(result, content) {
     const { zones, undertone, skinType, faceShape, globalScore, cernes, carnation, eyeContrast } = result;
 
@@ -1250,6 +1431,9 @@ const SkinAnalysis = (() => {
             </div>
           </div>
         </div>
+
+        <!-- BLOC ANALYSE VISAGE -->
+        ${renderFaceObsHTML(result)}
 
         <!-- BLOC 2 — EXPLICATION SIMPLE -->
         <div class="mkr-bloc mkr-bloc-explain">
