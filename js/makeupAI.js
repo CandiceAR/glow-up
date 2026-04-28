@@ -88,15 +88,15 @@ const MakeupAI = (() => {
     c.height = h;
     const ctx = c.getContext('2d');
 
-    // Fond blanc (zone à préserver)
-    ctx.fillStyle = '#FFFFFF';
+    // Fond noir (zone à préserver)
+    ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, w, h);
 
-    // Zone maquillage en noir (zone à modifier)
+    // Zone maquillage en blanc (zone à modifier par l'IA)
     const pts = indices.map(i => landmarks[i] ? { x: landmarks[i].x * w, y: landmarks[i].y * h } : null).filter(Boolean);
     if (pts.length < 3) return c;
 
-    ctx.fillStyle = '#000000';
+    ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
     ctx.moveTo(pts[0].x, pts[0].y);
     pts.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
@@ -120,13 +120,13 @@ const MakeupAI = (() => {
     const c = document.createElement('canvas');
     c.width = w; c.height = h;
     const ctx = c.getContext('2d');
-    ctx.fillStyle = '#FFFFFF';
+    ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, w, h);
 
     for (const indices of [idxA, idxB]) {
       const pts = indices.map(i => landmarks[i] ? { x: landmarks[i].x * w, y: landmarks[i].y * h } : null).filter(Boolean);
       if (pts.length < 3) continue;
-      ctx.fillStyle = '#000000';
+      ctx.fillStyle = '#FFFFFF';
       if (dilate > 0) ctx.filter = `blur(${dilate}px)`;
       ctx.beginPath();
       ctx.moveTo(pts[0].x, pts[0].y);
