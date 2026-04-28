@@ -389,10 +389,10 @@ const MakeupAI = (() => {
     const lipCrop = cropZone(sourceCanvas, landmarks, LIPS_IDX, 0.06);
 
     const PROMPTS = {
-      best:      `a woman wearing ${hexToColorName(colors.best)} lipstick, natural lighting, realistic, photorealistic makeup, high quality portrait`,
-      naturelle: `a woman wearing sheer nude lip gloss ${hexToColorName(colors.naturelle)}, barely-there natural look, glossy finish, photorealistic`,
-      cool:      `a woman wearing ${hexToColorName(colors.cool)} bold lip color, editorial makeup look, photorealistic portrait`,
-      soiree:    `a woman wearing ${hexToColorName(colors.soiree)} evening lip color, elegant dinner party makeup, photorealistic`
+      best:      `a woman wearing ${hexToColorName(colors.best)} lipstick, satin finish, no glitter, no shimmer, clean simple makeup, soft natural lighting, photorealistic portrait`,
+      naturelle: `a woman wearing ${hexToColorName(colors.naturelle)} tinted lip balm, barely-there natural look, no glitter, no shimmer, matte soft finish, photorealistic portrait`,
+      cool:      `a woman wearing ${hexToColorName(colors.cool)} lip color, matte finish, no glitter, no shimmer, clean modern makeup, photorealistic portrait`,
+      soiree:    `a woman wearing ${hexToColorName(colors.soiree)} lip color, satin finish, no glitter, no shimmer, elegant simple evening makeup, photorealistic portrait`
     };
 
     for (const [slot, prompt] of Object.entries(PROMPTS)) {
