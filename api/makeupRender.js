@@ -1,6 +1,6 @@
 /* ============================================================
    api/makeupRender.js — Proxy Replicate pour rendu maquillage IA
-   Modèle : black-forest-labs/flux-fill-pro (inpainting)
+   Modèle : black-forest-labs/flux-fill-pro (inpainting) v2
    ============================================================ */
 
 const CORS = {
@@ -23,31 +23,41 @@ module.exports = async (req, res) => {
   }
 
   try {
-    // 1. Lancer la prédiction
-    const startRes = await fetch('https://api.replicate.com/v1/models/black-forest-labs/flux-fill-pro/predictions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type':  'application/json',
-        'Prefer':        'wait'   // attend le résultat directement (max 60s)
-      },
-      body: JSON.stringify({
-        input: {
-          image,
-          mask,
-          prompt,
-          guidance:         30,
-          steps:            25,
-          output_format:    'jpeg',
-          output_quality:   90,
-          safety_tolerance: 6
-        }
-      })
-    });
+    // 1. Lancer la prédiction (retry si 429)
+    let startRes;
+    for (let attempt = 0; attempt <= 4; attempt++) {
+      if (attempt > 0) {
+        const wait = attempt * 8000; // 8s, 16s, 24s, 32s
+        await new Promise(r => setTimeout(r, wait));
+      }
+      startRes = await fetch('https://api.replicate.com/v1/models/black-forest-labs/flux-fill-pro/predictions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type':  'application/json',
+          'Prefer':        'wait'
+        },
+        body: JSON.stringify({
+          input: {
+            image,
+            mask,
+            prompt,
+            guidance:         30,
+            steps:            25,
+            output_format:    'jpeg',
+            output_quality:   90,
+            safety_tolerance: 6
+          }
+        })
+      });
+      if (startRes.status !== 429) break;
+      console.warn(`[makeupRender] 429 — tentative ${attempt+1}/4`);
+    }
 
     if (!startRes.ok) {
       const err = await startRes.json().catch(() => ({}));
-      return res.status(startRes.status).json({ error: err?.detail || 'Replicate error' });
+      console.error('[makeupRender] Replicate error:', startRes.status, err);
+      return res.status(startRes.status).json({ error: err?.detail || err?.message || 'Replicate error' });
     }
 
     const prediction = await startRes.json();

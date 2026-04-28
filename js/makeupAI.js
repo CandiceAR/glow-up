@@ -297,9 +297,10 @@ const MakeupAI = (() => {
     return lms[i] ? { x: lms[i].x*w, y: lms[i].y*h } : null;
   }
 
-  // ── Appel API ─────────────────────────────────────────────────
+  // ── Appel API avec retry sur 429 ────────────────────────────
 
-  async function callMakeupRender(imageB64, maskB64, prompt) {
+  async function callMakeupRender(imageB64, maskB64, prompt, _retry) {
+    const retry = _retry || 0;
     const res = await fetch('/api/makeupRender', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -309,12 +310,20 @@ const MakeupAI = (() => {
         prompt
       })
     });
+
+    if (res.status === 429 && retry < 3) {
+      const wait = 5000 + retry * 3000; // 5s, 8s, 11s
+      console.warn(`[MakeupAI] 429 — attente ${wait/1000}s avant retry ${retry+1}/3`);
+      await new Promise(r => setTimeout(r, wait));
+      return callMakeupRender(imageB64, maskB64, prompt, retry + 1);
+    }
+
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.error || `HTTP ${res.status}`);
     }
     const data = await res.json();
-    return data.url; // URL de l'image générée
+    return data.url;
   }
 
   // ── Rendu HTML d'une grille de cartes ─────────────────────────
@@ -392,7 +401,7 @@ const MakeupAI = (() => {
       await callMakeupRender(imgB64, maskB64, prompt)
         .then(url  => { console.log('[MakeupAI] Lèvres', slot, 'OK'); updateCard('mai-lips', slot, url, null); })
         .catch(err => { console.warn('[MakeupAI] Lèvres', slot, 'fallback —', err.message); updateCard('mai-lips', slot, null, fbCanvas); });
-      await new Promise(r => setTimeout(r, 500));
+      if (slot !== 'soiree') await new Promise(r => setTimeout(r, 2000));
     }
   }
 
@@ -438,7 +447,7 @@ const MakeupAI = (() => {
       await callMakeupRender(imgB64, maskB64, prompt)
         .then(url  => { console.log('[MakeupAI] Yeux', slot, 'OK'); updateCard('mai-eyes', slot, url, null); })
         .catch(err => { console.warn('[MakeupAI] Yeux', slot, 'fallback —', err.message); updateCard('mai-eyes', slot, null, fbCanvas); });
-      await new Promise(r => setTimeout(r, 500));
+      if (slot !== 'soiree') await new Promise(r => setTimeout(r, 2000));
     }
   }
 
@@ -474,7 +483,7 @@ const MakeupAI = (() => {
       await callMakeupRender(imgB64, maskB64, prompt)
         .then(url  => { console.log('[MakeupAI] Blush', slot, 'OK'); updateCard('mai-blush', slot, url, null); })
         .catch(err => { console.warn('[MakeupAI] Blush', slot, 'fallback —', err.message); updateCard('mai-blush', slot, null, fbCanvas); });
-      await new Promise(r => setTimeout(r, 500));
+      if (slot !== 'coral') await new Promise(r => setTimeout(r, 2000));
     }
   }
 
@@ -518,10 +527,10 @@ const MakeupAI = (() => {
     parentContainer.appendChild(eyesEl);
     parentContainer.appendChild(blushEl);
 
-    // Lancer en parallèle (les requêtes se font indépendamment)
-    generateLips(lipsEl,   sourceCanvas, landmarks, analysis);
-    generateEyes(eyesEl,   sourceCanvas, landmarks, analysis);
-    generateBlush(blushEl, sourceCanvas, landmarks, analysis);
+    // Sections séquentielles pour ne pas saturer le rate limit Replicate
+    await generateLips(lipsEl,   sourceCanvas, landmarks, analysis);
+    await generateEyes(eyesEl,   sourceCanvas, landmarks, analysis);
+    await generateBlush(blushEl, sourceCanvas, landmarks, analysis);
   }
 
   window.MakeupAI = { generate };
