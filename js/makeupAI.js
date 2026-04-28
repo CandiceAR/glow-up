@@ -173,6 +173,130 @@ const MakeupAI = (() => {
     return out;
   }
 
+  // ── Fallbacks canvas colorés (si API indisponible) ───────────
+
+  function hexToRgba(hex, alpha) {
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+
+  function darkenHex(hex, f) {
+    return '#' + [1,3,5].map(i => Math.round(parseInt(hex.slice(i,i+2),16)*(1-f)).toString(16).padStart(2,'0')).join('');
+  }
+
+  function buildLipFallback(sourceCanvas, landmarks, color, slot) {
+    const w = sourceCanvas.width, h = sourceCanvas.height;
+    const out = document.createElement('canvas');
+    out.width = w; out.height = h;
+    const ctx = out.getContext('2d');
+    ctx.drawImage(sourceCanvas, 0, 0);
+
+    const pts = LIPS_IDX.map(i => landmark(landmarks,i,w,h)).filter(Boolean);
+    if (pts.length < 3) return cropZone(out, landmarks, LIPS_IDX, 0.06);
+
+    const opacity = slot === 'soiree' ? 0.88 : slot === 'cool' ? 0.78 : slot === 'naturelle' ? 0.45 : 0.72;
+    const linerOp = slot === 'soiree' ? 0.55 : slot === 'cool' ? 0.35 : slot === 'naturelle' ? 0 : 0.25;
+
+    // Crayon contour
+    if (linerOp > 0) {
+      ctx.save();
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = linerOp;
+      ctx.strokeStyle = darkenHex(color, 0.28);
+      ctx.lineWidth   = Math.max(w * 0.003, 1);
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.beginPath();
+      pts.forEach((p,i) => i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
+      ctx.closePath(); ctx.stroke(); ctx.restore();
+    }
+    // Remplissage
+    ctx.save();
+    ctx.beginPath();
+    pts.forEach((p,i) => i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
+    ctx.closePath(); ctx.clip();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = opacity;
+    ctx.fillStyle   = color;
+    ctx.beginPath();
+    pts.forEach((p,i) => i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
+    ctx.closePath(); ctx.fill();
+    // Gloss pour naturelle
+    if (slot === 'naturelle') {
+      const cx = pts.reduce((s,p)=>s+p.x,0)/pts.length;
+      const top = Math.min(...pts.map(p=>p.y));
+      const cy  = top + (pts.reduce((s,p)=>s+p.y,0)/pts.length - top)*0.35;
+      const rx  = (Math.max(...pts.map(p=>p.x))-Math.min(...pts.map(p=>p.x)))*0.28;
+      const ry  = (Math.max(...pts.map(p=>p.y))-top)*0.20;
+      const g   = ctx.createRadialGradient(cx,cy,0,cx,cy,Math.max(rx,ry));
+      g.addColorStop(0,'rgba(255,255,255,0.5)'); g.addColorStop(1,'rgba(255,255,255,0)');
+      ctx.globalCompositeOperation = 'screen'; ctx.globalAlpha = 1; ctx.fillStyle = g;
+      ctx.beginPath(); ctx.ellipse(cx,cy,rx,ry,0,0,Math.PI*2); ctx.fill();
+    }
+    ctx.restore();
+    return cropZone(out, landmarks, LIPS_IDX, 0.06);
+  }
+
+  function buildEyeFallback(sourceCanvas, landmarks, slot) {
+    const shadeColors = { naturel:'#C8B090', defini:'#8B6050', smoky:'#3A2828', soiree:'#1A0A18' };
+    const opacities   = { naturel:0.25, defini:0.45, smoky:0.65, soiree:0.80 };
+    const color   = shadeColors[slot] || '#8B6050';
+    const opacity = opacities[slot]   || 0.40;
+    const w = sourceCanvas.width, h = sourceCanvas.height;
+    const out = document.createElement('canvas');
+    out.width = w; out.height = h;
+    const ctx = out.getContext('2d');
+    ctx.drawImage(sourceCanvas, 0, 0);
+
+    for (const indices of [EYE_LEFT_IDX, EYE_RIGHT_IDX]) {
+      const pts = indices.map(i => landmark(landmarks,i,w,h)).filter(Boolean);
+      if (pts.length < 3) continue;
+      ctx.save();
+      ctx.beginPath();
+      pts.forEach((p,i) => i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
+      ctx.closePath(); ctx.clip();
+      ctx.globalCompositeOperation = 'multiply';
+      ctx.globalAlpha = opacity;
+      ctx.fillStyle   = color;
+      ctx.beginPath();
+      pts.forEach((p,i) => i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
+      ctx.closePath(); ctx.fill(); ctx.restore();
+    }
+    return cropZone(out, landmarks, [...EYE_LEFT_IDX, ...EYE_RIGHT_IDX], 0.10);
+  }
+
+  function buildBlushFallback(sourceCanvas, landmarks, color, slot) {
+    const opacities = { nude:0.18, rosé:0.28, peche:0.35, coral:0.45 };
+    const opacity   = opacities[slot] || 0.28;
+    const w = sourceCanvas.width, h = sourceCanvas.height;
+    const out = document.createElement('canvas');
+    out.width = w; out.height = h;
+    const ctx = out.getContext('2d');
+    ctx.drawImage(sourceCanvas, 0, 0);
+
+    for (const indices of [CHEEK_LEFT_IDX, CHEEK_RIGHT_IDX]) {
+      const pts = indices.map(i => landmark(landmarks,i,w,h)).filter(Boolean);
+      if (!pts.length) continue;
+      const cx = pts.reduce((s,p)=>s+p.x,0)/pts.length;
+      const cy = pts.reduce((s,p)=>s+p.y,0)/pts.length;
+      const r  = Math.max(...pts.map(p=>Math.hypot(p.x-cx,p.y-cy)))*1.1;
+      const g  = ctx.createRadialGradient(cx,cy,0,cx,cy,r);
+      g.addColorStop(0, hexToRgba(color, opacity));
+      g.addColorStop(0.6, hexToRgba(color, opacity*0.4));
+      g.addColorStop(1, hexToRgba(color, 0));
+      ctx.save();
+      ctx.globalCompositeOperation = 'soft-light';
+      ctx.globalAlpha = 1; ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fill(); ctx.restore();
+    }
+    return out;
+  }
+
+  function landmark(lms, i, w, h) {
+    return lms[i] ? { x: lms[i].x*w, y: lms[i].y*h } : null;
+  }
+
   // ── Appel API ─────────────────────────────────────────────────
 
   async function callMakeupRender(imageB64, maskB64, prompt) {
@@ -263,9 +387,11 @@ const MakeupAI = (() => {
     };
 
     for (const [slot, prompt] of Object.entries(PROMPTS)) {
+      const color    = colors[slot];
+      const fbCanvas = buildLipFallback(sourceCanvas, landmarks, color, slot);
       callMakeupRender(imgB64, maskB64, prompt)
-        .then(url => updateCard('mai-lips', slot, url, null))
-        .catch(() => updateCard('mai-lips', slot, null, lipCrop));
+        .then(url  => { console.log('[MakeupAI] Lèvres', slot, 'OK'); updateCard('mai-lips', slot, url, null); })
+        .catch(err => { console.warn('[MakeupAI] Lèvres', slot, 'fallback —', err.message); updateCard('mai-lips', slot, null, fbCanvas); });
     }
   }
 
@@ -307,9 +433,10 @@ const MakeupAI = (() => {
     };
 
     for (const [slot, prompt] of Object.entries(PROMPTS)) {
+      const fbCanvas = buildEyeFallback(sourceCanvas, landmarks, slot);
       callMakeupRender(imgB64, maskB64, prompt)
-        .then(url => updateCard('mai-eyes', slot, url, null))
-        .catch(() => updateCard('mai-eyes', slot, null, eyeCrop));
+        .then(url  => { console.log('[MakeupAI] Yeux', slot, 'OK'); updateCard('mai-eyes', slot, url, null); })
+        .catch(err => { console.warn('[MakeupAI] Yeux', slot, 'fallback —', err.message); updateCard('mai-eyes', slot, null, fbCanvas); });
     }
   }
 
@@ -340,9 +467,11 @@ const MakeupAI = (() => {
     };
 
     for (const [slot, prompt] of Object.entries(PROMPTS)) {
+      const blushColor = BLUSH_COLORS[utK][slot] || '#F0A090';
+      const fbCanvas   = buildBlushFallback(sourceCanvas, landmarks, blushColor, slot);
       callMakeupRender(imgB64, maskB64, prompt)
-        .then(url => updateCard('mai-blush', slot, url, null))
-        .catch(() => updateCard('mai-blush', slot, null, cheekCrop));
+        .then(url  => { console.log('[MakeupAI] Blush', slot, 'OK'); updateCard('mai-blush', slot, url, null); })
+        .catch(err => { console.warn('[MakeupAI] Blush', slot, 'fallback —', err.message); updateCard('mai-blush', slot, null, fbCanvas); });
     }
   }
 
