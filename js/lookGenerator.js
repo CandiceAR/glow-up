@@ -266,7 +266,8 @@ const LookGenerator = (() => {
     ctx.closePath();
     ctx.clip();
 
-    ctx.globalCompositeOperation = blend || 'multiply';
+    // source-over avec alpha = rendu couleur direct visible
+    ctx.globalCompositeOperation = 'source-over';
     ctx.globalAlpha = opacity;
     ctx.fillStyle = color;
     ctx.beginPath();
@@ -799,15 +800,15 @@ const LookGenerator = (() => {
     const ctx  = out.getContext('2d');
     ctx.drawImage(sourceCanvas, 0, 0);
 
-    const linerOp = slotId === 'soiree'    ? 0.50
-                  : slotId === 'cool'      ? 0.25
-                  : slotId === 'best'      ? 0.22
-                  : 0; // naturelle = pas de crayon
-    const blend   = slotId === 'naturelle' ? 'soft-light' : 'multiply';
-    const opacity = slotId === 'naturelle' ? 0.35
-                  : slotId === 'cool'      ? 0.70
-                  : slotId === 'soiree'    ? 0.88
-                  : 0.78; // best
+    const linerOp = slotId === 'soiree'    ? 0.70
+                  : slotId === 'cool'      ? 0.55
+                  : slotId === 'best'      ? 0.45
+                  : 0.18; // naturelle = crayon très léger
+    const blend   = slotId === 'naturelle' ? 'source-over' : 'source-over';
+    const opacity = slotId === 'naturelle' ? 0.55
+                  : slotId === 'cool'      ? 0.82
+                  : slotId === 'soiree'    ? 0.95
+                  : 0.88; // best
 
     drawLipsSmooth(ctx, landmarks, LIPS_INNER, w, h, lipColor, opacity, blend, linerOp);
     if (slotId === 'naturelle') drawLipsGloss(ctx, landmarks, LIPS_INNER, w, h);
