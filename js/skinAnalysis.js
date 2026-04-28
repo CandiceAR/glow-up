@@ -969,10 +969,16 @@ const SkinAnalysis = (() => {
 
       AppState.face.skinAnalysis = result;
       renderReport(result, content);
+      console.log('[LookGen] LookGenerator défini?', typeof window.LookGenerator, '| sourceCanvas?', !!AppState.face.sourceCanvas, '| landmarks?', !!AppState.face.landmarks);
       if (typeof window.LookGenerator !== 'undefined' && window.LookGenerator.generate) {
         const looksEl = document.createElement('div');
         content.appendChild(looksEl);
-        window.LookGenerator.generate(looksEl, AppState.face.sourceCanvas, AppState.face.landmarks, result);
+        try {
+          await window.LookGenerator.generate(looksEl, AppState.face.sourceCanvas, AppState.face.landmarks, result);
+          console.log('[LookGen] Carousel généré OK');
+        } catch(e) {
+          console.error('[LookGen] Erreur génération:', e);
+        }
       }
       if (typeof SkinJourney !== 'undefined' && SkinJourney.isActive()) {
         SkinJourney.addAnalysis();
