@@ -389,9 +389,10 @@ const MakeupAI = (() => {
     for (const [slot, prompt] of Object.entries(PROMPTS)) {
       const color    = colors[slot];
       const fbCanvas = buildLipFallback(sourceCanvas, landmarks, color, slot);
-      callMakeupRender(imgB64, maskB64, prompt)
+      await callMakeupRender(imgB64, maskB64, prompt)
         .then(url  => { console.log('[MakeupAI] Lèvres', slot, 'OK'); updateCard('mai-lips', slot, url, null); })
         .catch(err => { console.warn('[MakeupAI] Lèvres', slot, 'fallback —', err.message); updateCard('mai-lips', slot, null, fbCanvas); });
+      await new Promise(r => setTimeout(r, 500));
     }
   }
 
@@ -434,9 +435,10 @@ const MakeupAI = (() => {
 
     for (const [slot, prompt] of Object.entries(PROMPTS)) {
       const fbCanvas = buildEyeFallback(sourceCanvas, landmarks, slot);
-      callMakeupRender(imgB64, maskB64, prompt)
+      await callMakeupRender(imgB64, maskB64, prompt)
         .then(url  => { console.log('[MakeupAI] Yeux', slot, 'OK'); updateCard('mai-eyes', slot, url, null); })
         .catch(err => { console.warn('[MakeupAI] Yeux', slot, 'fallback —', err.message); updateCard('mai-eyes', slot, null, fbCanvas); });
+      await new Promise(r => setTimeout(r, 500));
     }
   }
 
@@ -469,9 +471,10 @@ const MakeupAI = (() => {
     for (const [slot, prompt] of Object.entries(PROMPTS)) {
       const blushColor = BLUSH_COLORS[utK][slot] || '#F0A090';
       const fbCanvas   = buildBlushFallback(sourceCanvas, landmarks, blushColor, slot);
-      callMakeupRender(imgB64, maskB64, prompt)
+      await callMakeupRender(imgB64, maskB64, prompt)
         .then(url  => { console.log('[MakeupAI] Blush', slot, 'OK'); updateCard('mai-blush', slot, url, null); })
         .catch(err => { console.warn('[MakeupAI] Blush', slot, 'fallback —', err.message); updateCard('mai-blush', slot, null, fbCanvas); });
+      await new Promise(r => setTimeout(r, 500));
     }
   }
 
