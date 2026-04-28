@@ -6183,3 +6183,98 @@ em { font-style: italic; color: var(--nude); }
   .fobs-cols { flex-direction: row; }
   .fobs-col  { flex: 1; }
 }
+
+/* ============================================================
+   LIP CARDS — 4 rendus visuels lèvres personnalisés
+   ============================================================ */
+
+.lip-cards-section {
+  margin-top: 32px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border, #E8E0D8);
+}
+
+.lip-cards-header {
+  text-align: center;
+  margin-bottom: 18px;
+}
+.lip-cards-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 6px 0 4px;
+}
+.lip-cards-sub {
+  font-size: 0.8rem;
+  color: var(--muted, #7A6E68);
+  margin: 0;
+}
+
+.lip-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+@media (min-width: 480px) {
+  .lip-cards-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+.lip-card {
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.lip-card-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: #f0ebe5;
+  overflow: hidden;
+}
+.lip-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.lip-card-swatch {
+  position: absolute;
+  bottom: 7px;
+  right: 7px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.8);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+.lip-card-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 3px 7px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  backdrop-filter: blur(4px);
+}
+.lip-card--best .lip-card-badge    { background: #2A1A0A; color: #FFD580; }
+.lip-card--naturelle .lip-card-badge { background: rgba(255,255,255,0.8); color: #444; }
+.lip-card--cool .lip-card-badge    { background: #9B6A7E; color: #fff; }
+.lip-card--soiree .lip-card-badge  { background: #6E1E2A; color: #fff; }
+
+.lip-card-info {
+  padding: 8px 10px;
+}
+.lip-card-desc {
+  font-size: 0.73rem;
+  color: var(--muted, #7A6E68);
+  display: block;
+}

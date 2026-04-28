@@ -748,9 +748,125 @@ const LookGenerator = (() => {
       </div>`;
   }
 
+  // ══════════════════════════════════════════════════════════════
+  // LIP COLOR ADVISOR — 4 cartes visuelles lèvres personnalisées
+  // ══════════════════════════════════════════════════════════════
+
+  const LIP_MATRIX = {
+    warm: {
+      clair:  { best:'#E28C6A', naturelle:'#E3B7A0', cool:'#C06A8E', soiree:'#A94438' },
+      medium: { best:'#D89A7A', naturelle:'#C8A58A', cool:'#A57C8C', soiree:'#D94A2F' },
+      fonce:  { best:'#A66A4F', naturelle:'#8B5A4A', cool:'#8E4B5A', soiree:'#C0392B' }
+    },
+    cool: {
+      clair:  { best:'#CFA5A5', naturelle:'#E4A3A3', cool:'#D94F70', soiree:'#7B1E3A' },
+      medium: { best:'#D98C8C', naturelle:'#CFA5A5', cool:'#D92B72', soiree:'#6E1E2A' },
+      fonce:  { best:'#9F5F65', naturelle:'#D98C8C', cool:'#FF4F7B', soiree:'#5C2C2C' }
+    },
+    neutral: {
+      clair:  { best:'#E9967A', naturelle:'#FFC1A1', cool:'#D98C8C', soiree:'#FF6347' },
+      medium: { best:'#FFA07A', naturelle:'#C8A58A', cool:'#CFA5A5', soiree:'#A94438' },
+      fonce:  { best:'#8E5C58', naturelle:'#5A3A34', cool:'#9B6A7E', soiree:'#8E4B5A' }
+    }
+  };
+
+  const LIP_SLOT_META = {
+    best:      { label:'BEST',      icon:'★', desc:'La teinte faite pour toi' },
+    naturelle: { label:'NATURELLE', icon:'◌', desc:'Nude adapté à ta carnation' },
+    cool:      { label:'COOL',      icon:'◈', desc:'Originale mais toujours toi' },
+    soiree:    { label:'SOIRÉE',    icon:'◆', desc:'Habillée sans excès' }
+  };
+
+  function extractLipBounds(landmarks, imgW, imgH) {
+    const pts = LIPS_INNER.map(i => landmarks[i]).filter(Boolean);
+    if (!pts.length) return null;
+    const xs  = pts.map(p => p.x * imgW);
+    const ys  = pts.map(p => p.y * imgH);
+    const pad = imgW * 0.055;
+    const x   = Math.max(0, Math.min(...xs) - pad);
+    const y   = Math.max(0, Math.min(...ys) - pad * 1.2);
+    const x2  = Math.min(imgW, Math.max(...xs) + pad);
+    const y2  = Math.min(imgH, Math.max(...ys) + pad * 1.2);
+    return { x, y, w: x2 - x, h: y2 - y };
+  }
+
+  function renderLipCard(sourceCanvas, landmarks, lipColor, slotId) {
+    const w   = sourceCanvas.width;
+    const h   = sourceCanvas.height;
+    const out = document.createElement('canvas');
+    out.width  = w;
+    out.height = h;
+    const ctx  = out.getContext('2d');
+    ctx.drawImage(sourceCanvas, 0, 0);
+
+    const linerOp = slotId === 'soiree'    ? 0.50
+                  : slotId === 'cool'      ? 0.25
+                  : slotId === 'best'      ? 0.22
+                  : 0; // naturelle = pas de crayon
+    const blend   = slotId === 'naturelle' ? 'soft-light' : 'multiply';
+    const opacity = slotId === 'naturelle' ? 0.35
+                  : slotId === 'cool'      ? 0.70
+                  : slotId === 'soiree'    ? 0.88
+                  : 0.78; // best
+
+    drawLipsSmooth(ctx, landmarks, LIPS_INNER, w, h, lipColor, opacity, blend, linerOp);
+    if (slotId === 'naturelle') drawLipsGloss(ctx, landmarks, LIPS_INNER, w, h);
+
+    // Crop sur les lèvres
+    const bounds = extractLipBounds(landmarks, w, h);
+    if (!bounds || bounds.w < 10 || bounds.h < 10) return out;
+
+    const crop = document.createElement('canvas');
+    crop.width  = Math.round(bounds.w);
+    crop.height = Math.round(bounds.h);
+    crop.getContext('2d').drawImage(out, bounds.x, bounds.y, bounds.w, bounds.h, 0, 0, crop.width, crop.height);
+    return crop;
+  }
+
+  function generateLipCards(container, sourceCanvas, landmarks, analysis) {
+    if (!container || !sourceCanvas || !landmarks || !analysis) return;
+
+    const ut    = analysis.undertone?.type || 'neutral';
+    const ca    = analysis.carnation?.type || 'medium';
+    const utKey = ['warm','cool','neutral'].includes(ut) ? ut : 'neutral';
+    const caKey = ['clair','medium','fonce'].includes(ca) ? ca : 'medium';
+    const slots = LIP_MATRIX[utKey][caKey];
+    const utL   = analysis.undertone?.label?.split('·')[0]?.trim() || 'Neutre';
+    const caL   = analysis.carnation?.label || 'Medium';
+
+    const cards = Object.entries(slots).map(([slotId, color]) => {
+      const meta   = LIP_SLOT_META[slotId];
+      const canvas = renderLipCard(sourceCanvas, landmarks, color, slotId);
+      return { slotId, color, meta, img: canvas.toDataURL('image/jpeg', 0.92) };
+    });
+
+    container.innerHTML = `
+      <div class="lip-cards-section">
+        <div class="lip-cards-header">
+          <span class="section-tag">Tes lèvres, 4 teintes</span>
+          <h2 class="lip-cards-title">Rendus personnalisés</h2>
+          <p class="lip-cards-sub">Sélectionnées pour ton profil ${utL} · ${caL}</p>
+        </div>
+        <div class="lip-cards-grid">
+          ${cards.map(({ slotId, color, meta, img }) => `
+            <div class="lip-card lip-card--${slotId}">
+              <div class="lip-card-img-wrap">
+                <img src="${img}" alt="${meta.label}" class="lip-card-img">
+                <div class="lip-card-swatch" style="background:${color}"></div>
+                <div class="lip-card-badge">${meta.icon} ${meta.label}</div>
+              </div>
+              <div class="lip-card-info">
+                <span class="lip-card-desc">${meta.desc}</span>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`;
+  }
+
   // Sélection d'un look dans le carousel
   window.LookGenerator = window.LookGenerator || {};
   window.LookGenerator.generate = generate;
+  window.LookGenerator.generateLipCards = generateLipCards;
   window.LookGenerator.selectLook = function(lookId) {
     document.querySelectorAll('.look-card').forEach(c => {
       c.classList.toggle('look-card--active', c.dataset.look === lookId);

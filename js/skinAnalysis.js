@@ -935,9 +935,13 @@ const SkinAnalysis = (() => {
         content.appendChild(looksEl);
         try {
           await window.LookGenerator.generate(looksEl, AppState.face.sourceCanvas, AppState.face.landmarks, AppState.face.skinAnalysis);
-          console.log('[LookGen] CACHE — Carousel généré OK');
         } catch(e) {
           console.error('[LookGen] CACHE — Erreur:', e);
+        }
+        if (window.LookGenerator.generateLipCards) {
+          const lipEl = document.createElement('div');
+          content.appendChild(lipEl);
+          try { window.LookGenerator.generateLipCards(lipEl, AppState.face.sourceCanvas, AppState.face.landmarks, AppState.face.skinAnalysis); } catch(e) {}
         }
       }
       return;
@@ -984,6 +988,15 @@ const SkinAnalysis = (() => {
           console.log('[LookGen] Carousel généré OK');
         } catch(e) {
           console.error('[LookGen] Erreur génération:', e);
+        }
+        if (window.LookGenerator.generateLipCards) {
+          const lipEl = document.createElement('div');
+          content.appendChild(lipEl);
+          try {
+            window.LookGenerator.generateLipCards(lipEl, AppState.face.sourceCanvas, AppState.face.landmarks, result);
+          } catch(e) {
+            console.error('[LookGen] Erreur lip cards:', e);
+          }
         }
       }
       if (typeof SkinJourney !== 'undefined' && SkinJourney.isActive()) {
