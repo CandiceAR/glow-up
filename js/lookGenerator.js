@@ -267,39 +267,47 @@ const LookGenerator = (() => {
     ctx.restore();
   }
 
-  // Mascara — traits fins allongés sur les cils supérieurs
-  function drawMascara(ctx, lm, lashIndices, w, h, opacity) {
+  // Mascara — épaissit la ligne des cils naturellement (pas de traits séparés)
+  // style: 'natural' | 'volume' | 'bordeaux'
+  function drawMascara(ctx, lm, lashIndices, w, h, opacity, style) {
     if (!lm) return;
     const pts = lashIndices.map(i => lm[i] ? { x: lm[i].x * w, y: lm[i].y * h } : null).filter(Boolean);
     if (pts.length < 3) return;
 
-    const lashLen = Math.max(...pts.map((p, i, arr) => {
-      if (i === 0) return 0;
-      return Math.hypot(p.x - arr[i-1].x, p.y - arr[i-1].y);
-    })) * 2.5;
-    const strokeLen = Math.max(lashLen, w * 0.012);
+    // Couleur selon style
+    const color = style === 'bordeaux' ? '#3A1020' : '#08030A';
+    // Épaisseur de trait selon style
+    const baseW = style === 'natural' ? w * 0.0035 : style === 'bordeaux' ? w * 0.005 : w * 0.006;
 
     ctx.save();
     ctx.globalCompositeOperation = 'multiply';
     ctx.globalAlpha = opacity;
-    ctx.strokeStyle = '#0A0508';
-    ctx.lineCap = 'round';
+    ctx.strokeStyle = color;
+    ctx.lineCap    = 'round';
+    ctx.lineJoin   = 'round';
 
-    pts.forEach((p, i) => {
-      // Angle légèrement vers le haut + vers l'extérieur
-      const mid = pts[Math.floor(pts.length / 2)];
-      const angle = -Math.PI / 2 + (p.x - mid.x) / w * 0.6;
-      const lineW = Math.max(w * 0.0015, 0.8);
-      ctx.lineWidth = lineW;
+    // Passe 1 — ligne épaisse (base du mascara)
+    ctx.lineWidth = Math.max(baseW, 1.0);
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    pts.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.stroke();
+
+    // Passe 2 — ligne plus fine légèrement au-dessus (volume/longueur)
+    if (style !== 'natural') {
+      const lift = w * 0.003;
+      ctx.lineWidth = Math.max(baseW * 0.5, 0.6);
+      ctx.globalAlpha = opacity * 0.6;
       ctx.beginPath();
-      ctx.moveTo(p.x, p.y);
-      ctx.lineTo(p.x + Math.sin(angle) * strokeLen * 0.4, p.y - Math.cos(angle) * strokeLen);
+      ctx.moveTo(pts[0].x, pts[0].y - lift);
+      pts.slice(1).forEach(p => ctx.lineTo(p.x, p.y - lift));
       ctx.stroke();
-    });
+    }
+
     ctx.restore();
   }
 
-  // Eyeliner bordeaux — trait fin sur la ligne des cils supérieurs
+  // Eyeliner bordeaux — trait fin net sur la ligne des cils
   function drawEyeliner(ctx, lm, lashIndices, w, h, opacity) {
     if (!lm) return;
     const pts = lashIndices.map(i => lm[i] ? { x: lm[i].x * w, y: lm[i].y * h } : null).filter(Boolean);
@@ -308,8 +316,8 @@ const LookGenerator = (() => {
     ctx.save();
     ctx.globalCompositeOperation = 'multiply';
     ctx.globalAlpha = opacity;
-    ctx.strokeStyle = '#5C1A2A'; // bordeaux
-    ctx.lineWidth   = Math.max(w * 0.003, 1.2);
+    ctx.strokeStyle = '#4A0E1E'; // bordeaux profond
+    ctx.lineWidth   = Math.max(w * 0.004, 1.0);
     ctx.lineCap     = 'round';
     ctx.lineJoin    = 'round';
     ctx.beginPath();
@@ -481,10 +489,14 @@ const LookGenerator = (() => {
           drawPolygon(ctx, lm, BROW_RIGHT, w, h, '#1A0E06', layer.opacity, layer.blend);
           break;
 
-        case 'mascara':
-          drawMascara(ctx, lm, LASH_LEFT,  w, h, layer.opacity);
-          drawMascara(ctx, lm, LASH_RIGHT, w, h, layer.opacity);
+        case 'mascara': {
+          // naturel/minimaliste → natural, sophistiqué/soirée → bordeaux, glow → volume
+          const masStyle = (look.id === 'sophistique' || look.id === 'soiree') ? 'bordeaux'
+                         : look.id === 'glow' ? 'volume' : 'natural';
+          drawMascara(ctx, lm, LASH_LEFT,  w, h, layer.opacity, masStyle);
+          drawMascara(ctx, lm, LASH_RIGHT, w, h, layer.opacity, masStyle);
           break;
+        }
 
         case 'eyeliner':
           drawEyeliner(ctx, lm, LASH_LEFT,  w, h, layer.opacity);
