@@ -929,10 +929,16 @@ const SkinAnalysis = (() => {
 
     if (AppState.face.skinAnalysis) {
       renderReport(AppState.face.skinAnalysis, content);
+      console.log('[LookGen] CACHE — LookGenerator?', typeof window.LookGenerator, '| sourceCanvas?', !!AppState.face.sourceCanvas, '| landmarks?', !!AppState.face.landmarks);
       if (typeof window.LookGenerator !== 'undefined' && window.LookGenerator.generate && AppState.face.sourceCanvas && AppState.face.landmarks) {
         const looksEl = document.createElement('div');
         content.appendChild(looksEl);
-        window.LookGenerator.generate(looksEl, AppState.face.sourceCanvas, AppState.face.landmarks, AppState.face.skinAnalysis);
+        try {
+          await window.LookGenerator.generate(looksEl, AppState.face.sourceCanvas, AppState.face.landmarks, AppState.face.skinAnalysis);
+          console.log('[LookGen] CACHE — Carousel généré OK');
+        } catch(e) {
+          console.error('[LookGen] CACHE — Erreur:', e);
+        }
       }
       return;
     }
