@@ -297,6 +297,32 @@ const MakeupAI = (() => {
     return lms[i] ? { x: lms[i].x*w, y: lms[i].y*h } : null;
   }
 
+  // ── Charge une URL image et croppe sur une zone de landmarks ─
+
+  function cropUrlToZone(url, landmarks, indices, padRatio) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const w = img.width, h = img.height;
+        const pts = indices.map(i => landmarks[i] ? { x: landmarks[i].x * w, y: landmarks[i].y * h } : null).filter(Boolean);
+        if (!pts.length) { resolve(url); return; }
+        const pad = w * (padRatio || 0.08);
+        const x1  = Math.max(0, Math.min(...pts.map(p => p.x)) - pad);
+        const y1  = Math.max(0, Math.min(...pts.map(p => p.y)) - pad * 1.5);
+        const x2  = Math.min(w, Math.max(...pts.map(p => p.x)) + pad);
+        const y2  = Math.min(h, Math.max(...pts.map(p => p.y)) + pad * 1.5);
+        const cw  = x2 - x1, ch = y2 - y1;
+        const c   = document.createElement('canvas');
+        c.width = Math.round(cw); c.height = Math.round(ch);
+        c.getContext('2d').drawImage(img, x1, y1, cw, ch, 0, 0, cw, ch);
+        resolve(c.toDataURL('image/jpeg', 0.92));
+      };
+      img.onerror = () => resolve(url);
+      img.src = url;
+    });
+  }
+
   // ── Appel API avec retry sur 429 ────────────────────────────
 
   async function callMakeupRender(imageB64, maskB64, prompt, _retry) {
@@ -399,7 +425,11 @@ const MakeupAI = (() => {
       const color    = colors[slot];
       const fbCanvas = buildLipFallback(sourceCanvas, landmarks, color, slot);
       await callMakeupRender(imgB64, maskB64, prompt)
-        .then(url  => { console.log('[MakeupAI] Lèvres', slot, 'OK'); updateCard('mai-lips', slot, url, null); })
+        .then(async url => {
+          console.log('[MakeupAI] Lèvres', slot, 'OK');
+          const cropped = await cropUrlToZone(url, landmarks, LIPS_IDX, 0.10);
+          updateCard('mai-lips', slot, cropped, null);
+        })
         .catch(err => { console.warn('[MakeupAI] Lèvres', slot, 'fallback —', err.message); updateCard('mai-lips', slot, null, fbCanvas); });
       if (slot !== 'soiree') await new Promise(r => setTimeout(r, 2000));
     }
