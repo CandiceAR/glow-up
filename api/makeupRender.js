@@ -38,7 +38,14 @@ module.exports = async (req, res) => {
           'Prefer':        'wait'
         },
         body: JSON.stringify({
-          input: { image, mask, prompt }
+          input: {
+            image,
+            mask,
+            prompt,
+            output_format:    'jpg',
+            output_quality:   90,
+            safety_tolerance: 6
+          }
         })
       });
       if (startRes.status !== 429) break;
