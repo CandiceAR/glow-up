@@ -1027,7 +1027,7 @@ const SkinAnalysis = (() => {
     // 1 — Grain & pores
     if (mPores < 45) {
       obs.push({ icon:'🔬',
-        vois:      `Pores visibles sur la zone T (nez${mPores < 30 ? ' et milieu du front'}), grain légèrement irrégulier`,
+        vois:      `Pores visibles sur la zone T (nez${mPores < 30 ? ' et milieu du front' : ''}), grain légèrement irrégulier`,
         veut_dire: 'Les textures épaisses s\'incrustent dans les pores et les accentuent — la peau a besoin de légèreté',
         fait:      'Fond de teint fluide ou BB crème, appliqué en tapotements avec une éponge humide — jamais de formule compacte épaisse'
       });
