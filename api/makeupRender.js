@@ -38,16 +38,7 @@ module.exports = async (req, res) => {
           'Prefer':        'wait'
         },
         body: JSON.stringify({
-          input: {
-            image,
-            mask,
-            prompt,
-            guidance:         30,
-            steps:            25,
-            output_format:    'jpeg',
-            output_quality:   90,
-            safety_tolerance: 6
-          }
+          input: { image, mask, prompt }
         })
       });
       if (startRes.status !== 429) break;
@@ -55,9 +46,9 @@ module.exports = async (req, res) => {
     }
 
     if (!startRes.ok) {
-      const err = await startRes.json().catch(() => ({}));
-      console.error('[makeupRender] Replicate error:', startRes.status, err);
-      return res.status(startRes.status).json({ error: err?.detail || err?.message || 'Replicate error' });
+      const errBody = await startRes.text().catch(() => '');
+      console.error('[makeupRender] Replicate error:', startRes.status, errBody);
+      return res.status(startRes.status).json({ error: errBody || `Replicate HTTP ${startRes.status}` });
     }
 
     const prediction = await startRes.json();
