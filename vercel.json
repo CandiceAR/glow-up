@@ -1,0 +1,16 @@
+{
+  "functions": {
+    "api/makeupRender.js": {
+      "maxDuration": 60
+    },
+    "api/coach.js": {
+      "maxDuration": 30
+    },
+    "api/uploadImage.js": {
+      "maxDuration": 30
+    },
+    "api/saveProducts.js": {
+      "maxDuration": 30
+    }
+  }
+}
