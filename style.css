@@ -6278,3 +6278,98 @@ em { font-style: italic; color: var(--nude); }
   color: var(--muted, #7A6E68);
   display: block;
 }
+
+/* ============================================================
+   MAKEUP AI — Grilles de rendu IA (lèvres / yeux / blush)
+   ============================================================ */
+
+.mai-section {
+  margin-top: 32px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border, #E8E0D8);
+}
+
+.mai-header { text-align: center; margin-bottom: 18px; }
+.mai-title  { font-size: 1.3rem; font-weight: 700; margin: 0 0 4px; }
+.mai-sub    { font-size: 0.8rem; color: var(--muted, #7A6E68); margin: 0; }
+
+.mai-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+@media (min-width: 480px) {
+  .mai-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+.mai-card {
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.mai-card-img-wrap {
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: #f0ebe5;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.mai-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Loading spinner */
+.mai-loading { background: #f5f0eb; }
+.mai-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #E8DDD6;
+  border-top-color: var(--accent, #C8956A);
+  border-radius: 50%;
+  animation: mai-spin 0.8s linear infinite;
+}
+@keyframes mai-spin { to { transform: rotate(360deg); } }
+
+.mai-error {
+  font-size: 0.7rem;
+  color: var(--muted, #7A6E68);
+  text-align: center;
+  padding: 8px;
+}
+
+.mai-card-info {
+  padding: 8px 10px;
+}
+.mai-card-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+/* Badges lèvres */
+.mai-badge--best      { background: #2A1A0A; color: #FFD580; }
+.mai-badge--naturelle { background: #F5F0EB; color: #5A4A3A; border: 1px solid #ddd; }
+.mai-badge--cool      { background: #9B6A7E; color: #fff; }
+.mai-badge--soiree    { background: #6E1E2A; color: #fff; }
+
+/* Badges yeux */
+.mai-badge--naturel   { background: #E8F0E8; color: #2A4A2A; }
+.mai-badge--defini    { background: #E8E4F0; color: #2A205A; }
+.mai-badge--smoky     { background: #2A2A2A; color: #fff; }
+
+/* Badges blush */
+.mai-badge--nude      { background: #F5EAE0; color: #6A4A3A; }
+.mai-badge--rosé      { background: #F5E0E8; color: #8A2A4A; }
+.mai-badge--peche     { background: #F5E8D8; color: #8A4A1A; }
+.mai-badge--coral     { background: #F5D8D0; color: #8A2A1A; }
