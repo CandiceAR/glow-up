@@ -11,15 +11,15 @@ const LookGenerator = (() => {
   // LANDMARKS MEDIAPIPE — zones de dessin
   // ══════════════════════════════════════════════════════════════
 
-  const LIPS_OUTER = [61,185,40,39,37,0,267,269,270,409,291,375,321,405,314,17,84,181,91,146];
-  const LIPS_UPPER = [61,185,40,39,37,0,267,269,270,409,291,308,415,310,311,312,13,82,81,80,191,78];
-  const LIPS_LOWER = [61,146,91,181,84,17,314,405,321,375,291,308,324,318,402,317,14,87,178,88,95,78];
+  // Lèvres — contour intérieur strict (évite tout débordement)
+  const LIPS_INNER = [78,191,80,81,82,13,312,311,310,415,308,324,318,402,317,14,87,178,88,95];
 
   const EYE_LEFT_LID  = [246,161,160,159,158,157,173,133,155,154,153,145,144,163,7];
   const EYE_RIGHT_LID = [466,388,387,386,385,384,398,362,382,381,380,374,373,390,249];
 
-  const EYE_LEFT_LOWER  = [33,7,163,144,145,153,154,155,133];
-  const EYE_RIGHT_LOWER = [263,249,390,373,374,380,381,382,362];
+  // Ligne cils supérieurs — pour mascara et eyeliner
+  const LASH_LEFT  = [33,246,161,160,159,158,157,173,133];
+  const LASH_RIGHT = [263,466,388,387,386,385,384,398,362];
 
   const BROW_LEFT  = [70,63,105,66,107,55,65,52,53,46];
   const BROW_RIGHT = [300,293,334,296,336,285,295,282,283,276];
@@ -31,7 +31,8 @@ const LookGenerator = (() => {
   const HIGHLIGHTER_RIGHT = [454,447,340,352,376,411,423,266,280,347,346,340];
   const HIGHLIGHTER_NOSE  = [5,4,1,19,94,2,164,0,11,12,13];
 
-  const FOREHEAD_IDX = [10,338,297,332,284,251,389,356,109,67,103,54,21,162,127,151,9,8];
+  // Ovale visage complet — pour fond de teint
+  const FACE_OVAL = [10,338,297,332,284,251,389,356,454,323,361,288,397,365,379,378,400,377,152,148,176,149,150,136,172,58,132,93,234,127,162,21,54,103,67,109];
 
   // ══════════════════════════════════════════════════════════════
   // PALETTES — couleurs par profil (undertone × carnation)
@@ -101,10 +102,11 @@ const LookGenerator = (() => {
       icon:  '🌿',
       desc:  'Peau nette, teint unifié, lèvres douces',
       layers: [
-        { zone:'foundation',  opacity:0.12, blend:'overlay'    },
-        { zone:'blush',       opacity:0.18, blend:'soft-light' },
-        { zone:'eyeshadow',   opacity:0.15, blend:'multiply'   },
-        { zone:'lips',        opacity:0.45, blend:'multiply'   }
+        { zone:'foundation',  opacity:0.18, blend:'overlay'    },
+        { zone:'blush',       opacity:0.12, blend:'soft-light' },
+        { zone:'eyeshadow',   opacity:0.12, blend:'multiply'   },
+        { zone:'mascara',     opacity:0.70                     },
+        { zone:'lips',        opacity:0.40, blend:'multiply'   }
       ]
     },
     {
@@ -113,11 +115,12 @@ const LookGenerator = (() => {
       icon:  '✨',
       desc:  'Éclat lumineux, teint radieux, lèvres dorées',
       layers: [
-        { zone:'foundation',  opacity:0.15, blend:'overlay'    },
-        { zone:'blush',       opacity:0.28, blend:'soft-light' },
-        { zone:'highlighter', opacity:0.55, blend:'screen'     },
-        { zone:'eyeshadow',   opacity:0.22, blend:'multiply'   },
-        { zone:'lips',        opacity:0.60, blend:'multiply'   }
+        { zone:'foundation',  opacity:0.20, blend:'overlay'    },
+        { zone:'blush',       opacity:0.16, blend:'soft-light' },
+        { zone:'highlighter', opacity:0.50, blend:'screen'     },
+        { zone:'eyeshadow',   opacity:0.18, blend:'multiply'   },
+        { zone:'mascara',     opacity:0.80                     },
+        { zone:'lips',        opacity:0.55, blend:'multiply'   }
       ]
     },
     {
@@ -126,11 +129,13 @@ const LookGenerator = (() => {
       icon:  '💎',
       desc:  'Look structuré, sourcils définis, lèvres intenses',
       layers: [
-        { zone:'foundation',  opacity:0.18, blend:'overlay'    },
-        { zone:'blush',       opacity:0.22, blend:'multiply'   },
-        { zone:'eyeshadow',   opacity:0.40, blend:'multiply'   },
-        { zone:'brows',       opacity:0.50, blend:'darken'     },
-        { zone:'lips',        opacity:0.75, blend:'multiply'   }
+        { zone:'foundation',  opacity:0.22, blend:'overlay'    },
+        { zone:'blush',       opacity:0.14, blend:'multiply'   },
+        { zone:'eyeshadow',   opacity:0.32, blend:'multiply'   },
+        { zone:'eyeliner',    opacity:0.65                     },
+        { zone:'brows',       opacity:0.20, blend:'darken'     },
+        { zone:'mascara',     opacity:0.90                     },
+        { zone:'lips',        opacity:0.70, blend:'multiply'   }
       ]
     },
     {
@@ -139,12 +144,14 @@ const LookGenerator = (() => {
       icon:  '🌙',
       desc:  'Intensité maximale, smoky, lèvres profondes',
       layers: [
-        { zone:'foundation',  opacity:0.20, blend:'overlay'    },
-        { zone:'blush',       opacity:0.25, blend:'multiply'   },
-        { zone:'eyeshadow',   opacity:0.60, blend:'multiply'   },
-        { zone:'brows',       opacity:0.60, blend:'darken'     },
-        { zone:'highlighter', opacity:0.35, blend:'screen'     },
-        { zone:'lips',        opacity:0.85, blend:'multiply'   }
+        { zone:'foundation',  opacity:0.24, blend:'overlay'    },
+        { zone:'blush',       opacity:0.16, blend:'multiply'   },
+        { zone:'eyeshadow',   opacity:0.50, blend:'multiply'   },
+        { zone:'eyeliner',    opacity:0.85                     },
+        { zone:'brows',       opacity:0.22, blend:'darken'     },
+        { zone:'highlighter', opacity:0.38, blend:'screen'     },
+        { zone:'mascara',     opacity:1.00                     },
+        { zone:'lips',        opacity:0.80, blend:'multiply'   }
       ]
     },
     {
@@ -153,9 +160,10 @@ const LookGenerator = (() => {
       icon:  '○',
       desc:  'Baume teinté, teint zéro défaut, effet peau nue',
       layers: [
-        { zone:'foundation',  opacity:0.08, blend:'overlay'    },
-        { zone:'blush',       opacity:0.12, blend:'soft-light' },
-        { zone:'lips',        opacity:0.30, blend:'soft-light' }
+        { zone:'foundation',  opacity:0.14, blend:'overlay'    },
+        { zone:'blush',       opacity:0.08, blend:'soft-light' },
+        { zone:'mascara',     opacity:0.60                     },
+        { zone:'lips',        opacity:0.25, blend:'soft-light' }
       ]
     }
   ];
@@ -223,6 +231,120 @@ const LookGenerator = (() => {
     ctx.moveTo(pts[0].x, pts[0].y);
     pts.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
     ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // Lèvres avec bord fondu — évite tout débordement
+  function drawLipsSmooth(ctx, lm, indices, w, h, color, opacity, blend) {
+    if (!indices || !lm) return;
+    const pts = indices.map(i => lm[i] ? { x: lm[i].x * w, y: lm[i].y * h } : null).filter(Boolean);
+    if (pts.length < 3) return;
+
+    const cx = pts.reduce((s, p) => s + p.x, 0) / pts.length;
+    const cy = pts.reduce((s, p) => s + p.y, 0) / pts.length;
+
+    ctx.save();
+    // Clip strict sur le contour intérieur
+    ctx.beginPath();
+    pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+    ctx.closePath();
+    ctx.clip();
+
+    // Remplir avec gradient radial pour bord fondu
+    const r = Math.max(...pts.map(p => Math.hypot(p.x - cx, p.y - cy))) * 1.05;
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+    grad.addColorStop(0,   hexToRgba(color, opacity));
+    grad.addColorStop(0.75, hexToRgba(color, opacity * 0.85));
+    grad.addColorStop(1,   hexToRgba(color, 0));
+
+    ctx.globalCompositeOperation = blend || 'multiply';
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // Mascara — traits fins allongés sur les cils supérieurs
+  function drawMascara(ctx, lm, lashIndices, w, h, opacity) {
+    if (!lm) return;
+    const pts = lashIndices.map(i => lm[i] ? { x: lm[i].x * w, y: lm[i].y * h } : null).filter(Boolean);
+    if (pts.length < 3) return;
+
+    const lashLen = Math.max(...pts.map((p, i, arr) => {
+      if (i === 0) return 0;
+      return Math.hypot(p.x - arr[i-1].x, p.y - arr[i-1].y);
+    })) * 2.5;
+    const strokeLen = Math.max(lashLen, w * 0.012);
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.globalAlpha = opacity;
+    ctx.strokeStyle = '#0A0508';
+    ctx.lineCap = 'round';
+
+    pts.forEach((p, i) => {
+      // Angle légèrement vers le haut + vers l'extérieur
+      const mid = pts[Math.floor(pts.length / 2)];
+      const angle = -Math.PI / 2 + (p.x - mid.x) / w * 0.6;
+      const lineW = Math.max(w * 0.0015, 0.8);
+      ctx.lineWidth = lineW;
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(p.x + Math.sin(angle) * strokeLen * 0.4, p.y - Math.cos(angle) * strokeLen);
+      ctx.stroke();
+    });
+    ctx.restore();
+  }
+
+  // Eyeliner bordeaux — trait fin sur la ligne des cils supérieurs
+  function drawEyeliner(ctx, lm, lashIndices, w, h, opacity) {
+    if (!lm) return;
+    const pts = lashIndices.map(i => lm[i] ? { x: lm[i].x * w, y: lm[i].y * h } : null).filter(Boolean);
+    if (pts.length < 2) return;
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.globalAlpha = opacity;
+    ctx.strokeStyle = '#5C1A2A'; // bordeaux
+    ctx.lineWidth   = Math.max(w * 0.003, 1.2);
+    ctx.lineCap     = 'round';
+    ctx.lineJoin    = 'round';
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    pts.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // Fond de teint sur l'ovale du visage
+  function drawFoundationOval(ctx, lm, w, h, color, opacity) {
+    if (!lm || lm.length < 400) return;
+    const pts = FACE_OVAL.map(i => lm[i] ? { x: lm[i].x * w, y: lm[i].y * h } : null).filter(Boolean);
+    if (pts.length < 10) return;
+
+    const cx = pts.reduce((s, p) => s + p.x, 0) / pts.length;
+    const cy = pts.reduce((s, p) => s + p.y, 0) / pts.length;
+    const r  = Math.max(...pts.map(p => Math.hypot(p.x - cx, p.y - cy)));
+
+    const grad = ctx.createRadialGradient(cx, cy, r * 0.3, cx, cy, r);
+    grad.addColorStop(0,   hexToRgba(color, opacity));
+    grad.addColorStop(0.7, hexToRgba(color, opacity * 0.6));
+    grad.addColorStop(1,   hexToRgba(color, 0));
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'overlay';
+    ctx.globalAlpha = 1;
+    // Clip sur l'ovale
+    ctx.beginPath();
+    pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+    ctx.closePath();
+    ctx.clip();
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
   }
@@ -308,21 +430,6 @@ const LookGenerator = (() => {
     ctx.restore();
   }
 
-  function drawFoundationVeil(ctx, lm, w, h, color, opacity) {
-    if (!lm || lm.length < 400) return;
-    const pts = FOREHEAD_IDX.map(i => lm[i] ? { x: lm[i].x * w, y: lm[i].y * h } : null).filter(Boolean);
-    if (pts.length < 6) return;
-
-    ctx.save();
-    ctx.globalCompositeOperation = 'overlay';
-    ctx.globalAlpha = opacity;
-    ctx.fillStyle   = color;
-    ctx.beginPath();
-    pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
-  }
 
   // ══════════════════════════════════════════════════════════════
   // RENDU D'UN LOOK SUR CANVAS
@@ -346,8 +453,7 @@ const LookGenerator = (() => {
 
       switch (layer.zone) {
         case 'lips':
-          drawPolygon(ctx, lm, LIPS_UPPER, w, h, color, layer.opacity * 0.9, layer.blend);
-          drawPolygon(ctx, lm, LIPS_LOWER, w, h, color, layer.opacity, layer.blend);
+          drawLipsSmooth(ctx, lm, LIPS_INNER, w, h, color, layer.opacity, layer.blend);
           break;
 
         case 'blush':
@@ -363,16 +469,26 @@ const LookGenerator = (() => {
         case 'highlighter':
           drawHighlighter(ctx, lm, HIGHLIGHTER_LEFT,  w, h, color, layer.opacity);
           drawHighlighter(ctx, lm, HIGHLIGHTER_RIGHT, w, h, color, layer.opacity);
-          drawHighlighter(ctx, lm, HIGHLIGHTER_NOSE,  w, h, color, layer.opacity * 0.5);
+          drawHighlighter(ctx, lm, HIGHLIGHTER_NOSE,  w, h, color, layer.opacity * 0.4);
           break;
 
         case 'foundation':
-          drawFoundationVeil(ctx, lm, w, h, color, layer.opacity);
+          drawFoundationOval(ctx, lm, w, h, color, layer.opacity);
           break;
 
         case 'brows':
-          drawPolygon(ctx, lm, BROW_LEFT,  w, h, '#2A1A0A', layer.opacity, layer.blend);
-          drawPolygon(ctx, lm, BROW_RIGHT, w, h, '#2A1A0A', layer.opacity, layer.blend);
+          drawPolygon(ctx, lm, BROW_LEFT,  w, h, '#1A0E06', layer.opacity, layer.blend);
+          drawPolygon(ctx, lm, BROW_RIGHT, w, h, '#1A0E06', layer.opacity, layer.blend);
+          break;
+
+        case 'mascara':
+          drawMascara(ctx, lm, LASH_LEFT,  w, h, layer.opacity);
+          drawMascara(ctx, lm, LASH_RIGHT, w, h, layer.opacity);
+          break;
+
+        case 'eyeliner':
+          drawEyeliner(ctx, lm, LASH_LEFT,  w, h, layer.opacity);
+          drawEyeliner(ctx, lm, LASH_RIGHT, w, h, layer.opacity);
           break;
       }
     }
