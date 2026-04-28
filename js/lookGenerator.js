@@ -276,6 +276,39 @@ const LookGenerator = (() => {
     ctx.restore();
   }
 
+  // Effet gloss — reflet blanc brillant au centre de la lèvre supérieure
+  function drawLipsGloss(ctx, lm, indices, w, h) {
+    if (!lm) return;
+    const pts = indices.map(i => lm[i] ? { x: lm[i].x * w, y: lm[i].y * h } : null).filter(Boolean);
+    if (pts.length < 3) return;
+
+    const cx  = pts.reduce((s, p) => s + p.x, 0) / pts.length;
+    const top = Math.min(...pts.map(p => p.y));
+    const cy  = top + (pts.reduce((s, p) => s + p.y, 0) / pts.length - top) * 0.35;
+    const rx  = (Math.max(...pts.map(p => p.x)) - Math.min(...pts.map(p => p.x))) * 0.30;
+    const ry  = (Math.max(...pts.map(p => p.y)) - top) * 0.22;
+
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(rx, ry));
+    grad.addColorStop(0,   'rgba(255,255,255,0.55)');
+    grad.addColorStop(0.5, 'rgba(255,255,255,0.18)');
+    grad.addColorStop(1,   'rgba(255,255,255,0)');
+
+    ctx.save();
+    // Clip sur les lèvres
+    ctx.beginPath();
+    pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+    ctx.closePath();
+    ctx.clip();
+
+    ctx.globalCompositeOperation = 'screen';
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
   // Assombrit une couleur hex d'un facteur (0–1)
   function darkenHex(hex, factor) {
     const r = Math.round(parseInt(hex.slice(1,3),16) * (1 - factor));
@@ -478,13 +511,19 @@ const LookGenerator = (() => {
 
       switch (layer.zone) {
         case 'lips': {
-          // Opacité crayon selon look : léger naturel, marqué soirée
+          // Crayon : seulement sur glow, sophistiqué, soirée — pas sur naturel ni minimaliste
           const linerOp = look.id === 'soiree'      ? 0.55
                         : look.id === 'sophistique' ? 0.45
-                        : look.id === 'glow'        ? 0.30
-                        : look.id === 'minimaliste' ? 0.15
-                        : 0.20; // naturel
-          drawLipsSmooth(ctx, lm, LIPS_INNER, w, h, color, layer.opacity, layer.blend, linerOp);
+                        : look.id === 'glow'        ? 0.28
+                        : 0; // naturel + minimaliste = pas de crayon
+
+          if (look.id === 'naturel') {
+            // Effet gloss nude : couleur très transparente + reflet brillant central
+            drawLipsSmooth(ctx, lm, LIPS_INNER, w, h, color, 0.30, 'soft-light', 0.12);
+            drawLipsGloss(ctx, lm, LIPS_INNER, w, h);
+          } else {
+            drawLipsSmooth(ctx, lm, LIPS_INNER, w, h, color, layer.opacity, layer.blend, linerOp);
+          }
           break;
         }
 
