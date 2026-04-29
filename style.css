@@ -5722,6 +5722,15 @@ em { font-style: italic; color: var(--nude); }
   width: fit-content;
 }
 .mkr-reco-price  { font-size: 0.8rem; font-weight: 600; color: var(--dark, #1a1917); margin-top: 2px; }
+.mkr-reco-reason {
+  font-size: 0.74rem;
+  color: #7A6A5E;
+  margin: 6px 0 0;
+  line-height: 1.45;
+  font-style: italic;
+  border-left: 2px solid #C9A98A;
+  padding-left: 7px;
+}
 .mkr-reco-buy {
   display: block;
   margin: 8px 10px 10px;

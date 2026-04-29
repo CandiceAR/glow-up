@@ -1026,6 +1026,64 @@ const SkinAnalysis = (() => {
     }
   }
 
+  // ── Détection des besoins à partir de l'analyse visuelle ──────
+  function detectNeeds(result) {
+    const { zones = {}, skinType, cernes } = result;
+    const st = skinType?.type || 'normale';
+    const zv = Object.values(zones);
+    const n  = zv.length || 1;
+    const m  = key => zv.reduce((s,z) => s + (z[key] || 60), 0) / n;
+
+    const mPores  = m('pores');
+    const mEclat  = m('eclat');
+    const mRed    = m('redness');
+    const mTeint  = m('teint');
+    const mTaches = m('taches');
+
+    const needs = [];
+
+    if (mRed > 42)                              needs.push('rougeurs');
+    if (cernes?.detected)                       needs.push('cernes');
+    if (mPores < 52)                            needs.push('pores');
+    if (st === 'seche' || mTeint < 46)          needs.push('hydratation');
+    if (st === 'grasse' || st === 'mixte')      needs.push('matifiant');
+    if (mTaches < 52)                           needs.push('imperfections');
+    if (mEclat < 45)                            needs.push('eclat');
+    if (mEclat < 45 || mTaches < 55)            needs.push('uniformite');
+    if (mTaches < 40 || mRed > 55)             needs.push('couvrance');
+
+    return needs;
+  }
+
+  // ── Génère l'explication personnalisée pour un produit ────────
+  function buildProductReason(product, needs, result) {
+    const matched = (product.concernTags || []).filter(t => needs.includes(t));
+    if (!matched.length) return null;
+
+    const st = result.skinType?.type || 'normale';
+    const LABELS = {
+      rougeurs:      'des rougeurs visibles sur ton visage',
+      cernes:        'des cernes sous les yeux',
+      pores:         'des pores visibles',
+      hydratation:   'une peau qui a besoin d\'hydratation',
+      matifiant:     'une zone T qui a tendance à briller',
+      imperfections: 'quelques imperfections localisées',
+      ridules:       'des ridules d\'expression',
+      eclat:         'un teint qui manque d\'éclat',
+      couvrance:     'une irrégularité de teint à corriger',
+      uniformite:    'un teint légèrement irrégulier'
+    };
+
+    const raisons = matched.map(t => LABELS[t]).filter(Boolean);
+    if (!raisons.length) return null;
+
+    const debut = raisons.length === 1
+      ? `Recommandé car tu as ${raisons[0]}.`
+      : `Recommandé car tu as ${raisons.slice(0,-1).join(', ')} et ${raisons[raisons.length-1]}.`;
+
+    return debut;
+  }
+
   // ── Analyse détaillée du visage en 3 niveaux ──────────────────
   function buildFaceObservations(result) {
     const { zones = {}, undertone, skinType, faceShape, cernes, carnation, eyeContrast } = result;
@@ -1264,7 +1322,14 @@ const SkinAnalysis = (() => {
         if (matFiltered.length >= (limit || 2)) pool = matFiltered;
       }
 
+      // Calculer les besoins détectés (une seule fois, en dehors du filtre)
+      const detectedNeeds = detectNeeds(result);
+
+      // Trier : d'abord produits qui matchent un besoin détecté, puis featured, puis rating
       pool = pool.sort((a, b) => {
+        const aMatch = (a.concernTags || []).some(t => detectedNeeds.includes(t)) ? 1 : 0;
+        const bMatch = (b.concernTags || []).some(t => detectedNeeds.includes(t)) ? 1 : 0;
+        if (bMatch !== aMatch) return bMatch - aMatch;
         if (b.isFeatured !== a.isFeatured) return b.isFeatured ? 1 : -1;
         return (b.rating || 0) - (a.rating || 0);
       });
@@ -1307,7 +1372,9 @@ const SkinAnalysis = (() => {
       if (!pool.length) {
         return '<p class="mkr-reco-empty">Produits bientôt disponibles dans cette catégorie.</p>';
       }
-      return pool.map(p => `
+      return pool.map(p => {
+        const reason = buildProductReason(p, detectedNeeds, result);
+        return `
         <div class="mkr-reco-card" onclick="ProductCatalog.openProductModal('${p.id}')">
           <div class="mkr-reco-img">
             <img src="${p.imageUrl}" alt="${p.name}" onerror="this.onerror=null;this.style.opacity='0'">
@@ -1318,13 +1385,15 @@ const SkinAnalysis = (() => {
             <p class="mkr-reco-name">${p.name}</p>
             ${p.shadeName ? `<span class="mkr-reco-shade">${p.shadeName}</span>` : ''}
             <span class="mkr-reco-price">${p.price ? p.price.toFixed(2) + ' €' : ''}</span>
+            ${reason ? `<p class="mkr-reco-reason">${reason}</p>` : ''}
           </div>
           <a class="btn btn-amazon mkr-reco-buy"
              href="${p.amazonUrl}" target="_blank" rel="noopener nofollow sponsored"
              onclick="event.stopPropagation(); if(typeof Tracker!=='undefined') Tracker.trackBuyClick('${p.id}')">
             Acheter →
           </a>
-        </div>`).join('');
+        </div>`;
+      }).join('');
     }
 
     const makeupWarn = AppState?.face?.hasMakeup

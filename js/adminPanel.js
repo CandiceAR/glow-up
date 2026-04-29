@@ -281,6 +281,12 @@ const Admin = (() => {
     document.getElementById('fSkinSeche').checked    = st.length === 0 || st.includes('seche');
     document.getElementById('fSkinMixte').checked    = st.length === 0 || st.includes('mixte');
     document.getElementById('fSkinSensible').checked = st.length === 0 || st.includes('sensible');
+    // Besoins traités
+    const ct = Array.isArray(p.concernTags) ? p.concernTags : [];
+    ['rougeurs','cernes','pores','hydratation','matifiant','imperfections','ridules','eclat','couvrance','uniformite'].forEach(v => {
+      const el = document.getElementById('fNeed' + v.charAt(0).toUpperCase() + v.slice(1));
+      if (el) el.checked = ct.includes(v);
+    });
     previewImage(p.imageUrl || '');
     document.getElementById('productFormWrap').style.display = 'block';
     document.getElementById('productFormWrap').scrollIntoView({ behavior: 'smooth' });
@@ -311,6 +317,10 @@ const Admin = (() => {
     document.getElementById('fFormatGroup').style.display = 'none';
     ['fSkinNormale','fSkinGrasse','fSkinSeche','fSkinMixte','fSkinSensible'].forEach(id => {
       document.getElementById(id).checked = false;
+    });
+    ['rougeurs','cernes','pores','hydratation','matifiant','imperfections','ridules','eclat','couvrance','uniformite'].forEach(v => {
+      const el = document.getElementById('fNeed' + v.charAt(0).toUpperCase() + v.slice(1));
+      if (el) el.checked = false;
     });
     previewImage('');
     const prog = document.getElementById('imageUploadProgress');
@@ -346,6 +356,8 @@ const Admin = (() => {
     // Si tous cochés ou aucun coché = null (convient à tous)
     const skinTypeTags = skinTypes.length > 0 && skinTypes.length < 5 ? skinTypes : null;
     const format = category === 'eyeshadow' ? (document.getElementById('fFormat').value || null) : null;
+    const NEEDS_LIST = ['rougeurs','cernes','pores','hydratation','matifiant','imperfections','ridules','eclat','couvrance','uniformite'];
+    const concernTags = NEEDS_LIST.filter(v => document.getElementById('fNeed' + v.charAt(0).toUpperCase() + v.slice(1))?.checked);
 
     if (!amazonUrl || !name || !brand || !imageUrl) {
       toast('Remplis tous les champs obligatoires (lien, nom, marque, image)', 'error');
@@ -398,6 +410,7 @@ const Admin = (() => {
         maturity:    maturity || 'all',
         skinTypeTags: skinTypeTags,
         format:      format || null,
+        concernTags: concernTags,
         curatedAt:   new Date().toISOString().split('T')[0]
       };
     } else {
@@ -421,7 +434,7 @@ const Admin = (() => {
         maturity:    maturity || 'all',
         skinTypeTags: skinTypeTags,
         format:      format || null,
-        concernTags: [],
+        concernTags: concernTags,
         isFeatured,
         active: isActive,
         description: '',
