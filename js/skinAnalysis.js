@@ -947,11 +947,12 @@ const SkinAnalysis = (() => {
         content.appendChild(looksEl);
         try { await window.LookGenerator.generate(looksEl, AppState.face.sourceCanvas, AppState.face.landmarks, AppState.face.skinAnalysis); } catch(e) {}
       }
-      if (typeof window.MakeupAI !== 'undefined' && AppState.face.sourceCanvas && AppState.face.landmarks) {
-        const aiEl = document.createElement('div');
-        content.appendChild(aiEl);
-        try { window.MakeupAI.generate(aiEl, AppState.face.sourceCanvas, AppState.face.landmarks, AppState.face.skinAnalysis); } catch(e) {}
-      }
+      // MakeupAI désactivé temporairement
+      // if (typeof window.MakeupAI !== 'undefined' && AppState.face.sourceCanvas && AppState.face.landmarks) {
+      //   const aiEl = document.createElement('div');
+      //   content.appendChild(aiEl);
+      //   try { window.MakeupAI.generate(aiEl, AppState.face.sourceCanvas, AppState.face.landmarks, AppState.face.skinAnalysis); } catch(e) {}
+      // }
       return;
     }
 
@@ -998,12 +999,12 @@ const SkinAnalysis = (() => {
           console.error('[LookGen] Erreur génération:', e);
         }
       }
-      // Rendu IA Replicate — lèvres, yeux, blush
-      if (typeof window.MakeupAI !== 'undefined') {
-        const aiEl = document.createElement('div');
-        content.appendChild(aiEl);
-        try { window.MakeupAI.generate(aiEl, AppState.face.sourceCanvas, AppState.face.landmarks, result); } catch(e) { console.error('[MakeupAI]', e); }
-      }
+      // MakeupAI désactivé temporairement
+      // if (typeof window.MakeupAI !== 'undefined') {
+      //   const aiEl = document.createElement('div');
+      //   content.appendChild(aiEl);
+      //   try { window.MakeupAI.generate(aiEl, AppState.face.sourceCanvas, AppState.face.landmarks, result); } catch(e) { console.error('[MakeupAI]', e); }
+      // }
       if (typeof SkinJourney !== 'undefined' && SkinJourney.isActive()) {
         SkinJourney.addAnalysis();
       }
