@@ -1179,6 +1179,46 @@ const SkinAnalysis = (() => {
       </div>`;
   }
 
+  function renderBudgetBloc(cart) {
+    if (!cart || !cart.length) return '';
+
+    const withPrice  = cart.filter(p => p.price > 0);
+    const total      = withPrice.reduce((s, p) => s + p.price, 0);
+    const totalStr   = total > 0 ? `${Math.round(total)} €` : null;
+
+    const listHTML = cart.map(p => `
+      <div class="budget-item">
+        <div class="budget-item-img">
+          <img src="${p.imageUrl}" alt="${p.name}" onerror="this.onerror=null;this.style.opacity='0'">
+        </div>
+        <div class="budget-item-info">
+          <span class="budget-item-brand">${p.brand}</span>
+          <p class="budget-item-name">${p.name}</p>
+          ${p.shadeName ? `<span class="budget-item-shade">${p.shadeName}</span>` : ''}
+        </div>
+        <div class="budget-item-right">
+          <span class="budget-item-price">${p.price ? p.price.toFixed(2) + ' €' : '—'}</span>
+          <a class="btn btn-amazon budget-item-buy"
+             href="${p.amazonUrl}" target="_blank" rel="noopener nofollow sponsored"
+             onclick="if(typeof Tracker!=='undefined') Tracker.trackBuyClick('${p.id}')">
+            Acheter →
+          </a>
+        </div>
+      </div>`).join('');
+
+    return `
+      <div class="mkr-bloc budget-bloc">
+        <h2 class="mkr-bloc-title">🛒 Ton budget total</h2>
+        ${totalStr ? `
+        <div class="budget-total-row">
+          <span class="budget-total-label">Ta routine complète</span>
+          <span class="budget-total-amount">${totalStr} environ</span>
+        </div>` : ''}
+        <p class="budget-sub">On a sélectionné les produits les plus adaptés à ton profil et à ton budget.</p>
+        <div class="budget-list">${listHTML}</div>
+      </div>`;
+  }
+
   function renderReport(result, content) {
     const { zones, undertone, skinType, faceShape, globalScore, cernes, carnation, eyeContrast } = result;
 
@@ -1287,6 +1327,10 @@ const SkinAnalysis = (() => {
       }
     };
 
+    // Produits sélectionnés pour le budget (1 par catégorie)
+    const routineCart = [];
+    const cartCategories = new Set();
+
     function getProductsHTML(categories, limit) {
       const catalog = AppState?.products?.catalog || [];
 
@@ -1367,6 +1411,14 @@ const SkinAnalysis = (() => {
 
       // Avancer l'index de rotation pour la prochaine génération
       sessionStorage.setItem(rotKey, String((rotStart + (limit || 2)) % Math.max(rotated.length, 1)));
+
+      // Mémoriser pour le budget (1 produit par catégorie)
+      pool.forEach(p => {
+        if (!cartCategories.has(p.category)) {
+          cartCategories.add(p.category);
+          routineCart.push(p);
+        }
+      });
 
       if (!pool.length) {
         return '<p class="mkr-reco-empty">Produits bientôt disponibles dans cette catégorie.</p>';
@@ -1503,6 +1555,9 @@ const SkinAnalysis = (() => {
             </div>
           </div>
         </div>
+
+        <!-- BLOC BUDGET -->
+        ${renderBudgetBloc(routineCart)}
 
         <!-- CTA -->
         <div class="diag-cta">
