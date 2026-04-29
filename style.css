@@ -6098,90 +6098,35 @@ em { font-style: italic; color: var(--nude); }
    FACE OBSERVATIONS — Ce que je vois sur ton visage
    ============================================================ */
 
-.fobs-bloc { padding: 18px 16px; }
-
-.fobs-intro {
-  font-size: 0.8rem;
-  color: var(--muted, #7A6E68);
-  margin: 4px 0 12px;
-  font-style: italic;
-}
-
-.fobs-legend {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 14px;
-}
-.fobs-leg {
-  font-size: 0.7rem;
-  font-weight: 600;
-  padding: 3px 10px;
-  border-radius: 20px;
-  letter-spacing: 0.03em;
-}
-.fobs-leg--vois  { background: #EDF4FF; color: #2D5FA0; }
-.fobs-leg--veut  { background: #FFF8E8; color: #8A6200; }
-.fobs-leg--fait  { background: #F0FAF0; color: #2A6E2A; }
-
-.fobs-list {
+.fobs-bloc {
+  padding: 0 16px 4px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
-.fobs-row {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
+.fobs-section {
+  padding: 16px 18px;
+  border-radius: 16px;
   background: #FAFAF8;
-  border-radius: 14px;
-  padding: 12px;
   border: 1px solid #F0EBE4;
 }
 
-.fobs-icon {
-  font-size: 1.3rem;
-  flex-shrink: 0;
-  width: 28px;
-  text-align: center;
-  padding-top: 2px;
-}
-
-.fobs-cols {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex: 1;
-  min-width: 0;
-}
-
-.fobs-col {
-  padding: 8px 10px;
-  border-radius: 8px;
-  font-size: 0.83rem;
-  line-height: 1.45;
-}
-.fobs-col p { margin: 3px 0 0; color: var(--text, #1A1A1A); }
-
-.fobs-col--vois  { background: #EDF4FF; border-left: 3px solid #4A90D9; }
-.fobs-col--veut  { background: #FFF8E8; border-left: 3px solid #D4A017; }
-.fobs-col--fait  { background: #F0FAF0; border-left: 3px solid #4A9A4A; }
-
-.fobs-col-label {
+.fobs-section-label {
+  display: block;
   font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  display: block;
+  letter-spacing: 0.08em;
+  color: #C9A98A;
+  margin-bottom: 8px;
 }
-.fobs-col--vois .fobs-col-label { color: #2D5FA0; }
-.fobs-col--veut .fobs-col-label { color: #8A6200; }
-.fobs-col--fait .fobs-col-label { color: #2A6E2A; }
 
-@media (min-width: 600px) {
-  .fobs-cols { flex-direction: row; }
-  .fobs-col  { flex: 1; }
+.fobs-section-text {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text, #1A1A1A);
 }
 
 /* ============================================================
