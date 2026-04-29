@@ -1334,26 +1334,28 @@ const SkinAnalysis = (() => {
         return (b.rating || 0) - (a.rating || 0);
       });
 
-      // Récupérer les produits déjà montrés récemment (par catégorie)
-      const cacheKey   = 'mkr_shown_' + categories.join('_');
-      const shownIds   = new Set(JSON.parse(sessionStorage.getItem(cacheKey) || '[]'));
-      // Si tous les produits ont été montrés, réinitialiser
-      const freshPool  = pool.filter(p => !shownIds.has(p.id));
-      const activePool = freshPool.length >= (limit || 2) ? freshPool : pool;
+      // Rotation : index de départ stocké par catégorie, incrémenté à chaque génération
+      const rotKey   = 'mkr_rot_' + categories.join('_');
+      const rotStart = parseInt(sessionStorage.getItem(rotKey) || '0', 10);
 
-      // Shuffle pour varier à chaque analyse
-      for (let i = activePool.length - 1; i > 0; i--) {
+      // Shuffle déterministe basé sur l'index de rotation (pas aléatoire pur)
+      // On décale le pool de rotStart positions pour garantir des produits différents
+      const rotated = [...pool.slice(rotStart % pool.length), ...pool.slice(0, rotStart % pool.length)];
+
+      // Puis shuffle aléatoire dans chaque moitié pour éviter la répétition
+      const mid = Math.ceil(rotated.length / 2);
+      for (let i = mid - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [activePool[i], activePool[j]] = [activePool[j], activePool[i]];
+        [rotated[i], rotated[j]] = [rotated[j], rotated[i]];
       }
 
       // Sélectionner (limit) produits de marques différentes
       const usedBrands = new Set();
       const usedNames  = new Set();
       const selected   = [];
-      for (const p of activePool) {
-        const brand    = p.brand.toLowerCase().trim();
-        const nameKey  = (p.brand + p.name.slice(0, 22)).toLowerCase().replace(/\s+/g, '');
+      for (const p of rotated) {
+        const brand   = p.brand.toLowerCase().trim();
+        const nameKey = (p.brand + p.name.slice(0, 22)).toLowerCase().replace(/\s+/g, '');
         if (usedBrands.has(brand)) continue;
         if (usedNames.has(nameKey)) continue;
         usedBrands.add(brand);
@@ -1363,11 +1365,8 @@ const SkinAnalysis = (() => {
       }
       pool = selected;
 
-      // Mémoriser les produits montrés pour ne pas les répéter
-      if (pool.length) {
-        const nowShown = [...shownIds, ...pool.map(p => p.id)];
-        sessionStorage.setItem(cacheKey, JSON.stringify(nowShown));
-      }
+      // Avancer l'index de rotation pour la prochaine génération
+      sessionStorage.setItem(rotKey, String((rotStart + (limit || 2)) % Math.max(rotated.length, 1)));
 
       if (!pool.length) {
         return '<p class="mkr-reco-empty">Produits bientôt disponibles dans cette catégorie.</p>';
