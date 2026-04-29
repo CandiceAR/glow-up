@@ -21,22 +21,26 @@ const MakeupAI = (() => {
 
   // ── Palettes teintes par slot ─────────────────────────────────
 
-  // Lèvres — matrice undertone × carnation (identique à lookGenerator)
+  // Lèvres — matrice undertone × carnation
+  // Règles : naturel, chic, sans métallisé ni paillettes
   const LIP_MATRIX = {
     warm: {
-      clair:  { best:'#E28C6A', naturelle:'#E3B7A0', cool:'#C06A8E', soiree:'#A94438' },
-      medium: { best:'#D89A7A', naturelle:'#C8A58A', cool:'#A57C8C', soiree:'#D94A2F' },
-      fonce:  { best:'#A66A4F', naturelle:'#8B5A4A', cool:'#8E4B5A', soiree:'#C0392B' }
+      // Sous-ton chaud → pêche, corail doux, beige chaud
+      clair:  { best:'#EFB49A', naturelle:'#F2CDB8', cool:'#C8887A', soiree:'#C05858' },
+      medium: { best:'#E8A888', naturelle:'#EABBA0', cool:'#C07868', soiree:'#B04848' },
+      fonce:  { best:'#C87858', naturelle:'#C89878', cool:'#A86858', soiree:'#983838' }
     },
     cool: {
-      clair:  { best:'#CFA5A5', naturelle:'#E4A3A3', cool:'#D94F70', soiree:'#7B1E3A' },
-      medium: { best:'#D98C8C', naturelle:'#CFA5A5', cool:'#D92B72', soiree:'#6E1E2A' },
-      fonce:  { best:'#9F5F65', naturelle:'#D98C8C', cool:'#FF4F7B', soiree:'#5C2C2C' }
+      // Sous-ton froid → rose froid, framboise, rosé bleuté léger
+      clair:  { best:'#EEB8C8', naturelle:'#F0C8D0', cool:'#C888A8', soiree:'#B84870' },
+      medium: { best:'#E0A0B8', naturelle:'#E8B8C0', cool:'#C07898', soiree:'#A03860' },
+      fonce:  { best:'#C87890', naturelle:'#D09098', cool:'#A86080', soiree:'#882848' }
     },
     neutral: {
-      clair:  { best:'#E9967A', naturelle:'#FFC1A1', cool:'#D98C8C', soiree:'#FF6347' },
-      medium: { best:'#FFA07A', naturelle:'#C8A58A', cool:'#CFA5A5', soiree:'#A94438' },
-      fonce:  { best:'#8E5C58', naturelle:'#5A3A34', cool:'#9B6A7E', soiree:'#8E4B5A' }
+      // Sous-ton neutre → rose nude universel, équilibré
+      clair:  { best:'#EDBAAA', naturelle:'#F0C8B8', cool:'#CC9090', soiree:'#B84858' },
+      medium: { best:'#E0A090', naturelle:'#E8B8A8', cool:'#C08888', soiree:'#A03848' },
+      fonce:  { best:'#C07868', naturelle:'#C89080', cool:'#A87070', soiree:'#8A3040' }
     }
   };
 
@@ -415,10 +419,10 @@ const MakeupAI = (() => {
     const lipCrop = cropZone(sourceCanvas, landmarks, LIPS_IDX, 0.06);
 
     const PROMPTS = {
-      best:      `a woman wearing ${hexToColorName(colors.best)} lipstick, satin finish, no glitter, no shimmer, clean simple makeup, soft natural lighting, photorealistic portrait`,
-      naturelle: `a woman wearing ${hexToColorName(colors.naturelle)} tinted lip balm, barely-there natural look, no glitter, no shimmer, matte soft finish, photorealistic portrait`,
-      cool:      `a woman wearing ${hexToColorName(colors.cool)} lip color, matte finish, no glitter, no shimmer, clean modern makeup, photorealistic portrait`,
-      soiree:    `a woman wearing ${hexToColorName(colors.soiree)} lip color, satin finish, no glitter, no shimmer, elegant simple evening makeup, photorealistic portrait`
+      best:      `close-up lips with ${hexToColorName(colors.best)} lipstick, natural rosy nude tone, soft satin finish, no shimmer, no glitter, no metallic, elegant everyday makeup, photorealistic`,
+      naturelle: `close-up lips with ${hexToColorName(colors.naturelle)} tinted lip balm, barely-there nude tone, enhanced natural lips, no color, no shimmer, matte soft finish, photorealistic`,
+      cool:      `close-up lips with ${hexToColorName(colors.cool)} lip color, old rose tone, soft matte finish, no shimmer, no glitter, no metallic, chic understated makeup, photorealistic`,
+      soiree:    `close-up lips with ${hexToColorName(colors.soiree)} lip color, soft raspberry or bordeaux tone, satin finish, no shimmer, no glitter, no metallic, elegant evening makeup, photorealistic`
     };
 
     for (const [slot, prompt] of Object.entries(PROMPTS)) {
@@ -530,17 +534,26 @@ const MakeupAI = (() => {
   // Convertit hex en nom de couleur pour le prompt
   function hexToColorName(hex) {
     const MAP = {
-      '#E28C6A':'warm peach coral', '#E3B7A0':'light nude beige', '#C06A8E':'cool orchid pink', '#A94438':'brick red',
-      '#D89A7A':'terracotta nude',  '#C8A58A':'warm nude beige',  '#A57C8C':'muted mauve',       '#D94A2F':'warm red orange',
-      '#A66A4F':'brown nude',       '#8B5A4A':'warm brown',       '#8E4B5A':'dark plum',          '#C0392B':'classic red',
-      '#CFA5A5':'soft cool pink',   '#E4A3A3':'pale pink nude',   '#D94F70':'raspberry pink',     '#7B1E3A':'deep burgundy',
-      '#D98C8C':'dusty rose',       '#D92B72':'fuchsia pink',     '#6E1E2A':'deep wine',
-      '#9F5F65':'mauve rose',       '#FF4F7B':'hot pink',         '#5C2C2C':'dark plum brown',
-      '#E9967A':'coral rose',       '#FFC1A1':'peachy nude gloss',  '#FF6347':'tomato red',
-      '#FFA07A':'light coral',      '#CFA5A5':'dusty pink',       '#A94438':'brick red',
-      '#8E5C58':'warm brown nude',  '#5A3A34':'deep nude brown',  '#9B6A7E':'mauve violet',       '#8E4B5A':'plum'
+      // warm clair
+      '#EFB49A':'soft peach rose', '#F2CDB8':'warm nude beige', '#C8887A':'dusty rose warm', '#C05858':'soft warm red',
+      // warm medium
+      '#E8A888':'peach nude', '#EABBA0':'warm beige nude', '#C07868':'old rose warm', '#B04848':'muted raspberry warm',
+      // warm fonce
+      '#C87858':'deep peach nude', '#C89878':'warm nude deep', '#A86858':'dusty terracotta', '#983838':'soft bordeaux warm',
+      // cool clair
+      '#EEB8C8':'cool pink rose', '#F0C8D0':'rosy nude cool', '#C888A8':'old rose cool', '#B84870':'soft raspberry',
+      // cool medium
+      '#E0A0B8':'cool dusty rose', '#E8B8C0':'pink nude cool', '#C07898':'muted mauve rose', '#A03860':'deep raspberry cool',
+      // cool fonce
+      '#C87890':'deep rose cool', '#D09098':'dusty pink nude', '#A86080':'soft mauve', '#882848':'dark raspberry cool',
+      // neutral clair
+      '#EDBAAA':'rose nude', '#F0C8B8':'nude beige balanced', '#CC9090':'vieux rose', '#B84858':'soft red',
+      // neutral medium
+      '#E0A090':'universal rose nude', '#E8B8A8':'nude balanced', '#C08888':'dusty mauve rose', '#A03848':'soft framboise',
+      // neutral fonce
+      '#C07868':'deep nude rose', '#C89080':'warm nude deep balanced', '#A87070':'dusty mauve', '#8A3040':'soft bordeaux'
     };
-    return MAP[hex] || 'natural lip color';
+    return MAP[hex] || 'natural nude lip color';
   }
 
   // ── Point d'entrée public ─────────────────────────────────────
