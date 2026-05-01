@@ -1433,7 +1433,7 @@ const SkinAnalysis = (() => {
         const reason = buildProductReason(p, detectedNeeds, result);
         return `
         <div class="mkr-reco-card" onclick="ProductCatalog.openProductModal('${p.id}')">
-          <div class="mkr-reco-img">
+          <div class="mkr-reco-img mkr-reco-img--makeup">
             <img src="${p.imageUrl}" alt="${p.name}" onerror="this.onerror=null;this.style.opacity='0'">
             ${p.colorHex ? `<span class="mkr-reco-dot" style="background:${p.colorHex}" title="${p.shadeName || ''}"></span>` : ''}
           </div>
