@@ -1,0 +1,14 @@
+HTTP/1.1 301 Moved Permanently
+Server: nginx
+Date: Fri, 27 Mar 2026 16:36:10 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 628
+Cache-Control: private, max-age=90
+Content-Security-Policy: referrer always;
+Location: https://www.amazon.fr/Roche-Posay-Concentr%C3%A9-Anti-Rides-Salicylique-Neurosensine/dp/B07PM79MSC?__mk_fr_FR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=2LHDZHIAW16JZ&dib=eyJ2IjoiMSJ9.lE3VtKt99EuAzH2nOp2Qoo8ZS-Zf1PvIw_MjDaoAosiqA7yedg_sPwE0uLKJQNPfdjkhcwUzBN50NBWzM7d59LuybuvPUZQkhME_AWlM5TbrhCDCjYYfsXggwFbYh0mG.UixqmfQy8t-DZhoydQ5xHJnOQ4KxXNu6WC7Vph2TngM&dib_tag=se&keywords=SERUM+LAROCHE+POSAY+C12&qid=1772794997&s=beauty&sprefix=serum+laroche+posay+c,beauty,317&sr=1-2&linkCode=sl2&tag=kan10ar-21&linkId=2662376d67c4b88bf5d2a1afef4d40a1&ref_=as_li_ss_tl
+Referrer-Policy: unsafe-url
+Set-Cookie: _bit=q2rgAa-73cdd1374690d24c07-006; Domain=amzn.to; Expires=Wed, 23 Sep 2026 16:36:10 GMT
+Strict-Transport-Security: max-age=1209600
+Via: 1.1 google
+Alt-Svc: h3=":443"; ma=2592000
+

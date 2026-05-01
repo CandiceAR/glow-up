@@ -1179,7 +1179,7 @@ const SkinAnalysis = (() => {
       </div>`;
   }
 
-  function renderBudgetBloc(cart) {
+  function renderBudgetBloc(cart, budgetMax) {
     if (!cart || !cart.length) return '';
 
     const withPrice  = cart.filter(p => p.price > 0);
@@ -1214,7 +1214,7 @@ const SkinAnalysis = (() => {
           <span class="budget-total-label">Ta routine complète</span>
           <span class="budget-total-amount">${totalStr} environ</span>
         </div>` : ''}
-        <p class="budget-sub">On a sélectionné les produits les plus adaptés à ton profil et à ton budget.</p>
+        <p class="budget-sub">On a sélectionné les produits les plus adaptés à ton profil${budgetMax && budgetMax !== Infinity ? ` — tous à moins de ${budgetMax} €` : ''}.</p>
         <div class="budget-list">${listHTML}</div>
       </div>`;
   }
@@ -1331,6 +1331,10 @@ const SkinAnalysis = (() => {
     const routineCart = [];
     const cartCategories = new Set();
 
+    // Plafond de prix selon le budget choisi
+    const BUDGET_MAX = { 'petits-prix': 20, 'bon-rapport': 50, 'premium': Infinity };
+    const budgetMax  = BUDGET_MAX[answers.budget] ?? Infinity;
+
     function getProductsHTML(categories, limit) {
       const catalog = AppState?.products?.catalog || [];
 
@@ -1339,26 +1343,28 @@ const SkinAnalysis = (() => {
       const EYE_CATS  = new Set(['mascara','eyeliner','eyeshadow','eyebrow']);
       const SKIN_CATS = new Set(['foundation','concealer','powder','blush','bronzer','highlighter']);
 
-      function buildPool(filterUndertone, filterCarnation) {
+      function buildPool(filterUndertone, filterCarnation, filterBudget) {
         return catalog.filter(p => {
           if (!categories.includes(p.category)) return false;
           if (p.active === false) return false;
           if (!p.imageUrl) return false;
-          // Sécurité : pas de blush/bronzer dans les lèvres ou les yeux
           if (LIP_CATS.has(categories[0]) && SKIN_CATS.has(p.category) && !LIP_CATS.has(p.category)) return false;
           if (EYE_CATS.has(categories[0]) && SKIN_CATS.has(p.category) && !EYE_CATS.has(p.category)) return false;
           if (filterUndertone && p.undertone && p.undertone !== 'neutral' && p.undertone !== filterUndertone) return false;
           if (filterCarnation && Array.isArray(p.carnation) && p.carnation.length && !p.carnation.includes(filterCarnation)) return false;
+          if (filterBudget && p.price && p.price > budgetMax) return false;
           return true;
         });
       }
 
-      // Essai 1 : filtre strict (sous-ton + carnation)
-      let pool = buildPool(ut, ca);
-      // Essai 2 : si moins de 2 résultats, relâcher la carnation
-      if (pool.length < 2) pool = buildPool(ut, null);
-      // Essai 3 : si toujours moins de 2, relâcher le sous-ton aussi
-      if (pool.length < 2) pool = buildPool(null, null);
+      // Essai 1 : filtre strict (sous-ton + carnation + budget)
+      let pool = buildPool(ut, ca, true);
+      // Essai 2 : relâcher la carnation
+      if (pool.length < 2) pool = buildPool(ut, null, true);
+      // Essai 3 : relâcher le sous-ton
+      if (pool.length < 2) pool = buildPool(null, null, true);
+      // Essai 4 : relâcher le budget (ne jamais afficher 0 produit)
+      if (pool.length < 2) pool = buildPool(null, null, false);
 
       // Filtre maturité peau (soft — appliqué après, ne jamais vider)
       if (mp && mp !== 'all') {
@@ -1557,7 +1563,7 @@ const SkinAnalysis = (() => {
         </div>
 
         <!-- BLOC BUDGET -->
-        ${renderBudgetBloc(routineCart)}
+        ${renderBudgetBloc(routineCart, budgetMax)}
 
         <!-- CTA -->
         <div class="diag-cta">

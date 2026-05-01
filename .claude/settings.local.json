@@ -29,7 +29,9 @@
       "Bash(dir assets*anticerne* assets*concealer* assets*CLINIQUE*)",
       "Bash(findstr:*)",
       "Bash(dir:*)",
-      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); cats=set\\(p.get\\(''''category'''',''''?''''\\) for p in d[''''products'''']\\); print\\(sorted\\(cats\\)\\)\")"
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); cats=set\\(p.get\\(''''category'''',''''?''''\\) for p in d[''''products'''']\\); print\\(sorted\\(cats\\)\\)\")",
+      "Bash(ls \"C:/Users/candi/OneDrive/Bureau/GLOW UP/\"*.css)",
+      "Bash(ls \"C:/Users/candi/OneDrive/Bureau/GLOW UP/css/\"*.css)"
     ]
   }
 }
