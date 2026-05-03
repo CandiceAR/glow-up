@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:amzn.to)",
+      "Bash(grep -c \"^\\\\s*{$\\\\|q:\" \"/mnt/c/Users/candi/OneDrive/Bureau/GLOW UP/js/intentionScreen.js\" | head -1; grep -c \"q:\" \"/mnt/c/Users/candi/OneDrive/Bureau/GLOW UP/js/intentionScreen.js\")",
+      "Bash(python3 -c \"import json; d=json.load\\(open\\('/mnt/c/Users/candi/OneDrive/Bureau/GLOW UP/data/products-manual.json'\\)\\); print\\(f'Total: {len\\(d[\\\\\"products\\\\\"]\\)} produits'\\); foundations=[p for p in d['products'] if p['category']=='foundation']; print\\(f'Fond de teint: {len\\(foundations\\)}'\\); print\\('IDs:', [p[\\\\\"id\\\\\"] for p in foundations]\\)\")",
+      "WebFetch(domain:victoriabeckhambeauty.com)",
+      "WebSearch",
+      "WebFetch(domain:www.nordstrom.com)",
+      "WebFetch(domain:bluemercury.com)",
+      "WebFetch(domain:skinsort.com)",
+      "WebFetch(domain:incidecoder.com)",
+      "Bash(node --check \"/mnt/c/Users/candi/OneDrive/Bureau/GLOW UP/js/intentionScreen.js\" 2>&1 && echo \"✅ Syntaxe JS valide\")",
+      "Bash(python3 -c \"import json; d=json.load\\(open\\('/mnt/c/Users/candi/OneDrive/Bureau/GLOW UP/data/products-manual.json'\\)\\); print\\(f'Total: {len\\(d[\\\\\"products\\\\\"]\\)} produits'\\); kajal=[p for p in d['products'] if p['category']=='eyeliner']; print\\(f'Kajal VBB: {len\\(kajal\\)} teintes'\\); [print\\(f'  {p[\\\\\"id\\\\\"]} — {p[\\\\\"name\\\\\"].split\\(\\\\\"— \\\\\"\\)[1]}'\\) for p in kajal]\")",
+      "Bash(node --check \"/mnt/c/Users/candi/OneDrive/Bureau/GLOW UP/js/intentionScreen.js\" 2>&1 && node --check \"/mnt/c/Users/candi/OneDrive/Bureau/GLOW UP/js/app.js\" 2>&1 && echo \"✅ Les deux fichiers sont syntaxiquement valides\")",
+      "Bash(node --check \"/mnt/c/Users/candi/OneDrive/Bureau/GLOW UP/js/skinAnalysis.js\" 2>&1 && echo \"✅ skinAnalysis.js valide\")",
+      "Bash(node --check \"/mnt/c/Users/candi/OneDrive/Bureau/GLOW UP/js/catalogue.js\" && echo \"OK\")",
+      "Bash(node --check \"/mnt/c/Users/candi/OneDrive/Bureau/GLOW UP/js/catalogue.js\" && node --check \"/mnt/c/Users/candi/OneDrive/Bureau/GLOW UP/js/productCatalog.js\" && echo \"OK\")",
+      "WebFetch(domain:www.amazon.fr)",
+      "Bash(grep -rn \"trackAmazonClick\\\\|firebase\\\\|firebaseApp\\\\|initializeApp\" \"/mnt/c/Users/candi/OneDrive/Bureau/GLOW UP/\" --include=\"*.js\" --include=\"*.html\" --exclude-dir=\".claude\" 2>/dev/null | head -20)",
+      "Bash(node --check \"/mnt/c/Users/candi/OneDrive/Bureau/GLOW UP/js/tracker.js\" && node --check \"/mnt/c/Users/candi/OneDrive/Bureau/GLOW UP/js/adminPanel.js\" && echo \"OK\")",
+      "Bash(git add:*)",
+      "Bash(git rm:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "WebFetch(domain:verdant-vacherin-d3f775.netlify.app)",
+      "Bash(node --check:*)",
+      "Bash(curl:*)",
+      "Bash(dir assets*anticerne* assets*concealer* assets*CLINIQUE*)",
+      "Bash(findstr:*)",
+      "Bash(dir:*)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); cats=set\\(p.get\\(''''category'''',''''?''''\\) for p in d[''''products'''']\\); print\\(sorted\\(cats\\)\\)\")",
+      "Bash(ls \"C:/Users/candi/OneDrive/Bureau/GLOW UP/\"*.css)",
+      "Bash(ls \"C:/Users/candi/OneDrive/Bureau/GLOW UP/css/\"*.css)"
+    ]
+  }
+}

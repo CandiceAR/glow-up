@@ -3,8 +3,8 @@
     "version": "1.0",
     "source": "admin",
     "tag": "kand10ar-21",
-    "lastUpdated": "2026-04-03",
-    "totalProducts": 127
+    "lastUpdated": "2026-05-03",
+    "totalProducts": 128
   },
   "products": [
     {
@@ -2159,6 +2159,30 @@
       "curatedBy": "admin",
       "curatedAt": "2026-04-03",
       "notes": ""
+    },
+    {
+      "id": "m128",
+      "asin": "B0F47P3FVF",
+      "name": "SHEGLAM Sun Sculpt Poudre Contour Bronzante",
+      "brand": "SHEGLAM",
+      "category": "blush",
+      "imageUrl": "https://m.media-amazon.com/images/I/51Q0t4n0B0L._AC_SY879_.jpg",
+      "amazonUrl": "https://www.amazon.fr/dp/B0F47P3FVF?tag=kan10ar-21",
+      "price": 17.52,
+      "currency": "EUR",
+      "rating": null,
+      "reviews": null,
+      "description": "Poudre bronzante contour pour sculpter et définir les traits du visage. Formule légère pour un effet bonne mine naturel, idéal pour le contouring quotidien.",
+      "undertone": null,
+      "carnation": null,
+      "finish": "mat",
+      "maturity": "all",
+      "skinTypeTags": null,
+      "concernTags": [],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-03"
     }
   ]
 }
