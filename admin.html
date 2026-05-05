@@ -341,6 +341,7 @@
         <h1>Tableau de bord</h1>
         <div style="display:flex; gap:8px;">
           <button class="btn btn-outline" onclick="Admin.exportJSON()">⬇ Export JSON</button>
+          <button class="btn btn-outline" onclick="if(confirm('Appliquer les tags skincare sur 19 produits et corriger les catégories ?')) Admin.patchSkincareTags()" title="Tagger automatiquement les 19 produits skincare existants">🏷 Patcher tags skincare</button>
           <button class="btn btn-dark" onclick="Admin.showAddForm()">+ Ajouter un produit</button>
         </div>
       </div>
@@ -533,26 +534,33 @@
               <!-- Ingrédients actifs -->
               <div class="form-group full">
                 <label class="form-label">🧪 Ingrédients actifs</label>
-                <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:8px 0">
-                  <label class="check-row"><input type="checkbox" id="fIngRetinol"         value="retinol">          Rétinol</label>
-                  <label class="check-row"><input type="checkbox" id="fIngNiacinamide"      value="niacinamide">       Niacinamide</label>
-                  <label class="check-row"><input type="checkbox" id="fIngHyaluronique"     value="hyaluronique">      Acide Hyaluronique</label>
-                  <label class="check-row"><input type="checkbox" id="fIngVitamineC"        value="vitaminec">         Vitamine C</label>
-                  <label class="check-row"><input type="checkbox" id="fIngVitamineE"        value="vitaminee">         Vitamine E</label>
-                  <label class="check-row"><input type="checkbox" id="fIngAhaBha"           value="ahbha">             AHA / BHA</label>
-                  <label class="check-row"><input type="checkbox" id="fIngCeramides"        value="ceramides">         Céramides</label>
-                  <label class="check-row"><input type="checkbox" id="fIngCentella"         value="centella">          Centella Asiatica</label>
-                  <label class="check-row"><input type="checkbox" id="fIngCollagene"        value="collagene">         Collagène / Peptides</label>
-                  <label class="check-row"><input type="checkbox" id="fIngSpf"              value="spf">               SPF</label>
-                  <label class="check-row"><input type="checkbox" id="fIngAloe"             value="aloe">              Aloe Vera</label>
-                  <label class="check-row"><input type="checkbox" id="fIngRetinol2"         value="bakuchiol">         Bakuchiol (rétinol naturel)</label>
-                  <label class="check-row"><input type="checkbox" id="fIngZinc"             value="zinc">              Zinc</label>
-                  <label class="check-row"><input type="checkbox" id="fIngAzelaique"        value="azelaique">         Acide Azélaïque</label>
-                  <label class="check-row"><input type="checkbox" id="fIngCollagene2"       value="salicylique">       Acide Salicylique</label>
-                  <label class="check-row"><input type="checkbox" id="fIngSqualane"         value="squalane">          Squalane</label>
-                  <label class="check-row"><input type="checkbox" id="fIngGlycerine"        value="glycerine">         Glycérine</label>
-                  <label class="check-row"><input type="checkbox" id="fIngKarite"           value="karite">            Beurre de Karité</label>
-                </div>
+                <select id="fIngredients" class="form-select" multiple size="6" style="height:auto;min-height:120px;">
+                  <option value="retinol">Rétinol</option>
+                  <option value="niacinamide">Niacinamide</option>
+                  <option value="hyaluronique">Acide Hyaluronique</option>
+                  <option value="vitaminec">Vitamine C</option>
+                  <option value="vitaminee">Vitamine E</option>
+                  <option value="ahbha">AHA / BHA</option>
+                  <option value="ceramides">Céramides</option>
+                  <option value="centella">Centella Asiatica</option>
+                  <option value="collagene">Collagène / Peptides</option>
+                  <option value="spf">SPF</option>
+                  <option value="aloe">Aloe Vera</option>
+                  <option value="bakuchiol">Bakuchiol</option>
+                  <option value="zinc">Zinc</option>
+                  <option value="azelaique">Acide Azélaïque</option>
+                  <option value="salicylique">Acide Salicylique</option>
+                  <option value="squalane">Squalane</option>
+                  <option value="glycerine">Glycérine</option>
+                  <option value="karite">Beurre de Karité</option>
+                  <option value="panthenol">Panthénol (Vitamine B5)</option>
+                  <option value="uree">Urée (Urea)</option>
+                  <option value="jojoba">Huile de Jojoba</option>
+                  <option value="argan">Huile d'Argan</option>
+                  <option value="teatree">Tea Tree</option>
+                  <option value="lactique">Acide Lactique</option>
+                </select>
+                <p style="font-size:0.75rem;color:var(--muted);margin-top:4px">Ctrl+clic (ou Cmd+clic) pour sélectionner plusieurs ingrédients</p>
               </div>
 
               <!-- Maturité peau -->
@@ -632,6 +640,33 @@
             <option value="demaquillant">Démaquillant</option>
             <option value="set">Coffret</option>
             <option value="tools">Accessoires</option>
+          </select>
+          <select class="form-select" style="width:auto;" onchange="Admin.filterIngredient(this.value)" id="ingredientFilter">
+            <option value="all">Tous les ingrédients</option>
+            <option value="retinol">Rétinol</option>
+            <option value="niacinamide">Niacinamide</option>
+            <option value="hyaluronique">Acide Hyaluronique</option>
+            <option value="vitaminec">Vitamine C</option>
+            <option value="vitaminee">Vitamine E</option>
+            <option value="ahbha">AHA / BHA</option>
+            <option value="ceramides">Céramides</option>
+            <option value="centella">Centella Asiatica</option>
+            <option value="collagene">Collagène / Peptides</option>
+            <option value="spf">SPF</option>
+            <option value="aloe">Aloe Vera</option>
+            <option value="bakuchiol">Bakuchiol</option>
+            <option value="zinc">Zinc</option>
+            <option value="azelaique">Acide Azélaïque</option>
+            <option value="salicylique">Acide Salicylique</option>
+            <option value="squalane">Squalane</option>
+            <option value="glycerine">Glycérine</option>
+            <option value="karite">Beurre de Karité</option>
+            <option value="panthenol">Panthénol (Vit. B5)</option>
+            <option value="uree">Urée (Urea)</option>
+            <option value="jojoba">Huile de Jojoba</option>
+            <option value="argan">Huile d'Argan</option>
+            <option value="teatree">Tea Tree</option>
+            <option value="lactique">Acide Lactique</option>
           </select>
         </div>
 

@@ -6224,6 +6224,107 @@ em { font-style: italic; color: var(--nude); }
    FACE OBSERVATIONS — Ce que je vois sur ton visage
    ============================================================ */
 
+/* ── Skin Profile Bloc ─────────────────────────────────────── */
+.skin-profile-bloc {
+  padding: 20px 16px 16px;
+}
+.skin-profile-summary {
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: var(--text, #1A1A1A);
+  margin: 0 0 20px;
+  padding: 14px 16px;
+  background: #F9F5F1;
+  border-radius: 14px;
+  border-left: 3px solid #C9A98A;
+}
+.skin-needs-section {
+  margin-bottom: 18px;
+}
+.skin-needs-title {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #C9A98A;
+  margin-bottom: 10px;
+}
+.skin-needs-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.skin-need-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  background: #fff;
+  border: 1px solid #F0EBE4;
+  border-radius: 10px;
+  font-size: 0.84rem;
+  color: var(--text, #1A1A1A);
+}
+.skin-need-num {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #C9A98A;
+  min-width: 16px;
+}
+.skin-need-icon {
+  font-size: 1rem;
+}
+.skin-need-label {
+  font-weight: 500;
+}
+.skin-chars-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+.skin-char-item {
+  padding: 12px 14px;
+  background: #FAFAF8;
+  border: 1px solid #F0EBE4;
+  border-radius: 12px;
+}
+.skin-char-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+.skin-char-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text, #1A1A1A);
+}
+.skin-char-meta {
+  font-size: 0.68rem;
+  color: #B0A090;
+  letter-spacing: 0.02em;
+}
+.skin-char-explain {
+  margin: 0 0 6px;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: #5A4A3A;
+}
+.skin-char-zones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.skin-char-zones span {
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  background: #EFE8E0;
+  border-radius: 20px;
+  color: #8A7060;
+}
+
 .fobs-bloc {
   padding: 0 16px 4px;
   display: flex;

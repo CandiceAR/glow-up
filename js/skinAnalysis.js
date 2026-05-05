@@ -1026,13 +1026,13 @@ const SkinAnalysis = (() => {
     }
   }
 
-  // ── Détection des besoins à partir de l'analyse visuelle ──────
-  function detectNeeds(result) {
+  // ── Profil peau complet — croise photo + questionnaire ─────────
+  function buildSkinProfile(result, answers = {}) {
     const { zones = {}, skinType, cernes } = result;
-    const st = skinType?.type || 'normale';
-    const zv = Object.values(zones);
-    const n  = zv.length || 1;
-    const m  = key => zv.reduce((s,z) => s + (z[key] || 60), 0) / n;
+    const st  = skinType?.type || 'normale';
+    const zv  = Object.values(zones);
+    const n   = zv.length || 1;
+    const m   = key => zv.reduce((s, z) => s + (z[key] || 60), 0) / n;
 
     const mPores  = m('pores');
     const mEclat  = m('eclat');
@@ -1040,19 +1040,184 @@ const SkinAnalysis = (() => {
     const mTeint  = m('teint');
     const mTaches = m('taches');
 
-    const needs = [];
+    // Zone T (front + nez) vs joues
+    const zT    = ['forehead','nose'].map(k => zones[k]).filter(Boolean);
+    const zJ    = ['leftCheek','rightCheek'].map(k => zones[k]).filter(Boolean);
+    const mPorT = zT.length ? zT.reduce((s,z) => s+(z.pores||60),0)/zT.length : mPores;
+    const mPorJ = zJ.length ? zJ.reduce((s,z) => s+(z.pores||60),0)/zJ.length : mPores;
+    const mRedT = zT.length ? zT.reduce((s,z) => s+(z.redness||60),0)/zT.length : mRed;
 
-    if (mRed > 42)                              needs.push('rougeurs');
-    if (cernes?.detected)                       needs.push('cernes');
-    if (mPores < 52)                            needs.push('pores');
-    if (st === 'seche' || mTeint < 46)          needs.push('hydratation');
-    if (st === 'grasse' || st === 'mixte')      needs.push('matifiant');
-    if (mTaches < 52)                           needs.push('imperfections');
-    if (mEclat < 45)                            needs.push('eclat');
-    if (mEclat < 45 || mTaches < 55)            needs.push('uniformite');
-    if (mTaches < 40 || mRed > 55)             needs.push('couvrance');
+    // Questionnaire
+    const qSkin = answers.skinType   || null;
+    const qConc = Array.isArray(answers.concerns) ? answers.concerns : [];
+    const qObj  = answers.objectives || null;
+    const qAge  = answers.ageGroup   || null;
 
-    return needs;
+    // ── Types de peau ─────────────────────────────────────────────
+    const skinTypes = [];
+    const photoST   = st;
+    const quizST    = qSkin;
+    if (photoST !== 'normale' && quizST && photoST === quizST) {
+      skinTypes.push({ type: photoST, source: 'both', confidence: 'high' });
+    } else {
+      if (quizST && quizST !== 'normale') skinTypes.push({ type: quizST, source: 'questionnaire', confidence: 'medium' });
+      if (photoST !== 'normale' && photoST !== quizST) skinTypes.push({ type: photoST, source: 'photo', confidence: 'medium' });
+    }
+    if (!skinTypes.length) skinTypes.push({ type: 'normale', source: 'both', confidence: 'medium' });
+    if (qAge === '40+' || qAge === '30-40') skinTypes.push({ type: 'mature', source: 'questionnaire', confidence: qAge === '40+' ? 'high' : 'medium' });
+    if (qAge === 'moins-20' || qAge === '20-25') skinTypes.push({ type: 'jeune', source: 'questionnaire', confidence: 'high' });
+    if ((quizST === 'sensible' || qConc.includes('rougeurs')) && !skinTypes.find(s => s.type === 'sensible')) {
+      skinTypes.push({ type: 'sensible', source: quizST === 'sensible' ? 'both' : 'questionnaire', confidence: 'medium' });
+    }
+
+    // ── Caractéristiques ──────────────────────────────────────────
+    const characteristics = [];
+    const add = (id, label, detected, opts = {}) => {
+      if (!detected) return;
+      characteristics.push({ id, label, detected: true,
+        source:             opts.source     || 'photo',
+        confidence:         opts.confidence || 'medium',
+        zones:              opts.zones      || [],
+        explanation_simple: opts.explanation|| label + '.',
+        needs:              opts.needs      || []
+      });
+    };
+
+    // Hydratation / déshydratation
+    const isDehydrated = mTeint < 46 || qConc.includes('deshydration');
+    const isSkinSeche  = st === 'seche' || qSkin === 'seche';
+    add('dehydration', 'Manque d\'hydratation', isDehydrated, {
+      source:      (isDehydrated && qConc.includes('deshydration')) ? 'both' : isDehydrated ? 'photo' : 'questionnaire',
+      confidence:  isSkinSeche ? 'high' : 'medium',
+      zones:       ['joues', 'contour des yeux'],
+      explanation: isSkinSeche
+        ? 'Ta peau semble manquer d\'eau — elle peut tirailler et absorber les soins très vite.'
+        : 'Ta peau paraît légèrement déshydratée — un bon soin hydratant peut faire une vraie différence.',
+      needs: ['hydratation', ...(isSkinSeche ? ['barriere'] : [])]
+    });
+
+    // Barrière cutanée fragilisée
+    add('barriere', 'Barrière cutanée fragilisée', isSkinSeche && mRed > 38, {
+      source: quizST === 'sensible' ? 'both' : 'photo',
+      confidence: 'medium',
+      zones: ['joues', 'front'],
+      explanation: 'Ta peau semble fragilisée : elle a besoin d\'être apaisée et renforcée de l\'intérieur.',
+      needs: ['barriere', 'apaisement']
+    });
+
+    // Brillance zone T / peau mixte
+    const hasBrillanceT      = (st === 'mixte' || mPorT < 48) && !(st === 'grasse');
+    const hasBrillanceGlobal = st === 'grasse' || (mPorT < 48 && mPorJ < 48);
+    add('sebum_tzone', 'Brillance zone T', hasBrillanceT, {
+      source:      (st === 'mixte' && quizST === 'mixte') ? 'both' : 'photo',
+      confidence:  st === 'mixte' ? 'high' : 'medium',
+      zones:       ['front', 'nez'],
+      explanation: 'Ta zone T semble produire un peu plus de sébum — une formule équilibrante sera parfaite.',
+      needs: ['matifiant', 'pores']
+    });
+    add('sebum_global', 'Peau grasse / excès de sébum', hasBrillanceGlobal, {
+      source:      (st === 'grasse' && quizST === 'grasse') ? 'both' : 'photo',
+      confidence:  'medium',
+      zones:       ['front', 'nez', 'joues'],
+      explanation: 'Ta peau semble produire un excès de sébum — des formules légères et purifiantes t\'iront mieux.',
+      needs: ['matifiant', 'pores', 'purification']
+    });
+
+    // Pores / grain de peau
+    add('pores_visibles', 'Pores visibles', mPores < 52 || qConc.includes('pores'), {
+      source:      qConc.includes('pores') ? 'both' : 'photo',
+      confidence:  mPores < 40 ? 'high' : 'medium',
+      zones:       ['nez', 'front', 'joues'],
+      explanation: 'Les pores paraissent légèrement visibles — un soin affinant peut lisser le grain de peau.',
+      needs: ['pores', 'texture']
+    });
+
+    // Rougeurs
+    const hasRougeurs = mRed > 42 || qConc.includes('rougeurs');
+    add('rougeurs', 'Rougeurs visibles', hasRougeurs, {
+      source:      (mRed > 42 && qConc.includes('rougeurs')) ? 'both' : mRed > 42 ? 'photo' : 'questionnaire',
+      confidence:  mRed > 55 ? 'high' : 'medium',
+      zones:       ['joues', 'nez'],
+      explanation: 'Des rougeurs sont visibles — les formules apaisantes et sans parfum seront tes alliées.',
+      needs: ['rougeurs', 'apaisement']
+    });
+
+    // Sensibilité (sans rougeurs visibles)
+    const isSensible = st === 'sensible' || quizST === 'sensible';
+    add('sensibilite', 'Peau sensible / réactive', isSensible && !hasRougeurs, {
+      source: 'questionnaire', confidence: 'medium',
+      zones: ['joues'],
+      explanation: 'Ta peau semble réactive — mieux vaut privilégier des formules douces, sans parfum ni alcool.',
+      needs: ['rougeurs', 'apaisement']
+    });
+
+    // Teint terne / manque d'éclat
+    const hasTeintTerne = mEclat < 45 || qConc.includes('eclat_terne') || qObj === 'eclat';
+    add('teint_terne', 'Teint terne', hasTeintTerne, {
+      source:      (mEclat < 45 && qConc.includes('eclat_terne')) ? 'both' : mEclat < 45 ? 'photo' : 'questionnaire',
+      confidence:  mEclat < 35 ? 'high' : 'medium',
+      zones:       ['front', 'joues'],
+      explanation: 'Ton teint paraît légèrement voilé — il a besoin d\'être réveillé et éclairé.',
+      needs: ['eclat', 'uniformite']
+    });
+
+    // Taches / irrégularités
+    const hasTaches = mTaches < 52 || qConc.includes('taches');
+    add('taches_pigm', 'Irrégularités de teint', hasTaches, {
+      source:      (mTaches < 52 && qConc.includes('taches')) ? 'both' : mTaches < 52 ? 'photo' : 'questionnaire',
+      confidence:  mTaches < 40 ? 'high' : 'medium',
+      zones:       ['joues', 'front'],
+      explanation: 'Quelques irrégularités de teint sont visibles — un soin uniformisant peut faire une vraie différence.',
+      needs: ['uniformite', 'eclat']
+    });
+
+    // Imperfections / acné
+    const hasAcne = qConc.includes('acne') || (mTaches < 40 && mRed > 45);
+    add('imperfections', 'Imperfections localisées', hasAcne, {
+      source:      qConc.includes('acne') ? 'both' : 'photo',
+      confidence:  qConc.includes('acne') ? 'high' : 'medium',
+      zones:       ['menton', 'front', 'joues'],
+      explanation: 'Ta peau paraît sujette aux imperfections — des actifs purifiants ciblés peuvent t\'aider.',
+      needs: ['imperfections', 'purification']
+    });
+
+    // Cernes
+    const hasCernes = cernes?.detected || qConc.includes('cernes');
+    add('cernes', 'Cernes / contour des yeux fatigué', hasCernes, {
+      source:      (cernes?.detected && qConc.includes('cernes')) ? 'both' : cernes?.detected ? 'photo' : 'questionnaire',
+      confidence:  cernes?.intensity === 'marqués' ? 'high' : 'medium',
+      zones:       ['contour des yeux'],
+      explanation: 'Des cernes sont visibles — le contour des yeux a besoin d\'hydratation et d\'attention ciblée.',
+      needs: ['cernes']
+    });
+
+    // Ridules / anti-âge
+    const hasRides = qConc.includes('rides') || qAge === '40+' || (qAge === '30-40' && qObj === 'anti-age');
+    add('ridules', 'Ridules / signes du temps', hasRides, {
+      source:      'questionnaire', confidence: qAge === '40+' ? 'high' : 'medium',
+      zones:       ['contour des yeux', 'front'],
+      explanation: 'Ta peau montre des signes du temps — les formules anti-âge peuvent lisser et raffermir.',
+      needs: ['ridules', 'anti_age']
+    });
+
+    // Couvrance
+    add('couvrance', 'Besoin de couvrance', mTaches < 40 || mRed > 55, {
+      source: 'photo', confidence: 'medium',
+      zones:  ['joues', 'nez'],
+      explanation: 'Des irrégularités visibles peuvent bénéficier d\'une couvrance adaptée.',
+      needs: ['couvrance', 'uniformite']
+    });
+
+    // ── Besoins consolidés (déduplication) ────────────────────────
+    const needs = [...new Set(characteristics.flatMap(c => c.needs))];
+
+    return { skinTypes, characteristics, needs };
+  }
+
+  // ── Détection des besoins (rétrocompatible) ────────────────────
+  function detectNeeds(result) {
+    const answers = AppState?.questionnaire?.answers || {};
+    return buildSkinProfile(result, answers).needs;
   }
 
   // ── Génère l'explication personnalisée pour un produit ────────
@@ -1063,15 +1228,21 @@ const SkinAnalysis = (() => {
     const st = result.skinType?.type || 'normale';
     const LABELS = {
       rougeurs:      'des rougeurs visibles sur ton visage',
+      apaisement:    'une peau qui a besoin d\'être apaisée',
       cernes:        'des cernes sous les yeux',
       pores:         'des pores visibles',
+      texture:       'un grain de peau irrégulier',
       hydratation:   'une peau qui a besoin d\'hydratation',
+      barriere:      'une barrière cutanée fragilisée',
       matifiant:     'une zone T qui a tendance à briller',
+      purification:  'une peau sujette aux imperfections',
       imperfections: 'quelques imperfections localisées',
       ridules:       'des ridules d\'expression',
+      anti_age:      'des besoins anti-âge',
       eclat:         'un teint qui manque d\'éclat',
       couvrance:     'une irrégularité de teint à corriger',
-      uniformite:    'un teint légèrement irrégulier'
+      uniformite:    'un teint légèrement irrégulier',
+      deshydratation:'une peau déshydratée'
     };
 
     const raisons = matched.map(t => LABELS[t]).filter(Boolean);
@@ -1176,6 +1347,77 @@ const SkinAnalysis = (() => {
           <span class="fobs-section-label">Ce qui va t'aller le mieux</span>
           <p class="fobs-section-text">${aller}</p>
         </div>
+      </div>`;
+  }
+
+  function renderSkinProfileHTML(skinProfile) {
+    const { skinTypes, characteristics } = skinProfile;
+
+    // ── Phrase résumé ─────────────────────────────────────────────
+    const ST_LABELS = {
+      normale: 'normale', grasse: 'grasse', seche: 'sèche', mixte: 'mixte',
+      sensible: 'sensible', mature: 'mature', jeune: 'jeune', reactive: 'réactive'
+    };
+    const primaryTypes = skinTypes.filter(s => s.confidence !== 'low').map(s => ST_LABELS[s.type] || s.type);
+    const summaryTypes = primaryTypes.length ? `peau ${primaryTypes.join(', ')}` : 'peau normale';
+
+    const charLabelsShort = characteristics.slice(0, 4).map(c => c.explanation_simple);
+    const summaryPhrase = charLabelsShort.length
+      ? `Ta peau semble <strong>${summaryTypes}</strong>. ${charLabelsShort[0]}`
+      : `Ta peau semble <strong>${summaryTypes}</strong>.`;
+
+    // ── Besoins prioritaires ──────────────────────────────────────
+    const NEED_LABELS = {
+      hydratation:   { label: 'Hydrater',              icon: '💧' },
+      barriere:      { label: 'Renforcer la barrière',  icon: '🛡' },
+      matifiant:     { label: 'Rééquilibrer le sébum',  icon: '🌿' },
+      pores:         { label: 'Affiner le grain',        icon: '✦' },
+      texture:       { label: 'Lisser la texture',       icon: '✦' },
+      rougeurs:      { label: 'Apaiser les rougeurs',   icon: '🌸' },
+      apaisement:    { label: 'Apaiser',                 icon: '🌸' },
+      eclat:         { label: 'Raviver l\'éclat',        icon: '☀' },
+      uniformite:    { label: 'Uniformiser le teint',   icon: '✨' },
+      imperfections: { label: 'Purifier',                icon: '🫧' },
+      purification:  { label: 'Purifier',                icon: '🫧' },
+      cernes:        { label: 'Défatiguer le regard',   icon: '👁' },
+      ridules:       { label: 'Lisser et raffermir',     icon: '🌺' },
+      anti_age:      { label: 'Action anti-âge',         icon: '🌺' },
+      couvrance:     { label: 'Corriger le teint',       icon: '🎨' },
+    };
+
+    const uniqueNeeds = [...new Set(characteristics.flatMap(c => c.needs))];
+    const priorityNeeds = uniqueNeeds.slice(0, 5);
+    const needsHTML = priorityNeeds.map((n, i) => {
+      const nl = NEED_LABELS[n];
+      if (!nl) return '';
+      return `<div class="skin-need-item"><span class="skin-need-num">${i+1}</span><span class="skin-need-icon">${nl.icon}</span><span class="skin-need-label">${nl.label}</span></div>`;
+    }).filter(Boolean).join('');
+
+    // ── Caractéristiques détectées ────────────────────────────────
+    const SRC_LABELS = { photo: 'photo', questionnaire: 'questionnaire', both: 'photo + questionnaire' };
+    const CONF_DOTS  = { high: '●●●', medium: '●●○', low: '●○○' };
+    const charsHTML  = characteristics.map(c => `
+      <div class="skin-char-item">
+        <div class="skin-char-header">
+          <span class="skin-char-label">${c.label}</span>
+          <span class="skin-char-meta">${SRC_LABELS[c.source] || c.source} · <span title="${c.confidence}">${CONF_DOTS[c.confidence] || '●●○'}</span></span>
+        </div>
+        <p class="skin-char-explain">${c.explanation_simple}</p>
+        ${c.zones.length ? `<div class="skin-char-zones">${c.zones.map(z=>`<span>${z}</span>`).join('')}</div>` : ''}
+      </div>`).join('');
+
+    if (!characteristics.length) return '';
+
+    return `
+      <div class="mkr-bloc skin-profile-bloc">
+        <h2 class="mkr-bloc-title">🔍 Profil de ta peau</h2>
+        <p class="skin-profile-summary">${summaryPhrase}</p>
+        ${needsHTML ? `
+        <div class="skin-needs-section">
+          <span class="skin-needs-title">Besoins prioritaires</span>
+          <div class="skin-needs-grid">${needsHTML}</div>
+        </div>` : ''}
+        <div class="skin-chars-list">${charsHTML}</div>
       </div>`;
   }
 
@@ -1372,8 +1614,8 @@ const SkinAnalysis = (() => {
         if (matFiltered.length >= (limit || 2)) pool = matFiltered;
       }
 
-      // Calculer les besoins détectés (une seule fois, en dehors du filtre)
-      const detectedNeeds = detectNeeds(result);
+      // Calculer les besoins détectés (photo + questionnaire)
+      const detectedNeeds = buildSkinProfile(result, answers).needs;
 
       // Trier : d'abord produits qui matchent un besoin détecté, puis featured, puis rating
       pool = pool.sort((a, b) => {
@@ -1490,6 +1732,9 @@ const SkinAnalysis = (() => {
             </div>
           </div>
         </div>
+
+        <!-- BLOC PROFIL PEAU -->
+        ${renderSkinProfileHTML(buildSkinProfile(result, answers))}
 
         <!-- BLOC ANALYSE VISAGE -->
         ${renderFaceObsHTML(result)}

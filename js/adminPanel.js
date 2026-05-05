@@ -9,10 +9,11 @@ const TAG            = 'kand10ar-21';
 
 const Admin = (() => {
 
-  let products    = [];
-  let editingId   = null;
-  let searchQuery = '';
-  let catFilter   = 'all';
+  let products         = [];
+  let editingId        = null;
+  let searchQuery      = '';
+  let catFilter        = 'all';
+  let ingredientFilter = 'all';
 
   // ─── Toast notifications ──────────────────────────────────────
   function toast(msg, type = 'success') {
@@ -165,6 +166,7 @@ const Admin = (() => {
       );
     }
     if (catFilter !== 'all') list = list.filter(p => p.category === catFilter);
+    if (ingredientFilter !== 'all') list = list.filter(p => Array.isArray(p.ingredientTags) && p.ingredientTags.includes(ingredientFilter));
 
     const tbody = document.getElementById('productsTableBody');
     if (!tbody) return;
@@ -289,10 +291,8 @@ const Admin = (() => {
     });
     // Ingrédients actifs
     const it = Array.isArray(p.ingredientTags) ? p.ingredientTags : [];
-    ['retinol','niacinamide','hyaluronique','vitaminec','vitaminee','ahbha','ceramides','centella','collagene','spf','aloe','bakuchiol','zinc','azelaique','salicylique','squalane','glycerine','karite'].forEach(v => {
-      const key = 'fIng' + v.charAt(0).toUpperCase() + v.slice(1);
-      const el = document.getElementById(key);
-      if (el) el.checked = it.includes(v);
+    Array.from(document.getElementById('fIngredients').options).forEach(o => {
+      o.selected = it.includes(o.value);
     });
     previewImage(p.imageUrl || '');
     document.getElementById('productFormWrap').style.display = 'block';
@@ -329,11 +329,7 @@ const Admin = (() => {
       const el = document.getElementById('fNeed' + v.charAt(0).toUpperCase() + v.slice(1));
       if (el) el.checked = false;
     });
-    ['retinol','niacinamide','hyaluronique','vitaminec','vitaminee','ahbha','ceramides','centella','collagene','spf','aloe','bakuchiol','zinc','azelaique','salicylique','squalane','glycerine','karite'].forEach(v => {
-      const key = 'fIng' + v.charAt(0).toUpperCase() + v.slice(1);
-      const el = document.getElementById(key);
-      if (el) el.checked = false;
-    });
+    Array.from(document.getElementById('fIngredients').options).forEach(o => { o.selected = false; });
     previewImage('');
     const prog = document.getElementById('imageUploadProgress');
     if (prog) prog.textContent = '';
@@ -370,11 +366,7 @@ const Admin = (() => {
     const format = category === 'eyeshadow' ? (document.getElementById('fFormat').value || null) : null;
     const NEEDS_LIST = ['rougeurs','cernes','pores','hydratation','matifiant','imperfections','ridules','eclat','couvrance','uniformite'];
     const concernTags = NEEDS_LIST.filter(v => document.getElementById('fNeed' + v.charAt(0).toUpperCase() + v.slice(1))?.checked);
-    const ING_LIST = ['retinol','niacinamide','hyaluronique','vitaminec','vitaminee','ahbha','ceramides','centella','collagene','spf','aloe','bakuchiol','zinc','azelaique','salicylique','squalane','glycerine','karite'];
-    const ingredientTags = ING_LIST.filter(v => {
-      const key = 'fIng' + v.charAt(0).toUpperCase() + v.slice(1);
-      return document.getElementById(key)?.checked;
-    });
+    const ingredientTags = Array.from(document.getElementById('fIngredients').selectedOptions).map(o => o.value);
 
     if (!amazonUrl || !name || !brand || !imageUrl) {
       toast('Remplis tous les champs obligatoires (lien, nom, marque, image)', 'error');
@@ -666,12 +658,60 @@ const Admin = (() => {
     saveToStorage(); removeProduct(id); renderStats(); renderTable();
   }
 
+  // ─── Patch tags skincare ──────────────────────────────────────
+  const SKINCARE_TAGS_PATCH = {
+    m001: { concernTags: ['eclat','uniformite','ridules','anti_age'],            ingredientTags: ['vitaminec'] },
+    m002: { concernTags: ['hydratation','eclat'],                                ingredientTags: ['hyaluronique','glycerine'] },
+    m003: { concernTags: ['eclat','uniformite','barriere','hydratation'],        ingredientTags: ['vitaminec','vitaminee','glycerine'] },
+    m004: { concernTags: ['hydratation','eclat'],                                ingredientTags: ['hyaluronique','glycerine'] },
+    m005: { concernTags: ['hydratation','barriere','apaisement','rougeurs'],     ingredientTags: ['hyaluronique','ceramides'] },
+    m006: { concernTags: ['eclat','uniformite','rougeurs'],                      ingredientTags: ['vitaminec'] },
+    m007: { concernTags: ['uniformite','ridules'],                               ingredientTags: ['vitaminee','spf'] },
+    m008: { concernTags: ['eclat','uniformite','ridules','rougeurs'],            ingredientTags: ['vitaminec','spf','hyaluronique'] },
+    m009: { concernTags: ['cernes','ridules','anti_age'],                        ingredientTags: ['bakuchiol'] },
+    m010: { concernTags: ['hydratation','barriere'],                             ingredientTags: ['glycerine','uree'] },
+    m012: { concernTags: ['cernes'],                                             ingredientTags: ['hyaluronique'] },
+    m013: { concernTags: ['cernes','ridules'],                                   ingredientTags: [] },
+    m014: { concernTags: ['cernes','ridules','anti_age','eclat'],                ingredientTags: ['retinol','vitaminec'] },
+    m121: { concernTags: ['hydratation','eclat'],                                ingredientTags: ['hyaluronique'] },
+    m122: { concernTags: ['ridules','anti_age','hydratation'],                   ingredientTags: ['collagene','niacinamide','hyaluronique'] },
+    m123: { category: 'eye', concernTags: ['cernes','ridules','eclat'],          ingredientTags: ['hyaluronique','collagene'] },
+    m124: { concernTags: ['hydratation','ridules','barriere'],                   ingredientTags: ['hyaluronique','collagene'] },
+    m125: { concernTags: ['ridules','anti_age','hydratation'],                   ingredientTags: ['hyaluronique','collagene'] },
+    m126: { category: 'powder' },
+    m127: { category: 'powder' },
+  };
+
+  async function patchSkincareTags() {
+    const ids = Object.keys(SKINCARE_TAGS_PATCH);
+    let ok = 0, skip = 0;
+    for (const id of ids) {
+      const p = products.find(x => x.id === id);
+      if (!p) { skip++; continue; }
+      const patch = SKINCARE_TAGS_PATCH[id];
+      if (patch.concernTags   !== undefined) p.concernTags   = patch.concernTags;
+      if (patch.ingredientTags !== undefined) p.ingredientTags = patch.ingredientTags;
+      if (patch.category       !== undefined) p.category      = patch.category;
+      await persistProduct(p);
+      ok++;
+    }
+    saveToStorage();
+    renderStats();
+    renderTable();
+    toast(`${ok} produits mis à jour${skip ? ` (${skip} non trouvés)` : ''} ✓`);
+  }
+
   // ─── Recherche et filtres ─────────────────────────────────────
   function search(q) { searchQuery = q; renderTable(); }
 
   function filterCat(cat) {
     catFilter = cat;
     // BUG FIX: ne jamais toucher aux classes des onglets de navigation
+    renderTable();
+  }
+
+  function filterIngredient(ing) {
+    ingredientFilter = ing;
     renderTable();
   }
 
@@ -1031,7 +1071,7 @@ const Admin = (() => {
     showAddForm, editProduct, duplicateProduct, cancelForm, saveProduct,
     autoTagAll,
     toggleActive, toggleFeatured, deleteProduct,
-    search, filterCat, showTab,
+    search, filterCat, filterIngredient, patchSkincareTags, showTab,
     extractASIN, extractASINFromUrl, checkTag, autoFillAmazonUrl, exportJSON,
     setPeriod, exportStatsCSV, clearStats,
     saveCoachKey, deleteCoachKey, testCoachKey,
