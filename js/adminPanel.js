@@ -177,8 +177,8 @@ const Admin = (() => {
     }
 
     tbody.innerHTML = list.map(p => {
-      const colorCell = p.colorHex
-        ? `<div class="color-pill"><span class="color-pill-dot" style="background:${p.colorHex}"></span>${p.shadeName || p.colorHex}</div>`
+      const colorCell = (p.colorHex && p.colorHex !== '#ffffff') || p.shadeName
+        ? `<div class="color-pill"><span class="color-pill-dot" style="background:${p.colorHex || '#fff'}"></span>${p.shadeName || p.colorHex}</div>`
         : '—';
       const UT_LABELS = { warm: '🌡 Chaud', cool: '❄ Froid', neutral: '⚖ Neutre' };
       const carnStr   = Array.isArray(p.carnation) && p.carnation.length && p.carnation.length < 3
