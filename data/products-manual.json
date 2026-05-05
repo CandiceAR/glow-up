@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-05-03",
-    "totalProducts": 128
+    "totalProducts": 131
   },
   "products": [
     {
@@ -2219,6 +2219,69 @@
       "active": true,
       "curatedBy": "admin",
       "curatedAt": "2026-05-03"
+    },
+    {
+      "id": "m129",
+      "asin": "B07JL7DTZ4",
+      "name": "La Roche-Posay Toleriane Sérum Anti-Rougeurs",
+      "brand": "La Roche-Posay",
+      "category": "serum",
+      "imageUrl": "assets/LAROCHEPOSAY-TOLERIANEANTIROUGEURS.jpg",
+      "amazonUrl": "https://www.amazon.fr/dp/B07JL7DTZ4?tag=kan10ar-21",
+      "price": 14.39,
+      "currency": "EUR",
+      "rating": 4.4,
+      "reviews": 1200,
+      "description": "Sérum Toleriane anti-rougeurs de La Roche-Posay pour apaiser les peaux sensibles et réactives. Formule douce sans parfum.",
+      "skinTypeTags": ["sensible","normale","seche"],
+      "concernTags": ["rougeurs","apaisement","barriere","hydratation"],
+      "ingredientTags": ["niacinamide","ceramides","glycerine"],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-05"
+    },
+    {
+      "id": "m130",
+      "asin": "B0DSCGWVLH",
+      "name": "Uriage Roséliane Crème Riche Anti-Rougeurs",
+      "brand": "Uriage",
+      "category": "cream",
+      "imageUrl": "assets/URIAGE-ROSELIANE.jpg",
+      "amazonUrl": "https://www.amazon.fr/dp/B0DSCGWVLH?tag=kan10ar-21",
+      "price": 25,
+      "currency": "EUR",
+      "rating": 4.5,
+      "reviews": 890,
+      "description": "Crème riche anti-rougeurs Roséliane d'Uriage, spécialement formulée pour les peaux sensibles et réactives sujettes aux rougeurs diffuses.",
+      "skinTypeTags": ["sensible","seche","normale"],
+      "concernTags": ["rougeurs","apaisement","barriere","hydratation"],
+      "ingredientTags": ["niacinamide","ceramides","glycerine"],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-05"
+    },
+    {
+      "id": "m131",
+      "asin": "B0CQ3YGZVV",
+      "name": "Pyunkang Yul Crème Apaisante Anti-Rougeurs",
+      "brand": "Pyunkang Yul",
+      "category": "cream",
+      "imageUrl": "assets/Pyunkang Yul-Antirougeurs.jpg",
+      "amazonUrl": "https://www.amazon.fr/Pyunkang-Yul-Ultimate-Apaisante-Sensibles/dp/B0CQ3YGZVV?tag=kan10ar-21",
+      "price": 17.45,
+      "currency": "EUR",
+      "rating": 4.4,
+      "reviews": 320,
+      "description": "Crème apaisante ultime pour peaux sensibles et réactives. Réduit les rougeurs et renforce la barrière cutanée avec des actifs doux et efficaces.",
+      "skinTypeTags": ["sensible","normale","seche","mixte"],
+      "concernTags": ["rougeurs","apaisement","barriere","hydratation"],
+      "ingredientTags": ["centella","ceramides","glycerine","panthenol"],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-05"
     }
   ]
 }
