@@ -287,6 +287,13 @@ const Admin = (() => {
       const el = document.getElementById('fNeed' + v.charAt(0).toUpperCase() + v.slice(1));
       if (el) el.checked = ct.includes(v);
     });
+    // Ingrédients actifs
+    const it = Array.isArray(p.ingredientTags) ? p.ingredientTags : [];
+    ['retinol','niacinamide','hyaluronique','vitaminec','vitaminee','ahbha','ceramides','centella','collagene','spf','aloe','bakuchiol','zinc','azelaique','salicylique','squalane','glycerine','karite'].forEach(v => {
+      const key = 'fIng' + v.charAt(0).toUpperCase() + v.slice(1);
+      const el = document.getElementById(key);
+      if (el) el.checked = it.includes(v);
+    });
     previewImage(p.imageUrl || '');
     document.getElementById('productFormWrap').style.display = 'block';
     document.getElementById('productFormWrap').scrollIntoView({ behavior: 'smooth' });
@@ -320,6 +327,11 @@ const Admin = (() => {
     });
     ['rougeurs','cernes','pores','hydratation','matifiant','imperfections','ridules','eclat','couvrance','uniformite'].forEach(v => {
       const el = document.getElementById('fNeed' + v.charAt(0).toUpperCase() + v.slice(1));
+      if (el) el.checked = false;
+    });
+    ['retinol','niacinamide','hyaluronique','vitaminec','vitaminee','ahbha','ceramides','centella','collagene','spf','aloe','bakuchiol','zinc','azelaique','salicylique','squalane','glycerine','karite'].forEach(v => {
+      const key = 'fIng' + v.charAt(0).toUpperCase() + v.slice(1);
+      const el = document.getElementById(key);
       if (el) el.checked = false;
     });
     previewImage('');
@@ -358,6 +370,11 @@ const Admin = (() => {
     const format = category === 'eyeshadow' ? (document.getElementById('fFormat').value || null) : null;
     const NEEDS_LIST = ['rougeurs','cernes','pores','hydratation','matifiant','imperfections','ridules','eclat','couvrance','uniformite'];
     const concernTags = NEEDS_LIST.filter(v => document.getElementById('fNeed' + v.charAt(0).toUpperCase() + v.slice(1))?.checked);
+    const ING_LIST = ['retinol','niacinamide','hyaluronique','vitaminec','vitaminee','ahbha','ceramides','centella','collagene','spf','aloe','bakuchiol','zinc','azelaique','salicylique','squalane','glycerine','karite'];
+    const ingredientTags = ING_LIST.filter(v => {
+      const key = 'fIng' + v.charAt(0).toUpperCase() + v.slice(1);
+      return document.getElementById(key)?.checked;
+    });
 
     if (!amazonUrl || !name || !brand || !imageUrl) {
       toast('Remplis tous les champs obligatoires (lien, nom, marque, image)', 'error');
@@ -411,6 +428,7 @@ const Admin = (() => {
         skinTypeTags: skinTypeTags,
         format:      format || null,
         concernTags: concernTags,
+        ingredientTags: ingredientTags,
         curatedAt:   new Date().toISOString().split('T')[0]
       };
     } else {
