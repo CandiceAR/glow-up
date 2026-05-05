@@ -1,6 +1,6 @@
 {
-  "redirects": [
-    { "source": "/favicon.ico", "destination": "/icons/icon-192.png", "permanent": true }
+  "rewrites": [
+    { "source": "/favicon.ico", "destination": "/icons/icon-192.png" }
   ],
   "functions": {
     "api/makeupRender.js": {
