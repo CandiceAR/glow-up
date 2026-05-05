@@ -680,6 +680,12 @@ const Admin = (() => {
     m125: { concernTags: ['ridules','anti_age','hydratation'],                   ingredientTags: ['hyaluronique','collagene'] },
     m126: { category: 'powder' },
     m127: { category: 'powder' },
+    m139: { concernTags: ['pores','matifiant','imperfections','uniformite'],        ingredientTags: ['niacinamide','zinc'] },
+    m140: { concernTags: ['pores','eclat','apaisement','uniformite'],               ingredientTags: ['niacinamide','hyaluronique'] },
+    m141: { concernTags: ['pores','anti_age','eclat','imperfections'],              ingredientTags: ['niacinamide','peptides'] },
+    m142: { concernTags: ['pores','imperfections','purification','matifiant'],      ingredientTags: ['salicylique','niacinamide'] },
+    m143: { concernTags: ['pores','taches','eclat','uniformite'],                   ingredientTags: ['niacinamide','vitaminec'] },
+    m144: { concernTags: ['pores','taches','eclat','uniformite','anti_age'],        ingredientTags: ['vitaminec','niacinamide'] },
   };
 
   async function patchSkincareTags() {
