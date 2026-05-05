@@ -1,6 +1,7 @@
 {
   "rewrites": [
-    { "source": "/favicon.ico", "destination": "/icons/icon-192.png" }
+    { "source": "/favicon.ico", "destination": "/icons/icon-192.png" },
+    { "source": "/admin", "destination": "/admin.html" }
   ],
   "functions": {
     "api/makeupRender.js": {
