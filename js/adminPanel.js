@@ -686,14 +686,14 @@ const Admin = (() => {
 
   // ─── Patch tags skincare ──────────────────────────────────────
   const SKINCARE_TAGS_PATCH = {
-    m001: { concernTags: ['eclat','uniformite','ridules','anti_age'],            ingredientTags: ['vitaminec'] },
+    m001: { concernTags: ['eclat','uniformite','ridules','anti_age','taches'],   ingredientTags: ['vitaminec'] },
     m002: { concernTags: ['hydratation','eclat'],                                ingredientTags: ['hyaluronique','glycerine'] },
-    m003: { concernTags: ['eclat','uniformite','barriere','hydratation'],        ingredientTags: ['vitaminec','vitaminee','glycerine'] },
+    m003: { concernTags: ['eclat','uniformite','barriere','hydratation','taches'], ingredientTags: ['vitaminec','vitaminee','glycerine'] },
     m004: { concernTags: ['hydratation','eclat'],                                ingredientTags: ['hyaluronique','glycerine'] },
     m005: { concernTags: ['hydratation','barriere','apaisement','rougeurs'],     ingredientTags: ['hyaluronique','ceramides'] },
-    m006: { concernTags: ['eclat','uniformite','rougeurs'],                      ingredientTags: ['vitaminec'] },
+    m006: { concernTags: ['eclat','uniformite','rougeurs','taches'],             ingredientTags: ['vitaminec'] },
     m007: { concernTags: ['uniformite','ridules'],                               ingredientTags: ['vitaminee','spf'] },
-    m008: { concernTags: ['eclat','uniformite','ridules','rougeurs'],            ingredientTags: ['vitaminec','spf','hyaluronique'] },
+    m008: { concernTags: ['eclat','uniformite','ridules','rougeurs','taches'],   ingredientTags: ['vitaminec','spf','hyaluronique'] },
     m009: { concernTags: ['cernes','ridules','anti_age'],                        ingredientTags: ['bakuchiol'] },
     m010: { concernTags: ['hydratation','barriere'],                             ingredientTags: ['glycerine','uree'] },
     m012: { concernTags: ['cernes'],                                             ingredientTags: ['hyaluronique'] },
@@ -713,6 +713,10 @@ const Admin = (() => {
     m143: { concernTags: ['pores','taches','eclat','uniformite'],                   ingredientTags: ['niacinamide','vitaminec'] },
     m144: { concernTags: ['pores','taches','eclat','uniformite','anti_age'],        ingredientTags: ['vitaminec','niacinamide'] },
     m145: { concernTags: ['pores','eclat','imperfections','uniformite','matifiant'], ingredientTags: ['niacinamide','centella'] },
+    m146: { concernTags: ['taches','uniformite','eclat','anti_age'],                ingredientTags: ['niacinamide','tranexamique'] },
+    m147: { concernTags: ['taches','eclat','uniformite','spf'],                     ingredientTags: ['vitaminec','spf','niacinamide'] },
+    m148: { concernTags: ['taches','pores','uniformite','matifiant'],               ingredientTags: ['niacinamide'] },
+    m149: { concernTags: ['taches','ridules','anti_age','uniformite','eclat'],      ingredientTags: ['niacinamide','glycolique'] },
   };
 
   async function patchSkincareTags() {
