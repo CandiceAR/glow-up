@@ -136,14 +136,18 @@ const Admin = (() => {
   }
 
   async function importNewFromJSON() {
-    if (!confirm('Importer dans Firestore les produits du JSON absents du catalogue ?')) return;
     try {
       const res = await fetch('data/products-manual.json?v=' + Date.now());
       const data = await res.json();
       const jsonProducts = data.products || [];
       const existingIds = new Set(products.map(p => p.id));
       const toAdd = jsonProducts.filter(p => !existingIds.has(p.id));
-      if (!toAdd.length) { toast('Aucun nouveau produit à importer'); return; }
+      if (!toAdd.length) {
+        alert(`Catalogue déjà à jour.\nFirestore : ${products.length} produits\nJSON : ${jsonProducts.length} produits\nAucun nouvel ID à importer.`);
+        return;
+      }
+      const ids = toAdd.map(p => p.id).join(', ');
+      if (!confirm(`${toAdd.length} nouveau(x) produit(s) à importer :\n${ids}\n\nContinuer ?`)) return;
       let count = 0;
       for (const p of toAdd) {
         if (typeof FirestoreProducts !== 'undefined') {
@@ -157,7 +161,7 @@ const Admin = (() => {
       renderStats();
       toast(`${count} produit(s) importé(s) ✓`);
     } catch (e) {
-      toast('Erreur import JSON : ' + e.message);
+      alert('Erreur import JSON : ' + e.message);
     }
   }
 
