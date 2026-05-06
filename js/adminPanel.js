@@ -136,18 +136,19 @@ const Admin = (() => {
   }
 
   async function importNewFromJSON() {
+    toast('Chargement du JSON...', 'info');
     try {
       const res = await fetch('data/products-manual.json?v=' + Date.now());
+      if (!res.ok) { toast('Erreur fetch JSON : ' + res.status, 'error'); return; }
       const data = await res.json();
       const jsonProducts = data.products || [];
       const existingIds = new Set(products.map(p => p.id));
       const toAdd = jsonProducts.filter(p => !existingIds.has(p.id));
       if (!toAdd.length) {
-        alert(`Catalogue déjà à jour.\nFirestore : ${products.length} produits\nJSON : ${jsonProducts.length} produits\nAucun nouvel ID à importer.`);
+        toast(`Déjà à jour — Firestore: ${products.length} | JSON: ${jsonProducts.length}`, 'success');
         return;
       }
-      const ids = toAdd.map(p => p.id).join(', ');
-      if (!confirm(`${toAdd.length} nouveau(x) produit(s) à importer :\n${ids}\n\nContinuer ?`)) return;
+      toast(`Import de ${toAdd.length} produit(s)...`, 'info');
       let count = 0;
       for (const p of toAdd) {
         if (typeof FirestoreProducts !== 'undefined') {
@@ -159,9 +160,9 @@ const Admin = (() => {
       saveToStorage();
       renderTable();
       renderStats();
-      toast(`${count} produit(s) importé(s) ✓`);
+      toast(`✓ ${count} produit(s) importé(s) dans Firestore`, 'success');
     } catch (e) {
-      alert('Erreur import JSON : ' + e.message);
+      toast('Erreur : ' + e.message, 'error');
     }
   }
 
