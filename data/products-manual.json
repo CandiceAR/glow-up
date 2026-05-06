@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-05-05",
-    "totalProducts": 144
+    "totalProducts": 145
   },
   "products": [
     {
@@ -2542,6 +2542,27 @@
       "concernTags": ["pores","taches","eclat","uniformite","anti_age"],
       "ingredientTags": ["vitaminec","niacinamide"],
       "isFeatured": false,
+      "active": true,
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-05"
+    },
+    {
+      "id": "m145",
+      "asin": "B0DL92QM79",
+      "name": "Anua Niacinamide Sérum Éclat Anti-Imperfections",
+      "brand": "Anua",
+      "category": "serum",
+      "imageUrl": "assets/ANUA-Sérumniaciamide.jpg",
+      "amazonUrl": "https://www.amazon.fr/Anua-Niacinamide-S%C3%A9rum-%C3%89clat-Anti-Imperfections/dp/B0DL92QM79?linkCode=ll2&tag=kan10ar-21&linkId=aa25799de96d5f5029467dcfa182a79e&ref_=as_li_ss_tl",
+      "price": 0,
+      "currency": "EUR",
+      "rating": 4.6,
+      "reviews": 1200,
+      "description": "Sérum niacinamide coréen signature Anua pour affiner les pores, unifier le teint et traiter les imperfections. Formule légère et non comédogène.",
+      "skinTypeTags": ["mixte","grasse","normale","sensible"],
+      "concernTags": ["pores","eclat","imperfections","uniformite","matifiant"],
+      "ingredientTags": ["niacinamide","centella"],
+      "isFeatured": true,
       "active": true,
       "curatedBy": "admin",
       "curatedAt": "2026-05-05"

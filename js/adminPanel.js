@@ -134,6 +134,32 @@ const Admin = (() => {
     }
   }
 
+  async function importNewFromJSON() {
+    if (!confirm('Importer dans Firestore les produits du JSON absents du catalogue ?')) return;
+    try {
+      const res = await fetch('data/products-manual.json?v=' + Date.now());
+      const data = await res.json();
+      const jsonProducts = data.products || [];
+      const existingIds = new Set(products.map(p => p.id));
+      const toAdd = jsonProducts.filter(p => !existingIds.has(p.id));
+      if (!toAdd.length) { toast('Aucun nouveau produit à importer'); return; }
+      let count = 0;
+      for (const p of toAdd) {
+        if (typeof FirestoreProducts !== 'undefined') {
+          await FirestoreProducts.save(p);
+          products.push(p);
+          count++;
+        }
+      }
+      saveToStorage();
+      renderTable();
+      renderStats();
+      toast(`${count} produit(s) importé(s) ✓`);
+    } catch (e) {
+      toast('Erreur import JSON : ' + e.message);
+    }
+  }
+
   async function removeProduct(id) {
     if (typeof FirestoreProducts !== 'undefined') {
       await FirestoreProducts.remove(id);
@@ -686,6 +712,7 @@ const Admin = (() => {
     m142: { concernTags: ['pores','imperfections','purification','matifiant'],      ingredientTags: ['salicylique','niacinamide'] },
     m143: { concernTags: ['pores','taches','eclat','uniformite'],                   ingredientTags: ['niacinamide','vitaminec'] },
     m144: { concernTags: ['pores','taches','eclat','uniformite','anti_age'],        ingredientTags: ['vitaminec','niacinamide'] },
+    m145: { concernTags: ['pores','eclat','imperfections','uniformite','matifiant'], ingredientTags: ['niacinamide','centella'] },
   };
 
   async function patchSkincareTags() {
@@ -1077,7 +1104,7 @@ const Admin = (() => {
     showAddForm, editProduct, duplicateProduct, cancelForm, saveProduct,
     autoTagAll,
     toggleActive, toggleFeatured, deleteProduct,
-    search, filterCat, filterIngredient, patchSkincareTags, showTab,
+    search, filterCat, filterIngredient, patchSkincareTags, importNewFromJSON, showTab,
     extractASIN, extractASINFromUrl, checkTag, autoFillAmazonUrl, exportJSON,
     setPeriod, exportStatsCSV, clearStats,
     saveCoachKey, deleteCoachKey, testCoachKey,
