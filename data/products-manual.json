@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-05-05",
-    "totalProducts": 155
+    "totalProducts": 156
   },
   "products": [
     {
@@ -2795,9 +2795,9 @@
       "name": "Garnier Sérum Anti-Imperfections Acide Salicylique & Niacinamide",
       "brand": "Garnier",
       "category": "serum",
-      "imageUrl": "assets/GARNIER-SERUMANTIIMPERFECTION.jpg",
-      "amazonUrl": "https://www.amazon.fr/GARNIER-Anti-Imperfections-Salicylique-Niacinamide-Imperfections/dp/B0FVFZM1ML?tag=kan10ar-21",
-      "price": 10,
+      "imageUrl": "assets/GARNIER-Acidesalicylique.jpg",
+      "amazonUrl": "https://www.amazon.fr/GARNIER-Anti-Imperfections-Salicylique-Niacinamide-Imperfections/dp/B0FVFZM1ML?linkCode=ll2&tag=kan10ar-21&linkId=5f6b18800d1681e5b0059ddeba22ab82&ref_=as_li_ss_tl",
+      "price": 9,
       "currency": "EUR",
       "rating": 4.3,
       "reviews": 420,
@@ -3431,6 +3431,27 @@
         "spf"
       ],
       "shadeName": "Rich",
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-06"
+    },
+    {
+      "id": "m156",
+      "asin": "B0FM3NNS96",
+      "name": "Skin&Out Stop Boutons Sérum Acide Salicylique",
+      "brand": "Skin&Out",
+      "category": "serum",
+      "imageUrl": "assets/SKINANDOUT-Acidesalicylique.jpg",
+      "amazonUrl": "https://www.amazon.fr/Skin-Out-stop-boutons-Salicylique-post-boutons/dp/B0FM3NNS96?linkCode=ll2&tag=kan10ar-21&linkId=6bcd595b405cf07995be015fddc73ecc&ref_=as_li_ss_tl",
+      "price": 26,
+      "currency": "EUR",
+      "rating": 4.4,
+      "reviews": 680,
+      "description": "Sérum stop-boutons à l'acide salicylique pour traiter les imperfections, réduire les points noirs et prévenir les marques post-boutons. Idéal pour les peaux grasses et acnéiques.",
+      "skinTypeTags": ["grasse","mixte","normale"],
+      "concernTags": ["imperfections","purification","pores","matifiant"],
+      "ingredientTags": ["salicylique"],
       "isFeatured": false,
       "active": true,
       "curatedBy": "admin",
