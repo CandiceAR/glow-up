@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-05-05",
-    "totalProducts": 151
+    "totalProducts": 152
   },
   "products": [
     {
@@ -3244,6 +3244,27 @@
         "vitaminec",
         "hyaluronique"
       ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-06"
+    },
+    {
+      "id": "m152",
+      "asin": "B0C2B7WGQM",
+      "name": "MERODA Fond de Teint Changeant de Couleur",
+      "brand": "MERODA",
+      "category": "foundation",
+      "imageUrl": "assets/MERODA-FDTchangecouleur.jpg",
+      "amazonUrl": "https://www.amazon.fr/MERODA%C2%AE-teint-changeant-claire-moyenne/dp/B0C2B7WGQM?linkCode=ll2&tag=kan10ar-21&linkId=a8bb8912cc0332eb24861d310cdda93b&ref_=as_li_ss_tl",
+      "price": 29,
+      "currency": "EUR",
+      "rating": 4.4,
+      "reviews": 1200,
+      "description": "Fond de teint changeant de couleur qui s'adapte automatiquement au teint pour un résultat naturel. Couvrance modulable, formule légère adaptée aux teintes claires à moyennes.",
+      "skinTypeTags": ["normale","mixte","seche","sensible"],
+      "concernTags": ["couvrance","uniformite","eclat"],
+      "ingredientTags": [],
       "isFeatured": false,
       "active": true,
       "curatedBy": "admin",
