@@ -173,31 +173,40 @@ const Admin = (() => {
       if (!res.ok) { toast('Erreur fetch JSON : ' + res.status, 'error'); return; }
       const data = await res.json();
       const jsonProducts = data.products || [];
-      const existingIds = new Set(products.map(p => p.id));
-      // Ajouter les IDs manquants ET mettre à jour ceux qui existent dans JSON mais pas dans Firestore avec les bons tags
-      const toUpsert = jsonProducts.filter(p => {
-        const existing = products.find(e => e.id === p.id);
-        if (!existing) return true; // nouveau
-        // Mettre à jour si concernTags ou ingredientTags diffèrent
-        const tagsDiff = JSON.stringify(p.concernTags) !== JSON.stringify(existing.concernTags) ||
-                         JSON.stringify(p.ingredientTags) !== JSON.stringify(existing.ingredientTags);
-        return tagsDiff;
-      });
-      if (!toUpsert.length) { toast(`Tout est à jour (${jsonProducts.length} produits)`, 'success'); return; }
-      toast(`Mise à jour de ${toUpsert.length} produit(s)...`, 'info');
-      let count = 0;
-      for (const p of toUpsert) {
-        if (typeof FirestoreProducts !== 'undefined') {
-          await FirestoreProducts.save(p);
-          const idx = products.findIndex(e => e.id === p.id);
-          if (idx >= 0) products[idx] = p; else products.push(p);
-          count++;
+      // Comparer par ASIN (plus fiable que l'ID car Firestore peut avoir des IDs différents)
+      const existingAsins = new Set(products.map(p => p.asin).filter(Boolean));
+      const existingIds   = new Set(products.map(p => p.id).filter(Boolean));
+      let added = 0, updated = 0;
+      for (const p of jsonProducts) {
+        const existingByAsin = p.asin ? products.find(e => e.asin === p.asin) : null;
+        const existingById   = products.find(e => e.id === p.id);
+        const existing = existingByAsin || existingById;
+        if (!existing) {
+          // Nouveau produit
+          if (typeof FirestoreProducts !== 'undefined') {
+            await FirestoreProducts.save(p);
+            products.push(p);
+            added++;
+          }
+        } else {
+          // Mettre à jour tags si différents
+          const tagsDiff = JSON.stringify(p.concernTags) !== JSON.stringify(existing.concernTags) ||
+                           JSON.stringify(p.ingredientTags) !== JSON.stringify(existing.ingredientTags);
+          if (tagsDiff) {
+            const merged = { ...existing, concernTags: p.concernTags, ingredientTags: p.ingredientTags };
+            if (typeof FirestoreProducts !== 'undefined') {
+              await FirestoreProducts.save(merged);
+              const idx = products.findIndex(e => e.id === existing.id);
+              if (idx >= 0) products[idx] = merged;
+              updated++;
+            }
+          }
         }
       }
       saveToStorage();
       renderTable();
       renderStats();
-      toast(`✓ ${count} produit(s) synchronisé(s)`, 'success');
+      toast(`✓ ${added} ajouté(s), ${updated} tag(s) mis à jour`, 'success');
     } catch (e) {
       toast('Erreur : ' + e.message, 'error');
     }
