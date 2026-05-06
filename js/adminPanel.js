@@ -717,6 +717,8 @@ const Admin = (() => {
     m147: { concernTags: ['taches','eclat','uniformite','spf'],                     ingredientTags: ['vitaminec','spf','niacinamide'] },
     m148: { concernTags: ['taches','pores','uniformite','matifiant'],               ingredientTags: ['niacinamide'] },
     m149: { concernTags: ['taches','ridules','anti_age','uniformite','eclat'],      ingredientTags: ['niacinamide','glycolique'] },
+    m150: { concernTags: ['taches','eclat','uniformite','imperfections'],           ingredientTags: ['curcuma'] },
+    m151: { concernTags: ['taches','eclat','uniformite','anti_age'],                ingredientTags: ['vitaminec','hyaluronique'] },
   };
 
   async function patchSkincareTags() {
