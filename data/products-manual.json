@@ -19,8 +19,16 @@
       "reviews": 3000,
       "description": "Sérum concentré à la vitamine C pure qui illumine la peau, lisse les rides et améliore l'éclat du teint.",
       "badge": "vitc",
-      "concernTags": ["eclat","uniformite","ridules","anti_age","taches"],
-      "ingredientTags": ["vitaminec"],
+      "concernTags": [
+        "eclat",
+        "uniformite",
+        "ridules",
+        "anti_age",
+        "taches"
+      ],
+      "ingredientTags": [
+        "vitaminec"
+      ],
       "isFeatured": true,
       "active": true
     },
@@ -35,8 +43,14 @@
       "rating": 4.5,
       "reviews": 1200,
       "description": "Gel hydratant à l'acide hyaluronique, stimulant l'éclat, non comédogène et sans huile. Idéal pour un verre coréen lumineux.",
-      "concernTags": ["hydratation","eclat"],
-      "ingredientTags": ["hyaluronique","glycerine"],
+      "concernTags": [
+        "hydratation",
+        "eclat"
+      ],
+      "ingredientTags": [
+        "hyaluronique",
+        "glycerine"
+      ],
       "isFeatured": true,
       "active": true
     },
@@ -52,8 +66,18 @@
       "reviews": 850,
       "description": "Tonique essence avec CoQ10, eau de riz, Vitamine C & E et 5% de glycérine pour renforcer la barrière cutanée, adoucir et unifier le teint.",
       "badge": "vitc",
-      "concernTags": ["eclat","uniformite","barriere","hydratation","taches"],
-      "ingredientTags": ["vitaminec","vitaminee","glycerine"],
+      "concernTags": [
+        "eclat",
+        "uniformite",
+        "barriere",
+        "hydratation",
+        "taches"
+      ],
+      "ingredientTags": [
+        "vitaminec",
+        "vitaminee",
+        "glycerine"
+      ],
       "isFeatured": false,
       "active": true
     },
@@ -68,8 +92,14 @@
       "rating": 4.6,
       "reviews": 2100,
       "description": "Masque de sommeil au melon d'eau pour une peau repulpée, hydratée et lumineuse au réveil.",
-      "concernTags": ["hydratation","eclat"],
-      "ingredientTags": ["hyaluronique","glycerine"],
+      "concernTags": [
+        "hydratation",
+        "eclat"
+      ],
+      "ingredientTags": [
+        "hyaluronique",
+        "glycerine"
+      ],
       "isFeatured": false,
       "active": true
     },
@@ -84,8 +114,16 @@
       "rating": 4.3,
       "reviews": 640,
       "description": "Pads toniques gel avec acide hyaluronique et céramides pour hydrater et apaiser les peaux sensibles.",
-      "concernTags": ["hydratation","barriere","apaisement","rougeurs"],
-      "ingredientTags": ["hyaluronique","ceramides"],
+      "concernTags": [
+        "hydratation",
+        "barriere",
+        "apaisement",
+        "rougeurs"
+      ],
+      "ingredientTags": [
+        "hyaluronique",
+        "ceramides"
+      ],
       "isFeatured": false,
       "active": true
     },
@@ -101,8 +139,15 @@
       "reviews": 520,
       "description": "Crème légère non collante à la Vitamine C, faible irritation pour peaux sensibles. Verre coréen.",
       "badge": "vitc",
-      "concernTags": ["eclat","uniformite","rougeurs","taches"],
-      "ingredientTags": ["vitaminec"],
+      "concernTags": [
+        "eclat",
+        "uniformite",
+        "rougeurs",
+        "taches"
+      ],
+      "ingredientTags": [
+        "vitaminec"
+      ],
       "isFeatured": false,
       "active": true
     },
@@ -118,8 +163,15 @@
       "reviews": 1800,
       "description": "Crème solaire visage SPF 50 à la Vitamine E, légère sous maquillage. Idéale pour les voyages et l'été.",
       "badge": "vitc-spf",
-      "concernTags": ["uniformite","ridules"],
-      "ingredientTags": ["vitaminee","spf"],
+      "concernTags": [
+        "uniformite",
+        "ridules",
+        "spf"
+      ],
+      "ingredientTags": [
+        "vitaminee",
+        "spf"
+      ],
       "isFeatured": false,
       "active": true
     },
@@ -135,8 +187,19 @@
       "reviews": 2400,
       "description": "Crème solaire SPF 50 avec 3 dérivés de Vitamine C pour hydrater, illuminer et calmer les signes de sensibilité. 60 ml.",
       "badge": "vitc-spf",
-      "concernTags": ["eclat","uniformite","ridules","rougeurs","taches"],
-      "ingredientTags": ["vitaminec","spf","hyaluronique"],
+      "concernTags": [
+        "eclat",
+        "uniformite",
+        "ridules",
+        "rougeurs",
+        "taches",
+        "spf"
+      ],
+      "ingredientTags": [
+        "vitaminec",
+        "spf",
+        "hyaluronique"
+      ],
       "isFeatured": false,
       "active": true
     },
@@ -151,8 +214,14 @@
       "rating": 4.4,
       "reviews": 730,
       "description": "Crème contour des yeux au riz noir et bakuchiol, alternative naturelle au rétinol. Anti-rides, 20 ml.",
-      "concernTags": ["cernes","ridules","anti_age"],
-      "ingredientTags": ["bakuchiol"],
+      "concernTags": [
+        "cernes",
+        "ridules",
+        "anti_age"
+      ],
+      "ingredientTags": [
+        "bakuchiol"
+      ],
       "isFeatured": false,
       "active": true
     },
@@ -167,8 +236,14 @@
       "rating": 4.5,
       "reviews": 3200,
       "description": "Émulsion hydratante à la glycérine et urée pour peaux sèches à mixtes. Texture légère et confort durable.",
-      "concernTags": ["hydratation","barriere"],
-      "ingredientTags": ["glycerine","uree"],
+      "concernTags": [
+        "hydratation",
+        "barriere"
+      ],
+      "ingredientTags": [
+        "glycerine",
+        "uree"
+      ],
       "isFeatured": true,
       "active": true
     },
@@ -197,8 +272,12 @@
       "rating": 4.4,
       "reviews": 2800,
       "description": "Soin yeux anti-poches et anti-cernes 15 ml. Formule classique Clinique pour le contour des yeux.",
-      "concernTags": ["cernes"],
-      "ingredientTags": ["hyaluronique"],
+      "concernTags": [
+        "cernes"
+      ],
+      "ingredientTags": [
+        "hyaluronique"
+      ],
       "isFeatured": false,
       "active": true
     },
@@ -213,7 +292,10 @@
       "rating": 4.5,
       "reviews": 1600,
       "description": "Crème yeux à la caféine pour décongestionner le contour des yeux et réduire l'apparence des poches.",
-      "concernTags": ["cernes","ridules"],
+      "concernTags": [
+        "cernes",
+        "ridules"
+      ],
       "ingredientTags": [],
       "isFeatured": false,
       "active": true
@@ -230,8 +312,16 @@
       "reviews": 1900,
       "description": "Sérum contour des yeux premium avec rétinoïde + vitamine C stabilisée. Applicateur innovant validé ophtalmologiquement.",
       "badge": "vitc",
-      "concernTags": ["cernes","ridules","anti_age","eclat"],
-      "ingredientTags": ["retinol","vitaminec"],
+      "concernTags": [
+        "cernes",
+        "ridules",
+        "anti_age",
+        "eclat"
+      ],
+      "ingredientTags": [
+        "retinol",
+        "vitaminec"
+      ],
       "isFeatured": true,
       "active": true
     },
@@ -318,7 +408,10 @@
       "description": "Fond de teint SPF 15 à la Vitamine C — couvrance moyenne, fini naturel. Unifie le teint et réduit les taches brunes sur le long terme.",
       "badge": "vitc-spf",
       "isFeatured": true,
-      "active": true
+      "active": true,
+      "concernTags": [
+        "spf"
+      ]
     },
     {
       "id": "m021",
@@ -346,7 +439,10 @@
       "reviews": 8400,
       "description": "Fond de teint mat SPF30 à couverture complète 13g — imperméable, longue durée. Idéal peaux grasses, acné et poches. Teinte 212.",
       "isFeatured": false,
-      "active": true
+      "active": true,
+      "concernTags": [
+        "spf"
+      ]
     },
     {
       "id": "m023",
@@ -406,7 +502,10 @@
       "description": "CC crème SPF40 à couvrance moyenne — enrichie en peptides, collagène et vitamines. Fini naturel et lumineux. Teinte Medium. 32 ml.",
       "badge": "vitc-spf",
       "isFeatured": true,
-      "active": true
+      "active": true,
+      "concernTags": [
+        "spf"
+      ]
     },
     {
       "id": "m027",
@@ -421,7 +520,10 @@
       "description": "CC crème SPF40 à couvrance moyenne — enrichie en peptides, collagène et vitamines. Fini naturel et lumineux. Teinte Medium Tan. 32 ml.",
       "badge": "vitc-spf",
       "isFeatured": false,
-      "active": true
+      "active": true,
+      "concernTags": [
+        "spf"
+      ]
     },
     {
       "id": "m028",
@@ -436,7 +538,10 @@
       "description": "CC crème SPF40 à couvrance moyenne — enrichie en peptides, collagène et vitamines. Fini naturel et lumineux. Teinte Neutral Medium. 32 ml.",
       "badge": "vitc-spf",
       "isFeatured": false,
-      "active": true
+      "active": true,
+      "concernTags": [
+        "spf"
+      ]
     },
     {
       "id": "m029",
@@ -451,7 +556,10 @@
       "description": "CC crème SPF40 à couvrance moyenne — enrichie en peptides, collagène et vitamines. Fini naturel et lumineux. Teinte Neutral Tan. 32 ml.",
       "badge": "vitc-spf",
       "isFeatured": false,
-      "active": true
+      "active": true,
+      "concernTags": [
+        "spf"
+      ]
     },
     {
       "id": "m030",
@@ -466,7 +574,10 @@
       "description": "CC crème SPF40 à couvrance moyenne — enrichie en peptides, collagène et vitamines. Fini naturel et lumineux. Teinte Fair Light. 32 ml.",
       "badge": "vitc-spf",
       "isFeatured": false,
-      "active": true
+      "active": true,
+      "concernTags": [
+        "spf"
+      ]
     },
     {
       "id": "m031",
@@ -1418,7 +1529,10 @@
       "reviews": 2400,
       "description": "Fond de teint poudre SPF 15. Couvrance naturelle et légère.",
       "isFeatured": false,
-      "active": true
+      "active": true,
+      "concernTags": [
+        "spf"
+      ]
     },
     {
       "id": "m099",
@@ -1631,9 +1745,23 @@
       "currency": "EUR",
       "rating": 4.3,
       "reviews": 849,
-      "skinTypeTags": ["normale","mixte","seche","grasse","sensible"],
-      "concernTags": ["cernes","eclat","uniformite","apaisement"],
-      "ingredientTags": ["niacinamide","hyaluronique"],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "concernTags": [
+        "cernes",
+        "eclat",
+        "uniformite",
+        "apaisement"
+      ],
+      "ingredientTags": [
+        "niacinamide",
+        "hyaluronique"
+      ],
       "isFeatured": false,
       "active": true,
       "description": "",
@@ -2011,8 +2139,15 @@
         "grasse",
         "sensible"
       ],
-      "concernTags": ["hydratation","eclat","barriere"],
-      "ingredientTags": ["hyaluronique","collagene"],
+      "concernTags": [
+        "hydratation",
+        "eclat",
+        "barriere"
+      ],
+      "ingredientTags": [
+        "hyaluronique",
+        "collagene"
+      ],
       "isFeatured": false,
       "active": true,
       "description": "",
@@ -2039,8 +2174,16 @@
         "grasse",
         "sensible"
       ],
-      "concernTags": ["ridules","anti_age","hydratation"],
-      "ingredientTags": ["collagene","niacinamide","hyaluronique"],
+      "concernTags": [
+        "ridules",
+        "anti_age",
+        "hydratation"
+      ],
+      "ingredientTags": [
+        "collagene",
+        "niacinamide",
+        "hyaluronique"
+      ],
       "isFeatured": false,
       "active": true,
       "description": "",
@@ -2067,8 +2210,15 @@
         "grasse",
         "sensible"
       ],
-      "concernTags": ["cernes","ridules","eclat"],
-      "ingredientTags": ["hyaluronique","collagene"],
+      "concernTags": [
+        "cernes",
+        "ridules",
+        "eclat"
+      ],
+      "ingredientTags": [
+        "hyaluronique",
+        "collagene"
+      ],
       "isFeatured": false,
       "active": true,
       "description": "",
@@ -2095,8 +2245,15 @@
         "grasse",
         "sensible"
       ],
-      "concernTags": ["hydratation","ridules","barriere"],
-      "ingredientTags": ["hyaluronique","collagene"],
+      "concernTags": [
+        "hydratation",
+        "ridules",
+        "barriere"
+      ],
+      "ingredientTags": [
+        "hyaluronique",
+        "collagene"
+      ],
       "isFeatured": false,
       "active": true,
       "description": "",
@@ -2123,8 +2280,15 @@
         "grasse",
         "sensible"
       ],
-      "concernTags": ["ridules","anti_age","hydratation"],
-      "ingredientTags": ["hyaluronique","collagene"],
+      "concernTags": [
+        "ridules",
+        "anti_age",
+        "hydratation"
+      ],
+      "ingredientTags": [
+        "hyaluronique",
+        "collagene"
+      ],
       "isFeatured": false,
       "active": true,
       "description": "",
@@ -2223,9 +2387,22 @@
       "rating": 4.4,
       "reviews": 1200,
       "description": "Sérum Toleriane anti-rougeurs de La Roche-Posay pour apaiser les peaux sensibles et réactives. Formule douce sans parfum.",
-      "skinTypeTags": ["sensible","normale","seche"],
-      "concernTags": ["rougeurs","apaisement","barriere","hydratation"],
-      "ingredientTags": ["niacinamide","ceramides","glycerine"],
+      "skinTypeTags": [
+        "sensible",
+        "normale",
+        "seche"
+      ],
+      "concernTags": [
+        "rougeurs",
+        "apaisement",
+        "barriere",
+        "hydratation"
+      ],
+      "ingredientTags": [
+        "niacinamide",
+        "ceramides",
+        "glycerine"
+      ],
       "isFeatured": false,
       "active": true,
       "curatedBy": "admin",
@@ -2244,9 +2421,22 @@
       "rating": 4.5,
       "reviews": 890,
       "description": "Crème riche anti-rougeurs Roséliane d'Uriage, spécialement formulée pour les peaux sensibles et réactives sujettes aux rougeurs diffuses.",
-      "skinTypeTags": ["sensible","seche","normale"],
-      "concernTags": ["rougeurs","apaisement","barriere","hydratation"],
-      "ingredientTags": ["niacinamide","ceramides","glycerine"],
+      "skinTypeTags": [
+        "sensible",
+        "seche",
+        "normale"
+      ],
+      "concernTags": [
+        "rougeurs",
+        "apaisement",
+        "barriere",
+        "hydratation"
+      ],
+      "ingredientTags": [
+        "niacinamide",
+        "ceramides",
+        "glycerine"
+      ],
       "isFeatured": false,
       "active": true,
       "curatedBy": "admin",
@@ -2265,9 +2455,24 @@
       "rating": 4.4,
       "reviews": 320,
       "description": "Crème apaisante ultime pour peaux sensibles et réactives. Réduit les rougeurs et renforce la barrière cutanée avec des actifs doux et efficaces.",
-      "skinTypeTags": ["sensible","normale","seche","mixte"],
-      "concernTags": ["rougeurs","apaisement","barriere","hydratation"],
-      "ingredientTags": ["centella","ceramides","glycerine","panthenol"],
+      "skinTypeTags": [
+        "sensible",
+        "normale",
+        "seche",
+        "mixte"
+      ],
+      "concernTags": [
+        "rougeurs",
+        "apaisement",
+        "barriere",
+        "hydratation"
+      ],
+      "ingredientTags": [
+        "centella",
+        "ceramides",
+        "glycerine",
+        "panthenol"
+      ],
       "isFeatured": false,
       "active": true,
       "curatedBy": "admin",
@@ -2286,9 +2491,23 @@
       "rating": 4.5,
       "reviews": 480,
       "description": "Traitement à l'acide azélaïque 15% pour unifier le teint, réduire les rougeurs et traiter les imperfections. Convient aux peaux sensibles et réactives.",
-      "skinTypeTags": ["sensible","normale","mixte","grasse"],
-      "concernTags": ["rougeurs","apaisement","uniformite","imperfections","pores"],
-      "ingredientTags": ["azelaique","niacinamide"],
+      "skinTypeTags": [
+        "sensible",
+        "normale",
+        "mixte",
+        "grasse"
+      ],
+      "concernTags": [
+        "rougeurs",
+        "apaisement",
+        "uniformite",
+        "imperfections",
+        "pores"
+      ],
+      "ingredientTags": [
+        "azelaique",
+        "niacinamide"
+      ],
       "isFeatured": false,
       "active": true,
       "curatedBy": "admin",
@@ -2307,8 +2526,18 @@
       "rating": 4.2,
       "reviews": 1500,
       "description": "Apprêt correcteur de teint vert pour neutraliser les rougeurs avant le fond de teint. Formule légère pour une peau unifiée.",
-      "skinTypeTags": ["sensible","normale","mixte","grasse","seche"],
-      "concernTags": ["rougeurs","couvrance","uniformite"],
+      "skinTypeTags": [
+        "sensible",
+        "normale",
+        "mixte",
+        "grasse",
+        "seche"
+      ],
+      "concernTags": [
+        "rougeurs",
+        "couvrance",
+        "uniformite"
+      ],
       "ingredientTags": [],
       "isFeatured": false,
       "active": true,
@@ -2328,9 +2557,23 @@
       "rating": 4.5,
       "reviews": 620,
       "description": "Essence toner liquide ultra-hydratante et apaisante pour peaux sensibles. Formule minimaliste à base d'astragale pour calmer les rougeurs et renforcer la barrière cutanée.",
-      "skinTypeTags": ["sensible","normale","seche","mixte"],
-      "concernTags": ["rougeurs","apaisement","barriere","hydratation"],
-      "ingredientTags": ["glycerine","panthenol","hyaluronique"],
+      "skinTypeTags": [
+        "sensible",
+        "normale",
+        "seche",
+        "mixte"
+      ],
+      "concernTags": [
+        "rougeurs",
+        "apaisement",
+        "barriere",
+        "hydratation"
+      ],
+      "ingredientTags": [
+        "glycerine",
+        "panthenol",
+        "hyaluronique"
+      ],
       "isFeatured": false,
       "active": true,
       "curatedBy": "admin",
@@ -2344,14 +2587,28 @@
       "category": "spf",
       "imageUrl": "assets/svr-antirougeurspf.jpg",
       "amazonUrl": "https://www.amazon.fr/SVR-Sensifine-AR-Cr%C3%A8me-SPF50/dp/B09VW7YV32?tag=kan10ar-21",
-      "price": 15.80,
+      "price": 15.8,
       "currency": "EUR",
       "rating": 4.5,
       "reviews": 740,
       "description": "Crème solaire SPF50 anti-rougeurs pour peaux sensibles et réactives. Protège du soleil tout en apaisant les rougeurs diffuses.",
-      "skinTypeTags": ["sensible","normale","seche"],
-      "concernTags": ["rougeurs","apaisement","barriere","uniformite"],
-      "ingredientTags": ["niacinamide","spf","glycerine"],
+      "skinTypeTags": [
+        "sensible",
+        "normale",
+        "seche"
+      ],
+      "concernTags": [
+        "rougeurs",
+        "apaisement",
+        "barriere",
+        "uniformite",
+        "spf"
+      ],
+      "ingredientTags": [
+        "niacinamide",
+        "spf",
+        "glycerine"
+      ],
       "isFeatured": false,
       "active": true,
       "curatedBy": "admin",
@@ -2365,13 +2622,23 @@
       "category": "concealer",
       "imageUrl": "assets/ESSENCE-antirougeur.jpg",
       "amazonUrl": "https://www.amazon.fr/Cosmetics-Concealer-Correcteur-Correction-Couleurs/dp/B0D6NF2Z4S?tag=kan10ar-21",
-      "price": 3.50,
+      "price": 3.5,
       "currency": "EUR",
       "rating": 4.2,
       "reviews": 280,
       "description": "Correcteur de teint vert anti-rougeurs pour neutraliser les imperfections et rougeurs. Formule légère et couvrance modulable.",
-      "skinTypeTags": ["normale","mixte","grasse","seche","sensible"],
-      "concernTags": ["rougeurs","couvrance","uniformite"],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "grasse",
+        "seche",
+        "sensible"
+      ],
+      "concernTags": [
+        "rougeurs",
+        "couvrance",
+        "uniformite"
+      ],
       "ingredientTags": [],
       "isFeatured": false,
       "active": true,
@@ -2391,9 +2658,23 @@
       "rating": 4.3,
       "reviews": 420,
       "description": "Sérum anti-imperfections à l'acide salicylique et niacinamide pour purifier, réduire les pores et apaiser les rougeurs. Formule légère et efficace.",
-      "skinTypeTags": ["mixte","grasse","normale"],
-      "concernTags": ["imperfections","pores","rougeurs","purification","matifiant"],
-      "ingredientTags": ["salicylique","niacinamide","zinc"],
+      "skinTypeTags": [
+        "mixte",
+        "grasse",
+        "normale"
+      ],
+      "concernTags": [
+        "imperfections",
+        "pores",
+        "rougeurs",
+        "purification",
+        "matifiant"
+      ],
+      "ingredientTags": [
+        "salicylique",
+        "niacinamide",
+        "zinc"
+      ],
       "isFeatured": false,
       "active": true,
       "curatedBy": "admin",
@@ -2407,14 +2688,29 @@
       "category": "serum",
       "imageUrl": "assets/Beautyofjoseon-serumantirougeur.jpg",
       "amazonUrl": "https://www.amazon.fr/Beauty-Joseon-Revive-Ginseng-dEscargot/dp/B0B3R1R2DG?tag=kan10ar-21",
-      "price": 16.50,
+      "price": 16.5,
       "currency": "EUR",
       "rating": 4.6,
       "reviews": 1850,
       "description": "Sérum anti-rougeurs à base de ginseng et filtrat de bave d'escargot pour apaiser, régénérer et unifier le teint. Formule coréenne légendaire.",
-      "skinTypeTags": ["normale","sensible","mixte","seche"],
-      "concernTags": ["rougeurs","apaisement","eclat","uniformite","barriere"],
-      "ingredientTags": ["niacinamide","glycerine","centella"],
+      "skinTypeTags": [
+        "normale",
+        "sensible",
+        "mixte",
+        "seche"
+      ],
+      "concernTags": [
+        "rougeurs",
+        "apaisement",
+        "eclat",
+        "uniformite",
+        "barriere"
+      ],
+      "ingredientTags": [
+        "niacinamide",
+        "glycerine",
+        "centella"
+      ],
       "isFeatured": true,
       "active": true,
       "curatedBy": "admin",
@@ -2428,14 +2724,26 @@
       "category": "serum",
       "imageUrl": "assets/THEORDINARY-Niaciamide.jpg",
       "amazonUrl": "https://www.amazon.fr/Ordinary-Niacinamide-10-Zinc-30ml/dp/B01MDTVZTZ?linkCode=ll2&tag=kan10ar-21&linkId=b459c38f6b95263cae6ab3cc9756b25c&ref_=as_li_ss_tl",
-      "price": 7.90,
+      "price": 7.9,
       "currency": "EUR",
       "rating": 4.5,
       "reviews": 45000,
       "description": "Sérum culte à 10% de niacinamide et 1% de zinc pour réduire les pores dilatés, réguler le sébum et unifier le teint. Référence absolue du skincare actif.",
-      "skinTypeTags": ["mixte","grasse","normale"],
-      "concernTags": ["pores","matifiant","imperfections","uniformite"],
-      "ingredientTags": ["niacinamide","zinc"],
+      "skinTypeTags": [
+        "mixte",
+        "grasse",
+        "normale"
+      ],
+      "concernTags": [
+        "pores",
+        "matifiant",
+        "imperfections",
+        "uniformite"
+      ],
+      "ingredientTags": [
+        "niacinamide",
+        "zinc"
+      ],
       "isFeatured": true,
       "active": true,
       "curatedBy": "admin",
@@ -2454,9 +2762,22 @@
       "rating": 4.4,
       "reviews": 320,
       "description": "Sérum bio à base d'eau de rose et niacinamide pour affiner les pores, apaiser et illuminer le teint. Formule certifiée bio Ecocert.",
-      "skinTypeTags": ["normale","sensible","mixte","seche"],
-      "concernTags": ["pores","eclat","apaisement","uniformite"],
-      "ingredientTags": ["niacinamide","hyaluronique"],
+      "skinTypeTags": [
+        "normale",
+        "sensible",
+        "mixte",
+        "seche"
+      ],
+      "concernTags": [
+        "pores",
+        "eclat",
+        "apaisement",
+        "uniformite"
+      ],
+      "ingredientTags": [
+        "niacinamide",
+        "hyaluronique"
+      ],
       "isFeatured": false,
       "active": true,
       "curatedBy": "admin",
@@ -2475,9 +2796,22 @@
       "rating": 4.5,
       "reviews": 890,
       "description": "Sérum niacinamide aux peptides PDRN pour régénérer, affiner les pores et unifier le teint. Technologie coréenne cliniquement testée.",
-      "skinTypeTags": ["normale","mixte","seche","sensible"],
-      "concernTags": ["pores","anti_age","eclat","imperfections"],
-      "ingredientTags": ["niacinamide","peptides"],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "sensible"
+      ],
+      "concernTags": [
+        "pores",
+        "anti_age",
+        "eclat",
+        "imperfections"
+      ],
+      "ingredientTags": [
+        "niacinamide",
+        "peptides"
+      ],
       "isFeatured": false,
       "active": true,
       "curatedBy": "admin",
@@ -2496,9 +2830,21 @@
       "rating": 4.4,
       "reviews": 2100,
       "description": "Sérum à l'acide salicylique pour purifier en profondeur, réduire les pores dilatés et traiter les imperfections. Formule ultra-efficace.",
-      "skinTypeTags": ["mixte","grasse","normale"],
-      "concernTags": ["pores","imperfections","purification","matifiant"],
-      "ingredientTags": ["salicylique","niacinamide"],
+      "skinTypeTags": [
+        "mixte",
+        "grasse",
+        "normale"
+      ],
+      "concernTags": [
+        "pores",
+        "imperfections",
+        "purification",
+        "matifiant"
+      ],
+      "ingredientTags": [
+        "salicylique",
+        "niacinamide"
+      ],
       "isFeatured": false,
       "active": true,
       "curatedBy": "admin",
@@ -2517,9 +2863,22 @@
       "rating": 4.5,
       "reviews": 540,
       "description": "Sérum radiance à la niacinamide et vitamine C pour corriger les taches, affiner les pores et illuminer le teint. Formule hydratante pour peaux sensibles.",
-      "skinTypeTags": ["normale","mixte","seche","sensible"],
-      "concernTags": ["pores","taches","eclat","uniformite"],
-      "ingredientTags": ["niacinamide","vitaminec"],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "sensible"
+      ],
+      "concernTags": [
+        "pores",
+        "taches",
+        "eclat",
+        "uniformite"
+      ],
+      "ingredientTags": [
+        "niacinamide",
+        "vitaminec"
+      ],
       "isFeatured": false,
       "active": true,
       "curatedBy": "admin",
@@ -2538,9 +2897,22 @@
       "rating": 4.4,
       "reviews": 380,
       "description": "Sérum éclat boosté à la vitamine C, glutathion, niacinamide et vitamine E pour corriger les taches, affiner les pores et sublimer le teint.",
-      "skinTypeTags": ["normale","mixte","seche"],
-      "concernTags": ["pores","taches","eclat","uniformite","anti_age"],
-      "ingredientTags": ["vitaminec","niacinamide"],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche"
+      ],
+      "concernTags": [
+        "pores",
+        "taches",
+        "eclat",
+        "uniformite",
+        "anti_age"
+      ],
+      "ingredientTags": [
+        "vitaminec",
+        "niacinamide"
+      ],
       "isFeatured": false,
       "active": true,
       "curatedBy": "admin",
@@ -2559,9 +2931,23 @@
       "rating": 4.6,
       "reviews": 1200,
       "description": "Sérum niacinamide coréen signature Anua pour affiner les pores, unifier le teint et traiter les imperfections. Formule légère et non comédogène.",
-      "skinTypeTags": ["mixte","grasse","normale","sensible"],
-      "concernTags": ["pores","eclat","imperfections","uniformite","matifiant"],
-      "ingredientTags": ["niacinamide","centella"],
+      "skinTypeTags": [
+        "mixte",
+        "grasse",
+        "normale",
+        "sensible"
+      ],
+      "concernTags": [
+        "pores",
+        "eclat",
+        "imperfections",
+        "uniformite",
+        "matifiant"
+      ],
+      "ingredientTags": [
+        "niacinamide",
+        "centella"
+      ],
       "isFeatured": true,
       "active": true,
       "curatedBy": "admin",
@@ -2580,9 +2966,22 @@
       "rating": 4.6,
       "reviews": 1800,
       "description": "Sérum anti-taches Mela B3 à la niacinamide et acide tranexamique pour corriger les taches pigmentaires, unifier le teint et prévenir leur réapparition.",
-      "skinTypeTags": ["normale","mixte","seche","sensible"],
-      "concernTags": ["taches","uniformite","eclat","anti_age"],
-      "ingredientTags": ["niacinamide","tranexamique"],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "sensible"
+      ],
+      "concernTags": [
+        "taches",
+        "uniformite",
+        "eclat",
+        "anti_age"
+      ],
+      "ingredientTags": [
+        "niacinamide",
+        "tranexamique"
+      ],
       "isFeatured": true,
       "active": true,
       "curatedBy": "admin",
@@ -2601,9 +3000,23 @@
       "rating": 4.4,
       "reviews": 2800,
       "description": "Sérum quotidien SPF50 à la vitamine C anti-taches pour protéger, illuminer et unifier le teint. Formule légère pour tous types de peaux.",
-      "skinTypeTags": ["normale","mixte","grasse","seche"],
-      "concernTags": ["taches","eclat","uniformite","spf"],
-      "ingredientTags": ["vitaminec","spf","niacinamide"],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "grasse",
+        "seche"
+      ],
+      "concernTags": [
+        "taches",
+        "eclat",
+        "uniformite",
+        "spf"
+      ],
+      "ingredientTags": [
+        "vitaminec",
+        "spf",
+        "niacinamide"
+      ],
       "isFeatured": false,
       "active": true,
       "curatedBy": "admin",
@@ -2617,14 +3030,25 @@
       "category": "serum",
       "imageUrl": "assets/THEORDINARY-NiaciamideEMULSION.jpg",
       "amazonUrl": "https://www.amazon.fr/Ordinary-Niacinamide-Face-Emulsion-100ml/dp/B0DFYFXDDP?linkCode=ll2&tag=kan10ar-21&linkId=4a7a33d37419aedc90de4ef687df5363&ref_=as_li_ss_tl",
-      "price": 13.50,
+      "price": 13.5,
       "currency": "EUR",
       "rating": 4.5,
       "reviews": 640,
       "description": "Émulsion visage à la niacinamide pour corriger les taches pigmentaires, uniformiser le teint et réguler le sébum. Texture légère non grasse.",
-      "skinTypeTags": ["mixte","grasse","normale"],
-      "concernTags": ["taches","pores","uniformite","matifiant"],
-      "ingredientTags": ["niacinamide"],
+      "skinTypeTags": [
+        "mixte",
+        "grasse",
+        "normale"
+      ],
+      "concernTags": [
+        "taches",
+        "pores",
+        "uniformite",
+        "matifiant"
+      ],
+      "ingredientTags": [
+        "niacinamide"
+      ],
       "isFeatured": false,
       "active": true,
       "curatedBy": "admin",
@@ -2643,9 +3067,22 @@
       "rating": 4.5,
       "reviews": 3200,
       "description": "Sérum double action anti-rides et anti-taches à la niacinamide et acide glycolique pour corriger les taches pigmentaires et lisser les rides.",
-      "skinTypeTags": ["normale","mixte","seche"],
-      "concernTags": ["taches","ridules","anti_age","uniformite","eclat"],
-      "ingredientTags": ["niacinamide","glycolique"],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche"
+      ],
+      "concernTags": [
+        "taches",
+        "ridules",
+        "anti_age",
+        "uniformite",
+        "eclat"
+      ],
+      "ingredientTags": [
+        "niacinamide",
+        "glycolique"
+      ],
       "isFeatured": false,
       "active": true,
       "curatedBy": "admin",
@@ -2664,9 +3101,21 @@
       "rating": 4.4,
       "reviews": 560,
       "description": "Sérum anti-imperfections au curcuma pour corriger les taches pigmentaires, unifier le teint et illuminer. Formule naturelle anti-oxydante.",
-      "skinTypeTags": ["normale","mixte","seche","sensible"],
-      "concernTags": ["taches","eclat","uniformite","imperfections"],
-      "ingredientTags": ["curcuma"],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "sensible"
+      ],
+      "concernTags": [
+        "taches",
+        "eclat",
+        "uniformite",
+        "imperfections"
+      ],
+      "ingredientTags": [
+        "curcuma"
+      ],
       "isFeatured": false,
       "active": true,
       "curatedBy": "admin",
@@ -2685,9 +3134,22 @@
       "rating": 4.5,
       "reviews": 2100,
       "description": "Sérum dépigmentant anti-taches à la vitamine C et acide hyaluronique pour corriger l'hyperpigmentation et unifier le teint.",
-      "skinTypeTags": ["normale","mixte","seche","sensible"],
-      "concernTags": ["taches","eclat","uniformite","anti_age"],
-      "ingredientTags": ["vitaminec","hyaluronique"],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "sensible"
+      ],
+      "concernTags": [
+        "taches",
+        "eclat",
+        "uniformite",
+        "anti_age"
+      ],
+      "ingredientTags": [
+        "vitaminec",
+        "hyaluronique"
+      ],
       "isFeatured": false,
       "active": true,
       "curatedBy": "admin",

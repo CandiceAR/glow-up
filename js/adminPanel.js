@@ -322,6 +322,11 @@ const Admin = (() => {
     Array.from(document.getElementById('fIngredients').options).forEach(o => {
       o.selected = it.includes(o.value);
     });
+    // Causes / Problématiques
+    const ct = Array.isArray(p.concernTags) ? p.concernTags : [];
+    Array.from(document.getElementById('fConcerns').options).forEach(o => {
+      o.selected = ct.includes(o.value);
+    });
     previewImage(p.imageUrl || '');
     document.getElementById('productFormWrap').style.display = 'block';
     document.getElementById('productFormWrap').scrollIntoView({ behavior: 'smooth' });
@@ -358,6 +363,7 @@ const Admin = (() => {
       if (el) el.checked = false;
     });
     Array.from(document.getElementById('fIngredients').options).forEach(o => { o.selected = false; });
+    Array.from(document.getElementById('fConcerns').options).forEach(o => { o.selected = false; });
     previewImage('');
     const prog = document.getElementById('imageUploadProgress');
     if (prog) prog.textContent = '';
@@ -392,8 +398,7 @@ const Admin = (() => {
     // Si tous cochés ou aucun coché = null (convient à tous)
     const skinTypeTags = skinTypes.length > 0 && skinTypes.length < 5 ? skinTypes : null;
     const format = category === 'eyeshadow' ? (document.getElementById('fFormat').value || null) : null;
-    const NEEDS_LIST = ['rougeurs','cernes','pores','hydratation','matifiant','imperfections','ridules','eclat','couvrance','uniformite'];
-    const concernTags = NEEDS_LIST.filter(v => document.getElementById('fNeed' + v.charAt(0).toUpperCase() + v.slice(1))?.checked);
+    const concernTags = Array.from(document.getElementById('fConcerns').selectedOptions).map(o => o.value);
     const ingredientTags = Array.from(document.getElementById('fIngredients').selectedOptions).map(o => o.value);
 
     if (!amazonUrl || !name || !brand || !imageUrl) {
@@ -694,8 +699,8 @@ const Admin = (() => {
     m004: { concernTags: ['hydratation','eclat'],                                ingredientTags: ['hyaluronique','glycerine'] },
     m005: { concernTags: ['hydratation','barriere','apaisement','rougeurs'],     ingredientTags: ['hyaluronique','ceramides'] },
     m006: { concernTags: ['eclat','uniformite','rougeurs','taches'],             ingredientTags: ['vitaminec'] },
-    m007: { concernTags: ['uniformite','ridules'],                               ingredientTags: ['vitaminee','spf'] },
-    m008: { concernTags: ['eclat','uniformite','ridules','rougeurs','taches'],   ingredientTags: ['vitaminec','spf','hyaluronique'] },
+    m007: { concernTags: ['uniformite','ridules','spf'],                         ingredientTags: ['vitaminee','spf'] },
+    m008: { concernTags: ['eclat','uniformite','ridules','rougeurs','taches','spf'], ingredientTags: ['vitaminec','spf','hyaluronique'] },
     m009: { concernTags: ['cernes','ridules','anti_age'],                        ingredientTags: ['bakuchiol'] },
     m010: { concernTags: ['hydratation','barriere'],                             ingredientTags: ['glycerine','uree'] },
     m012: { concernTags: ['cernes'],                                             ingredientTags: ['hyaluronique'] },
