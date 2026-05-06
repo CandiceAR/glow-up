@@ -45,7 +45,8 @@
       "description": "Gel hydratant à l'acide hyaluronique, stimulant l'éclat, non comédogène et sans huile. Idéal pour un verre coréen lumineux.",
       "concernTags": [
         "hydratation",
-        "eclat"
+        "eclat",
+        "deshydratation"
       ],
       "ingredientTags": [
         "hyaluronique",
@@ -71,7 +72,8 @@
         "uniformite",
         "barriere",
         "hydratation",
-        "taches"
+        "taches",
+        "deshydratation"
       ],
       "ingredientTags": [
         "vitaminec",
@@ -94,7 +96,8 @@
       "description": "Masque de sommeil au melon d'eau pour une peau repulpée, hydratée et lumineuse au réveil.",
       "concernTags": [
         "hydratation",
-        "eclat"
+        "eclat",
+        "deshydratation"
       ],
       "ingredientTags": [
         "hyaluronique",
@@ -118,7 +121,9 @@
         "hydratation",
         "barriere",
         "apaisement",
-        "rougeurs"
+        "rougeurs",
+        "deshydratation",
+        "sensibilite"
       ],
       "ingredientTags": [
         "hyaluronique",
@@ -217,7 +222,8 @@
       "concernTags": [
         "cernes",
         "ridules",
-        "anti_age"
+        "anti_age",
+        "poches"
       ],
       "ingredientTags": [
         "bakuchiol"
@@ -238,7 +244,8 @@
       "description": "Émulsion hydratante à la glycérine et urée pour peaux sèches à mixtes. Texture légère et confort durable.",
       "concernTags": [
         "hydratation",
-        "barriere"
+        "barriere",
+        "deshydratation"
       ],
       "ingredientTags": [
         "glycerine",
@@ -273,7 +280,8 @@
       "reviews": 2800,
       "description": "Soin yeux anti-poches et anti-cernes 15 ml. Formule classique Clinique pour le contour des yeux.",
       "concernTags": [
-        "cernes"
+        "cernes",
+        "poches"
       ],
       "ingredientTags": [
         "hyaluronique"
@@ -294,7 +302,8 @@
       "description": "Crème yeux à la caféine pour décongestionner le contour des yeux et réduire l'apparence des poches.",
       "concernTags": [
         "cernes",
-        "ridules"
+        "ridules",
+        "poches"
       ],
       "ingredientTags": [],
       "isFeatured": false,
@@ -316,7 +325,8 @@
         "cernes",
         "ridules",
         "anti_age",
-        "eclat"
+        "eclat",
+        "poches"
       ],
       "ingredientTags": [
         "retinol",
@@ -878,7 +888,8 @@
       "isFeatured": true,
       "active": true,
       "concernTags": [
-        "couvrance"
+        "couvrance",
+        "poches"
       ]
     },
     {
@@ -1838,7 +1849,8 @@
         "cernes",
         "eclat",
         "uniformite",
-        "apaisement"
+        "apaisement",
+        "sensibilite"
       ],
       "ingredientTags": [
         "niacinamide",
@@ -2232,7 +2244,8 @@
       "concernTags": [
         "hydratation",
         "eclat",
-        "barriere"
+        "barriere",
+        "sensibilite"
       ],
       "ingredientTags": [
         "hyaluronique",
@@ -2267,7 +2280,8 @@
       "concernTags": [
         "ridules",
         "anti_age",
-        "hydratation"
+        "hydratation",
+        "deshydratation"
       ],
       "ingredientTags": [
         "collagene",
@@ -2303,7 +2317,8 @@
       "concernTags": [
         "cernes",
         "ridules",
-        "eclat"
+        "eclat",
+        "poches"
       ],
       "ingredientTags": [
         "hyaluronique",
@@ -2338,7 +2353,9 @@
       "concernTags": [
         "hydratation",
         "ridules",
-        "barriere"
+        "barriere",
+        "deshydratation",
+        "sensibilite"
       ],
       "ingredientTags": [
         "hyaluronique",
@@ -2490,7 +2507,9 @@
         "rougeurs",
         "apaisement",
         "barriere",
-        "hydratation"
+        "hydratation",
+        "deshydratation",
+        "sensibilite"
       ],
       "ingredientTags": [
         "niacinamide",
@@ -2524,7 +2543,8 @@
         "rougeurs",
         "apaisement",
         "barriere",
-        "hydratation"
+        "hydratation",
+        "sensibilite"
       ],
       "ingredientTags": [
         "niacinamide",
@@ -2559,7 +2579,8 @@
         "rougeurs",
         "apaisement",
         "barriere",
-        "hydratation"
+        "hydratation",
+        "sensibilite"
       ],
       "ingredientTags": [
         "centella",
@@ -2596,7 +2617,8 @@
         "apaisement",
         "uniformite",
         "imperfections",
-        "pores"
+        "pores",
+        "sensibilite"
       ],
       "ingredientTags": [
         "azelaique",
@@ -2661,7 +2683,9 @@
         "rougeurs",
         "apaisement",
         "barriere",
-        "hydratation"
+        "hydratation",
+        "deshydratation",
+        "sensibilite"
       ],
       "ingredientTags": [
         "glycerine",
@@ -2696,7 +2720,8 @@
         "apaisement",
         "barriere",
         "uniformite",
-        "spf"
+        "spf",
+        "sensibilite"
       ],
       "ingredientTags": [
         "niacinamide",
@@ -2798,7 +2823,9 @@
         "apaisement",
         "eclat",
         "uniformite",
-        "barriere"
+        "barriere",
+        "deshydratation",
+        "sensibilite"
       ],
       "ingredientTags": [
         "niacinamide",
@@ -2866,7 +2893,9 @@
         "pores",
         "eclat",
         "apaisement",
-        "uniformite"
+        "uniformite",
+        "deshydratation",
+        "sensibilite"
       ],
       "ingredientTags": [
         "niacinamide",
@@ -3238,7 +3267,8 @@
         "taches",
         "eclat",
         "uniformite",
-        "anti_age"
+        "anti_age",
+        "deshydratation"
       ],
       "ingredientTags": [
         "vitaminec",
@@ -3262,8 +3292,17 @@
       "rating": 4.4,
       "reviews": 1200,
       "description": "Fond de teint changeant de couleur qui s'adapte automatiquement au teint pour un résultat naturel. Couvrance modulable, formule légère adaptée aux teintes claires à moyennes.",
-      "skinTypeTags": ["normale","mixte","seche","sensible"],
-      "concernTags": ["couvrance","uniformite","eclat"],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "sensible"
+      ],
+      "concernTags": [
+        "couvrance",
+        "uniformite",
+        "eclat"
+      ],
       "ingredientTags": [],
       "isFeatured": false,
       "active": true,
