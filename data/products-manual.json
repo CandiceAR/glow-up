@@ -349,7 +349,12 @@
       "isFeatured": false,
       "active": true,
       "concernTags": [
-        "couvrance"
+        "couvrance",
+        "matifiant"
+      ],
+      "skinTypeTags": [
+        "grasse",
+        "mixte"
       ]
     },
     {
@@ -471,7 +476,13 @@
       "active": true,
       "concernTags": [
         "spf",
-        "couvrance"
+        "couvrance",
+        "matifiant",
+        "imperfections"
+      ],
+      "skinTypeTags": [
+        "grasse",
+        "mixte"
       ]
     },
     {
@@ -1601,7 +1612,12 @@
       "isFeatured": false,
       "active": true,
       "concernTags": [
-        "couvrance"
+        "couvrance",
+        "matifiant"
+      ],
+      "skinTypeTags": [
+        "grasse",
+        "mixte"
       ]
     },
     {
@@ -1636,7 +1652,13 @@
       "isFeatured": false,
       "active": true,
       "concernTags": [
-        "couvrance"
+        "couvrance",
+        "matifiant",
+        "purification"
+      ],
+      "skinTypeTags": [
+        "grasse",
+        "mixte"
       ]
     },
     {
@@ -2423,7 +2445,8 @@
         "sensible"
       ],
       "concernTags": [
-        "couvrance"
+        "couvrance",
+        "matifiant"
       ],
       "isFeatured": false,
       "active": true,
@@ -2452,7 +2475,9 @@
         "sensible"
       ],
       "concernTags": [
-        "couvrance"
+        "couvrance",
+        "matifiant",
+        "purification"
       ],
       "isFeatured": false,
       "active": true,
@@ -3322,9 +3347,21 @@
       "rating": 4.6,
       "reviews": 2800,
       "description": "CC Crème correctrice SPF50 teinte Light Medium pour carnations claires à moyennes. Couvrance naturelle, soin et protection solaire en un geste.",
-      "skinTypeTags": ["normale","mixte","seche","sensible"],
-      "concernTags": ["couvrance","spf","uniformite","eclat"],
-      "ingredientTags": ["spf"],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "sensible"
+      ],
+      "concernTags": [
+        "couvrance",
+        "spf",
+        "uniformite",
+        "eclat"
+      ],
+      "ingredientTags": [
+        "spf"
+      ],
       "shadeName": "Light Medium",
       "isFeatured": true,
       "active": true,
@@ -3344,9 +3381,21 @@
       "rating": 4.6,
       "reviews": 2800,
       "description": "CC Crème correctrice SPF50 teinte Medium pour carnations moyennes à sous-ton chaud. Couvrance naturelle, soin et protection solaire en un geste.",
-      "skinTypeTags": ["normale","mixte","seche","sensible"],
-      "concernTags": ["couvrance","spf","uniformite","eclat"],
-      "ingredientTags": ["spf"],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "sensible"
+      ],
+      "concernTags": [
+        "couvrance",
+        "spf",
+        "uniformite",
+        "eclat"
+      ],
+      "ingredientTags": [
+        "spf"
+      ],
       "shadeName": "Medium",
       "isFeatured": false,
       "active": true,
@@ -3366,9 +3415,21 @@
       "rating": 4.6,
       "reviews": 2800,
       "description": "CC Crème correctrice SPF50 teinte Rich pour carnations foncées. Couvrance naturelle, soin et protection solaire en un geste.",
-      "skinTypeTags": ["normale","mixte","seche","sensible"],
-      "concernTags": ["couvrance","spf","uniformite","eclat"],
-      "ingredientTags": ["spf"],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "sensible"
+      ],
+      "concernTags": [
+        "couvrance",
+        "spf",
+        "uniformite",
+        "eclat"
+      ],
+      "ingredientTags": [
+        "spf"
+      ],
       "shadeName": "Rich",
       "isFeatured": false,
       "active": true,
