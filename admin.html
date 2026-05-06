@@ -670,6 +670,41 @@
             <option value="teatree">Tea Tree</option>
             <option value="lactique">Acide Lactique</option>
           </select>
+          <select class="form-select" style="width:auto;" onchange="Admin.filterConcern(this.value)" id="concernFilter">
+            <option value="all">Toutes les causes</option>
+            <optgroup label="Teint">
+              <option value="taches">Taches pigmentaires</option>
+              <option value="eclat">Manque d'éclat</option>
+              <option value="uniformite">Teint irrégulier</option>
+              <option value="teint_terne">Teint terne</option>
+            </optgroup>
+            <optgroup label="Peau sensible / réactive">
+              <option value="rougeurs">Rougeurs</option>
+              <option value="apaisement">Apaisement</option>
+              <option value="sensibilite">Sensibilité</option>
+              <option value="barriere">Barrière cutanée</option>
+            </optgroup>
+            <optgroup label="Pores / Sébum">
+              <option value="pores">Pores dilatés</option>
+              <option value="matifiant">Matifiant</option>
+              <option value="purification">Purification</option>
+              <option value="imperfections">Imperfections</option>
+            </optgroup>
+            <optgroup label="Hydratation / Rides">
+              <option value="hydratation">Hydratation</option>
+              <option value="deshydratation">Déshydratation</option>
+              <option value="ridules">Ridules / Rides</option>
+              <option value="anti_age">Anti-âge</option>
+            </optgroup>
+            <optgroup label="Yeux">
+              <option value="cernes">Cernes</option>
+              <option value="poches">Poches</option>
+            </optgroup>
+            <optgroup label="Maquillage">
+              <option value="couvrance">Couvrance</option>
+              <option value="spf">Protection solaire</option>
+            </optgroup>
+          </select>
         </div>
 
         <!-- Table produits -->

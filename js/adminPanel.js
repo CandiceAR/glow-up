@@ -14,6 +14,7 @@ const Admin = (() => {
   let searchQuery      = '';
   let catFilter        = 'all';
   let ingredientFilter = 'all';
+  let concernFilter    = 'all';
 
   // ─── Toast notifications ──────────────────────────────────────
   function toast(msg, type = 'success') {
@@ -193,6 +194,7 @@ const Admin = (() => {
     }
     if (catFilter !== 'all') list = list.filter(p => p.category === catFilter);
     if (ingredientFilter !== 'all') list = list.filter(p => Array.isArray(p.ingredientTags) && p.ingredientTags.includes(ingredientFilter));
+    if (concernFilter    !== 'all') list = list.filter(p => Array.isArray(p.concernTags)    && p.concernTags.includes(concernFilter));
 
     const tbody = document.getElementById('productsTableBody');
     if (!tbody) return;
@@ -754,6 +756,11 @@ const Admin = (() => {
     renderTable();
   }
 
+  function filterConcern(concern) {
+    concernFilter = concern;
+    renderTable();
+  }
+
   // ─── Onglets ──────────────────────────────────────────────────
   let currentTab = 'products';
   const TAB_IDS  = ['products', 'analytics', 'asin', 'coach'];
@@ -1110,7 +1117,7 @@ const Admin = (() => {
     showAddForm, editProduct, duplicateProduct, cancelForm, saveProduct,
     autoTagAll,
     toggleActive, toggleFeatured, deleteProduct,
-    search, filterCat, filterIngredient, patchSkincareTags, importNewFromJSON, showTab,
+    search, filterCat, filterIngredient, filterConcern, patchSkincareTags, importNewFromJSON, showTab,
     extractASIN, extractASINFromUrl, checkTag, autoFillAmazonUrl, exportJSON,
     setPeriod, exportStatsCSV, clearStats,
     saveCoachKey, deleteCoachKey, testCoachKey,
