@@ -166,6 +166,43 @@ const Admin = (() => {
     }
   }
 
+  async function forceSyncAllFromJSON() {
+    toast('Force sync en cours...', 'info');
+    try {
+      const res = await fetch('data/products-manual.json?v=' + Date.now());
+      if (!res.ok) { toast('Erreur fetch JSON : ' + res.status, 'error'); return; }
+      const data = await res.json();
+      const jsonProducts = data.products || [];
+      const existingIds = new Set(products.map(p => p.id));
+      // Ajouter les IDs manquants ET mettre à jour ceux qui existent dans JSON mais pas dans Firestore avec les bons tags
+      const toUpsert = jsonProducts.filter(p => {
+        const existing = products.find(e => e.id === p.id);
+        if (!existing) return true; // nouveau
+        // Mettre à jour si concernTags ou ingredientTags diffèrent
+        const tagsDiff = JSON.stringify(p.concernTags) !== JSON.stringify(existing.concernTags) ||
+                         JSON.stringify(p.ingredientTags) !== JSON.stringify(existing.ingredientTags);
+        return tagsDiff;
+      });
+      if (!toUpsert.length) { toast(`Tout est à jour (${jsonProducts.length} produits)`, 'success'); return; }
+      toast(`Mise à jour de ${toUpsert.length} produit(s)...`, 'info');
+      let count = 0;
+      for (const p of toUpsert) {
+        if (typeof FirestoreProducts !== 'undefined') {
+          await FirestoreProducts.save(p);
+          const idx = products.findIndex(e => e.id === p.id);
+          if (idx >= 0) products[idx] = p; else products.push(p);
+          count++;
+        }
+      }
+      saveToStorage();
+      renderTable();
+      renderStats();
+      toast(`✓ ${count} produit(s) synchronisé(s)`, 'success');
+    } catch (e) {
+      toast('Erreur : ' + e.message, 'error');
+    }
+  }
+
   async function removeProduct(id) {
     if (typeof FirestoreProducts !== 'undefined') {
       await FirestoreProducts.remove(id);
@@ -1127,7 +1164,7 @@ const Admin = (() => {
     showAddForm, editProduct, duplicateProduct, cancelForm, saveProduct,
     autoTagAll,
     toggleActive, toggleFeatured, deleteProduct,
-    search, filterCat, filterIngredient, filterConcern, patchSkincareTags, importNewFromJSON, showTab,
+    search, filterCat, filterIngredient, filterConcern, patchSkincareTags, importNewFromJSON, forceSyncAllFromJSON, showTab,
     extractASIN, extractASINFromUrl, checkTag, autoFillAmazonUrl, exportJSON,
     setPeriod, exportStatsCSV, clearStats,
     saveCoachKey, deleteCoachKey, testCoachKey,
