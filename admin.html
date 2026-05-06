@@ -343,7 +343,7 @@
         <div style="display:flex; gap:8px;">
           <button class="btn btn-outline" onclick="Admin.exportJSON()">⬇ Export JSON</button>
           <button class="btn btn-outline" onclick="if(confirm('Appliquer les tags skincare sur 19 produits et corriger les catégories ?')) Admin.patchSkincareTags()" title="Tagger automatiquement les 19 produits skincare existants">🏷 Patcher tags skincare</button>
-          <button class="btn btn-outline" onclick="Admin.importNewFromJSON()" title="Importer dans Firestore les produits du JSON absents du catalogue">⬆ Sync nouveaux produits JSON</button>
+          <button class="btn btn-outline" onclick="console.log('sync clicked'); Admin.importNewFromJSON();" title="Importer dans Firestore les produits du JSON absents du catalogue">⬆ Sync nouveaux produits JSON</button>
           <button class="btn btn-dark" onclick="Admin.showAddForm()">+ Ajouter un produit</button>
         </div>
       </div>
