@@ -323,9 +323,9 @@ const Admin = (() => {
       o.selected = it.includes(o.value);
     });
     // Causes / Problématiques
-    const ct = Array.isArray(p.concernTags) ? p.concernTags : [];
+    const concerns = Array.isArray(p.concernTags) ? p.concernTags : [];
     Array.from(document.getElementById('fConcerns').options).forEach(o => {
-      o.selected = ct.includes(o.value);
+      o.selected = concerns.includes(o.value);
     });
     previewImage(p.imageUrl || '');
     document.getElementById('productFormWrap').style.display = 'block';
