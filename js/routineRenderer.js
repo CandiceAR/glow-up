@@ -148,6 +148,42 @@ const RoutineRenderer = (() => {
   }
 
   // ─── Rendu principal ──────────────────────────────────────────
+  // ─── Calcul du total global (matin + soir) ───────────────────
+  function _computeGlobalTotal(routine) {
+    const allSteps = [...(routine.matin || []), ...(routine.soir || [])];
+    let total = 0;
+    const seen = new Set();
+    for (const step of allSteps) {
+      const p = findBestProductForStep(step.step);
+      if (p?.price && !seen.has(p.id)) {
+        total += p.price;
+        seen.add(p.id);
+      }
+    }
+    // Patchs yeux si présents
+    const eyeSteps = allSteps.filter(s => s.step === 'eye');
+    if (eyeSteps.length > 0) {
+      const patch = findBestProductForStep('eyepatch');
+      if (patch?.price && !seen.has(patch.id)) total += patch.price;
+    }
+    return total;
+  }
+
+  function renderGlobalTotal(routine, isLocked) {
+    const total = _computeGlobalTotal(routine);
+    if (total <= 0) return '';
+    const note = isLocked ? 'Routine du matin uniquement · Débloquer le soir avec Premium' : 'Routine matin + soir complète';
+    return `
+      <div class="routine-global-total">
+        <div>
+          <div class="routine-global-total-label">Budget routine estimé</div>
+          <div class="routine-global-total-price">${total.toFixed(2)} €</div>
+          <div class="routine-global-total-note">${note}</div>
+        </div>
+        <span style="font-size:2rem;opacity:0.4;">🛒</span>
+      </div>`;
+  }
+
   function renderResults() {
     _refreshSeed(); // nouveau tirage produit à chaque génération
     const container = document.getElementById('resultsContent');
@@ -169,6 +205,9 @@ const RoutineRenderer = (() => {
       </div>
 
       ${renderWarnings(routine.warnings)}
+
+      <!-- Total global -->
+      ${renderGlobalTotal(routine, isLocked)}
 
       <!-- ✅ GRATUIT : Routine du matin complète -->
       <div class="free-section-label">
@@ -219,18 +258,20 @@ const RoutineRenderer = (() => {
   function renderRoutineSection(title, steps, emoji) {
     if (!steps || steps.length === 0) return '';
 
-    const isMatin   = title.toLowerCase().includes('matin');
-    const patchTipKey = isMatin ? 'eyepatch_matin' : 'eyepatch_soir';
+    const isMatin      = title.toLowerCase().includes('matin');
+    const patchTipKey  = isMatin ? 'eyepatch_matin' : 'eyepatch_soir';
     const patchProduct = findBestProductForStep('eyepatch');
 
     const sortedSteps = steps.sort((a, b) => a.order - b.order);
     let stepIndex = 0;
-    const blocks = [];
+    const blocks    = [];
+    const products  = []; // pour le total
 
     for (const step of sortedSteps) {
       const product  = findBestProductForStep(step.step);
       const applyTip = STEP_APPLY_TIPS[step.step] || '';
       stepIndex++;
+      if (product?.price) products.push(product);
 
       blocks.push(`
         <div class="routine-step-block">
@@ -254,6 +295,7 @@ const RoutineRenderer = (() => {
       // Injecter les patchs yeux juste après l'étape contour des yeux
       if (step.step === 'eye' && patchProduct) {
         stepIndex++;
+        if (patchProduct?.price) products.push(patchProduct);
         blocks.push(`
           <div class="routine-step-block eyepatch-block">
             <div class="routine-step">
@@ -274,6 +316,14 @@ const RoutineRenderer = (() => {
       }
     }
 
+    // Calcul total section
+    const total = products.reduce((s, p) => s + (p.price || 0), 0);
+    const totalHtml = total > 0 ? `
+      <div class="routine-section-total">
+        <span class="routine-section-total-label">${stepIndex} produit${stepIndex > 1 ? 's' : ''} · Budget estimé</span>
+        <span class="routine-section-total-price">${total.toFixed(2)} €</span>
+      </div>` : '';
+
     return `
       <div class="routine-section">
         <div class="routine-section-header">
@@ -281,6 +331,7 @@ const RoutineRenderer = (() => {
           <h2>${title}</h2>
         </div>
         <div class="routine-steps">${blocks.join('')}</div>
+        ${totalHtml}
       </div>`;
   }
 

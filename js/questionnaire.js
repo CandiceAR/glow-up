@@ -88,17 +88,17 @@ const Questionnaire = (() => {
       prefill: (photo) => _sensitivityFromPhoto(photo)
     },
 
-    // Q5 — Réactions (conditionnel : sensitivity ≥ 7)
+    // Q5 — Localisation rougeurs (conditionnel : sensitivity ≥ 7)
     {
-      id: 'q5', key: 'skinReactions', type: 'multiple', max: 3,
-      question: 'Quelles réactions as-tu fréquemment ?',
+      id: 'q5', key: 'rednessZones', type: 'multiple', max: 4,
+      question: 'Où apparaissent tes rougeurs ?',
       required: false,
       skipIf: (answers) => (_numVal(answers.sensitivity) < 7),
       options: [
-        { value: 'rougeurs',      emoji: '🌹', label: 'Rougeurs',      desc: 'Flush, couperose, vaisseaux' },
-        { value: 'demangeaisons', emoji: '⚡', label: 'Démangeaisons', desc: 'Prurit, inconfort' },
-        { value: 'picotements',   emoji: '🔥', label: 'Picotements',   desc: 'Après certains produits' },
-        { value: 'desquamation',  emoji: '🍂', label: 'Desquamation',  desc: 'Peaux qui s\'enlèvent' }
+        { value: 'joues',   emoji: '🌹', label: 'Joues',   desc: '' },
+        { value: 'nez',     emoji: '🔴', label: 'Nez',     desc: '' },
+        { value: 'menton',  emoji: '🫦', label: 'Menton',  desc: '' },
+        { value: 'partout', emoji: '😮', label: 'Partout', desc: 'Le visage entier réagit' }
       ]
     },
 
