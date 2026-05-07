@@ -490,12 +490,16 @@ function startGlowUp() {
 }
 
 function _doStartGlowUp() {
+  // Nouveau flow : photo optionnelle intégrée dans le questionnaire
   if (AppState.face.photo && AppState.face.skinAnalysis) {
-    showScreen('routine-choice');
+    // Photo analysée → questionnaire (photo-step skippée auto)
+    Questionnaire.startSkincare();
   } else if (AppState.face.photo) {
+    // Photo sans analyse → on analyse d'abord
     showScreen('skin-analysis');
   } else {
-    showScreen('capture');
+    // Pas de photo → questionnaire avec étape photo intégrée
+    Questionnaire.startSkincare();
   }
 }
 

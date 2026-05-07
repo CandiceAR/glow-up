@@ -1,351 +1,985 @@
 /* ============================================================
-   questionnaire.js — Questionnaire skincare (5 q) + makeup (5 q)
-   GLOW UP Phase 0
+   questionnaire.js — Questionnaire premium GLOW UP
+   • 15 étapes dynamiques (skipIf + prefill depuis analyse photo)
+   • Types : single, multiple, slider, face-map, photo-step, textarea
+   • Transitions slide entre questions
    ============================================================ */
 
 'use strict';
 
 const Questionnaire = (() => {
 
-  // ─── Questions Skincare ───────────────────────────────────────
-  const SKINCARE_QUESTIONS = [
+  // ─── Définition des questions ─────────────────────────────────
+
+  const QUESTIONS = [
+
+    // Q0 — Complexes (toujours affichée, multiple max 2)
     {
-      id: 'q0',
-      key: 'skinType',
-      // Affiché uniquement si l'analyse photo n'a pas détecté le type de peau
-      condition: () => !AppState?.face?.skinAnalysis?.skinType?.type,
+      id: 'q0', key: 'complexes', type: 'multiple', max: 2,
+      question: 'Qu\'est-ce qui te complexe le plus ?',
+      subtitle: 'Choisis jusqu\'à 2 réponses',
+      required: true,
+      skipIf: null,
+      options: [
+        { value: 'acne',      emoji: '😓', label: 'Acné / Boutons',        desc: 'Points noirs, kystes, imperfections' },
+        { value: 'taches',    emoji: '🫥', label: 'Taches & Teint inégal', desc: 'Hyperpigmentation, cicatrices' },
+        { value: 'rides',     emoji: '🕰', label: 'Rides & Fermeté',       desc: 'Perte de tonus, sillons' },
+        { value: 'cernes',    emoji: '😴', label: 'Cernes & Poches',       desc: 'Regard fatigué, cercles sombres' },
+        { value: 'pores',     emoji: '🔬', label: 'Pores dilatés',         desc: 'Peau d\'orange, brillances' },
+        { value: 'eclat',     emoji: '✨', label: 'Teint terne',            desc: 'Sans éclat, mine grise' },
+        { value: 'secheresse',emoji: '🏜', label: 'Sécheresse',            desc: 'Tiraillements, squames' },
+        { value: 'rougeurs',  emoji: '🌹', label: 'Rougeurs & Sensibilité',desc: 'Réactivité, couperose' }
+      ]
+    },
+
+    // Q-PHOTO — Étape analyse photo intégrée
+    {
+      id: 'q-photo', key: null, type: 'photo-step',
+      question: 'Analyse ta peau en temps réel',
+      subtitle: 'Pour des recommandations ultra-personnalisées',
+      required: false,
+      skipIf: (answers, photo) => !!photo?.skinType?.type
+    },
+
+    // Q1 — Type de peau (skip si photo confiance ≥ 65)
+    {
+      id: 'q1', key: 'skinType', type: 'single',
       question: 'Quel est ton type de peau ?',
-      type: 'single',
       required: true,
+      skipIf: (answers, photo) => photo?.skinType?.confidence >= 65,
+      prefill: (photo) => photo?.skinType?.type,
       options: [
-        { value: 'normale',  label: 'Normale',  desc: 'Ni trop grasse, ni trop sèche' },
-        { value: 'grasse',   label: 'Grasse',   desc: 'Brillances, pores dilatés' },
-        { value: 'seche',    label: 'Sèche',    desc: 'Tiraillements, peaux fines' },
-        { value: 'mixte',    label: 'Mixte',    desc: 'Zone T grasse, joues sèches' },
-        { value: 'sensible', label: 'Sensible', desc: 'Rougeurs, réactions fréquentes' }
+        { value: 'normale',  emoji: '◇', label: 'Normale',  desc: 'Équilibrée, confortable' },
+        { value: 'grasse',   emoji: '◎', label: 'Grasse',   desc: 'Brillances, pores dilatés' },
+        { value: 'seche',    emoji: '○', label: 'Sèche',    desc: 'Tiraillements, inconfort' },
+        { value: 'mixte',    emoji: '⟡', label: 'Mixte',    desc: 'Zone T grasse, joues sèches' },
+        { value: 'sensible', emoji: '△', label: 'Sensible', desc: 'Rougeurs, réactivité fréquente' }
       ]
     },
+
+    // Q2 — Brillance slider (skip si photo a mesuré les pores)
     {
-      id: 'q1',
-      key: 'concerns',
-      question: 'Quelles sont tes principales préoccupations ?',
-      subtitle: 'Jusqu\'à 3 réponses',
-      type: 'multiple',
-      max: 3,
+      id: 'q2', key: 'oiliness', type: 'slider',
+      question: 'À quel point ta peau brille-t-elle ?',
+      required: false,
+      min: 0, maxVal: 10,
+      labels: ['Aucune brillance', 'Brille toute la journée'],
+      skipIf: (answers, photo) => _hasPhotoZones(photo),
+      prefill: (photo) => _oilinessFromPhoto(photo)
+    },
+
+    // Q3 — Visage interactif (skip si photo faite)
+    {
+      id: 'q3', key: 'problemZones', type: 'face-map',
+      question: 'Où se concentrent tes problèmes ?',
+      subtitle: 'Touche les zones concernées',
+      required: false,
+      skipIf: (answers, photo) => _hasPhotoZones(photo)
+    },
+
+    // Q4 — Sensibilité slider
+    {
+      id: 'q4', key: 'sensitivity', type: 'slider',
+      question: 'Ma peau est sensible…',
       required: true,
+      min: 0, maxVal: 10,
+      labels: ['Pas du tout', 'Extrêmement sensible'],
+      skipIf: (answers, photo) => _hasPhotoZones(photo),
+      prefill: (photo) => _sensitivityFromPhoto(photo)
+    },
+
+    // Q5 — Réactions (conditionnel : sensitivity ≥ 7)
+    {
+      id: 'q5', key: 'skinReactions', type: 'multiple', max: 3,
+      question: 'Quelles réactions as-tu fréquemment ?',
+      required: false,
+      skipIf: (answers) => (_numVal(answers.sensitivity) < 7),
       options: [
-        { value: 'acne',         label: 'Acné / Boutons' },
-        { value: 'rougeurs',     label: 'Rougeurs / Irritations' },
-        { value: 'rides',        label: 'Rides / Fermeté' },
-        { value: 'pores',        label: 'Pores dilatés' },
-        { value: 'eclat_terne',  label: 'Teint terne / sans éclat' },
-        { value: 'taches',       label: 'Taches / Hyperpigmentation' },
-        { value: 'cernes',       label: 'Cernes / Poches' },
-        { value: 'deshydration', label: 'Déshydratation' }
+        { value: 'rougeurs',      emoji: '🌹', label: 'Rougeurs',      desc: 'Flush, couperose, vaisseaux' },
+        { value: 'demangeaisons', emoji: '⚡', label: 'Démangeaisons', desc: 'Prurit, inconfort' },
+        { value: 'picotements',   emoji: '🔥', label: 'Picotements',   desc: 'Après certains produits' },
+        { value: 'desquamation',  emoji: '🍂', label: 'Desquamation',  desc: 'Peaux qui s\'enlèvent' }
       ]
     },
+
+    // Q6 — Imperfections détail (conditionnel : complexes contient acne)
     {
-      id: 'q2',
-      key: 'objectives',
+      id: 'q6', key: 'acneType', type: 'multiple', max: 2,
+      question: 'Quel type d\'imperfections as-tu surtout ?',
+      required: false,
+      skipIf: (answers) => !answers.complexes?.includes('acne'),
+      options: [
+        { value: 'points_noirs',  emoji: '⚫', label: 'Points noirs',     desc: 'Comédons ouverts' },
+        { value: 'points_blancs', emoji: '⚪', label: 'Points blancs',    desc: 'Comédons fermés' },
+        { value: 'kystes',        emoji: '🔴', label: 'Kystes / Nodules', desc: 'Profonds, douloureux' },
+        { value: 'cicatrices',    emoji: '🩹', label: 'Cicatrices',       desc: 'Post-acnéiques' }
+      ]
+    },
+
+    // Q7 — Fermeté (conditionnel : complexes contient rides)
+    {
+      id: 'q7', key: 'firmness', type: 'slider',
+      question: 'Comment est la fermeté de ta peau ?',
+      required: false,
+      min: 0, maxVal: 10,
+      labels: ['Très ferme', 'Très relâchée'],
+      skipIf: (answers) => !answers.complexes?.includes('rides')
+    },
+
+    // Q8 — Objectif prioritaire
+    {
+      id: 'q8', key: 'objectives', type: 'single',
       question: 'Quel est ton objectif principal ?',
-      type: 'single',
-      required: true,
+      required: true, skipIf: null,
       options: [
-        { value: 'anti-age',       label: 'Anti-âge',       desc: 'Prévenir et réduire les rides' },
-        { value: 'eclat',          label: 'Éclat',          desc: 'Peau lumineuse, bonne mine' },
-        { value: 'hydratation',    label: 'Hydratation',    desc: 'Peau souple et confortable' },
-        { value: 'purification',   label: 'Purification',   desc: 'Réduire imperfections et pores' },
-        { value: 'uniformisation', label: 'Uniformisation', desc: 'Unifier le teint, estomper taches' }
+        { value: 'anti-age',       emoji: '⏳', label: 'Anti-âge',       desc: 'Prévenir et réduire les rides' },
+        { value: 'eclat',          emoji: '✨', label: 'Éclat',           desc: 'Teint lumineux, bonne mine' },
+        { value: 'hydratation',    emoji: '💧', label: 'Hydratation',     desc: 'Peau souple et confortable' },
+        { value: 'purification',   emoji: '🌿', label: 'Purification',    desc: 'Réduire imperfections et pores' },
+        { value: 'uniformisation', emoji: '🪞', label: 'Uniformisation',  desc: 'Unifier le teint, estomper taches' },
+        { value: 'apaisement',     emoji: '🕊', label: 'Apaisement',      desc: 'Calmer la réactivité' }
       ]
     },
+
+    // Q9 — Tranche d'âge
     {
-      id: 'q3',
-      key: 'ageGroup',
+      id: 'q9', key: 'ageGroup', type: 'single',
       question: 'Dans quelle tranche d\'âge te situes-tu ?',
-      type: 'single',
-      required: true,
+      required: true, skipIf: null,
       options: [
-        { value: 'moins-20', label: 'Moins de 20 ans', desc: 'Peau jeune, éclat naturel' },
-        { value: '20-25',    label: '20 – 25 ans',     desc: 'Prévention & légèreté' },
-        { value: '25-30',    label: '25 – 30 ans',     desc: 'Premiers soins ciblés' },
-        { value: '30-40',    label: '30 – 40 ans',     desc: 'Soin actif & hydratation' },
-        { value: '40+',      label: '40 ans et plus',  desc: 'Confort, éclat & fermeté' }
+        { value: 'moins-20', emoji: '🌸', label: 'Moins de 20 ans', desc: 'Peau jeune, éclat naturel' },
+        { value: '20-25',    emoji: '🌺', label: '20 – 25 ans',     desc: 'Prévention & légèreté' },
+        { value: '25-30',    emoji: '🌻', label: '25 – 30 ans',     desc: 'Premiers soins ciblés' },
+        { value: '30-40',    emoji: '🌹', label: '30 – 40 ans',     desc: 'Soin actif & hydratation' },
+        { value: '40+',      emoji: '🌷', label: '40 ans et plus',  desc: 'Confort, éclat & fermeté' }
       ]
     },
+
+    // Q10 — Texture préférée
     {
-      id: 'q4',
-      key: 'activeTolerance',
-      question: 'Ta tolérance aux actifs cosmétiques ?',
-      type: 'single',
-      required: true,
+      id: 'q10', key: 'texture', type: 'single',
+      question: 'Quelle texture préfères-tu sur ta peau ?',
+      required: true, skipIf: null,
       options: [
-        { value: 'debutante',     label: 'Débutante',     desc: 'Premiers pas dans le skincare' },
-        { value: 'intermediaire', label: 'Intermédiaire', desc: 'J\'utilise déjà AHA/BHA, Vit C...' },
-        { value: 'experte',       label: 'Experte',       desc: 'Rétinol, acides forts, etc.' }
+        { value: 'gel',    emoji: '💎', label: 'Gel',     desc: 'Frais, non-gras, absorbe vite' },
+        { value: 'fluide', emoji: '💧', label: 'Fluide',  desc: 'Léger, pénétration rapide' },
+        { value: 'creme',  emoji: '🍦', label: 'Crème',   desc: 'Nourrissante, enveloppante' },
+        { value: 'baume',  emoji: '🧴', label: 'Baume',   desc: 'Très riche, cocon protecteur' },
+        { value: 'huile',  emoji: '🫙', label: 'Huile',   desc: 'Éclat, nourrit en profondeur' }
       ]
     },
+
+    // Q11 — Budget
     {
-      id: 'q5',
-      key: 'budget',
+      id: 'q11', key: 'budget', type: 'single',
       question: 'Quel est ton budget mensuel skincare ?',
-      type: 'single',
-      required: true,
+      required: true, skipIf: null,
       options: [
-        { value: 'low',     label: 'Moins de 20 €', desc: 'Budget serré, maxi efficacité' },
-        { value: 'medium',  label: '20 – 50 €',     desc: 'Le juste milieu qualité/prix' },
-        { value: 'high',    label: '50 – 100 €',    desc: 'Je mise sur ma peau' },
-        { value: 'premium', label: 'Plus de 100 €', desc: 'Premium et sélectif' }
+        { value: 'low',     emoji: '🌱', label: 'Moins de 20 €', desc: 'Budget serré, maxi efficacité' },
+        { value: 'medium',  emoji: '🌿', label: '20 – 50 €',     desc: 'Le juste milieu qualité/prix' },
+        { value: 'high',    emoji: '🌳', label: '50 – 100 €',    desc: 'Je mise sur ma peau' },
+        { value: 'premium', emoji: '✦',  label: 'Plus de 100 €', desc: 'Premium et sélectif' }
       ]
+    },
+
+    // Q12 — Ingrédients à éviter
+    {
+      id: 'q12', key: 'avoidIngredients', type: 'multiple', max: 5,
+      question: 'Des ingrédients à éviter ?',
+      subtitle: 'Allergies, intolérances, préférences — optionnel',
+      required: false, skipIf: null,
+      options: [
+        { value: 'alcool',      emoji: '🚫', label: 'Alcool dénaturé',    desc: '' },
+        { value: 'parfum',      emoji: '🚫', label: 'Parfum / Fragrance', desc: '' },
+        { value: 'silicones',   emoji: '🚫', label: 'Silicones',          desc: '' },
+        { value: 'parabens',    emoji: '🚫', label: 'Parabènes',          desc: '' },
+        { value: 'retinol',     emoji: '⚠️', label: 'Rétinol',            desc: '' },
+        { value: 'aha_bha',     emoji: '⚠️', label: 'AHA / BHA',          desc: '' },
+        { value: 'niacinamide', emoji: '⚠️', label: 'Niacinamide',        desc: '' }
+      ]
+    },
+
+    // Q13 — Labels
+    {
+      id: 'q13', key: 'labels', type: 'multiple', max: 3,
+      question: 'Des labels importants pour toi ?',
+      subtitle: 'Optionnel',
+      required: false, skipIf: null,
+      options: [
+        { value: 'vegan',              emoji: '🌱', label: 'Vegan',            desc: '' },
+        { value: 'bio',                emoji: '🌿', label: 'Bio / Certifié',   desc: '' },
+        { value: 'cruelty',            emoji: '🐰', label: 'Cruelty-free',     desc: '' },
+        { value: 'grossesse',          emoji: '🤰', label: 'Grossesse safe',   desc: '' },
+        { value: 'dermo',              emoji: '🏥', label: 'Dermato-testé',    desc: '' },
+        { value: 'non_comedogenique',  emoji: '◇',  label: 'Non-comédogène',  desc: '' }
+      ]
+    },
+
+    // Q14 — Champ libre
+    {
+      id: 'q14', key: 'freeText', type: 'textarea',
+      question: 'Autre chose à me dire sur ta peau ?',
+      subtitle: 'Optionnel — allergies spécifiques, contexte particulier…',
+      required: false, skipIf: null,
+      placeholder: 'Ex : j\'utilise déjà de la vitamine C, je suis enceinte…'
     }
   ];
 
-  // ─── Questions Makeup ─────────────────────────────────────────
-  const MAKEUP_QUESTIONS = [
-    {
-      id: 'mq1',
-      key: 'mkSkinType',
-      question: 'Ma peau au réveil est plutôt :',
-      type: 'single',
-      required: true,
-      options: [
-        { value: 'normale',  label: 'Normale',  desc: 'Équilibrée, sans excès' },
-        { value: 'grasse',   label: 'Grasse',   desc: 'Brillances, pores visibles' },
-        { value: 'seche',    label: 'Sèche',    desc: 'Tiraillements, desquamations' },
-        { value: 'mixte',    label: 'Mixte',    desc: 'Zone T grasse, joues sèches' },
-        { value: 'sensible', label: 'Sensible', desc: 'Réactive, rougeurs possibles' }
-      ]
-    },
-    {
-      id: 'mq2',
-      key: 'mkLook',
-      question: 'Aujourd\'hui, je veux un maquillage :',
-      type: 'single',
-      required: true,
-      options: [
-        { value: 'naturel', label: 'Naturel', desc: 'No-makeup makeup, peau nue améliorée' },
-        { value: 'soigne',  label: 'Soigné',  desc: 'Everyday chic, bien fini' },
-        { value: 'glam',    label: 'Glam',    desc: 'Full glam, impact maximal' }
-      ]
-    },
-    {
-      id: 'mq3',
-      key: 'mkFocus',
-      question: 'La zone que je veux le plus améliorer est :',
-      type: 'single',
-      required: true,
-      options: [
-        { value: 'yeux',   label: 'Les yeux',   desc: 'Regard, mascara, liner' },
-        { value: 'levres', label: 'Les lèvres', desc: 'Couleur, volume, brillance' },
-        { value: 'teint',  label: 'Le teint',   desc: 'Peau nette et lumineuse' },
-        { value: 'joues',  label: 'Les joues',  desc: 'Bonne mine, structure' }
-      ]
-    },
-    {
-      id: 'mq4',
-      key: 'mkTime',
-      question: 'Le matin, j\'ai plutôt :',
-      type: 'single',
-      required: true,
-      options: [
-        { value: 'rapide',  label: 'Moins de 5 min', desc: 'Routine express, l\'essentiel' },
-        { value: 'moyen',   label: '5 – 10 min',     desc: 'Un peu de temps pour moi' },
-        { value: 'complet', label: 'Plus de 10 min', desc: 'Je prends le temps de me sublimer' }
-      ]
-    },
-    {
-      id: 'mq5',
-      key: 'mkBudget',
-      question: 'Je préfère :',
-      type: 'single',
-      required: true,
-      options: [
-        { value: 'petits-prix', label: 'Petits prix',     desc: 'Maxi effet, mini budget' },
-        { value: 'bon-rapport', label: 'Bon rapport Q/P', desc: 'Qualité accessible' },
-        { value: 'premium',     label: 'Premium',         desc: 'Je choisis les meilleurs' }
-      ]
-    }
-  ];
+  // ─── Helpers photo ────────────────────────────────────────────
 
-  let mode = 'skincare'; // 'skincare' | 'makeup'
-  let activeQuestions = [];
-  let currentIndex = 0;
-
-  // ─── Calculer les questions actives (avec conditions) ────────
-  function computeActiveQuestions(questions) {
-    return questions.filter(q => !q.condition || q.condition());
+  function _hasPhotoZones(photo) {
+    return !!(photo?.zones && Object.keys(photo.zones).length > 0);
   }
 
-  // ─── Réinitialiser ────────────────────────────────────────────
+  function _oilinessFromPhoto(photo) {
+    if (!_hasPhotoZones(photo)) return 5;
+    const avg = Object.values(photo.zones).reduce((s, z) => s + (z.pores || 0), 0) / 5;
+    return Math.min(10, Math.round(avg / 10));
+  }
+
+  function _sensitivityFromPhoto(photo) {
+    if (!_hasPhotoZones(photo)) return 3;
+    const avg = Object.values(photo.zones).reduce((s, z) => s + (z.redness || 0), 0) / 5;
+    return Math.min(10, Math.round(avg / 10));
+  }
+
+  function _numVal(v) {
+    return typeof v === 'number' ? v : 0;
+  }
+
+  // ─── State ────────────────────────────────────────────────────
+
+  let currentIndex = 0;   // index direct dans QUESTIONS[]
+  let mode = 'skincare';  // 'skincare' | 'makeup'
+  let sliding = false;
+
+  // ─── Navigation dans QUESTIONS[] en tenant compte des skipIf ─
+
+  function _shouldSkip(q) {
+    if (!q.skipIf) return false;
+    const answers   = AppState.questionnaire.answers;
+    const photo     = AppState.face?.skinAnalysis;
+    return !!q.skipIf(answers, photo);
+  }
+
+  function _firstActive() {
+    for (let i = 0; i < QUESTIONS.length; i++) {
+      if (!_shouldSkip(QUESTIONS[i])) return i;
+    }
+    return 0;
+  }
+
+  function _nextActive(from) {
+    for (let i = from + 1; i < QUESTIONS.length; i++) {
+      if (!_shouldSkip(QUESTIONS[i])) return i;
+    }
+    return -1; // fin
+  }
+
+  function _prevActive(from) {
+    for (let i = from - 1; i >= 0; i--) {
+      if (!_shouldSkip(QUESTIONS[i])) return i;
+    }
+    return -1;
+  }
+
+  function _visibleCount() {
+    return QUESTIONS.filter((q, i) => !_shouldSkip(q)).length;
+  }
+
+  function _visiblePosition() {
+    let pos = 0;
+    for (let i = 0; i <= currentIndex; i++) {
+      if (!_shouldSkip(QUESTIONS[i])) pos++;
+    }
+    return pos;
+  }
+
+  // ─── Init ─────────────────────────────────────────────────────
+
   function reset() {
-    currentIndex = 0;
-    AppState.questionnaire = { answers: {}, completed: false, currentQ: 0 };
+    AppState.questionnaire = { answers: {}, completed: false, currentQ: 0, photoPreFill: {} };
   }
 
-  // ─── Démarrer questionnaire skincare ─────────────────────────
   function startSkincare() {
     mode = 'skincare';
     reset();
-    activeQuestions = computeActiveQuestions(SKINCARE_QUESTIONS);
+    _prefillFromPhoto();
+    currentIndex = _firstActive();
     showScreen('questionnaire');
   }
 
-  // ─── Démarrer questionnaire makeup ───────────────────────────
   function startMakeup() {
     mode = 'makeup';
     currentIndex = 0;
     AppState.makeupQuiz = {};
-    activeQuestions = MAKEUP_QUESTIONS;
     showScreen('questionnaire');
+    render();
   }
 
-  // ─── Rendre la question courante ──────────────────────────────
-  function render() {
-    // Garantir que les questions actives sont initialisées
-    if (!activeQuestions || activeQuestions.length === 0) {
-      activeQuestions = mode === 'makeup'
-        ? MAKEUP_QUESTIONS
-        : computeActiveQuestions(SKINCARE_QUESTIONS);
-    }
+  function _prefillFromPhoto() {
+    const photo = AppState.face?.skinAnalysis;
+    if (!photo) return;
+    QUESTIONS.forEach(q => {
+      if (q.prefill && q.key) {
+        const val = q.prefill(photo);
+        if (val !== undefined && val !== null) {
+          AppState.questionnaire.answers[q.key] = val;
+          AppState.questionnaire.photoPreFill[q.key] = val;
+        }
+      }
+    });
+  }
 
-    const q = activeQuestions[currentIndex];
-    if (!q) return;
+  // ─── Render ───────────────────────────────────────────────────
+
+  function render() {
+    if (mode === 'makeup') { _renderMakeupLegacy(); return; }
 
     const container = document.getElementById('questionnaireContent');
     if (!container) return;
 
-    const answers  = mode === 'makeup' ? (AppState.makeupQuiz || {}) : AppState.questionnaire.answers;
-    const progress = Math.round(((currentIndex + 1) / activeQuestions.length) * 100);
-    const isLast   = currentIndex === activeQuestions.length - 1;
-    const ctaLabel = isLast
-      ? (mode === 'makeup' ? 'Voir ma routine ✦' : 'Voir mes résultats ✦')
-      : 'Continuer →';
+    const q          = QUESTIONS[currentIndex];
+    if (!q) return;
+
+    const total      = _visibleCount();
+    const pos        = _visiblePosition();
+    const pct        = Math.round((pos / total) * 100);
+    const photo      = AppState.face?.skinAnalysis;
+    const isPhotoQ   = q.type === 'photo-step';
+    const hasPhoto   = !!photo;
+    const isPrefilled = q.key && AppState.questionnaire.photoPreFill?.[q.key] !== undefined;
+
+    const prevIdx  = _prevActive(currentIndex);
+    const nextIdx  = _nextActive(currentIndex);
+    const isLast   = nextIdx === -1;
+    const ctaLabel = isLast ? 'Voir mes résultats ✦' : 'Continuer →';
 
     container.innerHTML = `
-      <div class="q-progress-bar">
-        <div class="q-progress-fill" style="width:${progress}%"></div>
+      <div class="q-progress-header">
+        <span class="q-progress-counter">${pos} / ${total}</span>
+        ${hasPhoto ? '<span class="q-progress-photo-badge">✦ Analyse photo active</span>' : ''}
       </div>
-      <div class="q-counter">${currentIndex + 1} / ${activeQuestions.length}</div>
-      <div class="q-card">
+      <div class="q-progress-bar">
+        <div class="q-progress-fill" style="width:${pct}%"></div>
+      </div>
+
+      <div class="q-card" id="qCard">
+        ${isPrefilled ? '<div class="q-prefill-badge">✦ Pré-rempli depuis ton analyse photo</div>' : ''}
         <h2 class="q-question">${q.question}</h2>
         ${q.subtitle ? `<p class="q-subtitle">${q.subtitle}</p>` : ''}
-        <div class="q-options ${q.type === 'multiple' ? 'q-multiple' : 'q-single'}">
-          ${renderOptions(q)}
+        <div id="qOptionsWrap">
+          ${_renderOptions(q)}
         </div>
       </div>
+
       <div class="q-navigation">
-        ${currentIndex > 0
+        ${prevIdx >= 0
           ? '<button class="btn btn-outline q-back" onclick="Questionnaire.prev()">← Retour</button>'
+          : '<div></div>'}
+        ${q.type !== 'photo-step'
+          ? `<button class="btn btn-dark q-next" id="qNextBtn" onclick="Questionnaire.next()">${ctaLabel}</button>`
           : ''}
-        <button class="btn btn-dark q-next" id="qNextBtn" onclick="Questionnaire.next()">
-          ${ctaLabel}
-        </button>
       </div>`;
 
-    // Restaurer les réponses déjà données
-    const existing = answers[q.key];
-    if (existing) {
-      const vals = Array.isArray(existing) ? existing : [existing];
-      vals.forEach(v => {
-        const el = container.querySelector(`[data-value="${v}"]`);
-        if (el) el.classList.add('selected');
-      });
+    _restoreAnswer(q);
+    _updateNextBtn();
+  }
+
+  // ─── Renderers par type ───────────────────────────────────────
+
+  function _renderOptions(q) {
+    switch (q.type) {
+      case 'single':
+      case 'multiple':  return _renderChoices(q);
+      case 'slider':    return _renderSlider(q);
+      case 'face-map':  return _renderFaceMap(q);
+      case 'photo-step':return _renderPhotoStep(q);
+      case 'textarea':  return _renderTextarea(q);
+      default:          return '';
+    }
+  }
+
+  function _renderChoices(q) {
+    const answers = AppState.questionnaire.answers;
+    const sel     = answers[q.key];
+    const selArr  = Array.isArray(sel) ? sel : (sel ? [sel] : []);
+
+    return q.options.map(opt => {
+      const checked = selArr.includes(opt.value);
+      return `<div class="q-option-premium${checked ? ' selected' : ''}"
+                   data-value="${opt.value}"
+                   onclick="Questionnaire.selectOption('${q.key}','${opt.value}','${q.type}',${q.max || 1})">
+        <span class="q-option-emoji">${opt.emoji || ''}</span>
+        <div class="q-option-body">
+          <div class="q-option-label">${opt.label}</div>
+          ${opt.desc ? `<div class="q-option-desc">${opt.desc}</div>` : ''}
+        </div>
+        <div class="q-option-check">✓</div>
+      </div>`;
+    }).join('');
+  }
+
+  function _renderSlider(q) {
+    const answers = AppState.questionnaire.answers;
+    const val     = answers[q.key] !== undefined ? answers[q.key] : 5;
+    const label   = _sliderLabel(val, q);
+    const bgStyle = `background: linear-gradient(to right, var(--nude) 0%, var(--nude) ${val*10}%, var(--sand) ${val*10}%, var(--sand) 100%)`;
+
+    return `<div class="q-slider-wrap">
+      <div class="q-slider-value-display" id="sliderVal">${val}</div>
+      <div class="q-slider-value-label"  id="sliderLbl">${label}</div>
+      <input type="range" class="q-slider" id="qSlider"
+             min="${q.min}" max="${q.maxVal}" step="1" value="${val}"
+             style="${bgStyle}"
+             oninput="Questionnaire.onSlider('${q.key}', this.value)">
+      <div class="q-slider-extremes">
+        <span>${q.labels[0]}</span>
+        <span>${q.labels[1]}</span>
+      </div>
+    </div>`;
+  }
+
+  function _sliderLabel(val, q) {
+    val = parseInt(val);
+    if (q.key === 'oiliness') {
+      if (val <= 2) return 'Peau très mate';
+      if (val <= 4) return 'Légères brillances';
+      if (val <= 6) return 'Brillances modérées';
+      if (val <= 8) return 'Peau grasse';
+      return 'Très grasse, brille toute la journée';
+    }
+    if (q.key === 'sensitivity') {
+      if (val <= 2) return 'Peau solide, réagit rarement';
+      if (val <= 4) return 'Quelques réactions occasionnelles';
+      if (val <= 6) return 'Assez réactive';
+      if (val <= 8) return 'Peau sensible, réagit souvent';
+      return 'Hyper-sensible, réagit à presque tout';
+    }
+    if (q.key === 'firmness') {
+      if (val <= 2) return 'Peau très ferme et tonique';
+      if (val <= 4) return 'Légère perte de tonus';
+      if (val <= 6) return 'Tonus modérément diminué';
+      if (val <= 8) return 'Peau relâchée';
+      return 'Peau très relâchée';
+    }
+    return '';
+  }
+
+  function _renderFaceMap(q) {
+    const answers  = AppState.questionnaire.answers;
+    const photo    = AppState.face?.skinAnalysis;
+    const selected = answers[q.key] || [];
+
+    // Zones problématiques détectées par la photo (score > 60 = rouge)
+    const photoHot = {};
+    if (photo?.zones) {
+      for (const [zone, data] of Object.entries(photo.zones)) {
+        if ((data.redness || 0) > 45 || (data.pores || 0) > 55) photoHot[zone] = true;
+      }
     }
 
-    updateNextBtn();
+    const zone = (id, d) => {
+      const isSel      = selected.includes(id);
+      const isFromPhoto = photoHot[id];
+      let cls = 'face-zone';
+      if (isSel)        cls += ' selected';
+      if (isFromPhoto)  cls += ' from-photo';
+      return `<path class="${cls}" d="${d}" data-zone="${id}"
+                    onclick="Questionnaire.toggleZone('${id}')" />`;
+    };
+
+    const chips = selected.length
+      ? selected.map(z => `<span class="q-face-chip">${_zoneLabel(z)}</span>`).join('')
+      : '<span style="font-size:0.8rem;color:var(--muted);">Touche les zones concernées</span>';
+
+    return `<div class="q-face-map-wrap">
+      <svg class="q-face-map-svg" viewBox="0 0 200 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Front -->
+        ${zone('forehead', 'M 60 30 Q 100 5 140 30 L 145 75 Q 100 65 55 75 Z')}
+        <!-- Nez -->
+        ${zone('nose', 'M 85 100 L 90 145 Q 100 155 110 145 L 115 100 Q 100 90 85 100 Z')}
+        <!-- Joue gauche -->
+        ${zone('leftCheek', 'M 30 105 Q 55 95 80 110 L 78 160 Q 55 168 35 155 Z')}
+        <!-- Joue droite -->
+        ${zone('rightCheek', 'M 170 105 Q 145 95 120 110 L 122 160 Q 145 168 165 155 Z')}
+        <!-- Menton -->
+        ${zone('chin', 'M 75 175 Q 100 192 125 175 L 128 210 Q 100 225 72 210 Z')}
+        <!-- Contour yeux (gauche) -->
+        ${zone('leftEye', 'M 48 88 Q 68 80 88 88 Q 68 100 48 88 Z')}
+        <!-- Contour yeux (droite) -->
+        ${zone('rightEye', 'M 152 88 Q 132 80 112 88 Q 132 100 152 88 Z')}
+        <!-- Séparateur front/yeux -->
+        <line x1="55" y1="80" x2="145" y2="80" stroke="rgba(201,169,138,0.2)" stroke-width="1"/>
+      </svg>
+      <div class="q-face-map-chips" id="faceChips">${chips}</div>
+    </div>`;
   }
 
-  function renderOptions(q) {
-    return q.options.map(opt => `
-      <div class="q-option" data-value="${opt.value}" onclick="Questionnaire.selectOption('${q.key}', '${opt.value}', '${q.type}', ${q.max || 1})">
-        <div class="q-option-label">${opt.label}</div>
-        ${opt.desc ? `<div class="q-option-desc">${opt.desc}</div>` : ''}
-      </div>`).join('');
+  function _zoneLabel(z) {
+    return { forehead: 'Front', nose: 'Nez', leftCheek: 'Joue gauche',
+             rightCheek: 'Joue droite', chin: 'Menton',
+             leftEye: 'Contour œil G', rightEye: 'Contour œil D' }[z] || z;
   }
 
-  // ─── Sélectionner une option ──────────────────────────────────
+  function _renderPhotoStep(q) {
+    const photo = AppState.face?.skinAnalysis;
+    if (photo) {
+      // Photo déjà faite — afficher résumé
+      return _renderPhotoMiniResult(photo);
+    }
+    const existingPhoto = AppState.face?.photo;
+    if (existingPhoto) {
+      // Photo capturée mais pas encore analysée
+      return `<div class="q-photo-step">
+        <img src="${existingPhoto}" class="q-photo-step-preview" alt="Ta photo">
+        <div class="q-photo-analyzing">
+          <div class="q-photo-scan-ring"></div>
+          <p style="font-size:0.85rem;color:var(--muted);">Analyse en cours…</p>
+        </div>
+      </div>`;
+    }
+
+    return `<div class="q-photo-step">
+      <p style="font-size:0.9rem;color:var(--muted);margin-bottom:20px;">
+        En 5 secondes, l'IA analyse ta peau et pré-remplit les questions suivantes.
+      </p>
+      <div class="q-photo-buttons">
+        <button class="btn btn-dark" onclick="Questionnaire.takePhoto()">📸 Prendre une photo</button>
+        <label class="btn btn-outline" style="cursor:pointer;text-align:center;">
+          📂 Uploader une photo
+          <input type="file" accept="image/*" style="display:none"
+                 onchange="Questionnaire.uploadPhoto(this)">
+        </label>
+      </div>
+      <button class="q-textarea-skip" onclick="Questionnaire.skipPhoto()">
+        Passer cette étape →
+      </button>
+    </div>`;
+  }
+
+  function _renderPhotoMiniResult(photo) {
+    const skinLabel = { normale:'Normale', grasse:'Grasse', seche:'Sèche', mixte:'Mixte', sensible:'Sensible' };
+    const items = [];
+    if (photo.skinType?.type)  items.push(`🧬 Type de peau : <strong>${skinLabel[photo.skinType.type] || photo.skinType.type}</strong>`);
+    if (photo.undertone?.label) items.push(`🎨 Sous-ton : <strong>${photo.undertone.label}</strong>`);
+    if (photo.cernes?.detected) items.push(`👁 Cernes détectés`);
+    if (photo.carnation?.label) items.push(`✨ Carnation : <strong>${photo.carnation.label}</strong>`);
+
+    return `<div class="q-photo-step">
+      <img src="${AppState.face.photo}" class="q-photo-step-preview" alt="Ta photo">
+      <div class="q-photo-result-mini">
+        <div class="q-photo-result-mini-title">✦ Analyse complète</div>
+        ${items.map(i => `<div class="q-photo-result-mini-item">${i}</div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  function _renderTextarea(q) {
+    const val = AppState.questionnaire.answers[q.key] || '';
+    return `<div>
+      <textarea class="q-textarea" id="qTextarea" placeholder="${q.placeholder || ''}"
+                oninput="Questionnaire.onTextarea('${q.key}', this.value)"
+                rows="4">${val}</textarea>
+      <span class="q-textarea-skip" onclick="Questionnaire.next()">Passer →</span>
+    </div>`;
+  }
+
+  // ─── Interactions ─────────────────────────────────────────────
+
   function selectOption(key, value, type, max) {
-    const answers = mode === 'makeup' ? AppState.makeupQuiz : AppState.questionnaire.answers;
+    const answers = AppState.questionnaire.answers;
 
     if (type === 'single') {
-      document.querySelectorAll('.q-option').forEach(el => el.classList.remove('selected'));
+      document.querySelectorAll('.q-option-premium').forEach(el => el.classList.remove('selected'));
       document.querySelector(`[data-value="${value}"]`)?.classList.add('selected');
       answers[key] = value;
+      _updateNextBtn();
+      // Auto-avance sur mobile après 200ms
+      setTimeout(() => { if (!_isLastQuestion()) next(); }, 220);
+
     } else {
       const el      = document.querySelector(`[data-value="${value}"]`);
-      const current = answers[key] || [];
-      if (el.classList.contains('selected')) {
+      const current = Array.isArray(answers[key]) ? answers[key] : [];
+      if (el?.classList.contains('selected')) {
         el.classList.remove('selected');
         answers[key] = current.filter(v => v !== value);
       } else {
         if (current.length >= max) {
-          showToast(`Maximum ${max} réponses`, 'warning');
-          return;
+          showToast(`Maximum ${max} réponses`, 'warning'); return;
         }
-        el.classList.add('selected');
+        el?.classList.add('selected');
         answers[key] = [...current, value];
       }
+      _updateNextBtn();
     }
-    updateNextBtn();
   }
 
-  function updateNextBtn() {
-    const q   = activeQuestions[currentIndex];
-    const btn = document.getElementById('qNextBtn');
-    if (!btn || !q) return;
-    const answers = mode === 'makeup' ? AppState.makeupQuiz : AppState.questionnaire.answers;
-    const answer  = answers[q.key];
-    const valid   = !q.required || (Array.isArray(answer) ? answer.length > 0 : !!answer);
-    btn.disabled      = !valid;
-    btn.style.opacity = valid ? '1' : '0.5';
+  function onSlider(key, value) {
+    const val  = parseInt(value);
+    const q    = QUESTIONS[currentIndex];
+    AppState.questionnaire.answers[key] = val;
+
+    const display = document.getElementById('sliderVal');
+    const lbl     = document.getElementById('sliderLbl');
+    if (display) display.textContent = val;
+    if (lbl)     lbl.textContent     = _sliderLabel(val, q);
+
+    // Update gradient
+    const slider = document.getElementById('qSlider');
+    if (slider) {
+      slider.style.background = `linear-gradient(to right, var(--nude) 0%, var(--nude) ${val*10}%, var(--sand) ${val*10}%, var(--sand) 100%)`;
+    }
+    _updateNextBtn();
+  }
+
+  function toggleZone(zoneId) {
+    const answers = AppState.questionnaire.answers;
+    const zones   = answers.problemZones || [];
+    const idx     = zones.indexOf(zoneId);
+
+    if (idx >= 0) {
+      answers.problemZones = zones.filter(z => z !== zoneId);
+      document.querySelector(`[data-zone="${zoneId}"]`)?.classList.remove('selected');
+    } else {
+      answers.problemZones = [...zones, zoneId];
+      document.querySelector(`[data-zone="${zoneId}"]`)?.classList.add('selected');
+    }
+
+    const chips = answers.problemZones.length
+      ? answers.problemZones.map(z => `<span class="q-face-chip">${_zoneLabel(z)}</span>`).join('')
+      : '<span style="font-size:0.8rem;color:var(--muted);">Touche les zones concernées</span>';
+    const el = document.getElementById('faceChips');
+    if (el) el.innerHTML = chips;
+    _updateNextBtn();
+  }
+
+  function onTextarea(key, value) {
+    AppState.questionnaire.answers[key] = value;
+  }
+
+  // ─── Photo step ───────────────────────────────────────────────
+
+  function takePhoto() {
+    // Redirige vers l'écran capture existant
+    // Quand la photo est prise, l'app revient ici via resumeFromPhoto()
+    sessionStorage.setItem('glow_resume_questionnaire', '1');
+    showScreen('capture');
+  }
+
+  function uploadPhoto(input) {
+    const file = input.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const dataUrl = e.target.result;
+      AppState.face = AppState.face || {};
+      AppState.face.photo = dataUrl;
+      _showPhotoAnalyzing();
+      try {
+        const result = await SkinAnalysis.analyzeFromPhoto(dataUrl);
+        if (result) {
+          AppState.face.skinAnalysis = result;
+          _prefillFromPhoto();
+        }
+      } catch (err) {
+        console.warn('[Questionnaire] analyzeFromPhoto error:', err);
+      }
+      _showPhotoResult();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function skipPhoto() {
+    _slideTo(_nextActive(currentIndex), 'forward');
+  }
+
+  function resumeFromPhoto() {
+    // Appelé depuis app.js quand la photo est capturée et l'analyse terminée
+    _prefillFromPhoto();
+    _showPhotoResult();
+  }
+
+  function _showPhotoAnalyzing() {
+    const wrap = document.getElementById('qOptionsWrap');
+    if (!wrap) return;
+    wrap.innerHTML = `<div class="q-photo-analyzing">
+      <div class="q-photo-scan-ring"></div>
+      <p style="font-size:0.85rem;color:var(--muted);">Analyse de ta peau…</p>
+    </div>`;
+  }
+
+  function _showPhotoResult() {
+    showScreen('questionnaire');
+    render();
+    // Avance automatiquement après 1.5s pour montrer le résumé
+    setTimeout(() => {
+      const nextIdx = _nextActive(currentIndex);
+      if (nextIdx >= 0) _slideTo(nextIdx, 'forward');
+    }, 1800);
   }
 
   // ─── Navigation ───────────────────────────────────────────────
+
   function next() {
-    const q       = activeQuestions[currentIndex];
-    const answers = mode === 'makeup' ? AppState.makeupQuiz : AppState.questionnaire.answers;
-    const answer  = answers[q.key];
-    if (q.required && (Array.isArray(answer) ? answer.length === 0 : !answer)) {
-      showToast('Merci de sélectionner une réponse', 'warning');
-      return;
+    const q       = QUESTIONS[currentIndex];
+    const answers = AppState.questionnaire.answers;
+
+    // Validation
+    if (q.required && q.type !== 'photo-step') {
+      const answer = answers[q.key];
+      const valid  = Array.isArray(answer) ? answer.length > 0 : (answer !== undefined && answer !== null && answer !== '');
+      if (!valid) {
+        showToast('Merci de faire une sélection', 'warning');
+        return;
+      }
     }
 
-    if (currentIndex < activeQuestions.length - 1) {
-      currentIndex++;
-      if (mode === 'skincare') AppState.questionnaire.currentQ = currentIndex;
-      render();
+    const nextIdx = _nextActive(currentIndex);
+    if (nextIdx >= 0) {
+      _slideTo(nextIdx, 'forward');
     } else {
       submit();
     }
   }
 
   function prev() {
-    if (currentIndex > 0) {
-      currentIndex--;
-      if (mode === 'skincare') AppState.questionnaire.currentQ = currentIndex;
-      render();
-    }
+    const prevIdx = _prevActive(currentIndex);
+    if (prevIdx >= 0) _slideTo(prevIdx, 'backward');
   }
 
-  // ─── Soumettre ────────────────────────────────────────────────
-  function submit() {
-    if (mode === 'skincare') {
-      AppState.questionnaire.completed = true;
-      const { routine, log } = RulesEngine.evaluate(AppState.questionnaire.answers);
-      AppState.routine = { ...routine, log };
-      ProductCatalog.getRecommended(AppState.questionnaire.answers);
-      if (typeof RoutineSaver !== 'undefined') RoutineSaver.saveProfile();
-      showScreen('results');
-    } else {
-      // Makeup : AppState.makeupQuiz est déjà à jour, aller vers la routine
-      showScreen('makeup');
-    }
+  function _isLastQuestion() {
+    return _nextActive(currentIndex) === -1;
   }
+
+  function _slideTo(targetIndex, direction) {
+    if (sliding) return;
+    sliding = true;
+
+    const card = document.getElementById('qCard');
+    if (!card) {
+      currentIndex = targetIndex;
+      AppState.questionnaire.currentQ = currentIndex;
+      render();
+      sliding = false;
+      return;
+    }
+
+    const outClass = direction === 'forward' ? 'slide-out-left'  : 'slide-out-right';
+    const inClass  = direction === 'forward' ? 'slide-in-right'  : 'slide-in-left';
+
+    card.classList.add(outClass);
+    setTimeout(() => {
+      currentIndex = targetIndex;
+      AppState.questionnaire.currentQ = currentIndex;
+      render();
+      const newCard = document.getElementById('qCard');
+      if (newCard) {
+        newCard.classList.add(inClass);
+        setTimeout(() => { newCard.classList.remove(inClass); sliding = false; }, 230);
+      } else {
+        sliding = false;
+      }
+    }, 220);
+  }
+
+  // ─── Validation bouton suivant ────────────────────────────────
+
+  function _updateNextBtn() {
+    const q   = QUESTIONS[currentIndex];
+    const btn = document.getElementById('qNextBtn');
+    if (!btn || !q || q.type === 'photo-step') return;
+
+    const answers = AppState.questionnaire.answers;
+    const answer  = answers[q.key];
+    const valid   = !q.required
+      || q.type === 'slider'     // slider toujours valide
+      || q.type === 'face-map'   // face-map optionnel
+      || q.type === 'textarea'   // textarea optionnel
+      || (Array.isArray(answer) ? answer.length > 0 : (answer !== undefined && answer !== null && answer !== ''));
+
+    btn.disabled      = !valid;
+    btn.style.opacity = valid ? '1' : '0.5';
+  }
+
+  function _restoreAnswer(q) {
+    // Les choix sont déjà restaurés dans le HTML — rien à faire pour single/multiple
+    // Pour slider, la valeur est déjà injectée dans le value= de l'input
+    // Pour textarea, la valeur est déjà dans le contenu
+    _updateNextBtn();
+  }
+
+  // ─── Submit ───────────────────────────────────────────────────
+
+  function submit() {
+    AppState.questionnaire.completed = true;
+
+    // Construire l'objet final avec données photo
+    const answers = {
+      ...AppState.questionnaire.answers,
+      photoData: AppState.face?.skinAnalysis || null
+    };
+
+    // Compatibilité rulesEngine (ancien champ concerns → nouveau complexes)
+    if (answers.complexes && !answers.concerns) {
+      answers.concerns = answers.complexes;
+    }
+    // Compatibilité ageGroup
+    if (!answers.ageGroup && answers.age) answers.ageGroup = answers.age;
+
+    const { routine, log } = RulesEngine.evaluate(answers);
+    AppState.routine = { ...routine, log };
+    ProductCatalog.getRecommended(answers);
+    if (typeof RoutineSaver !== 'undefined') RoutineSaver.saveProfile();
+    showScreen('results');
+  }
+
+  // ─── Legacy makeup (questionnaire maquillage inchangé) ────────
+
+  const MAKEUP_QUESTIONS = [
+    {
+      id: 'mq1', key: 'mkSkinType', type: 'single', required: true,
+      question: 'Ma peau au réveil est plutôt :',
+      options: [
+        { value: 'normale',  emoji: '◇', label: 'Normale',  desc: 'Équilibrée, sans excès' },
+        { value: 'grasse',   emoji: '◎', label: 'Grasse',   desc: 'Brillances, pores visibles' },
+        { value: 'seche',    emoji: '○', label: 'Sèche',    desc: 'Tiraillements, desquamations' },
+        { value: 'mixte',    emoji: '⟡', label: 'Mixte',    desc: 'Zone T grasse, joues sèches' },
+        { value: 'sensible', emoji: '△', label: 'Sensible', desc: 'Réactive, rougeurs possibles' }
+      ]
+    },
+    {
+      id: 'mq2', key: 'mkLook', type: 'single', required: true,
+      question: 'Aujourd\'hui, je veux un maquillage :',
+      options: [
+        { value: 'naturel', emoji: '🌸', label: 'Naturel', desc: 'No-makeup makeup, peau nue améliorée' },
+        { value: 'soigne',  emoji: '✨', label: 'Soigné',  desc: 'Everyday chic, bien fini' },
+        { value: 'glam',    emoji: '💫', label: 'Glam',    desc: 'Full glam, impact maximal' }
+      ]
+    },
+    {
+      id: 'mq3', key: 'mkFocus', type: 'single', required: true,
+      question: 'La zone que je veux le plus améliorer est :',
+      options: [
+        { value: 'yeux',   emoji: '👁', label: 'Les yeux',   desc: 'Regard, mascara, liner' },
+        { value: 'levres', emoji: '💋', label: 'Les lèvres', desc: 'Couleur, volume, brillance' },
+        { value: 'teint',  emoji: '🌟', label: 'Le teint',   desc: 'Peau nette et lumineuse' },
+        { value: 'joues',  emoji: '🌹', label: 'Les joues',  desc: 'Bonne mine, structure' }
+      ]
+    },
+    {
+      id: 'mq4', key: 'mkTime', type: 'single', required: true,
+      question: 'Le matin, j\'ai plutôt :',
+      options: [
+        { value: 'rapide',  emoji: '⚡', label: 'Moins de 5 min', desc: 'Routine express, l\'essentiel' },
+        { value: 'moyen',   emoji: '☕', label: '5 – 10 min',     desc: 'Un peu de temps pour moi' },
+        { value: 'complet', emoji: '🌅', label: 'Plus de 10 min', desc: 'Je prends le temps de me sublimer' }
+      ]
+    },
+    {
+      id: 'mq5', key: 'mkBudget', type: 'single', required: true,
+      question: 'Je préfère :',
+      options: [
+        { value: 'petits-prix', emoji: '🌱', label: 'Petits prix',     desc: 'Maxi effet, mini budget' },
+        { value: 'bon-rapport', emoji: '🌿', label: 'Bon rapport Q/P', desc: 'Qualité accessible' },
+        { value: 'premium',     emoji: '✦',  label: 'Premium',         desc: 'Je choisis les meilleurs' }
+      ]
+    }
+  ];
+
+  let makeupIndex = 0;
+
+  function _renderMakeupLegacy() {
+    const container = document.getElementById('questionnaireContent');
+    if (!container) return;
+
+    const q        = MAKEUP_QUESTIONS[makeupIndex];
+    if (!q) return;
+    const answers  = AppState.makeupQuiz || {};
+    const progress = Math.round(((makeupIndex + 1) / MAKEUP_QUESTIONS.length) * 100);
+    const isLast   = makeupIndex === MAKEUP_QUESTIONS.length - 1;
+
+    container.innerHTML = `
+      <div class="q-progress-header">
+        <span class="q-progress-counter">${makeupIndex + 1} / ${MAKEUP_QUESTIONS.length}</span>
+      </div>
+      <div class="q-progress-bar">
+        <div class="q-progress-fill" style="width:${progress}%"></div>
+      </div>
+      <div class="q-card" id="qCard">
+        <h2 class="q-question">${q.question}</h2>
+        <div id="qOptionsWrap">${_renderMkChoices(q, answers)}</div>
+      </div>
+      <div class="q-navigation">
+        ${makeupIndex > 0
+          ? '<button class="btn btn-outline q-back" onclick="Questionnaire.prev()">← Retour</button>'
+          : '<div></div>'}
+        <button class="btn btn-dark q-next" id="qNextBtn" onclick="Questionnaire.next()">
+          ${isLast ? 'Voir ma routine ✦' : 'Continuer →'}
+        </button>
+      </div>`;
+    _updateMkBtn(q, answers);
+  }
+
+  function _renderMkChoices(q, answers) {
+    const sel    = answers[q.key];
+    const selArr = Array.isArray(sel) ? sel : (sel ? [sel] : []);
+    return q.options.map(opt => `
+      <div class="q-option-premium${selArr.includes(opt.value) ? ' selected' : ''}"
+           data-value="${opt.value}"
+           onclick="Questionnaire.selectMkOption('${q.key}','${opt.value}')">
+        <span class="q-option-emoji">${opt.emoji || ''}</span>
+        <div class="q-option-body">
+          <div class="q-option-label">${opt.label}</div>
+          ${opt.desc ? `<div class="q-option-desc">${opt.desc}</div>` : ''}
+        </div>
+        <div class="q-option-check">✓</div>
+      </div>`).join('');
+  }
+
+  function selectMkOption(key, value) {
+    AppState.makeupQuiz = AppState.makeupQuiz || {};
+    document.querySelectorAll('.q-option-premium').forEach(el => el.classList.remove('selected'));
+    document.querySelector(`[data-value="${value}"]`)?.classList.add('selected');
+    AppState.makeupQuiz[key] = value;
+    const q = MAKEUP_QUESTIONS[makeupIndex];
+    _updateMkBtn(q, AppState.makeupQuiz);
+    setTimeout(() => {
+      if (makeupIndex < MAKEUP_QUESTIONS.length - 1) { makeupIndex++; _renderMakeupLegacy(); }
+      else { showScreen('makeup'); }
+    }, 220);
+  }
+
+  function _updateMkBtn(q, answers) {
+    const btn = document.getElementById('qNextBtn');
+    if (!btn) return;
+    const valid = !q.required || !!answers[q.key];
+    btn.disabled = !valid;
+    btn.style.opacity = valid ? '1' : '0.5';
+  }
+
+  // ─── API publique ─────────────────────────────────────────────
+
+  window.addEventListener('DOMContentLoaded', () => {
+    // Si retour depuis la capture photo
+    if (sessionStorage.getItem('glow_resume_questionnaire') === '1') {
+      sessionStorage.removeItem('glow_resume_questionnaire');
+      const screen = document.getElementById('screen-questionnaire');
+      if (screen && AppState.face?.photo) {
+        showScreen('questionnaire');
+        render();
+      }
+    }
+  });
 
   return {
     startSkincare, startMakeup,
     reset, render,
-    selectOption, next, prev, submit,
-    SKINCARE_QUESTIONS, MAKEUP_QUESTIONS
+    selectOption, selectMkOption,
+    onSlider, toggleZone, onTextarea,
+    takePhoto, uploadPhoto, skipPhoto, resumeFromPhoto,
+    next, prev, submit,
+    QUESTIONS, MAKEUP_QUESTIONS
   };
 
 })();

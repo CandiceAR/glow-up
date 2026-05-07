@@ -920,7 +920,7 @@ const SkinAnalysis = (() => {
           <h2>Aucune photo détectée</h2>
           <p>Commence par prendre ou uploader une photo pour obtenir ton diagnostic peau.</p>
           <button class="btn btn-dark" onclick="showScreen('capture')">Ajouter une photo →</button>
-          <button class="btn btn-outline" onclick="showScreen('routine-choice')" style="margin-top:8px">
+          <button class="btn btn-outline" onclick="Questionnaire.startSkincare()" style="margin-top:8px">
             Passer cette étape
           </button>
         </div>`;
@@ -979,7 +979,7 @@ const SkinAnalysis = (() => {
             <h2>Visage non détecté</h2>
             <p>Essaie avec une photo de face, bien éclairée, sans lunettes de soleil.</p>
             <button class="btn btn-dark" onclick="showScreen('capture')">Reprendre une photo</button>
-            <button class="btn btn-outline" onclick="showScreen('routine-choice')" style="margin-top:8px">
+            <button class="btn btn-outline" onclick="Questionnaire.startSkincare()" style="margin-top:8px">
               Continuer sans analyse →
             </button>
           </div>`;
@@ -1016,7 +1016,7 @@ const SkinAnalysis = (() => {
           <h2>Analyse temporairement indisponible</h2>
           <p>Le moteur d'analyse n'a pas pu se charger sur cet appareil.<br>
           <small style="color:var(--muted)">${err.message || 'Erreur inconnue'}</small></p>
-          <button class="btn btn-dark" onclick="showScreen('routine-choice')">
+          <button class="btn btn-dark" onclick="Questionnaire.startSkincare()">
             Continuer sans analyse →
           </button>
           <button class="btn btn-outline" onclick="showScreen('capture')" style="margin-top:10px">
@@ -1812,7 +1812,7 @@ const SkinAnalysis = (() => {
 
         <!-- CTA -->
         <div class="diag-cta">
-          <button class="btn btn-dark" onclick="showScreen('routine-choice')">
+          <button class="btn btn-dark" onclick="Questionnaire.startSkincare()">
             Créer ma routine soin ✦
           </button>
           <button class="btn btn-outline" onclick="showScreen('capture')" style="margin-top:10px">

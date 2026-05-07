@@ -27,6 +27,43 @@ const RulesEngine = (() => {
   }
 
   // ─── Évaluer les réponses et trouver la règle applicable ─────
+  // ─── Enrichissement depuis l'analyse photo ───────────────────
+  function _enrichFromPhoto(answers) {
+    const pd = answers.photoData;
+    if (!pd) return answers;
+
+    const enriched = { ...answers };
+
+    // skinType depuis photo si pas de réponse quiz
+    if (!enriched.skinType && pd.skinType?.type) {
+      enriched.skinType = pd.skinType.type;
+    }
+
+    // oiliness depuis pores photo
+    if (enriched.oiliness === undefined && pd.zones) {
+      const avg = Object.values(pd.zones).reduce((s, z) => s + (z.pores || 0), 0) / 5;
+      enriched.oiliness = Math.min(10, Math.round(avg / 10));
+    }
+
+    // sensitivity depuis redness photo
+    if (enriched.sensitivity === undefined && pd.zones) {
+      const avg = Object.values(pd.zones).reduce((s, z) => s + (z.redness || 0), 0) / 5;
+      enriched.sensitivity = Math.min(10, Math.round(avg / 10));
+    }
+
+    // cernes depuis photo
+    if (!enriched.complexes?.includes('cernes') && pd.cernes?.detected) {
+      enriched.complexes = [...(enriched.complexes || []), 'cernes'];
+    }
+
+    // concerns = complexes (compatibilité anciens rules)
+    if (enriched.complexes && !enriched.concerns) {
+      enriched.concerns = enriched.complexes;
+    }
+
+    return enriched;
+  }
+
   function evaluate(answers) {
     log = [];
 
@@ -35,8 +72,11 @@ const RulesEngine = (() => {
       return applyFallback();
     }
 
+    // Enrichir les réponses avec les données photo
+    answers = _enrichFromPhoto(answers);
+
     logEntry('START', `Évaluation démarrée — ${rules.length} règles disponibles`);
-    logEntry('INPUT', `Réponses : ${JSON.stringify(answers)}`);
+    logEntry('INPUT', `Réponses enrichies : skinType=${answers.skinType}, oiliness=${answers.oiliness}, sensitivity=${answers.sensitivity}`);
 
     // Trier par priorité décroissante (hors FALLBACK)
     const sorted = [...rules]
@@ -137,6 +177,42 @@ const RulesEngine = (() => {
     // { not: 'jamais' }
     if (condition.not !== undefined) {
       const match = value !== condition.not;
+      return { match, points: match ? 1 : 0 };
+    }
+
+    // { gte: 7 }  — valeur numérique >= 7
+    if (condition.gte !== undefined) {
+      const num   = typeof value === 'number' ? value : parseFloat(value);
+      const match = !isNaN(num) && num >= condition.gte;
+      return { match, points: match ? 2 : 0 };
+    }
+
+    // { lte: 4 }  — valeur numérique <= 4
+    if (condition.lte !== undefined) {
+      const num   = typeof value === 'number' ? value : parseFloat(value);
+      const match = !isNaN(num) && num <= condition.lte;
+      return { match, points: match ? 2 : 0 };
+    }
+
+    // { range: [3, 6] }  — entre 3 et 6 inclus
+    if (condition.range !== undefined) {
+      const [lo, hi] = condition.range;
+      const num   = typeof value === 'number' ? value : parseFloat(value);
+      const match = !isNaN(num) && num >= lo && num <= hi;
+      return { match, points: match ? 2 : 0 };
+    }
+
+    // { intersects: ['acne', 'pores'] }  — au moins 1 élément commun
+    if (condition.intersects !== undefined) {
+      const arr   = Array.isArray(value) ? value : (value ? [value] : []);
+      const match = condition.intersects.some(v => arr.includes(v));
+      return { match, points: match ? 1 : 0 };
+    }
+
+    // { notIncludes: 'retinol' }  — array ne contient PAS cet élément
+    if (condition.notIncludes !== undefined) {
+      const arr   = Array.isArray(value) ? value : (value ? [value] : []);
+      const match = !arr.includes(condition.notIncludes);
       return { match, points: match ? 1 : 0 };
     }
 
