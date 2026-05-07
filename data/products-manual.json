@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-05-05",
-    "totalProducts": 161
+    "totalProducts": 169
   },
   "products": [
     {
@@ -3734,6 +3734,207 @@
       "active": true,
       "curatedBy": "admin",
       "curatedAt": "2026-05-06"
+    },
+    {
+      "id": "m162",
+      "name": "RoC Derm Correxion Crème Réparatrice Yeux",
+      "brand": "RoC",
+      "category": "eye",
+      "imageUrl": "assets/ROC-DermCorrexionEyeRepair.jpg",
+      "amazonUrl": "https://www.amazon.fr/dp/B0FMGM47MC?tag=kan10ar-21",
+      "asin": "B0FMGM47MC",
+      "price": 37,
+      "rating": 4.3,
+      "reviews": 150,
+      "description": "Crème réparatrice contour des yeux. Réduit l'apparence des cernes, poches et ridules. Formule anti-âge enrichie en peptides.",
+      "concernTags": [
+        "cernes",
+        "poches",
+        "rides",
+        "ridules",
+        "anti_age"
+      ],
+      "ingredientTags": [
+        "peptides"
+      ],
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m163",
+      "name": "RoC Correxion Baume Contour des Yeux",
+      "brand": "RoC",
+      "category": "eye",
+      "imageUrl": "assets/ROC-BaumeYeux.jpg",
+      "amazonUrl": "https://www.amazon.fr/dp/B0CCW5HL71?tag=kan10ar-21",
+      "asin": "B0CCW5HL71",
+      "price": 29.77,
+      "rating": 4.3,
+      "reviews": 500,
+      "description": "Baume renouveau contour des yeux hypoallergénique. Contient de l'acide hyaluronique. Réduit cernes et ridules.",
+      "concernTags": [
+        "cernes",
+        "poches",
+        "rides",
+        "ridules",
+        "anti_age"
+      ],
+      "ingredientTags": [
+        "hyaluronique"
+      ],
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m164",
+      "name": "La Provençale Jouvence Anti-Âge Crème Yeux",
+      "brand": "La Provençale Bio",
+      "category": "eye",
+      "imageUrl": "assets/LAPROVENCALE-YeuxAntiAge.jpg",
+      "amazonUrl": "https://www.amazon.fr/dp/B07WMHGB86?tag=kan10ar-21",
+      "asin": "B07WMHGB86",
+      "price": 9.79,
+      "rating": 4.2,
+      "reviews": 1200,
+      "description": "Soin contour des yeux anti-âge certifié bio. Huile d'olive de Provence. Réduit cernes et ridules.",
+      "concernTags": [
+        "cernes",
+        "rides",
+        "ridules",
+        "anti_age",
+        "sensibilite"
+      ],
+      "ingredientTags": [
+        "huile_olive"
+      ],
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m165",
+      "name": "RoC Retinol Correxion Crème Lissante Anti-Rides Yeux",
+      "brand": "RoC",
+      "category": "eye",
+      "imageUrl": "assets/ROC-RetinolYeux.jpg",
+      "amazonUrl": "https://www.amazon.fr/dp/B08GGD7NRN?tag=kan10ar-21",
+      "asin": "B08GGD7NRN",
+      "price": 30.9,
+      "rating": 4.3,
+      "reviews": 3200,
+      "description": "Crème lissante anti-rides contour des yeux au rétinol. Réduit visiblement rides et ridules. Formule testée dermatologiquement.",
+      "concernTags": [
+        "cernes",
+        "rides",
+        "ridules",
+        "anti_age",
+        "texture"
+      ],
+      "ingredientTags": [
+        "retinol"
+      ],
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m166",
+      "name": "SVR Eye Biotic Soin Illuminateur Contour des Yeux",
+      "brand": "SVR",
+      "category": "eye",
+      "imageUrl": "assets/SVR-EyeBiotic.jpg",
+      "amazonUrl": "https://www.amazon.fr/dp/B0DZP89XCG?tag=kan10ar-21",
+      "asin": "B0DZP89XCG",
+      "price": 25.9,
+      "rating": 4.4,
+      "reviews": 180,
+      "description": "Soin illuminateur contour des yeux. Cernes pigmentaires et vasculaires. Enrichi en probiotiques.",
+      "concernTags": [
+        "cernes",
+        "poches",
+        "teint_terne",
+        "eclat",
+        "sensibilite"
+      ],
+      "ingredientTags": [
+        "probiotiques"
+      ],
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m167",
+      "name": "Erborian Ginseng Power Eyes Crème Lissante Anti-Âge",
+      "brand": "Erborian",
+      "category": "eye",
+      "imageUrl": "assets/ERBORIAN-GinsengPowerEyes.jpg",
+      "amazonUrl": "https://www.amazon.fr/dp/B0DPKHF8GH?tag=kan10ar-21",
+      "asin": "B0DPKHF8GH",
+      "price": 35.9,
+      "rating": 4.3,
+      "reviews": 90,
+      "description": "Crème lissante anti-âge contour des yeux au ginseng. Réduit rides et cernes. Cosmétique K-beauty.",
+      "concernTags": [
+        "cernes",
+        "rides",
+        "ridules",
+        "anti_age",
+        "teint_terne"
+      ],
+      "ingredientTags": [
+        "ginseng"
+      ],
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m168",
+      "name": "Beauty of Joseon Revive Eye Serum",
+      "brand": "Beauty of Joseon",
+      "category": "eye",
+      "imageUrl": "assets/BEAUTYOFJOSEON-EyeSerum.jpg",
+      "amazonUrl": "https://www.amazon.fr/dp/B0B45LL4DD?tag=kan10ar-21",
+      "asin": "B0B45LL4DD",
+      "price": 20,
+      "rating": 4.5,
+      "reviews": 2800,
+      "description": "Sérum contour des yeux K-beauty. Hydrate et réduit cernes et ridules. Formule légère au ginseng et niacinamide.",
+      "concernTags": [
+        "cernes",
+        "rides",
+        "ridules",
+        "hydratation",
+        "deshydratation"
+      ],
+      "ingredientTags": [
+        "ginseng",
+        "niacinamide",
+        "hyaluronique"
+      ],
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m169",
+      "name": "AXIS-Y Vegan Collagen Eyes Sérum",
+      "brand": "AXIS-Y",
+      "category": "eye",
+      "imageUrl": "assets/AXISY-VeganCollagenEyes.jpg",
+      "amazonUrl": "https://www.amazon.fr/s?k=axis-y+vegan+collagen+eyes&tag=kan10ar-21",
+      "price": 22.89,
+      "rating": 4.4,
+      "reviews": 600,
+      "description": "Sérum contour des yeux au collagène vegan. Réduit cernes, poches et ridules. Formule K-beauty vegan.",
+      "concernTags": [
+        "cernes",
+        "poches",
+        "rides",
+        "ridules",
+        "anti_age"
+      ],
+      "ingredientTags": [
+        "collagene"
+      ],
+      "isFeatured": false,
+      "active": true
     }
   ]
 }
