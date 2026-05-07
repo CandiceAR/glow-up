@@ -182,31 +182,27 @@ const Admin = (() => {
         const existingById   = products.find(e => e.id === p.id);
         const existing = existingByAsin || existingById;
         if (!existing) {
-          // Nouveau produit
+          // Nouveau produit — sauvegarder avec l'ID du JSON
           if (typeof FirestoreProducts !== 'undefined') {
             await FirestoreProducts.save(p);
             products.push(p);
             added++;
           }
         } else {
-          // Mettre à jour tags si différents
-          const tagsDiff = JSON.stringify(p.concernTags) !== JSON.stringify(existing.concernTags) ||
-                           JSON.stringify(p.ingredientTags) !== JSON.stringify(existing.ingredientTags);
-          if (tagsDiff) {
-            const merged = { ...existing, concernTags: p.concernTags, ingredientTags: p.ingredientTags };
-            if (typeof FirestoreProducts !== 'undefined') {
-              await FirestoreProducts.save(merged);
-              const idx = products.findIndex(e => e.id === existing.id);
-              if (idx >= 0) products[idx] = merged;
-              updated++;
-            }
+          // Produit existant — mettre à jour tous les champs depuis le JSON
+          const merged = { ...existing, ...p, id: existing.id };
+          if (typeof FirestoreProducts !== 'undefined') {
+            await FirestoreProducts.save(merged);
+            const idx = products.findIndex(e => e.id === existing.id);
+            if (idx >= 0) products[idx] = merged;
+            updated++;
           }
         }
       }
       saveToStorage();
       renderTable();
       renderStats();
-      toast(`✓ ${added} ajouté(s), ${updated} tag(s) mis à jour`, 'success');
+      toast(`✓ ${added} ajouté(s), ${updated} mis à jour — total: ${products.length}`, 'success');
     } catch (e) {
       toast('Erreur : ' + e.message, 'error');
     }
