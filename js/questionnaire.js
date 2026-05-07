@@ -93,7 +93,7 @@ const Questionnaire = (() => {
       id: 'q5', key: 'rednessZones', type: 'multiple', max: 4,
       question: 'Où apparaissent tes rougeurs ?',
       required: false,
-      skipIf: (answers) => (_numVal(answers.sensitivity) < 7),
+      skipIf: (answers) => !answers.complexes?.includes('rougeurs'),
       options: [
         { value: 'joues',   emoji: '🌹', label: 'Joues',   desc: '' },
         { value: 'nez',     emoji: '🔴', label: 'Nez',     desc: '' },
