@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-05-05",
-    "totalProducts": 169
+    "totalProducts": 171
   },
   "products": [
     {
@@ -3932,6 +3932,60 @@
       ],
       "ingredientTags": [
         "collagene"
+      ],
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m170",
+      "name": "AXIS-Y Biome Ultimate Nourishing Sérum Visage",
+      "brand": "AXIS-Y",
+      "category": "serum",
+      "imageUrl": "assets/AXIS-Y-vegan collagen eyes serum.jpg",
+      "amazonUrl": "https://www.amazon.fr/dp/B0CWPCX1D2?tag=kan10ar-21",
+      "asin": "B0CWPCX1D2",
+      "price": 22,
+      "rating": 4.5,
+      "reviews": 450,
+      "description": "Sérum visage végan à l'acide hyaluronique et 5 peptides. Éclat, hydratation et uniformité. K-beauty vegan.",
+      "concernTags": [
+        "hydratation",
+        "deshydratation",
+        "teint_terne",
+        "rides",
+        "ridules",
+        "anti_age"
+      ],
+      "ingredientTags": [
+        "hyaluronique",
+        "peptides",
+        "collagene"
+      ],
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m171",
+      "name": "Some By Mi Retinol Intense Reactivating Sérum",
+      "brand": "Some By Mi",
+      "category": "serum",
+      "imageUrl": "assets/SOMEBYMI-rétinol.jpg",
+      "amazonUrl": "https://www.amazon.fr/dp/B0BXGW8DRP?tag=kan10ar-21",
+      "asin": "B0BXGW8DRP",
+      "price": 23.97,
+      "rating": 4.4,
+      "reviews": 1100,
+      "description": "Sérum anti-âge au rétinol. Réduit rides, ridules et imperfections. Réactive le renouvellement cellulaire. K-beauty.",
+      "concernTags": [
+        "rides",
+        "ridules",
+        "anti_age",
+        "texture",
+        "teint_terne",
+        "pores"
+      ],
+      "ingredientTags": [
+        "retinol"
       ],
       "isFeatured": false,
       "active": true
