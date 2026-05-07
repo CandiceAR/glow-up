@@ -299,6 +299,7 @@ const Questionnaire = (() => {
 
   function reset() {
     AppState.questionnaire = { answers: {}, completed: false, currentQ: 0, photoPreFill: {} };
+    currentIndex = 0;
   }
 
   function startSkincare() {
@@ -335,6 +336,11 @@ const Questionnaire = (() => {
 
   function render() {
     if (mode === 'makeup') { _renderMakeupLegacy(); return; }
+
+    // Guard : s'assurer que l'état est initialisé
+    if (!AppState.questionnaire?.answers) {
+      AppState.questionnaire = { answers: {}, completed: false, currentQ: 0, photoPreFill: {} };
+    }
 
     const container = document.getElementById('questionnaireContent');
     if (!container) return;
@@ -588,25 +594,27 @@ const Questionnaire = (() => {
   // ─── Interactions ─────────────────────────────────────────────
 
   function selectOption(key, value, type, max) {
+    if (!AppState.questionnaire) AppState.questionnaire = { answers: {}, completed: false, currentQ: 0, photoPreFill: {} };
     const answers = AppState.questionnaire.answers;
+    const maxInt  = parseInt(max, 10) || 99;
 
     if (type === 'single') {
       document.querySelectorAll('.q-option-premium').forEach(el => el.classList.remove('selected'));
       document.querySelector(`[data-value="${value}"]`)?.classList.add('selected');
       answers[key] = value;
       _updateNextBtn();
-      // Auto-avance sur mobile après 200ms
+      // Auto-avance sur mobile après 220ms
       setTimeout(() => { if (!_isLastQuestion()) next(); }, 220);
 
     } else {
       const el      = document.querySelector(`[data-value="${value}"]`);
-      const current = Array.isArray(answers[key]) ? answers[key] : [];
+      const current = Array.isArray(answers[key]) ? [...answers[key]] : [];
       if (el?.classList.contains('selected')) {
         el.classList.remove('selected');
         answers[key] = current.filter(v => v !== value);
       } else {
-        if (current.length >= max) {
-          showToast(`Maximum ${max} réponses`, 'warning'); return;
+        if (current.length >= maxInt) {
+          showToast(`Maximum ${maxInt} réponse${maxInt > 1 ? 's' : ''}`, 'warning'); return;
         }
         el?.classList.add('selected');
         answers[key] = [...current, value];
