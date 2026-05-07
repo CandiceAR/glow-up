@@ -36,7 +36,7 @@
       "id": "m002",
       "name": "Glow Recipe Pink Juice Water Gel Hydratant",
       "brand": "Glow Recipe",
-      "category": "cream",
+      "category": "moisturizer",
       "imageUrl": "assets/Glowrecipe-hyaluronique.jpg",
       "amazonUrl": "https://amzn.to/4rukErP",
       "price": 40.84,
@@ -136,7 +136,7 @@
       "id": "m006",
       "name": "Mixsoon Vitamin C Crème Légère",
       "brand": "Mixsoon",
-      "category": "cream",
+      "category": "moisturizer",
       "imageUrl": "assets/MIXSOON-vitaminC.jpg",
       "amazonUrl": "https://amzn.to/3NgW7bI",
       "price": 18.81,
@@ -235,7 +235,7 @@
       "id": "m010",
       "name": "Clinique Emulsion Hydratante Tellement Différente+",
       "brand": "Clinique",
-      "category": "cream",
+      "category": "moisturizer",
       "imageUrl": "assets/CLINIQUE-crèmejour.jpg",
       "amazonUrl": "https://amzn.to/4lmn2zx",
       "price": 25.45,
@@ -2395,7 +2395,7 @@
       "asin": "B0BPXT3GBN",
       "name": "anti ride et crème hydratante visage",
       "brand": "Médicube",
-      "category": "cream",
+      "category": "moisturizer",
       "imageUrl": "assets/MEDICUBE-cr-mejour.jpg",
       "amazonUrl": "https://www.amazon.fr/Medicube-collagene-hyaluronique-l%C3%A9lastine-premium/dp/B0BPXT3GBN?crid=OVZ818S5FBG8&dib=eyJ2IjoiMSJ9.PEZp6QQKoUZ5gMY72f9AZAFeDDpIcEZ6KlQdJg5XqfEVnp5n_LyLgIUFLMeqWWDm14ceT1u4tMj9u8buPSEZw3iDHnAxZof5tnxT5bkk1MnklnF6CMERteLQbfsNeAX_MAo2x4BGrMVwMXSfQQj77G0QBBZlepOJdMjMeq-g1I4c7k1qnXelLpiSH57H6rwO88qXPXaLQzoSGb8fBwuMh9nYXh8XQaErDB4Ys4pBqNa6bGNS7oAGqvaej3MZ92fS0glUye3Gce5gKgg45Bs0RBGmNJOBzeBjJE3Wsv5slVI.Xsp4jia4eiGb9CNnKy7jFhlKxBoJIyIZ5aAP8uXJ3Mo&dib_tag=se&keywords=medicube+triple+collagen+cream&qid=1775211254&sprefix=medicube+TRIPLE+C%2Caps%2C233&sr=8-1&linkCode=ll2&tag=kan10ar-21&linkId=29bcfe5ad9eb3669182fcd91563b66dd&ref_=as_li_ss_tl",
       "price": 17.7,
@@ -2551,7 +2551,7 @@
       "asin": "B0DSCGWVLH",
       "name": "Uriage Roséliane Crème Riche Anti-Rougeurs",
       "brand": "Uriage",
-      "category": "cream",
+      "category": "moisturizer",
       "imageUrl": "assets/URIAGE-ROSELIANE.jpg",
       "amazonUrl": "https://www.amazon.fr/dp/B0DSCGWVLH?tag=kan10ar-21",
       "price": 25,
@@ -2586,7 +2586,7 @@
       "asin": "B0CQ3YGZVV",
       "name": "Pyunkang Yul Crème Apaisante Anti-Rougeurs",
       "brand": "Pyunkang Yul",
-      "category": "cream",
+      "category": "moisturizer",
       "imageUrl": "assets/Pyunkang Yul-Antirougeurs.jpg",
       "amazonUrl": "https://www.amazon.fr/Pyunkang-Yul-Ultimate-Apaisante-Sensibles/dp/B0CQ3YGZVV?tag=kan10ar-21",
       "price": 17.45,
@@ -3449,9 +3449,20 @@
       "rating": 4.4,
       "reviews": 680,
       "description": "Sérum stop-boutons à l'acide salicylique pour traiter les imperfections, réduire les points noirs et prévenir les marques post-boutons. Idéal pour les peaux grasses et acnéiques.",
-      "skinTypeTags": ["grasse","mixte","normale"],
-      "concernTags": ["imperfections","purification","pores","matifiant"],
-      "ingredientTags": ["salicylique"],
+      "skinTypeTags": [
+        "grasse",
+        "mixte",
+        "normale"
+      ],
+      "concernTags": [
+        "imperfections",
+        "purification",
+        "pores",
+        "matifiant"
+      ],
+      "ingredientTags": [
+        "salicylique"
+      ],
       "isFeatured": false,
       "active": true,
       "curatedBy": "admin",
@@ -3462,7 +3473,7 @@
       "asin": "B0FGXQRRC7",
       "name": "Kiehl's Rare Earth Masque Purifiant à l'Argile",
       "brand": "Kiehl's",
-      "category": "mask",
+      "category": "nightmask",
       "imageUrl": "assets/kiehl'S-rareearth.jpg",
       "amazonUrl": "https://www.amazon.fr/Kiehls-Earth-Masque-purifiant-125ml/dp/B0FGXQRRC7?linkCode=ll2&tag=kan10ar-21&linkId=1e5ee1f857279b793ecd622a7ac38722&ref_=as_li_ss_tl",
       "price": 40,
@@ -3470,9 +3481,19 @@
       "rating": 4.6,
       "reviews": 3200,
       "description": "Masque purifiant à l'argile Rare Earth pour absorber l'excès de sébum, désobstruer les pores et purifier les peaux grasses et mixtes. Texture argile douce.",
-      "skinTypeTags": ["grasse","mixte"],
-      "concernTags": ["purification","pores","imperfections","matifiant"],
-      "ingredientTags": ["kaolin"],
+      "skinTypeTags": [
+        "grasse",
+        "mixte"
+      ],
+      "concernTags": [
+        "purification",
+        "pores",
+        "imperfections",
+        "matifiant"
+      ],
+      "ingredientTags": [
+        "kaolin"
+      ],
       "isFeatured": true,
       "active": true,
       "curatedBy": "admin",
@@ -3483,7 +3504,7 @@
       "asin": "B0C42LDCM9",
       "name": "Kiehl's Ultra Facial Masque de Nuit Déshydratation",
       "brand": "Kiehl's",
-      "category": "mask",
+      "category": "nightmask",
       "imageUrl": "assets/kiehl'S-ultrafacialmasquenuit.jpg",
       "amazonUrl": "https://www.amazon.fr/dp/B0C42LDCM9?linkCode=ll2&tag=kan10ar-21&linkId=bd87c40a16b68c8b0e189fd97bd38039&ref_=as_li_ss_tl",
       "price": 38,
@@ -3491,9 +3512,22 @@
       "rating": 4.6,
       "reviews": 1800,
       "description": "Masque de nuit ultra-hydratant pour peaux déshydratées et fragilisées. Restaure la barrière cutanée et repulpe la peau pendant le sommeil.",
-      "skinTypeTags": ["seche","normale","sensible","mixte"],
-      "concernTags": ["deshydratation","hydratation","barriere","sensibilite"],
-      "ingredientTags": ["hyaluronique","glycerine"],
+      "skinTypeTags": [
+        "seche",
+        "normale",
+        "sensible",
+        "mixte"
+      ],
+      "concernTags": [
+        "deshydratation",
+        "hydratation",
+        "barriere",
+        "sensibilite"
+      ],
+      "ingredientTags": [
+        "hyaluronique",
+        "glycerine"
+      ],
       "isFeatured": true,
       "active": true,
       "curatedBy": "admin",
@@ -3504,7 +3538,7 @@
       "asin": "B0728K6X87",
       "name": "Kiehl's Masque Énergisant Illuminateur Nourrissant",
       "brand": "Kiehl's",
-      "category": "mask",
+      "category": "nightmask",
       "imageUrl": "assets/kiehl'S-masqueenergisant.jpg",
       "amazonUrl": "https://www.amazon.fr/dp/B0728K6X87?linkCode=ll2&tag=kan10ar-21&linkId=f7109b4928a7481084abcebb98997398&ref_=as_li_ss_tl",
       "price": 41,
@@ -3512,9 +3546,22 @@
       "rating": 4.5,
       "reviews": 1200,
       "description": "Masque énergisant qui illumine et nourrit la peau terne. Apporte éclat et vitalité au teint en une seule application.",
-      "skinTypeTags": ["normale","seche","mixte","sensible"],
-      "concernTags": ["eclat","teint_terne","hydratation","uniformite"],
-      "ingredientTags": ["glycerine","vitaminec"],
+      "skinTypeTags": [
+        "normale",
+        "seche",
+        "mixte",
+        "sensible"
+      ],
+      "concernTags": [
+        "eclat",
+        "teint_terne",
+        "hydratation",
+        "uniformite"
+      ],
+      "ingredientTags": [
+        "glycerine",
+        "vitaminec"
+      ],
       "isFeatured": false,
       "active": true,
       "curatedBy": "admin",
@@ -3525,7 +3572,7 @@
       "asin": "B008KMZ8FC",
       "name": "Kiehl's Masque Avocat Anti-Rides Nourrissant",
       "brand": "Kiehl's",
-      "category": "mask",
+      "category": "nightmask",
       "imageUrl": "assets/kiehl'S-AVOCADOantirides.jpg",
       "amazonUrl": "https://www.amazon.fr/dp/B008KMZ8FC?linkCode=ll2&tag=kan10ar-21&linkId=5d56e7d1eaf6a8cf54a421df7cbfde20&ref_=as_li_ss_tl",
       "price": 43,
@@ -3533,9 +3580,21 @@
       "rating": 4.6,
       "reviews": 2400,
       "description": "Masque crème à l'avocat contre les rides et ridules pour peaux matures et sèches. Nourrit intensément et lisse le relief cutané.",
-      "skinTypeTags": ["seche","normale","mature"],
-      "concernTags": ["ridules","anti_age","hydratation","barriere"],
-      "ingredientTags": ["glycerine","karite"],
+      "skinTypeTags": [
+        "seche",
+        "normale",
+        "mature"
+      ],
+      "concernTags": [
+        "ridules",
+        "anti_age",
+        "hydratation",
+        "barriere"
+      ],
+      "ingredientTags": [
+        "glycerine",
+        "karite"
+      ],
       "isFeatured": false,
       "active": true,
       "curatedBy": "admin",
@@ -3554,9 +3613,20 @@
       "rating": 4.5,
       "reviews": 480,
       "description": "Sérum anti-rides spécialement formulé pour les peaux mixtes et grasses matures. Lisse les rides sans alourdir, rééquilibre le sébum et raffermit le teint.",
-      "skinTypeTags": ["mixte","grasse"],
-      "concernTags": ["ridules","anti_age","matifiant","pores"],
-      "ingredientTags": ["niacinamide","glycerine"],
+      "skinTypeTags": [
+        "mixte",
+        "grasse"
+      ],
+      "concernTags": [
+        "ridules",
+        "anti_age",
+        "matifiant",
+        "pores"
+      ],
+      "ingredientTags": [
+        "niacinamide",
+        "glycerine"
+      ],
       "isFeatured": false,
       "active": true,
       "curatedBy": "admin",
