@@ -356,6 +356,7 @@
       <div class="admin-tabs">
         <button class="admin-tab active" onclick="Admin.showTab('products')">Produits</button>
         <button class="admin-tab" onclick="Admin.showTab('analytics')">📊 Statistiques</button>
+        <button class="admin-tab" onclick="Admin.showTab('catalogue')">📋 Catalogue</button>
         <button class="admin-tab" onclick="Admin.showTab('asin')">Extracteur ASIN</button>
         <button class="admin-tab" onclick="Admin.showTab('coach')">✦ Coach IA</button>
       </div>
@@ -880,6 +881,38 @@
         </div>
 
       </div><!-- /tabCoach -->
+
+      <!-- ── ONGLET CATALOGUE ── -->
+      <div id="tabCatalogue" style="display:none;">
+
+        <!-- Vue d'ensemble -->
+        <div class="analytics-card" style="margin-bottom:20px;">
+          <h3>Vue d'ensemble</h3>
+          <div class="analytics-kpis" id="catalogueOverview"></div>
+        </div>
+
+        <!-- Par caractéristique -->
+        <div class="analytics-card" style="margin-bottom:20px;">
+          <h3>Produits par cause / caractéristique</h3>
+          <div id="catalogueConcernStats"></div>
+        </div>
+
+        <!-- Liens Amazon -->
+        <div class="analytics-card" style="margin-bottom:20px;">
+          <h3>Liens Amazon — problèmes détectés</h3>
+          <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;">Produits sans lien, sans tag affilié ou sans ASIN. Les liens expirés ne peuvent pas être détectés automatiquement (CORS Amazon).</p>
+          <div id="catalogueLinkIssues"></div>
+        </div>
+
+        <!-- Photos manquantes -->
+        <div class="analytics-card">
+          <h3>Photos manquantes</h3>
+          <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;">Vérifie que chaque fichier image est accessible sur le serveur.</p>
+          <button id="btnCheckPhotos" class="btn btn-outline btn-sm" style="margin-bottom:14px;" onclick="Admin.checkMissingPhotos()">Vérifier les photos</button>
+          <div id="cataloguePhotosResult"></div>
+        </div>
+
+      </div><!-- /tabCatalogue -->
 
     </div><!-- /admin-wrap -->
   </div><!-- /adminPanel -->

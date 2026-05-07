@@ -815,7 +815,7 @@ const Admin = (() => {
 
   // ─── Onglets ──────────────────────────────────────────────────
   let currentTab = 'products';
-  const TAB_IDS  = ['products', 'analytics', 'asin', 'coach'];
+  const TAB_IDS  = ['products', 'analytics', 'asin', 'coach', 'catalogue'];
 
   function showTab(tab) {
     currentTab = tab;
@@ -828,6 +828,7 @@ const Admin = (() => {
     });
     if (tab === 'analytics') renderAnalytics();
     if (tab === 'coach')     renderCoachKeyStatus();
+    if (tab === 'catalogue') renderCatalogueTab();
   }
 
   // ─── Coach IA ─────────────────────────────────────────────────
@@ -1158,6 +1159,137 @@ const Admin = (() => {
     toast(`✓ ${count} produits taggés — vérifie et corrige dans l'admin`, 'success');
   }
 
+  // ─── Onglet Catalogue ─────────────────────────────────────────
+  const CONCERN_LABELS = {
+    couvrance: 'Couvrance', teint_terne: 'Teint terne', hydratation: 'Hydratation',
+    spf: 'SPF', sensibilite: 'Sensibilité', deshydratation: 'Déshydratation',
+    pores: 'Pores', taches: 'Taches', rides: 'Rides', acne: 'Acné',
+    texture: 'Texture', purification: 'Purification', cernes: 'Cernes',
+    eclat: 'Éclat', rougeurs: 'Rougeurs', ridules: 'Ridules', anti_age: 'Anti-âge',
+    imperfections: 'Imperfections', matifiant: 'Matifiant', poches: 'Poches',
+    uniformite: 'Uniformité', barriere: 'Barrière', apaisement: 'Apaisement'
+  };
+
+  function renderCatalogueTab() {
+    _renderCatalogueOverview();
+    _renderLinkIssues();
+    _renderConcernStats();
+    document.getElementById('cataloguePhotosResult').innerHTML =
+      '<span style="color:var(--muted);font-size:0.82rem;">Clique sur "Vérifier" pour analyser les photos.</span>';
+  }
+
+  function _renderCatalogueOverview() {
+    const total    = products.length;
+    const active   = products.filter(p => p.active !== false).length;
+    const inactive = total - active;
+    const withImg  = products.filter(p => p.imageUrl && p.imageUrl !== '').length;
+    const withLink = products.filter(p => p.amazonUrl && p.amazonUrl !== '').length;
+    document.getElementById('catalogueOverview').innerHTML = `
+      <div class="kpi-card highlight"><div class="kpi-value">${total}</div><div class="kpi-label">Produits total</div></div>
+      <div class="kpi-card"><div class="kpi-value">${active}</div><div class="kpi-label">Actifs</div></div>
+      <div class="kpi-card"><div class="kpi-value">${inactive}</div><div class="kpi-label">Inactifs</div></div>
+      <div class="kpi-card"><div class="kpi-value">${withImg}</div><div class="kpi-label">Avec photo</div></div>
+      <div class="kpi-card"><div class="kpi-value">${withLink}</div><div class="kpi-label">Avec lien Amazon</div></div>`;
+  }
+
+  function _renderLinkIssues() {
+    const noLink   = products.filter(p => !p.amazonUrl || p.amazonUrl.trim() === '');
+    const noTag    = products.filter(p => p.amazonUrl && !p.amazonUrl.includes('tag='));
+    const noAsin   = products.filter(p => !p.asin || p.asin.trim() === '');
+    const el = document.getElementById('catalogueLinkIssues');
+    let html = '';
+    if (!noLink.length && !noTag.length && !noAsin.length) {
+      html = '<p style="color:#155724;font-size:0.85rem;">✓ Tous les produits ont un lien Amazon avec tag affilié.</p>';
+    } else {
+      if (noLink.length) {
+        html += `<p style="font-weight:600;font-size:0.82rem;margin-bottom:6px;">⚠ ${noLink.length} produit(s) sans lien Amazon :</p>`;
+        html += '<ul style="font-size:0.8rem;color:var(--muted);margin:0 0 12px 16px;">' +
+          noLink.map(p => `<li><strong>${p.id}</strong> — ${p.name}</li>`).join('') + '</ul>';
+      }
+      if (noTag.length) {
+        html += `<p style="font-weight:600;font-size:0.82rem;margin-bottom:6px;">⚠ ${noTag.length} produit(s) sans tag affilié <code>tag=kan10ar-21</code> :</p>`;
+        html += '<ul style="font-size:0.8rem;color:var(--muted);margin:0 0 12px 16px;">' +
+          noTag.map(p => `<li><strong>${p.id}</strong> — ${p.name}</li>`).join('') + '</ul>';
+      }
+      if (noAsin.length) {
+        html += `<p style="font-weight:600;font-size:0.82rem;margin-bottom:6px;">ℹ ${noAsin.length} produit(s) sans ASIN :</p>`;
+        html += '<ul style="font-size:0.8rem;color:var(--muted);margin:0 0 12px 16px;">' +
+          noAsin.map(p => `<li><strong>${p.id}</strong> — ${p.name}</li>`).join('') + '</ul>';
+      }
+    }
+    el.innerHTML = html;
+  }
+
+  function _renderConcernStats() {
+    const total = products.length;
+    const counts = {};
+    products.forEach(p => {
+      (p.concernTags || []).forEach(tag => { counts[tag] = (counts[tag] || 0) + 1; });
+    });
+    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    const max = sorted[0]?.[1] || 1;
+    const rows = sorted.map(([key, n]) => {
+      const label = CONCERN_LABELS[key] || key;
+      const pct = Math.round((n / max) * 100);
+      return `<tr>
+        <td style="font-size:0.82rem;padding:7px 0;min-width:130px;">${label}</td>
+        <td style="padding:7px 8px;width:100%">
+          <div style="background:var(--sand);border-radius:4px;height:8px;">
+            <div style="width:${pct}%;height:8px;background:linear-gradient(90deg,var(--nude),#C9A98A);border-radius:4px;"></div>
+          </div>
+        </td>
+        <td style="font-size:0.82rem;font-weight:600;padding:7px 0 7px 8px;white-space:nowrap;">${n} <span style="color:var(--muted);font-weight:400;">/ ${total}</span></td>
+      </tr>`;
+    }).join('');
+    document.getElementById('catalogueConcernStats').innerHTML =
+      `<table style="width:100%;border-collapse:collapse;">${rows}</table>`;
+  }
+
+  async function checkMissingPhotos() {
+    const btn = document.getElementById('btnCheckPhotos');
+    const el  = document.getElementById('cataloguePhotosResult');
+    btn.disabled = true;
+    btn.textContent = 'Vérification…';
+    el.innerHTML = '<span style="color:var(--muted);font-size:0.82rem;">Analyse en cours…</span>';
+
+    const missing = [];
+    const ok      = [];
+    for (const p of products) {
+      if (!p.imageUrl || p.imageUrl.trim() === '') {
+        missing.push({ p, reason: 'Aucune image renseignée' });
+        continue;
+      }
+      try {
+        const res = await fetch(p.imageUrl, { method: 'HEAD', cache: 'no-store' });
+        if (!res.ok) missing.push({ p, reason: `HTTP ${res.status}` });
+        else ok.push(p);
+      } catch {
+        missing.push({ p, reason: 'Erreur réseau' });
+      }
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Vérifier les photos';
+
+    if (!missing.length) {
+      el.innerHTML = `<p style="color:#155724;font-size:0.85rem;">✓ Toutes les ${ok.length} photos sont accessibles.</p>`;
+      return;
+    }
+    let html = `<p style="font-weight:600;font-size:0.82rem;margin-bottom:8px;">⚠ ${missing.length} photo(s) manquante(s) ou inaccessible(s) :</p>`;
+    html += '<table style="width:100%;border-collapse:collapse;font-size:0.8rem;">';
+    html += '<tr><th style="text-align:left;padding:4px 8px;background:var(--sand);">ID</th><th style="text-align:left;padding:4px 8px;background:var(--sand);">Produit</th><th style="text-align:left;padding:4px 8px;background:var(--sand);">Fichier</th><th style="text-align:left;padding:4px 8px;background:var(--sand);">Problème</th></tr>';
+    missing.forEach(({ p, reason }) => {
+      html += `<tr style="border-bottom:1px solid var(--sand);">
+        <td style="padding:5px 8px;color:var(--muted);">${p.id}</td>
+        <td style="padding:5px 8px;">${p.name?.substring(0, 35) || '—'}</td>
+        <td style="padding:5px 8px;font-family:monospace;font-size:0.75rem;color:#721c24;">${p.imageUrl || '—'}</td>
+        <td style="padding:5px 8px;color:#856404;">${reason}</td>
+      </tr>`;
+    });
+    html += '</table>';
+    el.innerHTML = html;
+  }
+
   // ─── Init ─────────────────────────────────────────────────────
   window.addEventListener('DOMContentLoaded', checkAuth);
   document.addEventListener('keydown', e => {
@@ -1169,7 +1301,7 @@ const Admin = (() => {
     showAddForm, editProduct, duplicateProduct, cancelForm, saveProduct,
     autoTagAll,
     toggleActive, toggleFeatured, deleteProduct,
-    search, filterCat, filterIngredient, filterConcern, patchSkincareTags, importNewFromJSON, forceSyncAllFromJSON, showTab,
+    search, filterCat, filterIngredient, filterConcern, patchSkincareTags, importNewFromJSON, forceSyncAllFromJSON, showTab, checkMissingPhotos,
     extractASIN, extractASINFromUrl, checkTag, autoFillAmazonUrl, exportJSON,
     setPeriod, exportStatsCSV, clearStats,
     saveCoachKey, deleteCoachKey, testCoachKey,
