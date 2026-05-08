@@ -837,6 +837,12 @@ em { font-style: italic; color: var(--nude); }
   font-size: 2.2rem;
   line-height: 1;
 }
+.routine-global-total-duration {
+  font-size: 0.88rem;
+  opacity: 0.85;
+  margin-top: 6px;
+  font-weight: 500;
+}
 .routine-global-total-note {
   font-size: 0.72rem;
   opacity: 0.55;

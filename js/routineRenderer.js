@@ -148,39 +148,80 @@ const RoutineRenderer = (() => {
   }
 
   // ─── Rendu principal ──────────────────────────────────────────
-  // ─── Calcul du total global (matin + soir) ───────────────────
+  // ─── Durée estimée par type de produit ───────────────────────
+  // Basé sur usage quotidien, volumes moyens du marché
+  const STEP_DURATION_MONTHS = {
+    cleanser:    2,   // 150ml, 2x/jour
+    toner:       2,   // 150ml, 1x/jour
+    serum:       3,   // 30ml, 1-2 pompes/jour
+    treatment:   3,   // 30ml, usage ciblé
+    eye:         4,   // 15ml, usage délicat
+    eyepatch:    3,   // boîte 60 patchs, 3-4x/semaine
+    moisturizer: 3,   // 50ml, 2x/jour
+    oil:         4,   // 30ml, quelques gouttes/jour
+    exfoliant:   4,   // 2-3x/semaine
+    spf:         2,   // 50ml, 1x/jour, dose généreuse
+    lipbalm:     3
+  };
+
+  // ─── Calcul du total global + durée estimée ──────────────────
   function _computeGlobalTotal(routine) {
     const allSteps = [...(routine.matin || []), ...(routine.soir || [])];
     let total = 0;
+    let minDuration = Infinity;
     const seen = new Set();
+
     for (const step of allSteps) {
       const p = findBestProductForStep(step.step);
       if (p?.price && !seen.has(p.id)) {
         total += p.price;
         seen.add(p.id);
       }
+      const dur = STEP_DURATION_MONTHS[step.step];
+      if (dur && dur < minDuration) minDuration = dur;
     }
-    // Patchs yeux si présents
-    const eyeSteps = allSteps.filter(s => s.step === 'eye');
-    if (eyeSteps.length > 0) {
+
+    // Patchs yeux
+    const hasEye = allSteps.some(s => s.step === 'eye');
+    if (hasEye) {
       const patch = findBestProductForStep('eyepatch');
       if (patch?.price && !seen.has(patch.id)) total += patch.price;
+      const dur = STEP_DURATION_MONTHS.eyepatch;
+      if (dur < minDuration) minDuration = dur;
     }
-    return total;
+
+    const duration = minDuration === Infinity ? 3 : minDuration;
+    return { total, duration };
+  }
+
+  function _durationLabel(months) {
+    if (months <= 1) return '1 mois';
+    if (months <= 2) return '2 mois';
+    if (months <= 3) return '3 mois';
+    if (months <= 4) return '4 mois';
+    if (months <= 6) return '6 mois';
+    return months + ' mois';
   }
 
   function renderGlobalTotal(routine, isLocked) {
-    const total = _computeGlobalTotal(routine);
+    const { total, duration } = _computeGlobalTotal(routine);
     if (total <= 0) return '';
-    const note = isLocked ? 'Routine du matin uniquement · Débloquer le soir avec Premium' : 'Routine matin + soir complète';
+
+    const perMonth   = (total / duration).toFixed(0);
+    const durLabel   = _durationLabel(duration);
+    const routineNote = isLocked
+      ? 'Routine du matin uniquement'
+      : 'Routine matin + soir complète';
+
     return `
       <div class="routine-global-total">
         <div>
           <div class="routine-global-total-label">Budget routine estimé</div>
           <div class="routine-global-total-price">${total.toFixed(2)} €</div>
-          <div class="routine-global-total-note">${note}</div>
+          <div class="routine-global-total-duration">≈ ${perMonth} €/mois · Dure environ ${durLabel}</div>
+          <div class="routine-global-total-note">${routineNote}</div>
         </div>
-        <span style="font-size:2rem;opacity:0.4;">🛒</span>
+        <span style="font-size:2rem;opacity:0.35;">🛒</span>
       </div>`;
   }
 
