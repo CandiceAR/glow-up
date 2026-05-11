@@ -37,40 +37,44 @@ const ProductCatalog = (() => {
       // 1. Charger le catalogue statique
       let products = (typeof CATALOGUE !== 'undefined' ? CATALOGUE : []);
 
-      // 2. Charger les produits depuis Firestore (prioritaire)
+      // 2. Charger Firestore + JSON en parallèle (JSON toujours chargé)
       try {
-        let manualProducts = null;
-        if (typeof FirestoreProducts !== 'undefined') {
-          manualProducts = await FirestoreProducts.loadAll();
-        }
-        if (!manualProducts) {
-          // Fallback JSON statique
-          const res = await fetch('data/products-manual.json');
+        // 2a. JSON statique — toujours chargé (source de vérité pour les nouveaux produits)
+        let jsonProducts = [];
+        try {
+          const res = await fetch('data/products-manual.json?v=49');
           if (res.ok) {
             const data = await res.json();
-            manualProducts = Array.isArray(data) ? data : (data.products || []);
+            jsonProducts = Array.isArray(data) ? data : (data.products || []);
           }
+        } catch (e) { /* ignore */ }
+
+        // 2b. Firestore — chargé en supplément si disponible
+        let firestoreProducts = [];
+        if (typeof FirestoreProducts !== 'undefined') {
+          try {
+            firestoreProducts = await FirestoreProducts.loadAll() || [];
+          } catch (e) { /* ignore */ }
         }
-        if (manualProducts?.length) {
-          // Fusionner : manual prioritaire (par asin || id)
-          const map = new Map();
-          manualProducts.forEach(p => {
-            const key = p.asin || p.id;
-            map.set(key, p);
-          });
-          products.forEach(p => {
-            const key = p.asin || p.id;
-            if (!map.has(key)) map.set(key, p);
-          });
-          // Dédupliquer par id — évite les collisions entre catalogue statique et Firestore
-          // (deux produits avec ASINs différents mais même id causeraient openProductModal à retourner le mauvais)
-          const idSeen = new Set();
-          products = Array.from(map.values()).filter(p => {
-            if (!p.id || idSeen.has(p.id)) return false;
-            idSeen.add(p.id);
-            return true;
-          });
-        }
+
+        // 2c. Fusion : JSON prioritaire > Firestore > CATALOGUE statique
+        // JSON d'abord (nouveaux produits toujours présents)
+        const map = new Map();
+        jsonProducts.forEach(p => { const k = p.asin || p.id; if (k) map.set(k, p); });
+        // Firestore complète ce qui manque dans le JSON
+        firestoreProducts.forEach(p => { const k = p.asin || p.id; if (k && !map.has(k)) map.set(k, p); });
+        // CATALOGUE statique en dernier recours
+        products.forEach(p => { const k = p.asin || p.id; if (k && !map.has(k)) map.set(k, p); });
+
+        // Dédupliquer par id
+        const idSeen = new Set();
+        products = Array.from(map.values()).filter(p => {
+          if (!p.id || idSeen.has(p.id)) return false;
+          idSeen.add(p.id);
+          return true;
+        });
+
+        console.log(`[Catalog] JSON: ${jsonProducts.length} · Firestore: ${firestoreProducts.length} · Total fusionné: ${products.length}`);
       } catch (err) {
         console.log('[Catalog] Erreur chargement produits:', err.message);
       }
