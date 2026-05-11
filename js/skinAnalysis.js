@@ -1915,7 +1915,7 @@ const SkinAnalysis = (() => {
 
   // ─── API publique ─────────────────────────────────────────────
 
-  return { initScreen, startLiveAnalysis, stopLiveAnalysis };
+  return { initScreen, startLiveAnalysis, stopLiveAnalysis, analyzeFromPhoto };
 
 })();
 
