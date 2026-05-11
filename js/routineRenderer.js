@@ -65,8 +65,8 @@ const RoutineRenderer = (() => {
     treatment:   ['serum', 'retinol', 'niacinamide'],
     eye:         ['eye'],
     eyepatch:    ['eyepatch'],
-    moisturizer: ['cream'],
-    oil:         ['cream'],
+    moisturizer: ['moisturizer', 'cream'],
+    oil:         ['cream', 'moisturizer'],
     exfoliant:   ['cleanser', 'serum'],
     spf:         ['spf'],
     lipbalm:     ['lipbalm']
@@ -236,7 +236,8 @@ const RoutineRenderer = (() => {
       return;
     }
 
-    const isLocked = AppState.premium.isLocked;
+    const isLocked  = AppState.premium.isLocked;
+    const hasRetinol = _routineHasRetinol(routine);
 
     container.innerHTML = `
       <div class="results-header">
@@ -245,7 +246,7 @@ const RoutineRenderer = (() => {
         <p>Basée sur tes réponses et ton analyse de peau — routine adaptée à ton profil unique.</p>
       </div>
 
-      ${renderWarnings(routine.warnings)}
+      ${renderWarnings(routine.warnings, hasRetinol)}
 
       <!-- Total global -->
       ${renderGlobalTotal(routine, isLocked)}
@@ -254,12 +255,12 @@ const RoutineRenderer = (() => {
       <div class="free-section-label">
         <span class="free-badge">✦ Inclus gratuitement</span>
       </div>
-      ${renderRoutineSection('Routine du matin', routine.matin, '🌅')}
+      ${renderRoutineSection('Routine du matin', routine.matin, '🌅', hasRetinol)}
 
       <!-- 🔒 PREMIUM : Routine du soir -->
       ${isLocked
         ? renderLockedSection('Routine du soir', routine.soir, '🌙')
-        : renderRoutineSection('Routine du soir', routine.soir, '🌙')}
+        : renderRoutineSection('Routine du soir', routine.soir, '🌙', hasRetinol)}
 
       <!-- CTA vers Make-up -->
       ${renderMakeupBridge()}
@@ -296,7 +297,7 @@ const RoutineRenderer = (() => {
   }
 
   // ─── Section libre ────────────────────────────────────────────
-  function renderRoutineSection(title, steps, emoji) {
+  function renderRoutineSection(title, steps, emoji, hasRetinol) {
     if (!steps || steps.length === 0) return '';
 
     const isMatin      = title.toLowerCase().includes('matin');
@@ -314,6 +315,17 @@ const RoutineRenderer = (() => {
       stepIndex++;
       if (product?.price) products.push(product);
 
+      // Nettoyer les mentions rétinol dans les notes si non applicable
+      let stepNote = step.note || '';
+      if (!hasRetinol && stepNote) {
+        // Retirer "· rétinol" ou "rétinol ·" ou "rétinol," patterns en liste
+        stepNote = stepNote.replace(/·?\s*r[eé]tinol\s*(·|,|$)/gi, '').trim();
+        // Retirer les mentions standalone restantes
+        stepNote = stepNote.replace(/\br[eé]tinol\b/gi, '').replace(/\s{2,}/g, ' ').trim();
+        // Nettoyer virgules/points orphelins
+        stepNote = stepNote.replace(/^[,·\s]+|[,·\s]+$/g, '').trim();
+      }
+
       blocks.push(`
         <div class="routine-step-block">
           <div class="routine-step">
@@ -321,7 +333,7 @@ const RoutineRenderer = (() => {
             <div class="step-icon">${STEP_ICONS[step.step] || STEP_ICONS.default}</div>
             <div class="step-info">
               <div class="step-label">${step.label}</div>
-              ${step.note ? `<div class="step-note">${step.note}</div>` : ''}
+              ${stepNote ? `<div class="step-note">${stepNote}</div>` : ''}
             </div>
             <div class="step-type">${formatStepType(step.step)}</div>
           </div>
@@ -383,7 +395,7 @@ const RoutineRenderer = (() => {
       ? steps.sort((a, b) => a.order - b.order).slice(0, 2)
       : [
           { step: 'cleanser',    label: 'Double nettoyage',          note: 'Huile + nettoyant doux' },
-          { step: 'treatment',   label: 'Actif ciblé de nuit',       note: 'Rétinol ou AHA selon ton profil' }
+          { step: 'treatment',   label: 'Actif ciblé de nuit',       note: 'Actif de nuit selon ton profil' }
         ];
 
     const remainCount = steps && steps.length > 2 ? steps.length - 2 : 2;
@@ -490,14 +502,30 @@ const RoutineRenderer = (() => {
       </div>`;
   }
 
+  // ─── Retinol présent dans la routine ? ───────────────────────
+  function _routineHasRetinol(routine) {
+    const allSteps = [...(routine.matin || []), ...(routine.soir || [])];
+    return allSteps.some(step => {
+      const text = ((step.label || '') + ' ' + (step.note || '')).toLowerCase();
+      return text.includes('rétinol') || text.includes('retinol');
+    });
+  }
+
   // ─── Avertissements ───────────────────────────────────────────
-  function renderWarnings(warnings) {
+  function renderWarnings(warnings, hasRetinol) {
     if (!warnings || warnings.length === 0) return '';
+    const filtered = hasRetinol
+      ? warnings
+      : warnings.filter(w => {
+          const lc = w.toLowerCase();
+          return !lc.includes('rétinol') && !lc.includes('retinol');
+        });
+    if (filtered.length === 0) return '';
     return `
       <div class="routine-warnings">
         <h3>⚠️ Points importants</h3>
         <ul>
-          ${warnings.map(w => `<li>${w}</li>`).join('')}
+          ${filtered.map(w => `<li>${w}</li>`).join('')}
         </ul>
       </div>`;
   }

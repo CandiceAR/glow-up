@@ -70,7 +70,9 @@ const RoutineSaver = (() => {
   function clear() {
     localStorage.removeItem(_getKey());
     localStorage.removeItem(KEY_GUEST);
-    console.log('[RoutineSaver] Routine effacée');
+    localStorage.removeItem(_getProfileKey());
+    localStorage.removeItem(KEY_PROFILE_GUEST);
+    console.log('[RoutineSaver] Routine + profil effacés');
   }
 
   // ─── Sauvegarder uniquement le profil (questionnaire + analyse) ─

@@ -32,13 +32,13 @@ const Questionnaire = (() => {
       ]
     },
 
-    // Q-PHOTO — Étape analyse photo intégrée
+    // Q-PHOTO — Étape analyse photo intégrée (jamais sautée)
     {
       id: 'q-photo', key: null, type: 'photo-step',
       question: 'Analyse ta peau en temps réel',
       subtitle: 'Pour des recommandations ultra-personnalisées',
       required: false,
-      skipIf: (answers, photo) => !!photo?.skinType?.type
+      skipIf: null
     },
 
     // Q1 — Type de peau (skip si photo confiance ≥ 65)
@@ -259,7 +259,9 @@ const Questionnaire = (() => {
     if (!q.skipIf) return false;
     const answers   = AppState.questionnaire.answers;
     const photo     = AppState.face?.skinAnalysis;
-    return !!q.skipIf(answers, photo);
+    const skip      = !!q.skipIf(answers, photo);
+    if (skip) console.log('[Q] SKIP', q.id, '| photo skinType:', photo?.skinType?.type);
+    return skip;
   }
 
   function _firstActive() {
@@ -304,9 +306,15 @@ const Questionnaire = (() => {
 
   function startSkincare() {
     mode = 'skincare';
+    // Effacer la routine sauvegardée pour repartir de zéro
+    if (typeof RoutineSaver !== 'undefined') RoutineSaver.clear();
+    // Effacer l'analyse photo précédente pour que q-photo s'affiche
+    if (AppState.face) {
+      AppState.face.skinAnalysis = null;
+      AppState.face.photo        = null;
+    }
     reset();
-    _prefillFromPhoto();
-    currentIndex = _firstActive();
+    currentIndex = 0; // Q0 toujours en premier
     showScreen('questionnaire');
   }
 
@@ -347,6 +355,7 @@ const Questionnaire = (() => {
 
     const q          = QUESTIONS[currentIndex];
     if (!q) return;
+    console.log('[Q] Affichage question', currentIndex, q.id, q.type, '| skipIf?', !!q.skipIf);
 
     const total      = _visibleCount();
     const pos        = _visiblePosition();
@@ -383,7 +392,7 @@ const Questionnaire = (() => {
         ${prevIdx >= 0
           ? '<button class="btn btn-outline q-back" onclick="Questionnaire.prev()">← Retour</button>'
           : '<div></div>'}
-        ${q.type !== 'photo-step'
+        ${(q.type !== 'photo-step' || AppState.face?.skinAnalysis)
           ? `<button class="btn btn-dark q-next" id="qNextBtn" onclick="Questionnaire.next()">${ctaLabel}</button>`
           : ''}
       </div>`;
@@ -567,17 +576,30 @@ const Questionnaire = (() => {
   function _renderPhotoMiniResult(photo) {
     const skinLabel = { normale:'Normale', grasse:'Grasse', seche:'Sèche', mixte:'Mixte', sensible:'Sensible' };
     const items = [];
-    if (photo.skinType?.type)  items.push(`🧬 Type de peau : <strong>${skinLabel[photo.skinType.type] || photo.skinType.type}</strong>`);
+    if (photo.skinType?.type)   items.push(`🧬 Type de peau : <strong>${skinLabel[photo.skinType.type] || photo.skinType.type}</strong>`);
     if (photo.undertone?.label) items.push(`🎨 Sous-ton : <strong>${photo.undertone.label}</strong>`);
     if (photo.cernes?.detected) items.push(`👁 Cernes détectés`);
     if (photo.carnation?.label) items.push(`✨ Carnation : <strong>${photo.carnation.label}</strong>`);
 
+    const photoSrc = AppState.face?.photo;
+    const imgHtml  = photoSrc
+      ? `<img src="${photoSrc}" class="q-photo-step-preview" alt="Ta photo">`
+      : `<div style="font-size:3rem;margin-bottom:12px;">📸</div>`;
+
     return `<div class="q-photo-step">
-      <img src="${AppState.face.photo}" class="q-photo-step-preview" alt="Ta photo">
+      ${imgHtml}
       <div class="q-photo-result-mini">
-        <div class="q-photo-result-mini-title">✦ Analyse complète</div>
+        <div class="q-photo-result-mini-title">✦ Analyse photo active</div>
         ${items.map(i => `<div class="q-photo-result-mini-item">${i}</div>`).join('')}
       </div>
+      <div class="q-photo-buttons" style="margin-top:16px;">
+        <button class="btn btn-outline" onclick="Questionnaire.retakePhoto()" style="font-size:0.85rem;">
+          🔄 Refaire l'analyse photo
+        </button>
+      </div>
+      <button class="q-textarea-skip" onclick="Questionnaire.next()">
+        Continuer avec ces données →
+      </button>
     </div>`;
   }
 
@@ -669,10 +691,18 @@ const Questionnaire = (() => {
   // ─── Photo step ───────────────────────────────────────────────
 
   function takePhoto() {
-    // Redirige vers l'écran capture existant
-    // Quand la photo est prise, l'app revient ici via resumeFromPhoto()
     sessionStorage.setItem('glow_resume_questionnaire', '1');
     showScreen('capture');
+  }
+
+  function retakePhoto() {
+    // Efface l'analyse existante et relance la capture
+    if (AppState.face) {
+      AppState.face.photo        = null;
+      AppState.face.skinAnalysis = null;
+    }
+    AppState.questionnaire.photoPreFill = {};
+    takePhoto();
   }
 
   function uploadPhoto(input) {
@@ -985,7 +1015,7 @@ const Questionnaire = (() => {
     reset, render,
     selectOption, selectMkOption,
     onSlider, toggleZone, onTextarea,
-    takePhoto, uploadPhoto, skipPhoto, resumeFromPhoto,
+    takePhoto, retakePhoto, uploadPhoto, skipPhoto, resumeFromPhoto,
     next, prev, submit,
     QUESTIONS, MAKEUP_QUESTIONS
   };

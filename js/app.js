@@ -472,20 +472,42 @@ function renderRecommendedProducts() {
 
 // ─── Navigation capture → analyse ou questionnaire ────────────
 function handleCaptureNext() {
-  if (AppState.face.photo) {
-    showScreen('skin-analysis');
-  } else {
+  if (!AppState.face.photo) {
     showToast('Une photo est nécessaire pour personnaliser ta routine ✦', 'info', 3500);
+    return;
+  }
+  // Si on vient depuis le questionnaire (étape q-photo)
+  if (sessionStorage.getItem('glow_resume_questionnaire') === '1') {
+    sessionStorage.removeItem('glow_resume_questionnaire');
+    showScreen('questionnaire');
+    if (!AppState.face.skinAnalysis) {
+      SkinAnalysis.analyzeFromPhoto(AppState.face.photo)
+        .then(result => {
+          if (result) AppState.face.skinAnalysis = result;
+          Questionnaire.resumeFromPhoto();
+        })
+        .catch(() => Questionnaire.resumeFromPhoto());
+    } else {
+      Questionnaire.resumeFromPhoto();
+    }
+  } else {
+    showScreen('skin-analysis');
+  }
+}
+
+// ─── Passer la photo depuis la capture (bouton skip) ──────────
+function _captureSkip() {
+  if (sessionStorage.getItem('glow_resume_questionnaire') === '1') {
+    sessionStorage.removeItem('glow_resume_questionnaire');
+    showScreen('questionnaire');
+    setTimeout(() => Questionnaire.skipPhoto(), 50);
+  } else {
+    Questionnaire.startSkincare();
   }
 }
 
 // ─── Lancer le flow principal ─────────────────────────────────
 function startGlowUp() {
-  // Si l'utilisatrice est en mode invité, proposer la connexion d'abord
-  if (AppState.user.isGuest) {
-    Auth.openAuthModal('login', _doStartGlowUp);
-    return;
-  }
   _doStartGlowUp();
 }
 
