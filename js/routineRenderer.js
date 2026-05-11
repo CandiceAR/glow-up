@@ -72,6 +72,19 @@ const RoutineRenderer = (() => {
     lipbalm:     ['lipbalm']
   };
 
+  // ─── Budget utilisateur ───────────────────────────────────────
+  function _isLowBudget() {
+    return AppState.questionnaire.answers?.budget === 'low';
+  }
+
+  // ─── Routine réduite pour petit budget (3 étapes max) ─────────
+  // cleanser + moisturizer + spf, produits ≤ prix plafond
+  const LOW_BUDGET_PRICE_CAPS = {
+    cleanser:    15,
+    moisturizer: 20,
+    spf:         17
+  };
+
   // ─── Trouver le meilleur produit pour une étape ───────────────
   function findBestProductForStep(stepType) {
     const catalog  = AppState.products.catalog || [];
@@ -82,9 +95,6 @@ const RoutineRenderer = (() => {
                   || AppState.questionnaire.answers?.skinType
                   || null;
 
-    // Concerns du questionnaire pour affiner (ex: acne → préférer niacinamide)
-    const concerns = AppState.questionnaire.answers?.concerns || [];
-
     const categories = STEP_TO_CATEGORIES[stepType] || [stepType];
 
     let pool = [];
@@ -93,6 +103,12 @@ const RoutineRenderer = (() => {
       if (found.length > 0) { pool = found; break; }
     }
     if (!pool.length) return null;
+
+    // Filtrer par prix plafond si petit budget
+    if (_isLowBudget() && LOW_BUDGET_PRICE_CAPS[stepType]) {
+      const cheap = pool.filter(p => p.price > 0 && p.price <= LOW_BUDGET_PRICE_CAPS[stepType]);
+      if (cheap.length > 0) pool = cheap;
+    }
 
     // Filtrer par skinTypeTags si disponible
     if (skinType) {
@@ -103,11 +119,13 @@ const RoutineRenderer = (() => {
       if (filtered.length > 0) pool = filtered;
     }
 
-    // Scorer : isFeatured +3, concernsTags correspondants +2, rating
+    // Scorer : isFeatured +30, skinType match +20, rating ×10
+    // Petit budget : bonus +50 pour les produits les moins chers
     pool = pool.map(p => {
       let score = (p.rating || 0) * 10;
       if (p.isFeatured) score += 30;
       if (p.skinTypeTags && skinType && p.skinTypeTags.includes(skinType)) score += 20;
+      if (_isLowBudget() && p.price > 0) score += (20 - Math.min(20, p.price)) * 2;
       return { ...p, _score: score };
     });
 
@@ -118,6 +136,13 @@ const RoutineRenderer = (() => {
     const idx  = Math.floor(_seededRandom(stepType) * topN.length);
     return topN[idx] || null;
   }
+
+  // ─── Routine matin réduite pour petit budget ─────────────────
+  const LOW_BUDGET_ROUTINE = [
+    { order: 1, step: 'cleanser',    label: 'Nettoyant doux',      note: 'Matin et soir' },
+    { order: 2, step: 'moisturizer', label: 'Crème hydratante',    note: 'Légère et efficace' },
+    { order: 3, step: 'spf',         label: 'Protection solaire',  note: 'SPF 50 — indispensable' }
+  ];
 
   // ─── Mini carte produit inline dans la routine ────────────────
   function renderStepProduct(product) {
@@ -236,8 +261,10 @@ const RoutineRenderer = (() => {
       return;
     }
 
-    const isLocked  = AppState.premium.isLocked;
-    const hasRetinol = _routineHasRetinol(routine);
+    const isLocked   = AppState.premium.isLocked;
+    const lowBudget  = _isLowBudget();
+    const matnSteps  = lowBudget ? LOW_BUDGET_ROUTINE : routine.matin;
+    const hasRetinol = _routineHasRetinol({ matin: matnSteps, soir: routine.soir });
 
     container.innerHTML = `
       <div class="results-header">
@@ -246,21 +273,25 @@ const RoutineRenderer = (() => {
         <p>Basée sur tes réponses et ton analyse de peau — routine adaptée à ton profil unique.</p>
       </div>
 
+      ${lowBudget ? `<div class="routine-budget-notice">🌱 Routine essentielle · Budget serré · Max ~40 € pour les 3 produits</div>` : ''}
+
       ${renderWarnings(routine.warnings, hasRetinol)}
 
       <!-- Total global -->
-      ${renderGlobalTotal(routine, isLocked)}
+      ${renderGlobalTotal({ ...routine, matin: matnSteps }, isLocked)}
 
       <!-- ✅ GRATUIT : Routine du matin complète -->
       <div class="free-section-label">
         <span class="free-badge">✦ Inclus gratuitement</span>
       </div>
-      ${renderRoutineSection('Routine du matin', routine.matin, '🌅', hasRetinol)}
+      ${renderRoutineSection('Routine du matin', matnSteps, '🌅', hasRetinol)}
 
       <!-- 🔒 PREMIUM : Routine du soir -->
-      ${isLocked
-        ? renderLockedSection('Routine du soir', routine.soir, '🌙')
-        : renderRoutineSection('Routine du soir', routine.soir, '🌙', hasRetinol)}
+      ${lowBudget
+        ? renderLowBudgetSoir()
+        : isLocked
+          ? renderLockedSection('Routine du soir', routine.soir, '🌙')
+          : renderRoutineSection('Routine du soir', routine.soir, '🌙', hasRetinol)}
 
       <!-- CTA vers Make-up -->
       ${renderMakeupBridge()}
@@ -498,6 +529,21 @@ const RoutineRenderer = (() => {
           <button class="btn btn-outline" onclick="showScreen('tryon')" style="margin-top:12px">
             Essayer virtuellement ✦
           </button>
+        </div>
+      </div>`;
+  }
+
+  // ─── Routine du soir simplifiée pour petit budget ─────────────
+  function renderLowBudgetSoir() {
+    return `
+      <div class="routine-section">
+        <div class="routine-section-header">
+          <span class="routine-emoji">🌙</span>
+          <h2>Routine du soir</h2>
+        </div>
+        <div class="routine-budget-soir-tip">
+          <p>💡 <strong>Le soir avec un petit budget :</strong> utilise ton nettoyant + ta crème du matin. C'est tout ce dont tu as besoin — la constance prime sur le nombre de produits.</p>
+          <p style="margin-top:8px;font-size:0.8rem;color:var(--muted);">Quand tu es prête à investir davantage, une routine du soir dédiée peut inclure un sérum actif ciblé.</p>
         </div>
       </div>`;
   }
