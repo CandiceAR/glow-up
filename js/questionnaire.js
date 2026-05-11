@@ -619,6 +619,7 @@ const Questionnaire = (() => {
     if (!AppState.questionnaire) AppState.questionnaire = { answers: {}, completed: false, currentQ: 0, photoPreFill: {} };
     const answers = AppState.questionnaire.answers;
     const maxInt  = parseInt(max, 10) || 99;
+    console.log('[Q selectOption]', key, value, 'type:', type, 'max reçu:', max, '→ maxInt:', maxInt, '| déjà sélectionné:', answers[key]);
 
     if (type === 'single') {
       document.querySelectorAll('.q-option-premium').forEach(el => el.classList.remove('selected'));

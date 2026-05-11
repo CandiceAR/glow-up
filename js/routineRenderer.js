@@ -77,6 +77,11 @@ const RoutineRenderer = (() => {
     return AppState.questionnaire.answers?.budget === 'low';
   }
 
+  function _isBudgetUnder40() {
+    const b = AppState.questionnaire.answers?.budget;
+    return b === 'low' || b === 'medium';
+  }
+
   // ─── Routine réduite pour petit budget (3 étapes max) ─────────
   // cleanser + moisturizer + spf, produits ≤ prix plafond
   const LOW_BUDGET_PRICE_CAPS = {
@@ -126,6 +131,8 @@ const RoutineRenderer = (() => {
       if (p.isFeatured) score += 30;
       if (p.skinTypeTags && skinType && p.skinTypeTags.includes(skinType)) score += 20;
       if (_isLowBudget() && p.price > 0) score += (20 - Math.min(20, p.price)) * 2;
+      // Bonus fort pour crème avec SPF intégré si budget ≤ 40€ (évite d'acheter 2 produits)
+      if (_isBudgetUnder40() && stepType === 'moisturizer' && p.includesSPF) score += 60;
       return { ...p, _score: score };
     });
 
@@ -137,12 +144,36 @@ const RoutineRenderer = (() => {
     return topN[idx] || null;
   }
 
-  // ─── Routine matin réduite pour petit budget ─────────────────
-  const LOW_BUDGET_ROUTINE = [
-    { order: 1, step: 'cleanser',    label: 'Nettoyant doux',      note: 'Matin et soir' },
-    { order: 2, step: 'moisturizer', label: 'Crème hydratante',    note: 'Légère et efficace' },
-    { order: 3, step: 'spf',         label: 'Protection solaire',  note: 'SPF 50 — indispensable' }
-  ];
+  // ─── Routine matin réduite pour petit budget (dynamique) ────────
+  // Si la crème choisie inclut SPF → 2 étapes (pas de SPF séparé)
+  function _buildLowBudgetRoutine() {
+    const moisturizer = findBestProductForStep('moisturizer');
+    if (moisturizer?.includesSPF) {
+      return [
+        { order: 1, step: 'cleanser',    label: 'Nettoyant doux',            note: 'Matin et soir' },
+        { order: 2, step: 'moisturizer', label: 'Crème hydratante + SPF 50', note: 'Hydrate et protège en une étape' }
+      ];
+    }
+    return [
+      { order: 1, step: 'cleanser',    label: 'Nettoyant doux',     note: 'Matin et soir' },
+      { order: 2, step: 'moisturizer', label: 'Crème hydratante',   note: 'Légère et efficace' },
+      { order: 3, step: 'spf',         label: 'Protection solaire', note: 'SPF 50 — indispensable' }
+    ];
+  }
+
+  // ─── Filtrer SPF d'une routine si la crème hydratante l'inclut ─
+  function _filterSpfIfIncluded(steps) {
+    if (!_isBudgetUnder40()) return steps;
+    const moisturizer = findBestProductForStep('moisturizer');
+    if (!moisturizer?.includesSPF) return steps;
+    // Supprimer l'étape SPF et renommer l'étape moisturizer
+    return steps
+      .filter(s => s.step !== 'spf')
+      .map(s => s.step === 'moisturizer'
+        ? { ...s, label: s.label.includes('SPF') ? s.label : s.label + ' + SPF 50', note: 'Hydrate et protège en une étape' }
+        : s
+      );
+  }
 
   // ─── Mini carte produit inline dans la routine ────────────────
   function renderStepProduct(product) {
@@ -263,7 +294,9 @@ const RoutineRenderer = (() => {
 
     const isLocked   = AppState.premium.isLocked;
     const lowBudget  = _isLowBudget();
-    const matnSteps  = lowBudget ? LOW_BUDGET_ROUTINE : routine.matin;
+    const matnSteps  = lowBudget
+      ? _buildLowBudgetRoutine()
+      : _filterSpfIfIncluded(routine.matin || []);
     const hasRetinol = _routineHasRetinol({ matin: matnSteps, soir: routine.soir });
 
     container.innerHTML = `

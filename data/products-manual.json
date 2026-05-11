@@ -4205,6 +4205,27 @@
     },
 
     {
+      "id": "m187",
+      "asin": "B09XN22JBT",
+      "name": "Crème Hydratante Visage SPF50",
+      "brand": "CeraVe",
+      "category": "moisturizer",
+      "includesSPF": true,
+      "imageUrl": "assets/CERAVE-cremehydratanteSPF50.jpg",
+      "amazonUrl": "https://www.amazon.fr/CeraVe-Cr%C3%A8me-Hydratante-Visage-50-52ml/dp/B09XN22JBT?linkCode=ll2&tag=kan10ar-21&linkId=aaf750e9f67928c8f38460bcbd08bc6b&ref_=as_li_ss_tl",
+      "price": 13.00,
+      "currency": "EUR",
+      "rating": 4.5,
+      "reviews": 8600,
+      "description": "Crème hydratante visage avec SPF50. Céramides + Acide Hyaluronique + Niacinamide. Hydrate et protège en une seule étape — idéale pour les petits budgets. Sans parfum.",
+      "skinTypeTags": ["normale", "seche", "sensible", "mixte"],
+      "concernTags": ["secheresse", "eclat"],
+      "budgetTags": ["low", "medium"],
+      "isFeatured": true,
+      "active": true
+    },
+
+    {
       "id": "m185",
       "asin": "B0DZ11PRRM",
       "name": "Soleil Protect SPF50 Teint Anti-Taches Unificateur",
