@@ -60,27 +60,30 @@ const RoutineRenderer = (() => {
   // Mapping étape routine → catégorie(s) catalogue (ordre de priorité)
   const STEP_TO_CATEGORIES = {
     cleanser:    ['cleanser'],
-    toner:       ['serum', 'cleanser'],
+    toner:       ['serum'],
     serum:       ['serum'],
-    treatment:   ['serum', 'retinol', 'niacinamide'],
+    treatment:   ['serum'],
     eye:         ['eye'],
-    eyepatch:    ['eyepatch'],
-    moisturizer: ['moisturizer', 'cream'],
-    oil:         ['cream', 'moisturizer'],
-    exfoliant:   ['cleanser', 'serum'],
+    eyepatch:    ['eye'],
+    moisturizer: ['moisturizer'],
+    oil:         ['moisturizer'],
+    exfoliant:   ['serum'],
     spf:         ['spf'],
     lipbalm:     ['lipbalm']
   };
 
   // ─── Budget utilisateur ───────────────────────────────────────
-  function _isLowBudget() {
-    return AppState.questionnaire.answers?.budget === 'low';
+  // Normalise les valeurs de budget (questionnaire: low/medium/high, ancien: petits-prix/bon-rapport/premium)
+  function _normBudget() {
+    const b = AppState.questionnaire.answers?.budget;
+    if (b === 'low'    || b === 'petits-prix') return 'low';
+    if (b === 'medium' || b === 'bon-rapport') return 'medium';
+    if (b === 'high'   || b === 'premium')     return 'high';
+    return b;
   }
 
-  function _isBudgetUnder40() {
-    const b = AppState.questionnaire.answers?.budget;
-    return b === 'low' || b === 'medium';
-  }
+  function _isLowBudget()    { return _normBudget() === 'low'; }
+  function _isBudgetUnder40(){ const b = _normBudget(); return b === 'low' || b === 'medium'; }
 
   // ─── Routine réduite pour petit budget (3 étapes max) ─────────
   // cleanser + moisturizer + spf, produits ≤ prix plafond
@@ -91,7 +94,8 @@ const RoutineRenderer = (() => {
   };
 
   // ─── Trouver le meilleur produit pour une étape ───────────────
-  function findBestProductForStep(stepType) {
+  // excludeIds : Set de product.id déjà utilisés dans la même section (évite les doublons)
+  function findBestProductForStep(stepType, excludeIds = null) {
     const catalog  = AppState.products.catalog || [];
     if (!catalog.length) return null;
 
@@ -108,6 +112,13 @@ const RoutineRenderer = (() => {
       if (found.length > 0) { pool = found; break; }
     }
     if (!pool.length) return null;
+
+    // Exclure les produits déjà assignés à d'autres étapes (évite les doublons)
+    if (excludeIds && excludeIds.size > 0) {
+      const deduped = pool.filter(p => !excludeIds.has(p.id));
+      if (deduped.length > 0) pool = deduped;
+      // Si tous exclus → on garde le pool complet (fallback, mieux que rien)
+    }
 
     // Filtrer par prix plafond si petit budget
     if (_isLowBudget() && LOW_BUDGET_PRICE_CAPS[stepType]) {
@@ -225,13 +236,17 @@ const RoutineRenderer = (() => {
     const allSteps = [...(routine.matin || []), ...(routine.soir || [])];
     let total = 0;
     let minDuration = Infinity;
-    const seen = new Set();
+    const seen = new Set();      // dédup pour le prix (ne compter qu'une fois par produit)
+    const usedIds = new Set();   // dédup pour le choix (même logique que renderRoutineSection)
 
     for (const step of allSteps) {
-      const p = findBestProductForStep(step.step);
-      if (p?.price && !seen.has(p.id)) {
-        total += p.price;
-        seen.add(p.id);
+      const p = findBestProductForStep(step.step, usedIds);
+      if (p) {
+        usedIds.add(p.id);
+        if (p.price && !seen.has(p.id)) {
+          total += p.price;
+          seen.add(p.id);
+        }
       }
       const dur = STEP_DURATION_MONTHS[step.step];
       if (dur && dur < minDuration) minDuration = dur;
@@ -240,7 +255,7 @@ const RoutineRenderer = (() => {
     // Patchs yeux
     const hasEye = allSteps.some(s => s.step === 'eye');
     if (hasEye) {
-      const patch = findBestProductForStep('eyepatch');
+      const patch = findBestProductForStep('eyepatch', usedIds);
       if (patch?.price && !seen.has(patch.id)) total += patch.price;
       const dur = STEP_DURATION_MONTHS.eyepatch;
       if (dur < minDuration) minDuration = dur;
@@ -292,7 +307,7 @@ const RoutineRenderer = (() => {
       return;
     }
 
-    const isLocked   = AppState.premium.isLocked;
+    const isLocked   = typeof Subscription !== 'undefined' ? !Subscription.canAccess('routine_second') : true;
     const lowBudget  = _isLowBudget();
     const matnSteps  = lowBudget
       ? _buildLowBudgetRoutine()
@@ -368,13 +383,15 @@ const RoutineRenderer = (() => {
     const patchTipKey  = isMatin ? 'eyepatch_matin' : 'eyepatch_soir';
     const patchProduct = findBestProductForStep('eyepatch');
 
-    const sortedSteps = steps.sort((a, b) => a.order - b.order);
+    const sortedSteps    = steps.sort((a, b) => a.order - b.order);
     let stepIndex = 0;
     const blocks    = [];
     const products  = []; // pour le total
+    const usedProductIds = new Set(); // dédup : pas le même produit pour deux étapes différentes
 
     for (const step of sortedSteps) {
-      const product  = findBestProductForStep(step.step);
+      const product  = findBestProductForStep(step.step, usedProductIds);
+      if (product) usedProductIds.add(product.id);
       const applyTip = STEP_APPLY_TIPS[step.step] || '';
       stepIndex++;
       if (product?.price) products.push(product);
@@ -410,7 +427,8 @@ const RoutineRenderer = (() => {
         </div>`);
 
       // Injecter les patchs yeux juste après l'étape contour des yeux
-      if (step.step === 'eye' && patchProduct) {
+      if (step.step === 'eye' && patchProduct && !usedProductIds.has(patchProduct.id)) {
+        usedProductIds.add(patchProduct.id);
         stepIndex++;
         if (patchProduct?.price) products.push(patchProduct);
         blocks.push(`
@@ -611,7 +629,7 @@ const RoutineRenderer = (() => {
 
   // ─── Pont discret vers Make-up (depuis les résultats Skincare) ─
   function renderMakeupBridge() {
-    const isLocked = AppState.premium.isLocked;
+    const isLocked = typeof Subscription !== 'undefined' ? !Subscription.canAccess('routine_second') : true;
     return `
       <div class="makeup-bridge">
         <div class="makeup-bridge-inner">

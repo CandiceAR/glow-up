@@ -16,11 +16,6 @@ const AppState = {
     imageEl: null       // Référence à l'<img> source
   },
 
-  premium: {
-    isLocked: true,     // false = Beauty Plan actif
-    plan: null          // 'monthly' | 'yearly' | null
-  },
-
   questionnaire: {
     answers: {},        // { q1: 'grasse', q2: ['acne','pores'], ... }
     completed: false,
@@ -507,28 +502,31 @@ function _captureSkip() {
 }
 
 // ─── Lancer le flow principal ─────────────────────────────────
+// Toujours passer par l'écran de choix : Skincare ou Make-up
 function startGlowUp() {
-  _doStartGlowUp();
+  showScreen('routine-choice');
 }
 
-function _doStartGlowUp() {
-  // Nouveau flow : photo optionnelle intégrée dans le questionnaire
-  if (AppState.face.photo && AppState.face.skinAnalysis) {
-    // Photo analysée → questionnaire (photo-step skippée auto)
-    Questionnaire.startSkincare();
-  } else if (AppState.face.photo) {
-    // Photo sans analyse → on analyse d'abord
-    showScreen('skin-analysis');
+// Accès direct "Make-up" depuis navbar — respecte le modèle 1 routine gratuite
+function goToMakeup() {
+  if (!AppState.routineChoice) {
+    showScreen('routine-choice');
+  } else if (AppState.routineChoice === 'makeup') {
+    showScreen('makeup');
   } else {
-    // Pas de photo → questionnaire avec étape photo intégrée
-    Questionnaire.startSkincare();
+    // choix=skincare → 2e routine = payante
+    if (typeof Subscription !== 'undefined' && !Subscription.canAccess('routine_second')) {
+      Subscription.showPaywall('routine_second');
+    } else {
+      showScreen('makeup');
+    }
   }
 }
 
 // ─── Écran de choix de routine ────────────────────────────────
 function initRoutineChoiceScreen() {
   const choice   = AppState.routineChoice;
-  const isLocked = AppState.premium.isLocked;
+  const isLocked = typeof Subscription !== 'undefined' ? !Subscription.isPlan('glow') : true;
 
   const lockSkincare = document.getElementById('lockSkincare');
   const lockMakeup   = document.getElementById('lockMakeup');
@@ -556,9 +554,10 @@ function initRoutineChoiceScreen() {
 }
 
 function pickRoutine(type) {
-  // Si l'autre routine a déjà été choisie et que premium est verrouillé → paywall
-  if (AppState.routineChoice && AppState.routineChoice !== type && AppState.premium.isLocked) {
-    openPaywallModal();
+  // Si l'autre routine a déjà été choisie et que l'utilisatrice n'a pas Glow → paywall
+  const isLocked = typeof Subscription !== 'undefined' ? !Subscription.isPlan('glow') : true;
+  if (AppState.routineChoice && AppState.routineChoice !== type && isLocked) {
+    Subscription.showPaywall('routine_second');
     return;
   }
   AppState.routineChoice = type;
@@ -570,98 +569,9 @@ function pickRoutine(type) {
 }
 
 // ─── Paywall ──────────────────────────────────────────────────
+// Redirige vers le vrai système Stripe (subscription.js)
 function openPaywallModal() {
-  openModal(`
-    <div class="paywall-modal">
-      <button class="modal-close" onclick="closeModal()">×</button>
-
-      <div class="paywall-modal-hero">
-        <span class="paywall-modal-tag">Beauty Plan</span>
-        <h2>Ta routine complète est prête</h2>
-        <p>Débloque ta routine du soir, tes conseils maquillage personnalisés et les produits adaptés à ton diagnostic peau.</p>
-      </div>
-
-      <div class="paywall-features-list">
-        <div class="paywall-feature-item">
-          <span class="paywall-feat-icon">🌙</span>
-          <div>
-            <strong>Routine du soir complète</strong>
-            <p>Actifs ciblés selon ton analyse : rétinol, AHA, peptides…</p>
-          </div>
-        </div>
-        <div class="paywall-feature-item">
-          <span class="paywall-feat-icon">💄</span>
-          <div>
-            <strong>Conseils maquillage personnalisés</strong>
-            <p>Bases, correcteurs et textures selon ton type de peau.</p>
-          </div>
-        </div>
-        <div class="paywall-feature-item">
-          <span class="paywall-feat-icon">✦</span>
-          <div>
-            <strong>Produits recommandés linkés Amazon</strong>
-            <p>Sélection objective, même commission sur tous les produits.</p>
-          </div>
-        </div>
-        <div class="paywall-feature-item">
-          <span class="paywall-feat-icon">◇</span>
-          <div>
-            <strong>Essai virtuel maquillage</strong>
-            <p>Try-on MediaPipe : teste avant d'acheter.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="paywall-pricing-wrap">
-        <div class="paywall-plan selected" onclick="selectPlan('monthly')">
-          <div class="plan-name">Mensuel</div>
-          <div class="plan-price">4,99 €<span>/mois</span></div>
-        </div>
-        <div class="paywall-plan" onclick="selectPlan('yearly')">
-          <div class="plan-badge">–33%</div>
-          <div class="plan-name">Annuel</div>
-          <div class="plan-price">39,99 €<span>/an</span></div>
-          <div class="plan-note">soit 3,33 €/mois</div>
-        </div>
-      </div>
-
-      <button class="btn btn-dark full-width paywall-cta-btn" onclick="handlePaywallSubscribe()">
-        Débloquer mon Beauty Plan ✦
-      </button>
-      <p class="paywall-trial-note">7 jours gratuits · Aucun engagement · Annulable à tout moment</p>
-
-      <button class="btn-ghost" onclick="closeModal()" style="display:block; width:100%; text-align:center; margin-top:8px;">
-        Continuer avec la version gratuite
-      </button>
-    </div>
-  `);
-}
-
-function selectPlan(plan) {
-  document.querySelectorAll('.paywall-plan').forEach(el => el.classList.remove('selected'));
-  const idx = plan === 'monthly' ? 0 : 1;
-  document.querySelectorAll('.paywall-plan')[idx]?.classList.add('selected');
-}
-
-function handlePaywallSubscribe() {
-  closeModal();
-  // Si non connecté → auth d'abord
-  if (AppState.user.isGuest) {
-    if (typeof openAuthModal === 'function') openAuthModal();
-    showToast('Connecte-toi pour activer ton Beauty Plan ✦', 'info');
-  } else {
-    // Connecté → simuler activation (à relier à Stripe)
-    unlockPremium();
-  }
-}
-
-function unlockPremium() {
-  AppState.premium.isLocked = false;
-  AppState.premium.plan     = 'monthly';
-  closeModal();
-  showToast('Beauty Plan activé ! Ta routine complète est débloquée ✦', 'success', 4000);
-  // Re-rendre la page résultats si on y est
-  if (AppState.screen === 'results') RoutineRenderer.renderResults();
+  if (typeof Subscription !== 'undefined') Subscription.showPaywall('routine_second');
 }
 
 document.addEventListener('DOMContentLoaded', initApp);

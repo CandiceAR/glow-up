@@ -41,12 +41,12 @@ const Questionnaire = (() => {
       skipIf: null
     },
 
-    // Q1 — Type de peau (skip si photo confiance ≥ 65)
+    // Q1 — Type de peau (toujours affiché — photo pré-sélectionne mais user peut corriger)
     {
       id: 'q1', key: 'skinType', type: 'single',
       question: 'Quel est ton type de peau ?',
       required: true,
-      skipIf: (answers, photo) => photo?.skinType?.confidence >= 65,
+      skipIf: null,
       prefill: (photo) => photo?.skinType?.type,
       options: [
         { value: 'normale',  emoji: '◇', label: 'Normale',  desc: 'Équilibrée, confortable' },
@@ -320,8 +320,13 @@ const Questionnaire = (() => {
 
   function startMakeup() {
     mode = 'makeup';
-    currentIndex = 0;
-    AppState.makeupQuiz = {};
+    makeupIndex = 0;
+    const analysis = AppState?.face?.skinAnalysis;
+    // Pré-remplir depuis l'analyse photo si disponible
+    AppState.makeupQuiz = {
+      mkCarnation: analysis?.carnation?.type  || null,
+      mkUndertone: analysis?.undertone?.type  || null
+    };
     showScreen('questionnaire');
     render();
   }
@@ -761,6 +766,14 @@ const Questionnaire = (() => {
   // ─── Navigation ───────────────────────────────────────────────
 
   function next() {
+    if (mode === 'makeup') {
+      const q = MAKEUP_QUESTIONS[makeupIndex];
+      const answers = AppState.makeupQuiz || {};
+      if (q.required && !answers[q.key]) return;
+      if (makeupIndex < MAKEUP_QUESTIONS.length - 1) { makeupIndex++; _renderMakeupLegacy(); }
+      else { showScreen('makeup'); }
+      return;
+    }
     const q       = QUESTIONS[currentIndex];
     const answers = AppState.questionnaire.answers;
 
@@ -783,6 +796,10 @@ const Questionnaire = (() => {
   }
 
   function prev() {
+    if (mode === 'makeup') {
+      if (makeupIndex > 0) { makeupIndex--; _renderMakeupLegacy(); }
+      return;
+    }
     const prevIdx = _prevActive(currentIndex);
     if (prevIdx >= 0) _slideTo(prevIdx, 'backward');
   }
@@ -877,6 +894,28 @@ const Questionnaire = (() => {
 
   const MAKEUP_QUESTIONS = [
     {
+      id: 'mq_carn', key: 'mkCarnation', type: 'single', required: true,
+      photoKey: 'carnation',
+      question: 'Ma teinte de peau naturelle est :',
+      hint: 'Compare ton intérieur de poignet à la lumière naturelle.',
+      options: [
+        { value: 'clair',  emoji: '🌸', label: 'Claire',  desc: 'Fair, ivoire, beige pâle — je rougis facilement' },
+        { value: 'medium', emoji: '🌻', label: 'Medium',  desc: 'Dorée, caramel, olive — je bronze facilement' },
+        { value: 'fonce',  emoji: '🌙', label: 'Foncée',  desc: 'Chocolat, acajou, ébène — teinte profonde naturelle' }
+      ]
+    },
+    {
+      id: 'mq_tone', key: 'mkUndertone', type: 'single', required: true,
+      photoKey: 'undertone',
+      question: 'Mon sous-ton naturel est :',
+      hint: 'Regarde tes veines à l\'intérieur du poignet : vertes/jaunes → chaud · bleues/violettes → froid · entre les deux → neutre',
+      options: [
+        { value: 'warm',    emoji: '☀️', label: 'Chaud',   desc: 'Teintes dorées, pêche, abricot — veines vert/jaune' },
+        { value: 'cool',    emoji: '❄️', label: 'Froid',   desc: 'Teintes roses, mauves, rouges — veines bleues/violettes' },
+        { value: 'neutral', emoji: '✦',  label: 'Neutre',  desc: 'L\'or et l\'argent me conviennent — veines bleu-vert' }
+      ]
+    },
+    {
       id: 'mq1', key: 'mkSkinType', type: 'single', required: true,
       question: 'Ma peau au réveil est plutôt :',
       options: [
@@ -938,6 +977,16 @@ const Questionnaire = (() => {
     const progress = Math.round(((makeupIndex + 1) / MAKEUP_QUESTIONS.length) * 100);
     const isLast   = makeupIndex === MAKEUP_QUESTIONS.length - 1;
 
+    // Badge "Détecté depuis ta photo" si la valeur vient de l'analyse photo
+    const analysis    = AppState?.face?.skinAnalysis;
+    const photoVal    = q.photoKey ? analysis?.[q.photoKey]?.type : null;
+    const photoDetect = photoVal && answers[q.key] === photoVal;
+    const photoBadge  = photoDetect
+      ? `<div class="mk-photo-badge">📸 Détecté depuis ton analyse photo · tu peux modifier si besoin</div>`
+      : (analysis && q.photoKey && !photoVal
+          ? `<div class="mk-photo-badge mk-photo-badge--miss">📷 Non détecté par la photo — choisis ci-dessous</div>`
+          : '');
+
     container.innerHTML = `
       <div class="q-progress-header">
         <span class="q-progress-counter">${makeupIndex + 1} / ${MAKEUP_QUESTIONS.length}</span>
@@ -946,7 +995,9 @@ const Questionnaire = (() => {
         <div class="q-progress-fill" style="width:${progress}%"></div>
       </div>
       <div class="q-card" id="qCard">
+        ${photoBadge}
         <h2 class="q-question">${q.question}</h2>
+        ${q.hint ? `<p class="mk-question-hint">${q.hint}</p>` : ''}
         <div id="qOptionsWrap">${_renderMkChoices(q, answers)}</div>
       </div>
       <div class="q-navigation">

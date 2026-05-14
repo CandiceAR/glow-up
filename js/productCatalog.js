@@ -124,14 +124,14 @@ const ProductCatalog = (() => {
   function getRecommended(answers) {
     const { skinType, makeupUsed = [], makeupFrequency, budget } = answers;
 
-    const skincareCategories = ['cleanser', 'serum', 'eye', 'cream', 'spf', 'lipbalm'];
+    const skincareCategories = ['cleanser', 'serum', 'moisturizer', 'eye', 'spf', 'lipbalm', 'nightmask'];
     const makeupCategories   = makeupFrequency !== 'jamais' ? (makeupUsed || []) : [];
     const allowed = [...skincareCategories, ...makeupCategories];
 
     let pool = AppState.products.catalog.filter(p => allowed.includes(p.category));
 
-    // Filtrer par budget
-    const BUDGET_MAX = { 'petits-prix': 20, 'bon-rapport': 50, 'premium': Infinity };
+    // Filtrer par budget (support des deux formats : questionnaire (low/medium/high) et ancien (petits-prix/bon-rapport/premium))
+    const BUDGET_MAX = { 'petits-prix': 20, 'low': 20, 'bon-rapport': 50, 'medium': 50, 'premium': Infinity, 'high': Infinity };
     const maxPrice = BUDGET_MAX[budget] ?? Infinity;
     if (maxPrice !== Infinity) {
       const budgetFiltered = pool.filter(p => !p.price || p.price <= maxPrice);
@@ -334,25 +334,37 @@ const ProductCatalog = (() => {
   function getCategoryLabel(cat) {
     const map = {
       // Skincare
-      cleanser:   'Démaquillant',
-      serum:      'Sérum',
-      eye:        'Contour yeux',
-      eyepatch:   'Patchs yeux',
-      cream:      'Crème hydratante',
-      spf:        'Protection solaire',
-      nightmask:  'Masque de nuit',
-      // Maquillage
+      cleanser:    'Nettoyant',
+      serum:       'Sérum',
+      moisturizer: 'Crème hydratante',
+      cream:       'Crème hydratante',
+      eye:         'Contour yeux',
+      eyepatch:    'Patchs yeux',
+      spf:         'Protection solaire',
+      nightmask:   'Masque de nuit',
+      // Maquillage visage
+      foundation:  'Fond de teint',
+      concealer:   'Correcteur',
+      primer:      'Primer',
+      powder:      'Poudre',
+      bronzer:     'Bronzer',
+      highlighter: 'Highlighter',
+      blush:       'Blush',
+      // Yeux
+      mascara:     'Mascara',
+      eyeliner:    'Eyeliner',
+      eyeshadow:   'Fards à paupières',
+      eyebrow:     'Sourcils',
+      // Lèvres
       lipstick:    'Rouge à lèvres',
       lipgloss:    'Gloss',
+      lipbalm:     'Baume à lèvres',
       lipliner:    'Crayon à lèvres',
       lipprimer:   'Base lèvres',
       lipplumper:  'Repulpeur lèvres',
-      blush:       'Blush',
-      foundation:  'Fond de teint',
-      mascara:     'Mascara',
-      eyebrow:     'Sourcils',
-      // Lèvres / Soin
-      lipbalm:     'Baume à lèvres',
+      // Autres
+      tools:       'Accessoires',
+      set:         'Coffret',
       demaquillant:'Démaquillant'
     };
     return map[cat] || cat;

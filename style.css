@@ -86,7 +86,7 @@ em { font-style: italic; color: var(--nude); }
 }
 .nav-links {
   display: flex;
-  gap: 24px;
+  gap: 20px;
   align-items: center;
 }
 .nav-link {
@@ -1386,9 +1386,39 @@ em { font-style: italic; color: var(--nude); }
   padding: 40px 24px 80px;
 }
 
-/* Nav link accent */
-.nav-link-journey { color: var(--nude) !important; font-weight: 500; }
-.nav-link-journey.active { color: var(--charcoal) !important; }
+/* Nav link — hiérarchie visuelle */
+
+/* Primaires : Skincare · Make-up · Offres — légèrement plus présents */
+.nav-link-primary {
+  font-weight: 500;
+  color: var(--charcoal) !important;
+  letter-spacing: 0.04em;
+}
+.nav-link-primary:hover {
+  border-bottom-color: var(--nude);
+}
+.nav-link-primary.active {
+  border-bottom-color: var(--nude);
+}
+
+/* Secondaires : Skinpedia — plus discrets */
+.nav-link-secondary {
+  font-weight: 300;
+  opacity: 0.65;
+}
+.nav-link-secondary:hover {
+  opacity: 1;
+}
+
+/* Désactivé : Skin Journey — grisé, non-cliquable */
+.nav-link-disabled {
+  font-weight: 300;
+  opacity: 0.32;
+  cursor: default;
+  pointer-events: none;
+  user-select: none;
+  border-bottom-color: transparent !important;
+}
 
 /* Écran de démarrage */
 .journey-start {
@@ -3144,11 +3174,25 @@ em { font-style: italic; color: var(--nude); }
   background: rgba(201,169,138,0.04);
 }
 .choice-card--locked {
-  cursor: default;
-  opacity: 0.6;
-  pointer-events: none;
+  cursor: pointer;
+  opacity: 0.72;
 }
 .choice-card--locked:hover { transform: none; box-shadow: none; }
+
+.choice-card-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--nude);
+  background: rgba(201,169,138,0.12);
+  border: 1px solid rgba(201,169,138,0.35);
+  border-radius: 20px;
+  padding: 3px 10px;
+}
+.choice-card--locked .choice-card-badge { display: none; }
 
 .choice-card-icon {
   font-size: 1.5rem;
@@ -3201,24 +3245,45 @@ em { font-style: italic; color: var(--nude); }
   display: none;
   position: absolute;
   inset: 0;
-  background: rgba(253,248,244,0.88);
-  backdrop-filter: blur(3px);
+  background: rgba(253,248,244,0.91);
+  backdrop-filter: blur(4px);
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   text-align: center;
-  padding: 20px;
+  padding: 24px 20px;
   pointer-events: none;
 }
 .choice-card--locked .choice-card-lock { display: flex; }
-.choice-card-lock span {
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--charcoal);
-  letter-spacing: 0.03em;
-}
 .choice-card-lock svg { color: var(--nude); }
+.choice-card-lock-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--charcoal);
+  letter-spacing: 0.04em;
+}
+.choice-card-lock-sub {
+  font-size: 0.76rem;
+  color: var(--muted);
+  line-height: 1.5;
+  max-width: 180px;
+}
+.choice-card-lock-btn {
+  pointer-events: auto;
+  margin-top: 4px;
+  background: var(--charcoal);
+  color: var(--white);
+  border: none;
+  border-radius: 24px;
+  padding: 9px 20px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: opacity 0.18s;
+}
+.choice-card-lock-btn:hover { opacity: 0.8; }
 
 .routine-choice-note {
   font-size: 0.82rem;
@@ -3579,6 +3644,163 @@ em { font-style: italic; color: var(--nude); }
   color: var(--muted);
   line-height: 1.7;
   text-align: center;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CLEAN GIRL ROUTINE — Layout étapes
+   ══════════════════════════════════════════════════════════════ */
+
+.makeup-routine { max-width: 780px; margin: 0 auto; }
+
+/* Profil chips */
+.cg-profile {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0 32px;
+}
+.cg-chip {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--charcoal);
+  background: var(--sand);
+  border-radius: 20px;
+  padding: 4px 12px;
+}
+
+/* Étapes */
+.cg-steps { display: flex; flex-direction: column; gap: 0; }
+
+.cg-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--sand);
+}
+.cg-step:last-child { border-bottom: none; }
+
+.cg-step-meta {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex: 0 0 240px;
+  padding-top: 4px;
+}
+.cg-step-num {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 300;
+  color: var(--nude);
+  opacity: 0.5;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 36px;
+}
+.cg-step-title {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--charcoal);
+  margin: 0 0 6px;
+}
+.cg-step-tip {
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0;
+}
+.cg-step-card { flex: 1; min-width: 0; }
+.cg-step-card .premium-card { margin: 0; }
+
+/* Bonus section */
+.cg-bonus {
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px solid var(--sand);
+}
+.cg-bonus-header { margin-bottom: 24px; }
+.cg-bonus-tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--nude);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.cg-bonus-title {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: var(--charcoal);
+  margin: 0 0 4px;
+}
+.cg-bonus-subtitle {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin: 0;
+}
+.cg-bonus-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--sand);
+}
+.cg-bonus-item:last-child { border-bottom: none; }
+.cg-bonus-item-label {
+  flex: 0 0 220px;
+  padding-top: 4px;
+}
+.cg-bonus-item-label h3 {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--charcoal);
+  margin: 0 0 6px;
+}
+.cg-bonus-item-label p {
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0;
+}
+.cg-bonus-item-card { flex: 1; min-width: 0; }
+.cg-bonus-item-card .premium-card { margin: 0; }
+
+/* Totaux */
+.cg-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--charcoal);
+  color: var(--white);
+  padding: 16px 24px;
+  border-radius: var(--radius);
+  margin-top: 32px;
+}
+.cg-total-label { font-size: 0.82rem; opacity: 0.75; }
+.cg-total-amount { font-size: 1.1rem; font-weight: 600; }
+/* Total avec bonus — fond plus clair pour le distinguer */
+.cg-total-bonus {
+  background: transparent;
+  border: 1px solid var(--sand);
+  color: var(--charcoal);
+  margin-top: 16px;
+}
+.cg-total-bonus .cg-total-label { opacity: 0.6; }
+.cg-total-bonus .cg-total-amount { color: var(--nude); }
+
+@media (max-width: 640px) {
+  .cg-step, .cg-bonus-item {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .cg-step-meta { flex: none; }
+  .cg-bonus-item-label { flex: none; }
+  .cg-step-num { font-size: 1.5rem; }
 }
 
 /* ─── Teaser Make-up dans la page Résultats ─────────────────── */
@@ -4285,7 +4507,8 @@ em { font-style: italic; color: var(--nude); }
 }
 
 /* ─── GLOW UP COACH ──────────────────────────────────────────── */
-.nav-link-coach { color: var(--nude); font-weight: 600; }
+.nav-link-coach { color: var(--nude); font-weight: 400; opacity: 0.85; }
+.nav-link-coach:hover { opacity: 1; }
 
 .coach-container {
   height: calc(100vh - 60px);
@@ -4663,7 +4886,19 @@ em { font-style: italic; color: var(--nude); }
   stroke-linejoin: round;
 }
 
-/* Bouton capture central accentué */
+/* Boutons primaires mobile (Skincare, Make-up, Offres) */
+.mobile-nav-primary {
+  color: var(--charcoal);
+  font-weight: 500;
+}
+.mobile-nav-primary .mobile-nav-icon {
+  stroke-width: 2;
+}
+.mobile-nav-primary.active {
+  color: var(--nude);
+}
+
+/* Bouton capture central accentué — conservé pour compatibilité CSS */
 .mobile-nav-capture {
   position: relative;
   margin-top: -18px;
@@ -5845,7 +6080,7 @@ em { font-style: italic; color: var(--nude); }
 .plan-price-alt { font-size: 0.8rem; color: var(--muted); margin-bottom: 16px; }
 .plan-features { list-style: none; padding: 0; margin: 0 0 20px; font-size: 0.875rem; display: flex; flex-direction: column; gap: 6px; }
 .plan-badge-current { text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 8px; }
-.nav-link-plans { color: var(--charcoal) !important; font-weight: 500; }
+/* .nav-link-plans remplacé par .nav-link-primary */
 
 /* ─── Auth tabs ───────────────────────────────────────────────── */
 .auth-tabs { display: flex; gap: 0; margin-bottom: 24px; border-bottom: 1px solid var(--sand); }

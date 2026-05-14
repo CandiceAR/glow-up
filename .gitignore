@@ -20,3 +20,9 @@ node_modules/
 
 # PDF privés
 recapitulatif_*.pdf
+
+.vercel
+
+# Claude Code (local only)
+.claude/settings.local.json
+.claude/worktrees/

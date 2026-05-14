@@ -6,7 +6,7 @@
   <title>Glow Up — Skincare & Maquillage Virtuel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=28">
+  <link rel="stylesheet" href="style.css?v=32">
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#C9A98A">
@@ -35,13 +35,14 @@
 
     <div class="nav-right">
       <nav class="nav-links" id="navLinks">
-        <a class="nav-link active" data-screen="home"     href="#" onclick="showScreen('home'); return false;">Accueil</a>
-        <a class="nav-link"        data-screen="shop"     href="#" onclick="showScreen('shop'); return false;">Boutique</a>
-        <a class="nav-link"        data-screen="capture"  href="#" onclick="showScreen('capture'); return false;">Mon Look</a>
-        <a class="nav-link nav-link-journey" data-screen="journey" href="#" onclick="showScreen('journey'); return false;">✦ Skin Journey</a>
-        <a class="nav-link" data-screen="skinpedia" href="#" onclick="showScreen('skinpedia'); return false;">Skinpedia</a>
-        <a class="nav-link nav-link-coach" data-screen="coach" href="#" onclick="showScreen('coach'); return false;">✦ Coach</a>
-        <a class="nav-link nav-link-plans" data-screen="plans" href="#" onclick="showScreen('plans'); return false;">Offres</a>
+        <a class="nav-link active"          data-screen="home"          href="#" onclick="showScreen('home'); return false;">Accueil</a>
+        <a class="nav-link"                 data-screen="shop"          href="#" onclick="showScreen('shop'); return false;">Boutique</a>
+        <a class="nav-link nav-link-disabled"                           href="#" onclick="return false;" aria-disabled="true" tabindex="-1">Skin Journey</a>
+        <a class="nav-link nav-link-primary" data-screen="questionnaire" href="#" onclick="startGlowUp(); return false;">Skincare</a>
+        <a class="nav-link nav-link-primary" data-screen="makeup"        href="#" onclick="goToMakeup(); return false;">Make-up</a>
+        <a class="nav-link nav-link-coach"   data-screen="coach"         href="#" onclick="showScreen('coach'); return false;">Coach ⭐</a>
+        <a class="nav-link nav-link-secondary" data-screen="skinpedia"   href="#" onclick="showScreen('skinpedia'); return false;">Skinpedia</a>
+        <a class="nav-link nav-link-primary" data-screen="plans"         href="#" onclick="showScreen('plans'); return false;">Offres</a>
       </nav>
       <div id="navUser"></div>
     </div>
@@ -59,7 +60,7 @@
           <h1 class="hero-title">Découvre ta routine,<br><em>essaie avant d'acheter.</em></h1>
           <p class="hero-sub">Questionnaire personnalisé · Routine sur-mesure · Try-on virtuel MediaPipe<br>Liens Amazon affiliés — même commission, aucun favoritisme.</p>
           <div class="hero-actions">
-            <button class="btn btn-dark" onclick="startGlowUp()">Commencer mon analyse ✦</button>
+            <button class="btn btn-dark" onclick="startGlowUp()">Faire mon analyse ✦</button>
             <button class="btn btn-outline" onclick="showScreen('shop')">Voir la boutique</button>
           </div>
           <p class="hero-login-hint" id="heroLoginHint">
@@ -182,15 +183,15 @@
       <div class="routine-choice-container">
 
         <div class="routine-choice-header">
-          <span class="section-tag">Étape 2</span>
-          <h1>Quelle routine veux-tu découvrir ?</h1>
-          <p>Choisis la routine qui t'intéresse le plus.<br>Tu peux découvrir l'autre plus tard avec l'accès complet Glow Up.</p>
+          <h1>Choisis ta routine offerte ✨</h1>
+          <p>Une routine gratuite, personnalisée pour toi.<br>Tu pourras débloquer l'autre ensuite si tu veux.</p>
         </div>
 
         <div class="routine-choice-cards" id="routineChoiceCards">
 
           <!-- Skincare -->
           <div class="choice-card" id="choiceCardSkincare" onclick="pickRoutine('skincare')">
+            <div class="choice-card-badge">✦ Offert</div>
             <div class="choice-card-icon">◇</div>
             <div class="choice-card-body">
               <h2>Routine Skincare</h2>
@@ -202,14 +203,17 @@
               </ul>
             </div>
             <div class="choice-card-cta">Choisir Skincare →</div>
-            <div class="choice-card-lock" id="lockSkincare" style="display:none">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              <span>Accès complet Glow Up</span>
+            <div class="choice-card-lock" id="lockSkincare">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span class="choice-card-lock-label">Premium ✨</span>
+              <span class="choice-card-lock-sub">Cette routine est réservée aux membres Glow Up</span>
+              <button class="choice-card-lock-btn" onclick="event.stopPropagation(); pickRoutine('skincare')">Débloquer ma routine →</button>
             </div>
           </div>
 
           <!-- Make-up -->
           <div class="choice-card" id="choiceCardMakeup" onclick="pickRoutine('makeup')">
+            <div class="choice-card-badge">✦ Offert</div>
             <div class="choice-card-icon">✦</div>
             <div class="choice-card-body">
               <h2>Routine Make-up</h2>
@@ -221,9 +225,11 @@
               </ul>
             </div>
             <div class="choice-card-cta">Choisir Make-up →</div>
-            <div class="choice-card-lock" id="lockMakeup" style="display:none">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              <span>Accès complet Glow Up</span>
+            <div class="choice-card-lock" id="lockMakeup">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span class="choice-card-lock-label">Premium ✨</span>
+              <span class="choice-card-lock-sub">Cette routine est réservée aux membres Glow Up</span>
+              <button class="choice-card-lock-btn" onclick="event.stopPropagation(); pickRoutine('makeup')">Débloquer ma routine →</button>
             </div>
           </div>
 
@@ -235,10 +241,6 @@
             Voir les offres →
           </button>
         </p>
-
-        <div style="text-align:center; margin-top:32px;">
-          <button class="btn btn-outline" onclick="showScreen('skin-analysis')">← Retour à mon analyse</button>
-        </div>
 
       </div>
     </div><!-- /screen-routine-choice -->
@@ -373,11 +375,9 @@
               </button>
               <div class="sidebar-group-items">
                 <button class="sidebar-item" data-cat="serum"       onclick="filterShop('serum')">Sérum</button>
-                <button class="sidebar-item" data-cat="cleanser"    onclick="filterShop('cleanser')">Démaquillant</button>
-                <button class="sidebar-item" data-cat="cream"       onclick="filterShop('cream')">Crème</button>
+                <button class="sidebar-item" data-cat="moisturizer" onclick="filterShop('moisturizer')">Crème hydratante</button>
                 <button class="sidebar-item" data-cat="eye"         onclick="filterShop('eye')">Contour yeux</button>
-                <button class="sidebar-item" data-cat="retinol"     onclick="filterShop('retinol')">Rétinol</button>
-                <button class="sidebar-item" data-cat="niacinamide" onclick="filterShop('niacinamide')">Niacinamide</button>
+                <button class="sidebar-item" data-cat="cleanser"    onclick="filterShop('cleanser')">Nettoyant</button>
                 <button class="sidebar-item" data-cat="spf"         onclick="filterShop('spf')">SPF ☀️</button>
                 <button class="sidebar-item" data-cat="nightmask"   onclick="filterShop('nightmask')">Masque de nuit</button>
               </div>
@@ -389,12 +389,19 @@
                 Maquillage <span class="sidebar-arrow">▾</span>
               </button>
               <div class="sidebar-group-items">
-                <button class="sidebar-item" data-cat="foundation" onclick="filterShop('foundation')">Fond de teint</button>
-                <button class="sidebar-item" data-cat="bronzer"    onclick="filterShop('bronzer')">Bronzer &amp; Bonne mine</button>
-                <button class="sidebar-item" data-cat="eyeliner"   onclick="filterShop('eyeliner')">Eyeliner &amp; Kajal</button>
-                <button class="sidebar-item" data-cat="mascara"    onclick="filterShop('mascara')">Mascara</button>
-                <button class="sidebar-item" data-cat="lipstick"   onclick="filterShop('lipstick')">Rouge à lèvres</button>
-                <button class="sidebar-item" data-cat="lipbalm"    onclick="filterShop('lipbalm')">Baume à lèvres</button>
+                <button class="sidebar-item" data-cat="foundation"  onclick="filterShop('foundation')">Fond de teint</button>
+                <button class="sidebar-item" data-cat="concealer"   onclick="filterShop('concealer')">Correcteur / Anti-cernes</button>
+                <button class="sidebar-item" data-cat="mascara"     onclick="filterShop('mascara')">Mascara</button>
+                <button class="sidebar-item" data-cat="lipstick"    onclick="filterShop('lipstick')">Rouge à lèvres</button>
+                <button class="sidebar-item" data-cat="lipgloss"    onclick="filterShop('lipgloss')">Gloss</button>
+                <button class="sidebar-item" data-cat="eyeliner"    onclick="filterShop('eyeliner')">Eyeliner &amp; Kajal</button>
+                <button class="sidebar-item" data-cat="eyeshadow"   onclick="filterShop('eyeshadow')">Fards à paupières</button>
+                <button class="sidebar-item" data-cat="blush"       onclick="filterShop('blush')">Blush</button>
+                <button class="sidebar-item" data-cat="bronzer"     onclick="filterShop('bronzer')">Bronzer &amp; Bonne mine</button>
+                <button class="sidebar-item" data-cat="highlighter" onclick="filterShop('highlighter')">Highlighter</button>
+                <button class="sidebar-item" data-cat="powder"      onclick="filterShop('powder')">Poudre</button>
+                <button class="sidebar-item" data-cat="primer"      onclick="filterShop('primer')">Primer</button>
+                <button class="sidebar-item" data-cat="lipbalm"     onclick="filterShop('lipbalm')">Baume à lèvres</button>
               </div>
             </div>
 
@@ -473,6 +480,20 @@
       </svg>
       <span>Accueil</span>
     </button>
+    <button class="mobile-nav-item mobile-nav-primary" data-screen="questionnaire" onclick="startGlowUp()">
+      <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M12 22C12 22 3 17 3 10a9 9 0 0 1 18 0c0 7-9 12-9 12z"/>
+        <circle cx="12" cy="10" r="3"/>
+      </svg>
+      <span>Skincare</span>
+    </button>
+    <button class="mobile-nav-item mobile-nav-primary" data-screen="makeup" onclick="showScreen('makeup')">
+      <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M12 2a4 4 0 0 1 4 4c0 2.5-4 8-4 8S8 8.5 8 6a4 4 0 0 1 4-4z"/>
+        <path d="M12 14c0 4-2 6-2 6h4s-2-2-2-6z"/>
+      </svg>
+      <span>Make-up</span>
+    </button>
     <button class="mobile-nav-item" data-screen="shop" onclick="showScreen('shop')">
       <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
         <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
@@ -481,24 +502,11 @@
       </svg>
       <span>Boutique</span>
     </button>
-    <button class="mobile-nav-item mobile-nav-capture" data-screen="capture" onclick="showScreen('capture')">
-      <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/>
-        <circle cx="12" cy="12" r="4"/>
-      </svg>
-      <span>Photo</span>
-    </button>
-    <button class="mobile-nav-item" data-screen="journey" onclick="showScreen('journey')">
+    <button class="mobile-nav-item mobile-nav-primary" data-screen="plans" onclick="showScreen('plans')">
       <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
       </svg>
-      <span>Journey</span>
-    </button>
-    <button class="mobile-nav-item" data-screen="coach" onclick="showScreen('coach')">
-      <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-      </svg>
-      <span>Coach</span>
+      <span>Offres</span>
     </button>
   </nav>
 
@@ -544,11 +552,11 @@
   <script src="js/lookGenerator.js?v=50"></script>
   <script src="js/makeupAI.js?v=50"></script>
   <script src="js/skinAnalysis.js?v=50"></script>
-  <script src="js/rulesEngine.js?v=50"></script>
+  <script src="js/rulesEngine.js?v=51"></script>
   <script src="js/catalogue.js?v=50"></script>
-  <script src="js/productCatalog.js?v=50"></script>
-  <script src="js/questionnaire.js?v=50"></script>
-  <script src="js/routineRenderer.js?v=50"></script>
+  <script src="js/productCatalog.js?v=51"></script>
+  <script src="js/questionnaire.js?v=51"></script>
+  <script src="js/routineRenderer.js?v=51"></script>
   <script src="js/tryOn.js?v=50"></script>
   <script src="js/auth.js?v=50"></script>
   <script src="js/skinJourney.js?v=50"></script>
