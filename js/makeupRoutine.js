@@ -23,7 +23,7 @@ const MakeupRoutine = (() => {
         allProducts = await FirestoreProducts.loadAll();
       }
       if (!allProducts) {
-        const res  = await fetch('data/products-manual.json?v=55');
+        const res  = await fetch('data/products-manual.json?v=56');
         const data = await res.json();
         allProducts = Array.isArray(data) ? data : (data.products || []);
       }
@@ -140,12 +140,22 @@ const MakeupRoutine = (() => {
   }
 
   // 3. BLUSH ────────────────────────────────────────────────────
-  function selectBlush({ undertone, budget }) {
-    const priority = undertone === 'warm'
-      ? ['m105']
-      : undertone === 'cool'
-        ? ['m104','m112']
-        : ['m104'];
+  function selectBlush({ undertone, carnation, budget }) {
+    const isDark = carnation === 'dark';
+    let priority;
+    if (undertone === 'warm') {
+      priority = isDark
+        ? ['m193','m105']              // Naked (terracotta foncé), puis warm existants
+        : ['m192','m105'];             // Fever (corail clair/medium)
+    } else if (undertone === 'cool') {
+      priority = isDark
+        ? ['m193','m104','m112']
+        : ['m192','m104','m112'];
+    } else {
+      priority = isDark
+        ? ['m193','m104']
+        : ['m192','m104'];
+    }
     return [pickFromCatalog('blush', budget, priority, ['m128'])].filter(Boolean);
   }
 

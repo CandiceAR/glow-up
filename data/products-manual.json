@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-05-15",
-    "totalProducts": 191
+    "totalProducts": 193
   },
   "products": [
     {
@@ -4502,6 +4502,74 @@
       "makeupCategory": "tools",
       "curatedBy": "admin",
       "curatedAt": "2026-05-15"
+    },
+    {
+      "id": "m192",
+      "name": "Blush Béguin — Fever",
+      "brand": "DLA Paris",
+      "category": "blush",
+      "subcategory": "blush",
+      "shadeName": "Fever",
+      "colorHex": "#E8856A",
+      "imageUrl": "https://dlaparis.com/wp-content/uploads/2026/03/BLUSH-BEGUIN-FEVER-SITE-NEW.jpg",
+      "shopUrl": "https://dlaparis.com/pinceaux/blush-beguin/",
+      "amazonUrl": null,
+      "price": 26,
+      "currency": "EUR",
+      "rating": 4.9,
+      "description": "Blush velouté ultra-pigmenté. Teinte corail chaud idéale pour les carnations claires à medium. Formule modulable, fini satiné naturel. Utilisable sur joues, lèvres et paupières.",
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "isFeatured": true,
+      "active": true,
+      "makeupCategory": "blush",
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-15",
+      "skinTonePreview": {
+        "mode": "images",
+        "light": "https://dlaparis.com/wp-content/uploads/2026/03/BLUSH-BEGUIN-FEVER-SITE-NEW.jpg",
+        "medium": "https://dlaparis.com/wp-content/uploads/2026/03/BLUSH-BEGUIN-FEVER-SITE-NEW.jpg",
+        "dark": null
+      }
+    },
+    {
+      "id": "m193",
+      "name": "Blush Béguin — Naked",
+      "brand": "DLA Paris",
+      "category": "blush",
+      "subcategory": "blush",
+      "shadeName": "Naked",
+      "colorHex": "#C4876A",
+      "imageUrl": "https://dlaparis.com/wp-content/uploads/2026/03/BLUSH-BEGUIN-NAKED-SITE-NEW.jpg",
+      "shopUrl": "https://dlaparis.com/pinceaux/blush-beguin/",
+      "amazonUrl": null,
+      "price": 26,
+      "currency": "EUR",
+      "rating": 4.9,
+      "description": "Blush velouté ultra-pigmenté. Teinte nude terracotta parfaite pour les carnations medium à foncées. Formule modulable, fini satiné naturel. Utilisable sur joues, lèvres et paupières.",
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "isFeatured": true,
+      "active": true,
+      "makeupCategory": "blush",
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-15",
+      "skinTonePreview": {
+        "mode": "images",
+        "light": null,
+        "medium": "https://dlaparis.com/wp-content/uploads/2026/03/BLUSH-BEGUIN-NAKED-SITE-NEW.jpg",
+        "dark": "https://dlaparis.com/wp-content/uploads/2026/03/BLUSH-BEGUIN-NAKED-SITE-NEW.jpg"
+      }
     }
   ]
 }
