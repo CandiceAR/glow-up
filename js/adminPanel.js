@@ -86,42 +86,43 @@ const Admin = (() => {
 
   // ─── Chargement produits ──────────────────────────────────────
   async function loadProducts() {
-    // 1. Essayer Firestore (source de vérité)
+    let firestoreProducts = [];
+    let jsonProducts      = [];
+
+    // 1. Charger Firestore
     if (typeof FirestoreProducts !== 'undefined') {
-      const fp = await FirestoreProducts.loadAll();
-      if (fp?.length) {
-        products = fp;
-        saveToStorage();
-        return;
-      }
-      // Firestore vide → migration one-time depuis localStorage ou JSON
-      const stored = localStorage.getItem('glow_products_manual');
-      if (stored) {
-        try {
-          products = JSON.parse(stored);
-          await FirestoreProducts.migrateFromJSON(products);
-          return;
-        } catch {}
-      }
       try {
-        const res  = await fetch('data/products-manual.json');
-        const data = await res.json();
-        products = data.products || [];
-        if (products.length) await FirestoreProducts.migrateFromJSON(products);
-        return;
+        const fp = await FirestoreProducts.loadAll();
+        if (fp?.length) firestoreProducts = fp;
       } catch {}
     }
-    // 2. Fallback localStorage
-    const stored = localStorage.getItem('glow_products_manual');
-    if (stored) {
-      try { products = JSON.parse(stored); return; } catch {}
-    }
-    // 3. Fallback JSON statique
+
+    // 2. Toujours charger le JSON (source des produits ajoutés via code)
     try {
-      const res  = await fetch('data/products-manual.json');
+      const res  = await fetch('data/products-manual.json?v=' + Date.now());
       const data = await res.json();
-      products = data.products || [];
-    } catch { products = []; }
+      jsonProducts = data.products || [];
+    } catch {}
+
+    if (firestoreProducts.length === 0 && jsonProducts.length === 0) {
+      // Fallback localStorage
+      const stored = localStorage.getItem('glow_products_manual');
+      if (stored) try { products = JSON.parse(stored); saveToStorage(); return; } catch {}
+      products = [];
+      return;
+    }
+
+    // 3. Fusionner : Firestore prioritaire sur les IDs en commun, JSON comble les manquants
+    const firestoreMap = new Map(firestoreProducts.map(p => [p.id, p]));
+    const jsonOnly     = jsonProducts.filter(p => !firestoreMap.has(p.id));
+    products = [...firestoreProducts, ...jsonOnly];
+
+    // 4. Si Firestore était vide : migrer tout le JSON vers Firestore
+    if (firestoreProducts.length === 0 && jsonProducts.length && typeof FirestoreProducts !== 'undefined') {
+      try { await FirestoreProducts.migrateFromJSON(jsonProducts); } catch {}
+    }
+
+    saveToStorage();
   }
 
   function saveToStorage() {
