@@ -318,14 +318,16 @@ const Questionnaire = (() => {
     showScreen('questionnaire');
   }
 
+  // Photo renvoie 'light'/'dark', les options MQ utilisent 'clair'/'fonce'
+  const CARN_PHOTO_MAP = { light: 'clair', medium: 'medium', dark: 'fonce', clair: 'clair', fonce: 'fonce' };
+
   function startMakeup() {
     mode = 'makeup';
     const analysis = AppState?.face?.skinAnalysis;
-    // Si photo déjà analysée, sauter l'étape photo (index 0 = mq_photo)
     makeupIndex = analysis ? 1 : 0;
     AppState.makeupQuiz = {
-      mkCarnation: analysis?.carnation?.type  || null,
-      mkUndertone: analysis?.undertone?.type  || null
+      mkCarnation: CARN_PHOTO_MAP[analysis?.carnation?.type] || null,
+      mkUndertone: analysis?.undertone?.type || null
     };
     showScreen('questionnaire');
     render();
@@ -774,7 +776,7 @@ const Questionnaire = (() => {
         const analysis = AppState?.face?.skinAnalysis;
         if (analysis) {
           AppState.makeupQuiz = AppState.makeupQuiz || {};
-          if (analysis.carnation?.type) AppState.makeupQuiz.mkCarnation = analysis.carnation.type;
+          if (analysis.carnation?.type) AppState.makeupQuiz.mkCarnation = CARN_PHOTO_MAP[analysis.carnation.type] || analysis.carnation.type;
           if (analysis.undertone?.type) AppState.makeupQuiz.mkUndertone = analysis.undertone.type;
         }
         makeupIndex++;

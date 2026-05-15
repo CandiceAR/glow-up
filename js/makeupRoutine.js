@@ -472,10 +472,13 @@ const MakeupRoutine = (() => {
     const skinQuiz = AppState?.questionnaire?.answers || {};
     const mkQuiz   = AppState?.makeupQuiz || {};
 
-    // Carnation : photo > quiz
-    const carnationRaw = analysis?.carnation?.type || skinQuiz?.skinTone || 'medium';
+    // Carnation : quiz makeup (choix manuel) > photo > quiz skincare
     const carnationMap = { light:'light', clair:'light', medium:'medium', fonce:'dark', dark:'dark' };
+    const carnationRaw = mkQuiz.mkCarnation || analysis?.carnation?.type || skinQuiz?.skinTone || 'medium';
     const carnation    = carnationMap[carnationRaw] || 'medium';
+
+    // Sous-ton : quiz makeup > photo
+    const undertoneRaw = mkQuiz.mkUndertone || analysis?.undertone?.type || 'neutral';
 
     // Budget : quiz makeup > quiz skincare
     const budgetMap = { 'petits-prix':'low', 'bon-rapport':'medium', premium:'premium' };
@@ -484,7 +487,7 @@ const MakeupRoutine = (() => {
     const profile = {
       faceShape: analysis?.faceShape?.shape   || 'oval',
       skinType:  mkQuiz.mkSkinType || analysis?.skinType?.type || skinQuiz?.skinType || 'normale',
-      undertone: analysis?.undertone?.type    || 'neutral',
+      undertone: undertoneRaw,
       eyeShape:  analysis?.eyeShape           || 'almond',
       lipShape:  analysis?.lipShape           || 'medium',
       carnation,
