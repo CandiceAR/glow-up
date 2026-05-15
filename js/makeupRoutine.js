@@ -140,23 +140,25 @@ const MakeupRoutine = (() => {
   }
 
   // 3. BLUSH ────────────────────────────────────────────────────
-  function selectBlush({ undertone, carnation, budget }) {
-    const isDark = carnation === 'dark';
+  function selectBlush({ undertone, carnation, budget, ageGroup }) {
+    const isDark    = carnation === 'dark';
+    const isUnder40 = ageGroup !== '40+';  // DLA blushes ciblés -40 ans
+    const exclude   = ['m128', ...(isUnder40 ? [] : ['m192','m193'])];
     let priority;
     if (undertone === 'warm') {
       priority = isDark
-        ? ['m193','m105']              // Naked (terracotta foncé), puis warm existants
-        : ['m192','m105'];             // Fever (corail clair/medium)
+        ? [isUnder40 && 'm193', 'm105'].filter(Boolean)
+        : [isUnder40 && 'm192', 'm105'].filter(Boolean);
     } else if (undertone === 'cool') {
       priority = isDark
-        ? ['m193','m104','m112']
-        : ['m192','m104','m112'];
+        ? [isUnder40 && 'm193', 'm104', 'm112'].filter(Boolean)
+        : [isUnder40 && 'm192', 'm104', 'm112'].filter(Boolean);
     } else {
       priority = isDark
-        ? ['m193','m104']
-        : ['m192','m104'];
+        ? [isUnder40 && 'm193', 'm104'].filter(Boolean)
+        : [isUnder40 && 'm192', 'm104'].filter(Boolean);
     }
-    return [pickFromCatalog('blush', budget, priority, ['m128'])].filter(Boolean);
+    return [pickFromCatalog('blush', budget, priority, exclude)].filter(Boolean);
   }
 
   // 4. POUDRE LIBRE ─────────────────────────────────────────────
