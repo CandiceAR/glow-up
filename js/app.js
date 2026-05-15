@@ -273,14 +273,14 @@ function renderShop() {
 }
 
 function renderShopBrands() {
-  const container = document.getElementById('shopBrandList');
+  const container = document.getElementById('shopBrandBar');
   if (!container) return;
   const brands = [...new Set(AppState.products.catalog.map(p => p.brand).filter(Boolean))].sort();
   const currentBrand = AppState.products.filters.brand;
   container.innerHTML =
-    `<button class="sidebar-item${currentBrand === 'all' ? ' active' : ''}" data-brand="all" onclick="filterShopBrand('all')">Toutes les marques</button>` +
+    `<button class="brand-pill${currentBrand === 'all' ? ' active' : ''}" data-brand="all" onclick="filterShopBrand('all')">Toutes</button>` +
     brands.map(b =>
-      `<button class="sidebar-item${currentBrand === b ? ' active' : ''}" data-brand="${b.replace(/"/g,'&quot;')}" onclick="filterShopBrand(${JSON.stringify(b)})">${b}</button>`
+      `<button class="brand-pill${currentBrand === b ? ' active' : ''}" data-brand="${b.replace(/"/g,'&quot;')}" onclick="filterShopBrand(${JSON.stringify(b)})">${b}</button>`
     ).join('');
 }
 
@@ -294,7 +294,7 @@ function filterShop(cat) {
 
 function filterShopBrand(brand) {
   AppState.products.filters.brand = brand;
-  document.querySelectorAll('[data-brand]').forEach(t =>
+  document.querySelectorAll('.brand-pill').forEach(t =>
     t.classList.toggle('active', t.dataset.brand === brand));
   renderShop();
 }

@@ -2100,6 +2100,36 @@ em { font-style: italic; color: var(--nude); }
 /* ── Main content ── */
 .shop-main { flex: 1; min-width: 0; }
 
+/* ── Barre marques ── */
+.shop-brand-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.brand-pill {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--sand);
+  background: none;
+  font-size: 0.82rem;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+  white-space: nowrap;
+}
+.brand-pill:hover {
+  border-color: var(--charcoal);
+  color: var(--charcoal);
+}
+.brand-pill.active {
+  background: var(--charcoal);
+  border-color: var(--charcoal);
+  color: var(--white);
+  font-weight: 500;
+}
+
 /* ─── Modal Générique ────────────────────────────────────────── */
 .overlay {
   position: fixed;
