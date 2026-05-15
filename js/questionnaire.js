@@ -320,9 +320,9 @@ const Questionnaire = (() => {
 
   function startMakeup() {
     mode = 'makeup';
-    makeupIndex = 0;
     const analysis = AppState?.face?.skinAnalysis;
-    // Pré-remplir depuis l'analyse photo si disponible
+    // Si photo déjà analysée, sauter l'étape photo (index 0 = mq_photo)
+    makeupIndex = analysis ? 1 : 0;
     AppState.makeupQuiz = {
       mkCarnation: analysis?.carnation?.type  || null,
       mkUndertone: analysis?.undertone?.type  || null
@@ -768,6 +768,20 @@ const Questionnaire = (() => {
   function next() {
     if (mode === 'makeup') {
       const q = MAKEUP_QUESTIONS[makeupIndex];
+
+      // Quitter l'étape photo → pré-remplir carnation + undertone depuis l'analyse
+      if (q.type === 'photo-step') {
+        const analysis = AppState?.face?.skinAnalysis;
+        if (analysis) {
+          AppState.makeupQuiz = AppState.makeupQuiz || {};
+          if (analysis.carnation?.type) AppState.makeupQuiz.mkCarnation = analysis.carnation.type;
+          if (analysis.undertone?.type) AppState.makeupQuiz.mkUndertone = analysis.undertone.type;
+        }
+        makeupIndex++;
+        _renderMakeupLegacy();
+        return;
+      }
+
       const answers = AppState.makeupQuiz || {};
       if (q.required && !answers[q.key]) return;
       if (makeupIndex < MAKEUP_QUESTIONS.length - 1) { makeupIndex++; _renderMakeupLegacy(); }
@@ -894,6 +908,11 @@ const Questionnaire = (() => {
 
   const MAKEUP_QUESTIONS = [
     {
+      id: 'mq_photo', key: null, type: 'photo-step', required: false,
+      question: 'Analyse ton visage pour personnaliser ta routine make-up',
+      subtitle: 'Carnation, sous-ton et forme du visage détectés automatiquement'
+    },
+    {
       id: 'mq_carn', key: 'mkCarnation', type: 'single', required: true,
       photoKey: 'carnation',
       question: 'Ma teinte de peau naturelle est :',
@@ -973,6 +992,28 @@ const Questionnaire = (() => {
 
     const q        = MAKEUP_QUESTIONS[makeupIndex];
     if (!q) return;
+
+    // ── Étape photo ────────────────────────────────────────────────
+    if (q.type === 'photo-step') {
+      const photoHtml = _renderPhotoStep(q);
+      const hasAnalysis = !!AppState?.face?.skinAnalysis;
+      container.innerHTML = `
+        <div class="q-progress-header">
+          <span class="q-progress-counter">Analyse photo</span>
+        </div>
+        <div class="q-progress-bar">
+          <div class="q-progress-fill" style="width:0%"></div>
+        </div>
+        ${photoHtml}
+        <div class="q-navigation" style="margin-top:24px;">
+          <div></div>
+          <button class="btn btn-dark q-next" onclick="Questionnaire.next()">
+            ${hasAnalysis ? 'Utiliser cette analyse →' : 'Passer cette étape →'}
+          </button>
+        </div>`;
+      return;
+    }
+
     const answers  = AppState.makeupQuiz || {};
     const progress = Math.round(((makeupIndex + 1) / MAKEUP_QUESTIONS.length) * 100);
     const isLast   = makeupIndex === MAKEUP_QUESTIONS.length - 1;
