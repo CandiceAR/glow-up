@@ -37,7 +37,7 @@ const AppState = {
     recommended: [],    // Produits recommandés (après questionnaire)
     selected: null,     // Produit ouvert en modal
     tryOnActive: [],    // Produits actuellement appliqués sur le try-on
-    filters: { category: 'all' }
+    filters: { category: 'all', brand: 'all' }
   },
 
   user: {
@@ -85,7 +85,7 @@ function showScreen(name) {
       overlay.style.display = 'flex';
     }
   }
-  if (name === 'shop')          renderShop();
+  if (name === 'shop')          { renderShopBrands(); renderShop(); }
   if (name === 'tryon')         TryOn.initTryOnScreen();
   if (name === 'results') {
     RoutineRenderer.renderResults();
@@ -259,23 +259,43 @@ function renderFeaturedHome() {
 function renderShop() {
   const grid = document.getElementById('shopGrid');
   if (!grid) return;
-  const cat = AppState.products.filters.category;
+  const { category: cat, brand } = AppState.products.filters;
   let list;
-  if (cat === 'all')      list = AppState.products.catalog;
+  if (cat === 'all')           list = AppState.products.catalog;
   else if (cat === 'featured') list = AppState.products.catalog.filter(p => p.isFeatured);
   else if (cat === 'h2o')      list = AppState.products.catalog.filter(p => p.badge === 'h2o');
   else if (cat === 'vitc')     list = AppState.products.catalog.filter(p => p.badge === 'vitc' || p.badge === 'vitc-spf');
   else                         list = AppState.products.catalog.filter(p => p.category === cat);
+  if (brand !== 'all')         list = list.filter(p => p.brand === brand);
   grid.innerHTML = list.length
     ? list.map(p => ProductCatalog.renderCard(p)).join('')
-    : '<p class="empty-state">Aucun produit dans cette catégorie.</p>';
+    : '<p class="empty-state">Aucun produit dans cette sélection.</p>';
+}
+
+function renderShopBrands() {
+  const container = document.getElementById('shopBrandList');
+  if (!container) return;
+  const brands = [...new Set(AppState.products.catalog.map(p => p.brand).filter(Boolean))].sort();
+  const currentBrand = AppState.products.filters.brand;
+  container.innerHTML =
+    `<button class="sidebar-item${currentBrand === 'all' ? ' active' : ''}" data-brand="all" onclick="filterShopBrand('all')">Toutes les marques</button>` +
+    brands.map(b =>
+      `<button class="sidebar-item${currentBrand === b ? ' active' : ''}" data-brand="${b.replace(/"/g,'&quot;')}" onclick="filterShopBrand(${JSON.stringify(b)})">${b}</button>`
+    ).join('');
 }
 
 function filterShop(cat) {
   AppState.products.filters.category = cat;
-  document.querySelectorAll('.sidebar-item').forEach(t =>
+  document.querySelectorAll('[data-cat]').forEach(t =>
     t.classList.toggle('active', t.dataset.cat === cat));
   renderCatExplainer(cat);
+  renderShop();
+}
+
+function filterShopBrand(brand) {
+  AppState.products.filters.brand = brand;
+  document.querySelectorAll('[data-brand]').forEach(t =>
+    t.classList.toggle('active', t.dataset.brand === brand));
   renderShop();
 }
 
