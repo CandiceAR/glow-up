@@ -149,8 +149,8 @@ const RoutineRenderer = (() => {
 
     pool.sort((a, b) => b._score - a._score);
 
-    // Diversité : choisir aléatoirement parmi le top-3, seed par session
-    const topN = pool.slice(0, Math.min(3, pool.length));
+    // Diversité : choisir aléatoirement parmi les top-15 produits éligibles
+    const topN = pool.slice(0, Math.min(15, pool.length));
     const idx  = Math.floor(_seededRandom(stepType) * topN.length);
     return topN[idx] || null;
   }

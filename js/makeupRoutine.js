@@ -23,7 +23,7 @@ const MakeupRoutine = (() => {
         allProducts = await FirestoreProducts.loadAll();
       }
       if (!allProducts) {
-        const res  = await fetch('data/products-manual.json');
+        const res  = await fetch('data/products-manual.json?v=53');
         const data = await res.json();
         allProducts = Array.isArray(data) ? data : (data.products || []);
       }
@@ -87,132 +87,144 @@ const MakeupRoutine = (() => {
     return [pool[Math.floor(Math.random() * pool.length)]];
   }
 
+  // Picks randomly from the best-scored products across the full catalog
+  // priorityIds get a +50 bonus so they appear in top-10 more often but aren't guaranteed
+  function pickFromCatalog(categories, budget, priorityIds = [], excludeIds = []) {
+    const cats = Array.isArray(categories) ? categories : [categories];
+    const excludeSet = new Set(excludeIds);
+    const all = filterByBudget(
+      getByCategories(cats).filter(p => !excludeSet.has(p.id)),
+      budget
+    );
+    if (!all.length) return null;
+    const prioritySet = new Set(priorityIds);
+    const scored = all.map(p => ({
+      ...p, _w: (p.rating || 3) * 10 + (prioritySet.has(p.id) ? 50 : 0)
+    }));
+    scored.sort((a, b) => b._w - a._w);
+    const topN = scored.slice(0, Math.min(10, scored.length));
+    return topN[Math.floor(Math.random() * topN.length)] || null;
+  }
+
   // ══════════════════════════════════════════════════════════════
   // SÉLECTION PRODUITS — adaptés au profil
   // ══════════════════════════════════════════════════════════════
 
   // 1. ANTI-CERNES MULTI-USAGE ───────────────────────────────────
   function selectConcealer({ carnation, undertone, budget }) {
-    let ids;
+    let priority;
     if (carnation === 'light') {
-      ids = undertone === 'cool'
-        ? ['m115','m042','m046','m038']   // HALOW GLOW Fair, NYX Ivoire, NYX Light, Clinique
-        : ['m115','m038','m047','m046'];  // HALOW GLOW Fair, Clinique, Maybelline
+      priority = undertone === 'cool'
+        ? ['m115','m042','m046','m038']
+        : ['m115','m038','m047','m046'];
     } else if (carnation === 'dark') {
-      ids = undertone === 'warm'
-        ? ['m044','m038','m039','m114']   // NYX Tan, Clinique, Charlotte Tilbury, HALOW GLOW
+      priority = undertone === 'warm'
+        ? ['m044','m038','m039','m114']
         : ['m038','m044','m039','m113'];
     } else {
-      // medium
-      ids = undertone === 'warm'
-        ? ['m114','m038','m047','m043']   // HALOW GLOW 3, Clinique, Maybelline, NYX Natural
+      priority = undertone === 'warm'
+        ? ['m114','m038','m047','m043']
         : ['m038','m047','m114','m042'];
     }
-    return pick1(ids.map(getById), budget);
+    return [pickFromCatalog('concealer', budget, priority)].filter(Boolean);
   }
 
   // 2. HIGHLIGHTER GLOW ─────────────────────────────────────────
   function selectHighlighter({ carnation, budget }) {
-    let ids;
-    if (carnation === 'dark')       ids = ['m117','m090','m110'];
-    else if (carnation === 'light') ids = ['m116','m090','m109'];
-    else                            ids = ['m090','m109','m116'];
-    return pick1(ids.map(getById), budget);
+    const priority = carnation === 'dark'
+      ? ['m117','m090','m110']
+      : carnation === 'light'
+        ? ['m116','m090','m109']
+        : ['m090','m109','m116'];
+    return [pickFromCatalog('highlighter', budget, priority)].filter(Boolean);
   }
 
   // 3. BLUSH ────────────────────────────────────────────────────
   function selectBlush({ undertone, budget }) {
-    // m128 = contour bronzant, exclure
-    const pool = getByCategory('blush').filter(p => p.id !== 'm128');
-    let ordered;
-    if (undertone === 'warm')       ordered = [getById('m105'), ...pool.filter(p => p.id !== 'm105')];
-    else if (undertone === 'cool')  ordered = [getById('m104'), getById('m112'), ...pool.filter(p => !['m104','m112'].includes(p.id))];
-    else                            ordered = [getById('m104'), ...pool.filter(p => p.id !== 'm104')];
-    return pick1(ordered, budget);
+    const priority = undertone === 'warm'
+      ? ['m105']
+      : undertone === 'cool'
+        ? ['m104','m112']
+        : ['m104'];
+    return [pickFromCatalog('blush', budget, priority, ['m128'])].filter(Boolean);
   }
 
   // 4. POUDRE LIBRE ─────────────────────────────────────────────
   function selectPowder({ skinType, undertone, carnation, budget }) {
-    let ids;
+    let priority;
     if (skinType === 'grasse' || skinType === 'mixte') {
-      ids = ['m099','m097','m127'];  // Stay Matte, Sun Lover, Laura Mercier
+      priority = ['m099','m097','m127'];
     } else if (undertone === 'warm' && carnation !== 'light') {
-      ids = ['m126','m097','m127'];  // HUDA BEAUTY pain banane, Sun Lover, Laura Mercier
+      priority = ['m126','m097','m127'];
     } else {
-      ids = ['m097','m127','m099'];  // Sun Lover, Laura Mercier (translucentes)
+      priority = ['m097','m127','m099'];
     }
-    return pick1(ids.map(getById), budget);
+    return [pickFromCatalog('powder', budget, priority)].filter(Boolean);
   }
 
   // 5. CRAYON YEUX ESTOMPABLE ───────────────────────────────────
   function selectEyeliner({ undertone, budget }) {
-    let ids;
-    if (undertone === 'warm')      ids = ['m032', 'm033', 'm035']; // Cocoa Pavé, Terre Cuite, Olive
-    else if (undertone === 'cool') ids = ['m031', 'm037', 'm036']; // Mauve, Quartz Fumé, Éclair de Nuit
-    else                           ids = ['m036', 'm034', 'm031']; // Éclair de Nuit, Bordeaux, Mauve
-    const products = ids.map(getById).filter(Boolean);
-    return products.length ? pick1(products, budget) : pick1(getByCategory('eyeliner'), budget);
+    const priority = undertone === 'warm'
+      ? ['m032','m033','m035']
+      : undertone === 'cool'
+        ? ['m031','m037','m036']
+        : ['m036','m034','m031'];
+    return [pickFromCatalog('eyeliner', budget, priority)].filter(Boolean);
   }
 
   // 6. MASCARA ──────────────────────────────────────────────────
   function selectMascara({ undertone, carnation, budget }) {
-    let ids;
+    let priority;
     if (undertone === 'warm') {
-      ids = carnation === 'dark'
-        ? ['m050', 'm049', 'm052']  // CT Pillow Talk, CT Push Up, Clinique Brown
-        : ['m052', 'm050', 'm054']; // Clinique Brown, CT Pillow Talk, Maybelline Lash Sensational
+      priority = carnation === 'dark'
+        ? ['m050','m049','m052']
+        : ['m052','m050','m054'];
     } else {
-      ids = ['m055', 'm051', 'm056']; // Maybelline Sky High, Clinique Noir, IT Cosmetics
+      priority = ['m055','m051','m056'];
     }
-    const products = ids.map(getById).filter(Boolean);
-    return products.length ? pick1(products, budget) : pick1(getByCategory('mascara'), budget);
+    return [pickFromCatalog('mascara', budget, priority)].filter(Boolean);
   }
 
   // 7. CRAYON LÈVRES LONGUE TENUE ───────────────────────────────
   function selectLipliner({ undertone, carnation, budget }) {
-    const pool = getByCategory('lipliner');
-    if (!pool.length) return [];
-    let ids;
+    let priority;
     if (undertone === 'warm') {
-      ids = carnation === 'dark'
-        ? ['m079','m063','m068']   // Sacheu (nude foncé), Cayenne, NYX
-        : ['m068','m063','m079'];  // NYX Repulpant, Cayenne, Sacheu
+      priority = carnation === 'dark'
+        ? ['m079','m063','m068']
+        : ['m068','m063','m079'];
     } else if (undertone === 'cool') {
-      ids = carnation === 'dark'
-        ? ['m061','m062']          // Crushberry, Intense Blush
-        : ['m062','m061'];         // Intense Blush (rose cool), Crushberry
+      priority = carnation === 'dark'
+        ? ['m061','m062']
+        : ['m062','m061'];
     } else {
-      ids = ['m068','m062','m079']; // NYX (neutre), Blush, Sacheu
+      priority = ['m068','m062','m079'];
     }
-    return pick1(ids.map(getById), budget);
+    return [pickFromCatalog('lipliner', budget, priority)].filter(Boolean);
   }
 
   // 8. LÈVRES — GLOSS OU BAUME TEINTÉ ──────────────────────────
   function selectLips({ undertone, carnation, budget }) {
-    // Priorité : formules hydratantes et glossy. Jamais de mat.
-    let ids;
+    let priority;
     if (undertone === 'warm') {
-      ids = carnation === 'dark'
-        ? ['m060','m071','m075']   // Chubby Stick, NYX Butter Gloss, Elizabeth Arden Lip Oil
-        : ['m060','m075','m071'];  // Chubby Stick, Lip Oil, Gloss
+      priority = carnation === 'dark'
+        ? ['m060','m071','m075']
+        : ['m060','m075','m071'];
     } else if (undertone === 'cool') {
-      ids = carnation === 'dark'
-        ? ['m064','m118','m071']   // Pink Honey, Gloss bonbon rose, NYX Butter Gloss
-        : ['m064','m118','m111'];  // Pink Honey, Gloss bonbon rose, Fraise
+      priority = carnation === 'dark'
+        ? ['m064','m118','m071']
+        : ['m064','m118','m111'];
     } else {
-      ids = ['m064','m060','m075']; // Pink Honey, Chubby Stick, Lip Oil
+      priority = ['m064','m060','m075'];
     }
-    const lips = getByCategories(['lipstick','lipgloss']);
-    const candidates = ids.map(id => lips.find(p => p.id === id)).filter(Boolean);
-    if (!candidates.length) return pick1(lips.filter(p => p.category === 'lipgloss' || p.id === 'm060' || p.id === 'm064'), budget);
-    return pick1(candidates, budget);
+    return [pickFromCatalog(['lipstick','lipgloss'], budget, priority)].filter(Boolean);
   }
 
   // BONUS 1 — GLOW BRONZANT LIQUIDE ─────────────────────────────
   function selectGlowBronzer({ budget }) {
-    const product = getById('m094'); // Weleda Teint Lumineux Sérum Bronzant
-    if (product) return [product];
-    return pick1(getByCategory('bronzer').filter(p => p.name.toLowerCase().includes('sérum') || p.name.toLowerCase().includes('liquid') || p.name.toLowerCase().includes('teint')), budget);
+    const liquidBronzers = getByCategory('bronzer').filter(p =>
+      ['sérum','serum','liquid','teint','glow'].some(kw => p.name?.toLowerCase().includes(kw))
+    );
+    return pick1(liquidBronzers.length ? liquidBronzers : getByCategory('bronzer'), budget);
   }
 
   // BONUS 2 — PINCEAUX ──────────────────────────────────────────
