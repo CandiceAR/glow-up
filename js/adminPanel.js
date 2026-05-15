@@ -334,6 +334,7 @@ const Admin = (() => {
     document.getElementById('fBrand').value     = p.brand || '';
     document.getElementById('fCategory').value  = p.category || 'serum';
     document.getElementById('fAmazonUrl').value = p.amazonUrl || '';
+    document.getElementById('fShopUrl').value   = p.shopUrl   || '';
     document.getElementById('fImageUrl').value  = p.imageUrl || '';
     // BUG FIX: fActive et fFeatured sont maintenant de vrais checkboxes
     document.getElementById('fPrice').value       = p.price != null ? p.price : '';
@@ -419,6 +420,7 @@ const Admin = (() => {
 
   async function saveProduct() {
     const amazonUrl  = document.getElementById('fAmazonUrl').value.trim();
+    const shopUrl    = document.getElementById('fShopUrl').value.trim();
     const name       = document.getElementById('fName').value.trim();
     const brand      = document.getElementById('fBrand').value.trim();
     const imageUrl   = document.getElementById('fImageUrl').value.trim();
@@ -449,28 +451,40 @@ const Admin = (() => {
     const concernTags = Array.from(document.getElementById('fConcerns').selectedOptions).map(o => o.value);
     const ingredientTags = Array.from(document.getElementById('fIngredients').selectedOptions).map(o => o.value);
 
-    if (!amazonUrl || !name || !brand || !imageUrl) {
-      toast('Remplis tous les champs obligatoires (lien, nom, marque, image)', 'error');
+    const hasLink = amazonUrl || shopUrl;
+    if (!hasLink || !name || !brand || !imageUrl) {
+      toast('Remplis tous les champs obligatoires (lien Amazon ou boutique, nom, marque, image)', 'error');
       return;
     }
 
-    extractASINFromUrl();
+    // ASIN : extrait du lien Amazon si présent, sinon on génère un ID depuis le nom/marque
     let asin = document.getElementById('fAsin').value.trim();
-    if (!asin) {
-      const m = amazonUrl.match(/\/dp\/([A-Z0-9]{10})/i);
-      if (m) { asin = m[1].toUpperCase(); document.getElementById('fAsin').value = asin; }
-      else { toast('Impossible d\'extraire l\'ASIN — vérifie le lien Amazon', 'error'); return; }
+    if (amazonUrl && !asin) {
+      extractASINFromUrl();
+      asin = document.getElementById('fAsin').value.trim();
+      if (!asin) {
+        const m = amazonUrl.match(/\/dp\/([A-Z0-9]{10})/i);
+        if (m) { asin = m[1].toUpperCase(); document.getElementById('fAsin').value = asin; }
+        else { toast('Impossible d\'extraire l\'ASIN — vérifie le lien Amazon', 'error'); return; }
+      }
     }
 
     let id = document.getElementById('fId').value.trim();
+    if (!id) {
+      // Produit sans Amazon : générer un ID depuis la marque et le nom
+      const brandSlug = brand.toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,8);
+      const nameSlug  = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,12);
+      id = `${brandSlug}-${nameSlug}-${Date.now().toString().slice(-4)}`;
+      document.getElementById('fId').value = id;
+    }
     if (!editingId && products.some(p => p.id === id)) {
-      id = generateProductId() || `${id}-${Date.now().toString().slice(-4)}`;
+      id = `${id}-${Date.now().toString().slice(-4)}`;
       document.getElementById('fId').value = id;
     }
     if (!id) { toast('Erreur lors de la génération de l\'ID', 'error'); return; }
 
-    let finalAmazonUrl = amazonUrl;
-    if (!amazonUrl.includes('tag=')) {
+    let finalAmazonUrl = amazonUrl || null;
+    if (amazonUrl && !amazonUrl.includes('tag=')) {
       finalAmazonUrl = amazonUrl.includes('?') ? `${amazonUrl}&tag=${TAG}` : `${amazonUrl}?tag=${TAG}`;
     }
 
@@ -486,6 +500,7 @@ const Admin = (() => {
         category,
         imageUrl,
         amazonUrl: finalAmazonUrl,
+        shopUrl:   shopUrl || null,
         asin,
         price,
         rating,
@@ -513,6 +528,7 @@ const Admin = (() => {
         category,
         imageUrl,
         amazonUrl: finalAmazonUrl,
+        shopUrl:   shopUrl || null,
         price,
         currency: 'EUR',
         rating,
@@ -698,6 +714,7 @@ const Admin = (() => {
     document.getElementById('fBrand').value       = p.brand || '';
     document.getElementById('fCategory').value    = p.category || 'serum';
     document.getElementById('fAmazonUrl').value   = '';
+    document.getElementById('fShopUrl').value     = '';
     document.getElementById('fImageUrl').value    = '';
     document.getElementById('fPrice').value       = p.price != null ? p.price : '';
     document.getElementById('fRating').value      = p.rating != null ? p.rating : '';

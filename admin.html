@@ -372,9 +372,14 @@
             <div class="form-grid">
               <!-- SECTION: INFOS OBLIGATOIRES -->
               <div class="form-group full">
-                <label class="form-label">🔗 Lien affilié Amazon *</label>
+                <label class="form-label">🔗 Lien affilié Amazon <span style="color:var(--muted); font-weight:400;">(optionnel si lien boutique renseigné)</span></label>
                 <input type="url" id="fAmazonUrl" class="form-input" placeholder="https://www.amazon.fr/dp/B000FKG4TI?tag=kand10ar-21" oninput="Admin.extractASINFromUrl()">
                 <small style="font-size:0.75rem; color:var(--muted); margin-top:4px; display:block;">L'ASIN sera extrait automatiquement</small>
+              </div>
+
+              <div class="form-group full">
+                <label class="form-label">🌐 Lien boutique directe <span style="color:var(--muted); font-weight:400;">(si pas sur Amazon — ex: DLA Paris)</span></label>
+                <input type="url" id="fShopUrl" class="form-input" placeholder="https://dlaparis.com/pinceaux/kit-pinceaux-iconic/">
               </div>
 
               <div class="form-group full">
