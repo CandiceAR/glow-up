@@ -23,7 +23,7 @@ const MakeupRoutine = (() => {
         allProducts = await FirestoreProducts.loadAll();
       }
       if (!allProducts) {
-        const res  = await fetch('data/products-manual.json?v=54');
+        const res  = await fetch('data/products-manual.json?v=55');
         const data = await res.json();
         allProducts = Array.isArray(data) ? data : (data.products || []);
       }
@@ -376,7 +376,7 @@ const MakeupRoutine = (() => {
         <div class="cg-bonus-item">
           <div class="cg-bonus-item-label">
             <h3>Pinceaux ✦</h3>
-            <p>De bons pinceaux peuvent complètement transformer le rendu du maquillage. 2 ou 3 bons pinceaux suffisent pour une routine quotidienne.</p>
+            <p>De bons pinceaux, ça change tout. Un outil de qualité fait la différence entre un maquillage ordinaire et un résultat parfaitement estompé — plus naturel, plus précis, plus longue tenue.</p>
           </div>
           <div class="cg-bonus-item-card">${renderCard(brush)}</div>
         </div>` : ''}

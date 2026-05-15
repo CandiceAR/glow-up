@@ -259,7 +259,7 @@ const ProductCatalog = (() => {
             <p class="modal-paired-name">${paired.name}</p>
             <span class="modal-paired-price">${paired.price.toFixed(2)} €</span>
           </div>
-          <a class="btn btn-amazon btn-amazon-sm" href="${paired.amazonUrl}" target="_blank" rel="noopener">Acheter</a>
+          <a class="btn btn-amazon btn-amazon-sm" href="${paired.amazonUrl || paired.shopUrl || '#'}" target="_blank" rel="noopener">Acheter</a>
         </div>
       </div>` : '';
 
@@ -293,15 +293,18 @@ const ProductCatalog = (() => {
     openModal(html);
   }
 
-  // ─── Bouton Amazon ─────────────────────────────────────────────
+  // ─── Bouton achat (Amazon ou boutique directe) ───────────────
   function renderBuyButton(product) {
+    const url = product.amazonUrl || product.shopUrl;
+    if (!url) return '';
+    const isAmazon = !!product.amazonUrl;
     return `
       <a class="btn btn-amazon btn-amazon-prominent"
-         href="${product.amazonUrl}"
+         href="${url}"
          target="_blank"
-         rel="noopener nofollow sponsored"
-         onclick="trackAmazonClick('${product.id}')">
-        🛒 Acheter sur Amazon →
+         rel="noopener nofollow${isAmazon ? ' sponsored' : ''}"
+         ${isAmazon ? `onclick="trackAmazonClick('${product.id}')"` : ''}>
+        🛒 ${isAmazon ? 'Acheter sur Amazon →' : 'Voir le produit →'}
       </a>`;
   }
 

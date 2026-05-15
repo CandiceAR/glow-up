@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-05-15",
-    "totalProducts": 188
+    "totalProducts": 191
   },
   "products": [
     {
@@ -4420,6 +4420,84 @@
         "sensible"
       ],
       "isFeatured": true,
+      "active": true,
+      "makeupCategory": "tools",
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-15"
+    },
+    {
+      "id": "m189",
+      "name": "Pinceau Ras de Cils — Precision Blender",
+      "brand": "DLA Paris",
+      "category": "tools",
+      "subcategory": "brushes",
+      "imageUrl": "https://dlaparis.com/wp-content/uploads/2025/09/10_ZOOM_SITE_NEW.png",
+      "shopUrl": "https://dlaparis.com/pinceaux/10-ras-de-cils-precision-blender-brush-15cm/",
+      "amazonUrl": null,
+      "price": 19,
+      "currency": "EUR",
+      "rating": 4.8,
+      "description": "Pinceau de précision pour estomper au plus près des cils. Idéal pour le fard à paupières, l'eyeliner et les petites zones.",
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "makeupCategory": "tools",
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-15"
+    },
+    {
+      "id": "m190",
+      "name": "Pinceau Blush Crème — Cream Cheek Blush",
+      "brand": "DLA Paris",
+      "category": "tools",
+      "subcategory": "brushes",
+      "imageUrl": "https://dlaparis.com/wp-content/uploads/2025/09/11_ZOOM_SITE_NEW.png",
+      "shopUrl": "https://dlaparis.com/pinceaux/11-blush-creme-cream-cheek-blush-15cm/",
+      "amazonUrl": null,
+      "price": 29,
+      "currency": "EUR",
+      "rating": 4.8,
+      "description": "Pinceau conçu pour les blush crème et liquides. Dépôt précis sur les pommettes pour un effet bonne mine naturel et fondé.",
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "makeupCategory": "tools",
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-15"
+    },
+    {
+      "id": "m191",
+      "name": "Pinceau Anti-cernes — Concealer",
+      "brand": "DLA Paris",
+      "category": "tools",
+      "subcategory": "brushes",
+      "imageUrl": "https://dlaparis.com/wp-content/uploads/2025/09/02_ZOOM_SITE_NEW.png",
+      "shopUrl": "https://dlaparis.com/pinceaux/2-anticernes-concealer-145cm/",
+      "amazonUrl": null,
+      "price": 24,
+      "currency": "EUR",
+      "rating": 4.8,
+      "description": "Pinceau plat et précis pour l'application et l'estompage de l'anti-cernes. Résultat naturel, sans traces.",
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "isFeatured": false,
       "active": true,
       "makeupCategory": "tools",
       "curatedBy": "admin",
