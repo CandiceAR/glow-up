@@ -20,9 +20,20 @@ const Subscription = (() => {
     return false;
   }
 
+  // ─── Emails admin — accès glowplus complet pour les tests ───────
+  const ADMIN_EMAILS = ['candice_arav@hotmail.com'];
+
   // ─── Charger le plan depuis Firestore ─────────────────────────
   async function loadPlan(uid) {
     if (!uid || typeof firebase === 'undefined') return;
+
+    if (ADMIN_EMAILS.includes(AppState?.user?.email)) {
+      AppState.user.plan = 'glowplus';
+      console.log('[Subscription] Admin override → glowplus');
+      updateGatingUI();
+      return;
+    }
+
     try {
       if (!firebase.apps.length) return;
       const db  = firebase.firestore();
