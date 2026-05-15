@@ -113,7 +113,7 @@ const Subscription = (() => {
               Choisir Glow mensuel
             </button>
             <button class="btn btn-outline full-width" style="margin-top:8px" onclick="Subscription.openCheckout('glow_yearly'); closeModal();">
-              30€/an — économise 18€
+              🌱 30€/an · 2,50€/mois — une peau ça prend du temps
             </button>
           </div>
 
@@ -185,7 +185,7 @@ const Subscription = (() => {
           <div class="plan-badge-top">✦ Recommandé</div>
           <div class="plan-name">Glow</div>
           <div class="plan-price">3,99€<span>/mois</span></div>
-          <div class="plan-price-alt">ou 30€/an — 2,50€/mois</div>
+          <div class="plan-price-alt">ou 30€/an · 2,50€/mois<br><em>365 jours pour transformer ta peau.</em></div>
           <ul class="plan-features">
             <li>✓ Tout ce qui est inclus dans Free</li>
             <li>✓ Skincare + Make-up</li>
@@ -196,7 +196,7 @@ const Subscription = (() => {
           ${plan === 'glow'
             ? '<div class="plan-badge-current">Ton offre actuelle</div>'
             : `<button class="btn btn-dark full-width" onclick="Subscription.openCheckout('glow_monthly')">Commencer — 3,99€/mois</button>
-               <button class="btn btn-outline full-width" style="margin-top:8px" onclick="Subscription.openCheckout('glow_yearly')">30€/an</button>`
+               <button class="btn btn-outline full-width" style="margin-top:8px" onclick="Subscription.openCheckout('glow_yearly')">🌱 Rejoindre pour 30€/an — 365 jours ✦</button>`
           }
         </div>
 
