@@ -3,8 +3,8 @@
     "version": "1.0",
     "source": "admin",
     "tag": "kand10ar-21",
-    "lastUpdated": "2026-05-05",
-    "totalProducts": 171
+    "lastUpdated": "2026-05-15",
+    "totalProducts": 188
   },
   "products": [
     {
@@ -1765,8 +1765,8 @@
       "asin": "B0DK74S66Z",
       "name": "Blush liquide - pigmentation intense",
       "brand": "L'Oréal Paris",
-      "category": "lipstick",
-      "subcategory": "lipstick",
+      "category": "blush",
+      "subcategory": "blush",
       "shadeName": null,
       "colorHex": null,
       "imageUrl": "assets/loreal-blushliquid.jpg",
@@ -1782,7 +1782,7 @@
         "sensible"
       ],
       "concernTags": [],
-      "makeupCategory": "lipstick",
+      "makeupCategory": "blush",
       "finish": "mat",
       "coverage": null,
       "isFeatured": false,
@@ -1803,8 +1803,8 @@
       "asin": "B0CTG3VSTH",
       "name": "Blush liquide - Afterglow",
       "brand": "NARS",
-      "category": "lipstick",
-      "subcategory": "lipstick",
+      "category": "blush",
+      "subcategory": "blush",
       "shadeName": null,
       "colorHex": null,
       "imageUrl": "assets/NARS-Aftregloxwliquid.jpg",
@@ -1820,7 +1820,7 @@
         "sensible"
       ],
       "concernTags": [],
-      "makeupCategory": "lipstick",
+      "makeupCategory": "blush",
       "finish": "mat",
       "coverage": null,
       "isFeatured": false,
@@ -3990,7 +3990,6 @@
       "isFeatured": false,
       "active": true
     },
-
     {
       "id": "m172",
       "name": "Gel Nettoyant Apaisant Aloe Vera",
@@ -4003,8 +4002,16 @@
       "rating": 4.4,
       "reviews": 8500,
       "description": "Gel nettoyant à pH neutre enrichi en Aloe Vera, Glycérine et Acide Hyaluronique. Élimine maquillage et impuretés, hydrate et repulpe. Vegan & Cruelty Free.",
-      "skinTypeTags": ["normale", "mixte", "seche", "sensible"],
-      "concernTags": ["secheresse", "eclat"],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "sensible"
+      ],
+      "concernTags": [
+        "secheresse",
+        "eclat"
+      ],
       "isFeatured": false,
       "active": true
     },
@@ -4015,13 +4022,19 @@
       "category": "cleanser",
       "imageUrl": "assets/Cerave-GelMoussantacnee.jpg",
       "amazonUrl": "https://amzn.to/3PogVhX",
-      "price": 13.00,
+      "price": 13,
       "currency": "EUR",
       "rating": 4.6,
       "reviews": 12000,
       "description": "Nettoyant purifiant à l'Acide Salicylique, Argile Blanche, Céramides et Niacinamide. Nettoie en douceur, réduit les imperfections. Idéal peaux acnéiques.",
-      "skinTypeTags": ["grasse", "mixte"],
-      "concernTags": ["acne", "pores"],
+      "skinTypeTags": [
+        "grasse",
+        "mixte"
+      ],
+      "concernTags": [
+        "acne",
+        "pores"
+      ],
       "isFeatured": true,
       "active": true
     },
@@ -4032,13 +4045,20 @@
       "category": "cleanser",
       "imageUrl": "assets/ANUA-laitnettoyant.jpg",
       "amazonUrl": "https://amzn.to/4rZMAoH",
-      "price": 20.00,
+      "price": 20,
       "currency": "EUR",
       "rating": 4.7,
       "reviews": 4800,
       "description": "Nettoyant moussant coréen ultra-doux avec Acide Hyaluronique, Glycérine, Zinc PCA et Panthénol. Nettoie sans agresser, maintient l'hydratation. 150 ml.",
-      "skinTypeTags": ["normale", "seche", "sensible"],
-      "concernTags": ["secheresse", "rougeurs"],
+      "skinTypeTags": [
+        "normale",
+        "seche",
+        "sensible"
+      ],
+      "concernTags": [
+        "secheresse",
+        "rougeurs"
+      ],
       "isFeatured": false,
       "active": true
     },
@@ -4054,8 +4074,16 @@
       "rating": 4.5,
       "reviews": 3100,
       "description": "Huile/gel démaquillante à la Centella Asiatica. Se transforme en lait crémeux au contact de l'eau, élimine maquillage et impuretés en douceur.",
-      "skinTypeTags": ["normale", "mixte", "seche", "sensible"],
-      "concernTags": ["rougeurs", "secheresse"],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "sensible"
+      ],
+      "concernTags": [
+        "rougeurs",
+        "secheresse"
+      ],
       "isFeatured": false,
       "active": true
     },
@@ -4066,13 +4094,19 @@
       "category": "cleanser",
       "imageUrl": "assets/SVR-Gelmoussantpeaumixte.jpg",
       "amazonUrl": "https://amzn.to/4uhwFn4",
-      "price": 13.90,
+      "price": 13.9,
       "currency": "EUR",
       "rating": 4.5,
       "reviews": 5200,
       "description": "Gel nettoyant anti-imperfections avec Gluconolactone 4% et Acide Salicylique 0,5%. Pour peaux mixtes à grasses et sensibles à tendance acnéique. 400 ml.",
-      "skinTypeTags": ["grasse", "mixte"],
-      "concernTags": ["acne", "pores"],
+      "skinTypeTags": [
+        "grasse",
+        "mixte"
+      ],
+      "concernTags": [
+        "acne",
+        "pores"
+      ],
       "isFeatured": false,
       "active": true
     },
@@ -4083,13 +4117,20 @@
       "category": "cleanser",
       "imageUrl": "assets/LAROCHEPOSAY-nettoyantlait.jpg",
       "amazonUrl": "https://amzn.to/4bhLUnu",
-      "price": 16.60,
+      "price": 16.6,
       "currency": "EUR",
       "rating": 4.6,
       "reviews": 9400,
       "description": "Lait démaquillant enrichi en Glycérine et Eau Thermale de La Roche-Posay. Nettoie visage et yeux sans parfum, sans rinçage. Formule apaisante pour peaux sensibles.",
-      "skinTypeTags": ["sensible", "seche", "normale"],
-      "concernTags": ["rougeurs", "secheresse"],
+      "skinTypeTags": [
+        "sensible",
+        "seche",
+        "normale"
+      ],
+      "concernTags": [
+        "rougeurs",
+        "secheresse"
+      ],
       "isFeatured": false,
       "active": true
     },
@@ -4105,8 +4146,15 @@
       "rating": 4.6,
       "reviews": 7200,
       "description": "Baume démaquillant qui fond en huile au contact de la peau. Élimine maquillage, fond de teint et sébum en douceur. Son de riz : peau nourrie et hydratée après le lavage.",
-      "skinTypeTags": ["seche", "normale", "sensible"],
-      "concernTags": ["secheresse", "eclat"],
+      "skinTypeTags": [
+        "seche",
+        "normale",
+        "sensible"
+      ],
+      "concernTags": [
+        "secheresse",
+        "eclat"
+      ],
       "isFeatured": false,
       "active": true
     },
@@ -4122,12 +4170,15 @@
       "rating": 4.5,
       "reviews": 3600,
       "description": "Nettoyant démaquillant apaisant à la Niacinamide. Élimine maquillage et impuretés sans agresser la peau. Formule ultra-douce pour peaux sensibles et réactives.",
-      "skinTypeTags": ["sensible"],
-      "concernTags": ["rougeurs"],
+      "skinTypeTags": [
+        "sensible"
+      ],
+      "concernTags": [
+        "rougeurs"
+      ],
       "isFeatured": false,
       "active": true
     },
-
     {
       "id": "m180",
       "asin": "B0DNJNLMP7",
@@ -4136,17 +4187,26 @@
       "category": "cleanser",
       "imageUrl": "assets/SHUUEMURA-HUILEDEMAK.jpg",
       "amazonUrl": "https://www.amazon.fr/D%C3%A9maquillante-Clarifiante-Pollution-Nettoyant-Enrichie/dp/B0DNJNLMP7?linkCode=ll2&tag=kan10ar-21&linkId=304be670e46a7beab7747330df0fdd22&ref_=as_li_ss_tl",
-      "price": 19.00,
+      "price": 19,
       "currency": "EUR",
       "rating": 4.6,
       "reviews": 2100,
       "description": "Huile démaquillante clarifiante enrichie, élimine pollution, maquillage et impuretés en profondeur. Nettoyant iconique Shu Uemura, formule légère qui se rince facilement.",
-      "skinTypeTags": ["normale", "mixte", "grasse", "seche", "sensible"],
-      "concernTags": ["eclat", "pores", "teint_terne"],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "grasse",
+        "seche",
+        "sensible"
+      ],
+      "concernTags": [
+        "eclat",
+        "pores",
+        "teint_terne"
+      ],
       "isFeatured": true,
       "active": true
     },
-
     {
       "id": "m181",
       "asin": "B01MCWXYGF",
@@ -4155,17 +4215,24 @@
       "category": "cleanser",
       "imageUrl": "assets/kiehlS-HUILEDEMAK.jpg",
       "amazonUrl": "https://www.amazon.fr/Kiehls-Non-com%C3%A9dog%C3%A8ne-dermatologiquement-ophtalmologiquement-scientifiquement/dp/B01MCWXYGF?linkCode=ll2&tag=kan10ar-21&linkId=62f0b75b6bae6f648970ce821ea84db4&ref_=as_li_ss_tl",
-      "price": 35.00,
+      "price": 35,
       "currency": "EUR",
       "rating": 4.5,
       "reviews": 4800,
       "description": "Huile démaquillante botanique non-comédogène. Élimine maquillage waterproof et impuretés en douceur. Testée dermatologiquement et ophtalmologiquement. Convient aux peaux sensibles.",
-      "skinTypeTags": ["normale", "seche", "sensible", "mixte"],
-      "concernTags": ["secheresse", "eclat"],
+      "skinTypeTags": [
+        "normale",
+        "seche",
+        "sensible",
+        "mixte"
+      ],
+      "concernTags": [
+        "secheresse",
+        "eclat"
+      ],
       "isFeatured": false,
       "active": true
     },
-
     {
       "id": "m182",
       "asin": "B0BBRFRPFD",
@@ -4174,17 +4241,23 @@
       "category": "cleanser",
       "imageUrl": "assets/MELVITA-Huiledemak.jpg",
       "amazonUrl": "https://www.amazon.fr/Melvita-d%C3%A9maquillante-naturelle-Certifi%C3%A9e-d%C3%A9maquille/dp/B0BBRFRPFD?linkCode=ll2&tag=kan10ar-21&linkId=7eed78b24a5971ebc00c45c4fe3f8c96&ref_=as_li_ss_tl",
-      "price": 14.00,
+      "price": 14,
       "currency": "EUR",
       "rating": 4.4,
       "reviews": 1800,
       "description": "Huile démaquillante 100% naturelle, certifiée bio. Élimine maquillage et impuretés en douceur. Formule vegan sans sulfates ni silicones.",
-      "skinTypeTags": ["normale", "seche", "sensible"],
-      "concernTags": ["secheresse", "rougeurs"],
+      "skinTypeTags": [
+        "normale",
+        "seche",
+        "sensible"
+      ],
+      "concernTags": [
+        "secheresse",
+        "rougeurs"
+      ],
       "isFeatured": false,
       "active": true
     },
-
     {
       "id": "m184",
       "asin": "B09ZRVSHS1",
@@ -4193,17 +4266,24 @@
       "category": "cleanser",
       "imageUrl": "assets/ERBORIAN-HUILEDEMAK.jpg",
       "amazonUrl": "https://www.amazon.fr/Erborian-Centella-Cleansing-D%C3%A9maquillante-Cosm%C3%A9tique/dp/B09ZRVSHS1?linkCode=ll2&tag=kan10ar-21&linkId=36889800a969565f17cb17086f5c229b&ref_=as_li_ss_tl",
-      "price": 11.00,
+      "price": 11,
       "currency": "EUR",
       "rating": 4.5,
       "reviews": 2400,
       "description": "Huile démaquillante à la Centella Asiatica. Élimine maquillage et impuretés en douceur tout en apaisant la peau. Cosmétique coréen, se rince facilement.",
-      "skinTypeTags": ["sensible", "normale", "seche", "mixte"],
-      "concernTags": ["rougeurs", "secheresse"],
+      "skinTypeTags": [
+        "sensible",
+        "normale",
+        "seche",
+        "mixte"
+      ],
+      "concernTags": [
+        "rougeurs",
+        "secheresse"
+      ],
       "isFeatured": false,
       "active": true
     },
-
     {
       "id": "m187",
       "asin": "B09XN22JBT",
@@ -4213,18 +4293,28 @@
       "includesSPF": true,
       "imageUrl": "assets/Cerave-cremevisagejourspf50.jpg",
       "amazonUrl": "https://www.amazon.fr/CeraVe-Cr%C3%A8me-Hydratante-Visage-50-52ml/dp/B09XN22JBT?linkCode=ll2&tag=kan10ar-21&linkId=aaf750e9f67928c8f38460bcbd08bc6b&ref_=as_li_ss_tl",
-      "price": 13.00,
+      "price": 13,
       "currency": "EUR",
       "rating": 4.5,
       "reviews": 8600,
       "description": "Crème hydratante visage avec SPF50. Céramides + Acide Hyaluronique + Niacinamide. Hydrate et protège en une seule étape — idéale pour les petits budgets. Sans parfum.",
-      "skinTypeTags": ["normale", "seche", "sensible", "mixte"],
-      "concernTags": ["secheresse", "eclat"],
-      "budgetTags": ["low", "medium"],
+      "skinTypeTags": [
+        "normale",
+        "seche",
+        "sensible",
+        "mixte"
+      ],
+      "concernTags": [
+        "secheresse",
+        "eclat"
+      ],
+      "budgetTags": [
+        "low",
+        "medium"
+      ],
       "isFeatured": true,
       "active": true
     },
-
     {
       "id": "m185",
       "asin": "B0DZ11PRRM",
@@ -4233,14 +4323,25 @@
       "category": "spf",
       "imageUrl": "assets/ROC-SPFteinté.jpg",
       "amazonUrl": "https://www.amazon.fr/RoC-Soleil-Protect-Anti-Taches-Unificateur-Hydratant/dp/B0DZ11PRRM?linkCode=ll2&tag=kan10ar-21&linkId=a178e0d18ff2d8f94b2c4fef36fea7e6&ref_=as_li_ss_tl",
-      "price": 11.00,
+      "price": 11,
       "currency": "EUR",
       "rating": 4.3,
       "reviews": 980,
       "description": "Crème solaire SPF50 teintée anti-taches, unifie le teint et hydrate. Texture légère, effet peau nette. Idéale pour les petits budgets.",
-      "skinTypeTags": ["normale", "mixte", "grasse"],
-      "concernTags": ["taches", "eclat", "teint_terne"],
-      "budgetTags": ["low", "medium"],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "grasse"
+      ],
+      "concernTags": [
+        "taches",
+        "eclat",
+        "teint_terne"
+      ],
+      "budgetTags": [
+        "low",
+        "medium"
+      ],
       "isFeatured": false,
       "active": true
     },
@@ -4252,18 +4353,27 @@
       "category": "moisturizer",
       "imageUrl": "assets/LAPROVENCALE-OLEOJEUNESSEcremehydratante.jpg",
       "amazonUrl": "https://www.amazon.fr/Proven%C3%A7ale-Oleo-Jeunesse-dHydratation-hyaluronique-Efficacit%C3%A9/dp/B07HC3G9VR?linkCode=ll2&tag=kan10ar-21&linkId=7c5d6fc53633c65f340f2716acbc89b7&ref_=as_li_ss_tl",
-      "price": 7.00,
+      "price": 7,
       "currency": "EUR",
       "rating": 4.3,
       "reviews": 4200,
       "description": "Crème hydratante visage à l'acide hyaluronique et huiles végétales bio. Formule certifiée bio, peaux normales à sèches. Excellent rapport qualité/prix.",
-      "skinTypeTags": ["normale", "seche", "sensible"],
-      "concernTags": ["secheresse", "rides"],
-      "budgetTags": ["low", "medium"],
+      "skinTypeTags": [
+        "normale",
+        "seche",
+        "sensible"
+      ],
+      "concernTags": [
+        "secheresse",
+        "rides"
+      ],
+      "budgetTags": [
+        "low",
+        "medium"
+      ],
       "isFeatured": true,
       "active": true
     },
-
     {
       "id": "m183",
       "asin": "B09TLD4S4H",
@@ -4272,15 +4382,48 @@
       "category": "cleanser",
       "imageUrl": "assets/MadagascarCentella-huiledemak.jpg",
       "amazonUrl": "https://www.amazon.fr/SKIN1004-Madagascar-Centella-Light-Cleansing/dp/B09TLD4S4H?linkCode=ll2&tag=kan10ar-21&linkId=ca2a2430e90b32f04048bd72e0203dd1&ref_=as_li_ss_tl",
-      "price": 10.00,
+      "price": 10,
       "currency": "EUR",
       "rating": 4.5,
       "reviews": 3200,
       "description": "Huile nettoyante légère à la Centella Asiatica de Madagascar. Démaquille en douceur tout en apaisant la peau sensible. Se rince facilement, sans résidu gras. K-beauty.",
-      "skinTypeTags": ["sensible", "normale", "mixte"],
-      "concernTags": ["rougeurs", "secheresse"],
+      "skinTypeTags": [
+        "sensible",
+        "normale",
+        "mixte"
+      ],
+      "concernTags": [
+        "rougeurs",
+        "secheresse"
+      ],
       "isFeatured": false,
       "active": true
+    },
+    {
+      "id": "m188",
+      "name": "Kit Pinceaux Iconic",
+      "brand": "DLA Paris",
+      "category": "tools",
+      "subcategory": "brushes",
+      "imageUrl": "https://dlaparis.com/wp-content/uploads/2025/09/KIT_ICONIC_OPEN-1030x1030.jpg",
+      "shopUrl": "https://dlaparis.com/pinceaux/kit-pinceaux-iconic/",
+      "amazonUrl": null,
+      "price": 119,
+      "currency": "EUR",
+      "rating": 4.8,
+      "description": "Kit 5 pinceaux multi-usages — poudre, anti-cernes, contour, teint, yeux. Fibres vegan ultra-douces. Livré avec sa vanity rose Iconic.",
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "isFeatured": true,
+      "active": true,
+      "makeupCategory": "tools",
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-15"
     }
   ]
 }
