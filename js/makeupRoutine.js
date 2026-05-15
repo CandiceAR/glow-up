@@ -82,7 +82,9 @@ const MakeupRoutine = (() => {
   }
 
   function pick1(candidates, budget) {
-    return filterByBudget(candidates.filter(Boolean), budget).slice(0, 1);
+    const pool = filterByBudget(candidates.filter(Boolean), budget);
+    if (!pool.length) return [];
+    return [pool[Math.floor(Math.random() * pool.length)]];
   }
 
   // ══════════════════════════════════════════════════════════════
@@ -144,26 +146,26 @@ const MakeupRoutine = (() => {
 
   // 5. CRAYON YEUX ESTOMPABLE ───────────────────────────────────
   function selectEyeliner({ undertone, budget }) {
-    // Tous VB Satin Kajal — tous estompables, excellent tenue
-    let id;
-    if (undertone === 'warm')      id = 'm032'; // Cocoa Pavé (nude marron chaud — très clean girl)
-    else if (undertone === 'cool') id = 'm031'; // Mauve (tendance cool)
-    else                           id = 'm036'; // Éclair de Nuit (noir universel)
-    const product = getById(id);
-    return product ? [product] : pick1(getByCategory('eyeliner'), budget);
+    let ids;
+    if (undertone === 'warm')      ids = ['m032', 'm033', 'm035']; // Cocoa Pavé, Terre Cuite, Olive
+    else if (undertone === 'cool') ids = ['m031', 'm037', 'm036']; // Mauve, Quartz Fumé, Éclair de Nuit
+    else                           ids = ['m036', 'm034', 'm031']; // Éclair de Nuit, Bordeaux, Mauve
+    const products = ids.map(getById).filter(Boolean);
+    return products.length ? pick1(products, budget) : pick1(getByCategory('eyeliner'), budget);
   }
 
   // 6. MASCARA ──────────────────────────────────────────────────
   function selectMascara({ undertone, carnation, budget }) {
-    // Brun pour sous-tons chauds (effet naturel), noir pour cool/neutre
-    let id;
+    let ids;
     if (undertone === 'warm') {
-      id = carnation === 'dark' ? 'm050' : 'm052'; // Charlotte Tilbury Pillow Talk, Clinique Brown
+      ids = carnation === 'dark'
+        ? ['m050', 'm049', 'm052']  // CT Pillow Talk, CT Push Up, Clinique Brown
+        : ['m052', 'm050', 'm054']; // Clinique Brown, CT Pillow Talk, Maybelline Lash Sensational
     } else {
-      id = 'm055'; // Maybelline Sky High — effet regard ouvert
+      ids = ['m055', 'm051', 'm056']; // Maybelline Sky High, Clinique Noir, IT Cosmetics
     }
-    const product = getById(id);
-    return product ? [product] : pick1(getByCategory('mascara'), budget);
+    const products = ids.map(getById).filter(Boolean);
+    return products.length ? pick1(products, budget) : pick1(getByCategory('mascara'), budget);
   }
 
   // 7. CRAYON LÈVRES LONGUE TENUE ───────────────────────────────

@@ -383,7 +383,7 @@ const RoutineRenderer = (() => {
     const patchTipKey  = isMatin ? 'eyepatch_matin' : 'eyepatch_soir';
     const patchProduct = findBestProductForStep('eyepatch');
 
-    const sortedSteps    = steps.sort((a, b) => a.order - b.order);
+    const sortedSteps    = [...steps].sort((a, b) => a.order - b.order);
     let stepIndex = 0;
     const blocks    = [];
     const products  = []; // pour le total
