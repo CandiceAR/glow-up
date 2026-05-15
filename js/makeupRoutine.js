@@ -141,24 +141,22 @@ const MakeupRoutine = (() => {
 
   // 3. BLUSH ────────────────────────────────────────────────────
   function selectBlush({ undertone, carnation, budget, ageGroup }) {
-    const isDark    = carnation === 'dark';
-    const isUnder40 = ageGroup !== '40+';  // DLA blushes ciblés -40 ans
-    const exclude   = ['m128', ...(isUnder40 ? [] : ['m192','m193'])];
-    let priority;
-    if (undertone === 'warm') {
-      priority = isDark
-        ? [isUnder40 && 'm193', 'm105'].filter(Boolean)
-        : [isUnder40 && 'm192', 'm105'].filter(Boolean);
-    } else if (undertone === 'cool') {
-      priority = isDark
-        ? [isUnder40 && 'm193', 'm104', 'm112'].filter(Boolean)
-        : [isUnder40 && 'm192', 'm104', 'm112'].filter(Boolean);
-    } else {
-      priority = isDark
-        ? [isUnder40 && 'm193', 'm104'].filter(Boolean)
-        : [isUnder40 && 'm192', 'm104'].filter(Boolean);
+    const isDark  = carnation === 'dark';
+    const is40plus = ageGroup === '40+';
+
+    if (is40plus) {
+      // 40+ : uniquement DLA Blush Béguin, teinte selon carnation
+      const id = isDark ? 'm193' : 'm192';
+      const p  = getById(id);
+      return p ? [p] : [pickFromCatalog('blush', budget, ['m193','m192'], ['m128'])].filter(Boolean);
     }
-    return [pickFromCatalog('blush', budget, priority, exclude)].filter(Boolean);
+
+    // Moins de 40 ans : catalogue existant, DLA exclus
+    let priority;
+    if (undertone === 'warm')      priority = isDark ? ['m193','m105'] : ['m105'];
+    else if (undertone === 'cool') priority = isDark ? ['m104','m112'] : ['m104','m112'];
+    else                           priority = ['m104'];
+    return [pickFromCatalog('blush', budget, priority, ['m128','m192','m193'])].filter(Boolean);
   }
 
   // 4. POUDRE LIBRE ─────────────────────────────────────────────
