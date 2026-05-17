@@ -23,7 +23,7 @@ const MakeupRoutine = (() => {
         allProducts = await FirestoreProducts.loadAll();
       }
       if (!allProducts) {
-        const res  = await fetch('data/products-manual.json?v=56');
+        const res  = await fetch('data/products-manual.json?v=57');
         const data = await res.json();
         allProducts = Array.isArray(data) ? data : (data.products || []);
       }
@@ -122,6 +122,43 @@ const MakeupRoutine = (() => {
   // ══════════════════════════════════════════════════════════════
   // SÉLECTION PRODUITS — adaptés au profil
   // ══════════════════════════════════════════════════════════════
+
+  // 0. CORRECTEUR COLORÉ CERNES (conditionnel selon couleur des cernes) ──────
+  const CORRECTOR_TYPE_MAP = {
+    bleu_violet: 'peach',
+    marron:      'orange',
+    rouge_rose:  'vert',
+    gris:        'rose'
+  };
+
+  function selectColorCorrector({ cernesColor, budget, mkLuxe }) {
+    if (!cernesColor) return null;
+    const type = CORRECTOR_TYPE_MAP[cernesColor];
+    if (!type) return null;
+    const correctors = getByCategory('corrector');
+    const match = correctors.filter(p => p.correctorType === type);
+    if (match.length) {
+      const pool = filterByBudget(match, budget);
+      return pool[Math.floor(Math.random() * pool.length)] || match[0];
+    }
+    // Fallback : n'importe quel correcteur dispo dans le catalogue
+    const fallback = filterByBudget(correctors, budget);
+    return fallback.length ? fallback[0] : null;
+  }
+
+  const CORRECTOR_TIPS = {
+    bleu_violet: 'Cernes bleus/violets = circulation sanguine visible et fatigue. Le correcteur pêche/abricot neutralise le bleu avant l\'anticernes. Tapote délicatement — très peu de matière suffit.',
+    marron:      'Cernes marron/bruns = hyperpigmentation ou hérédité. Le correcteur orange/caramel annule la pigmentation foncée. Sur peaux claires, préfère le pêche ; sur peaux mates/foncées, l\'orange.',
+    rouge_rose:  'Cernes rouges/rosés = irritation ou sensibilité. Le correcteur vert neutralise le rouge par contraste chromatique. Étale en couche ultra-fine, il disparaît sous l\'anticernes.',
+    gris:        'Cernes gris/ternes = manque d\'éclat et fatigue chronique. Le correcteur rose/saumon redonne de la chaleur et de la luminosité avant l\'anticernes.'
+  };
+
+  const CORRECTOR_WARNING = '⚠️ Très peu de matière — une noisette de la taille d\'un grain de riz. Trop de correcteur coloré accentue les plis et rend les cernes plus visibles.';
+
+  function _getCorrectorTip(cernesColor) {
+    const tip = CORRECTOR_TIPS[cernesColor] || '';
+    return tip ? `${tip}<br><small style="opacity:0.75;">${CORRECTOR_WARNING}</small>` : CORRECTOR_WARNING;
+  }
 
   // 1. ANTI-CERNES MULTI-USAGE ───────────────────────────────────
   function selectConcealer({ carnation, undertone, budget, mkLuxe }) {
@@ -330,6 +367,7 @@ const MakeupRoutine = (() => {
 
   function render(container, profile) {
     // Sélection
+    const corrector      = profile.cernesColor ? selectColorCorrector(profile) : null;
     const [concealer]    = selectConcealer(profile)   || [null];
     const [highlighter]  = selectHighlighter(profile)  || [null];
     const [blush]        = selectBlush(profile)        || [null];
@@ -341,7 +379,7 @@ const MakeupRoutine = (() => {
     const [powder]       = selectPowder(profile)       || [null];
     const [brush]        = selectBrushes(profile)      || [null];
 
-    const coreProducts  = [concealer, highlighter, blush, eyeliner, mascara, lipliner, lips].filter(Boolean);
+    const coreProducts  = [corrector, concealer, highlighter, blush, eyeliner, mascara, lipliner, lips].filter(Boolean);
     const bonusProducts = [glowBronzer, powder, brush].filter(Boolean);
     const coreTotal     = computeTotal(coreProducts);
     const totalWithBonus= computeTotal([...coreProducts, ...bonusProducts]);
@@ -354,19 +392,26 @@ const MakeupRoutine = (() => {
       return;
     }
 
+    let stepNum = 1;
+    const correctorStep = corrector
+      ? renderStep(stepNum++, 'Correcteur coloré cernes', _getCorrectorTip(profile.cernesColor), corrector)
+      : '';
+
     const steps = [
-      renderStep(1, 'Anti-cernes',    'Tapote avec le doigt sous les yeux et sur les petites imperfections. Effet seconde peau.',               concealer),
-      renderStep(2, 'Highlighter',    'Une touche sur les pommettes et l\'arc de Cupidon. Le doigt suffit — pas besoin de pinceau.',            highlighter),
-      renderStep(3, 'Blush',          'Souris et dépose sur les rondeurs des joues. Estompe vers les tempes pour un effet bonne mine naturel.',  blush),
-      renderStep(4, 'Crayon yeux',    'Trace au plus près des cils et estompe avec le doigt. En waterline nude, il agrandit le regard.',         eyeliner),
-      renderStep(5, 'Mascara',        'Zigzague la brosse de la racine vers les pointes. Une couche pour le naturel, deux pour l\'intensité.',   mascara),
-      renderStep(6, 'Crayon lèvres',  'Contourne les lèvres puis remplis-les entièrement. Ça prolonge la tenue du gloss toute la journée.',     lipliner),
-      renderStep(7, 'Lèvres',         'Applique directement depuis l\'embout. Tamponne au doigt pour un rendu encore plus naturel.',             lips)
+      correctorStep,
+      renderStep(stepNum++, 'Anti-cernes',    'Tapote avec le doigt sous les yeux et sur les petites imperfections. Effet seconde peau.',               concealer),
+      renderStep(stepNum++, 'Highlighter',    'Une touche sur les pommettes et l\'arc de Cupidon. Le doigt suffit — pas besoin de pinceau.',            highlighter),
+      renderStep(stepNum++, 'Blush',          'Souris et dépose sur les rondeurs des joues. Estompe vers les tempes pour un effet bonne mine naturel.',  blush),
+      renderStep(stepNum++, 'Crayon yeux',    'Trace au plus près des cils et estompe avec le doigt. En waterline nude, il agrandit le regard.',         eyeliner),
+      renderStep(stepNum++, 'Mascara',        'Zigzague la brosse de la racine vers les pointes. Une couche pour le naturel, deux pour l\'intensité.',   mascara),
+      renderStep(stepNum++, 'Crayon lèvres',  'Contourne les lèvres puis remplis-les entièrement. Ça prolonge la tenue du gloss toute la journée.',     lipliner),
+      renderStep(stepNum++, 'Lèvres',         'Applique directement depuis l\'embout. Tamponne au doigt pour un rendu encore plus naturel.',             lips)
     ].join('');
 
+    const productCount = coreProducts.length;
     const coreTotalHtml = coreTotal > 0 ? `
       <div class="cg-total">
-        <span class="cg-total-label">Total routine (7 produits)</span>
+        <span class="cg-total-label">Total routine (${productCount} produit${productCount > 1 ? 's' : ''})</span>
         <strong class="cg-total-amount">${coreTotal.toFixed(2)} €</strong>
       </div>` : '';
 
@@ -415,7 +460,7 @@ const MakeupRoutine = (() => {
         <header class="premium-header">
           <span class="premium-tag">Ta sélection personnalisée</span>
           <h1 class="premium-title">Clean Girl Routine ✦</h1>
-          <p class="premium-subtitle">7 produits · Adapté à ton profil beauté</p>
+          <p class="premium-subtitle">${productCount} produit${productCount > 1 ? 's' : ''} · Adapté à ton profil beauté</p>
         </header>
 
         ${renderProfile(profile)}
@@ -496,18 +541,19 @@ const MakeupRoutine = (() => {
     const budget    = budgetMap[mkQuiz.mkBudget] || skinQuiz?.budget || null;
 
     const profile = {
-      faceShape: analysis?.faceShape?.shape   || 'oval',
-      skinType:  mkQuiz.mkSkinType || analysis?.skinType?.type || skinQuiz?.skinType || 'normale',
-      undertone: undertoneRaw,
-      eyeShape:  analysis?.eyeShape           || 'almond',
-      lipShape:  analysis?.lipShape           || 'medium',
+      faceShape:   analysis?.faceShape?.shape   || 'oval',
+      skinType:    mkQuiz.mkSkinType || analysis?.skinType?.type || skinQuiz?.skinType || 'normale',
+      undertone:   undertoneRaw,
+      eyeShape:    analysis?.eyeShape           || 'almond',
+      lipShape:    analysis?.lipShape           || 'medium',
       carnation,
       budget,
-      mkFocus:   mkQuiz.mkFocus  || null,
-      mkLook:    mkQuiz.mkLook   || null,
-      mkTime:    mkQuiz.mkTime   || null,
-      ageGroup:  skinQuiz?.ageGroup     || null,
-      mkLuxe:    mkQuiz.mkBudget === 'premium'
+      mkFocus:     mkQuiz.mkFocus  || null,
+      mkLook:      mkQuiz.mkLook   || null,
+      mkTime:      mkQuiz.mkTime   || null,
+      ageGroup:    skinQuiz?.ageGroup     || null,
+      mkLuxe:      mkQuiz.mkBudget === 'premium',
+      cernesColor: skinQuiz?.cernesColor || null
     };
 
     console.log('[MakeupRoutine] Profil:', profile);

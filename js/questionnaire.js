@@ -32,6 +32,20 @@ const Questionnaire = (() => {
       ]
     },
 
+    // Q0b — Couleur des cernes (conditionnel : complexes contient cernes)
+    {
+      id: 'q0b', key: 'cernesColor', type: 'single', required: false,
+      question: 'De quelle couleur sont tes cernes ?',
+      subtitle: 'Pour te proposer le bon correcteur coloré dans ta routine maquillage',
+      skipIf: (answers) => !answers.complexes?.includes('cernes'),
+      options: [
+        { value: 'bleu_violet', emoji: '💜', label: 'Bleus / Violets', desc: 'Circulation sanguine visible, fatigue, peau fine' },
+        { value: 'marron',      emoji: '🟤', label: 'Marrons / Bruns',  desc: 'Hyperpigmentation, soleil, hérédité' },
+        { value: 'rouge_rose',  emoji: '🔴', label: 'Rouges / Rosés',   desc: 'Irritation, sensibilité, inflammation' },
+        { value: 'gris',        emoji: '⚫', label: 'Gris / Ternes',    desc: 'Manque d\'éclat, fatigue chronique' }
+      ]
+    },
+
     // Q-PHOTO — Étape analyse photo intégrée (jamais sautée)
     {
       id: 'q-photo', key: null, type: 'photo-step',
