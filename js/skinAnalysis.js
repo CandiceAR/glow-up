@@ -387,7 +387,7 @@ const SkinAnalysis = (() => {
 
     if (!Object.keys(zoneResults).length) return null;
 
-    const undertone   = detectUndertone(allSkinPixels);
+    const undertone   = detectUndertone(allSkinPixels, zoneResults);
     const skinType    = detectSkinType(zoneResults);
     const globalScore = Math.round(
       Object.values(zoneResults).reduce((s, z) => s + z.score, 0) /
@@ -401,10 +401,8 @@ const SkinAnalysis = (() => {
     const refB = allSkinPixels.length ? allSkinPixels.reduce((s, p) => s + (p.b ?? p[2] ?? 120), 0) / allSkinPixels.length : 120;
     const cernes = analyzeCernes(sourceCanvas, landmarks, w, h, refR, refG, refB);
 
-    // Carnation (clair / medium / foncé) depuis luminosité LAB
-    const skinLabs  = allSkinPixels.slice(0, 500).map(p => rgbToLab(p.r ?? p[0] ?? 180, p.g ?? p[1] ?? 140, p.b ?? p[2] ?? 120));
-    const skinMeanL = avg(skinLabs.map(l => l.L));
-    const carnation = detectCarnation(skinMeanL);
+    // Carnation (clair / medium / foncé) — médiane LAB L, sans ombres
+    const carnation = detectCarnation(allSkinPixels);
 
     // Contraste yeux
     const skinLumNorm = allSkinPixels.length
@@ -523,10 +521,31 @@ const SkinAnalysis = (() => {
     return Math.round(clamp(100 - darkFraction * 450, 5, 100));
   }
 
-  function detectUndertone(pixels) {
-    if (!pixels.length) return { type: 'neutral', label: 'Neutre', colorHex: '#D4B896', desc: 'Sous-tons équilibrés — l\'or et l\'argent te conviennent également.' };
+  function detectUndertone(allPixels, zoneResults) {
+    // Préférer les joues : moins de bruit (ombres front, rouge nez)
+    const cheekPixels = [
+      ...(zoneResults?.leftCheek?.pixels  || []),
+      ...(zoneResults?.rightCheek?.pixels || [])
+    ];
+    const source = cheekPixels.length >= 80 ? cheekPixels : allPixels;
 
-    const labs  = pixels.slice(0, 500).map(p => rgbToLab(p.r, p.g, p.b));
+    // Filtrer ombres (trop sombre) et reflets spéculaires (trop clair)
+    const filtered = source.filter(p => {
+      const lum = 0.299 * p.r + 0.587 * p.g + 0.114 * p.b;
+      return lum > 45 && lum < 215;
+    });
+    if (filtered.length < 20) {
+      return { type: 'neutral', label: 'Neutre', colorHex: '#D4B896',
+               desc: 'Sous-tons équilibrés — l\'or et l\'argent te conviennent également.', confidence: 'low' };
+    }
+
+    // ─── Méthode 1 : chromaticité (R−B)/(R+G+B) — invariante à l'éclairage ──
+    // Peau chaude : R >> B → ratio élevé. Peau froide : B relativement plus haut → ratio bas.
+    const chromScores = filtered.map(p => (p.r - p.b) / ((p.r + p.g + p.b) || 1));
+    const meanChrom   = avg(chromScores);
+
+    // ─── Méthode 2 : axe LAB a/b ─────────────────────────────────────────────
+    const labs  = filtered.map(p => rgbToLab(p.r, p.g, p.b));
     const meanA = avg(labs.map(l => l.a));
     const meanB = avg(labs.map(l => l.b));
     const meanL = avg(labs.map(l => l.L));
@@ -537,16 +556,35 @@ const SkinAnalysis = (() => {
                       : meanL > 40 ? 'IV-V'
                       : 'V-VI';
 
-    if (meanB > meanA + 4 && meanB > 9) {
+    // ─── Vote multi-méthode ──────────────────────────────────────────────────
+    let warmVotes = 0, coolVotes = 0;
+
+    // Vote chromaticité (poids 2 — plus fiable)
+    if      (meanChrom > 0.19)  warmVotes += 2;
+    else if (meanChrom > 0.165) warmVotes += 1;
+    else if (meanChrom < 0.14)  coolVotes += 2;
+    else if (meanChrom < 0.16)  coolVotes += 1;
+
+    // Vote LAB
+    if (meanB > meanA + 3 && meanB > 7) warmVotes += 1;
+    if (meanA > meanB + 2 && meanA > 5) coolVotes += 1;
+
+    // Confiance : à quelle distance de la frontière neutre
+    const chromDiff = Math.abs(meanChrom - 0.17);
+    const confidence = (warmVotes >= 3 || coolVotes >= 3 || chromDiff > 0.03) ? 'high'
+                     : (warmVotes >= 2 || coolVotes >= 2 || chromDiff > 0.015) ? 'medium'
+                     : 'low';
+
+    if (warmVotes > coolVotes) {
       return { type: 'warm', label: 'Chaud · Doré / Pêche', colorHex: '#E8A87C',
-               desc: 'Sous-tons dorés et pêchés — l\'or, le cuivre et le corail te subliment naturellement.', fitzpatrick };
+               desc: 'Sous-tons dorés et pêchés — l\'or, le cuivre et le corail te subliment naturellement.', fitzpatrick, confidence };
     }
-    if (meanA > meanB + 3 && meanA > 6) {
+    if (coolVotes > warmVotes) {
       return { type: 'cool', label: 'Froid · Rosé / Bleuté', colorHex: '#C9A8C8',
-               desc: 'Sous-tons rosés et bleutés — l\'argent, le bleu givré et le violet bordeaux t\'illuminent.', fitzpatrick };
+               desc: 'Sous-tons rosés et bleutés — l\'argent, le bleu givré et le violet bordeaux t\'illuminent.', fitzpatrick, confidence };
     }
     return { type: 'neutral', label: 'Neutre · Équilibré', colorHex: '#C8A882',
-             desc: 'Sous-tons équilibrés — une grande polyvalence, l\'or, l\'argent et les tons terreux te vont tous.', fitzpatrick };
+             desc: 'Sous-tons équilibrés — l\'or, l\'argent et les tons terreux te vont tous.', fitzpatrick, confidence: 'low' };
   }
 
   function detectSkinType(zoneResults) {
@@ -586,10 +624,27 @@ const SkinAnalysis = (() => {
   // ─── Détection forme du visage ────────────────────────────────
 
   // ─── Carnation : clair / medium / foncé ──────────────────────
-  function detectCarnation(meanL) {
-    if (meanL > 62) return { type: 'clair',  label: 'Claire'  };
-    if (meanL > 46) return { type: 'medium', label: 'Medium'  };
-    return           { type: 'fonce',  label: 'Foncée'  };
+  function detectCarnation(allSkinPixels) {
+    // Filtrer ombres et reflets
+    const filtered = allSkinPixels.filter(p => {
+      const lum = 0.299 * (p.r ?? 180) + 0.587 * (p.g ?? 140) + 0.114 * (p.b ?? 120);
+      return lum > 50 && lum < 225;
+    });
+    const pixels = filtered.length >= 30 ? filtered : allSkinPixels;
+
+    // Médiane L (plus robuste que la moyenne contre les zones sombres)
+    const labLs = pixels.map(p => rgbToLab(p.r ?? 180, p.g ?? 140, p.b ?? 120).L);
+    labLs.sort((a, b) => a - b);
+    const medianL = labLs[Math.floor(labLs.length / 2)];
+
+    // Confiance : étroitesse de la distribution
+    const p25 = labLs[Math.floor(labLs.length * 0.25)] ?? medianL;
+    const p75 = labLs[Math.floor(labLs.length * 0.75)] ?? medianL;
+    const confidence = (p75 - p25) < 12 ? 'high' : (p75 - p25) < 22 ? 'medium' : 'low';
+
+    if (medianL > 62) return { type: 'clair',  label: 'Claire', confidence };
+    if (medianL > 46) return { type: 'medium', label: 'Medium', confidence };
+    return               { type: 'fonce',  label: 'Foncée', confidence };
   }
 
   // ─── Contraste yeux (iris vs peau) ───────────────────────────

@@ -618,6 +618,28 @@ em { font-style: italic; color: var(--nude); }
   color: white;
 }
 
+.mk-photo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--nude);
+  background: rgba(201,169,138,0.1);
+  border: 1px solid rgba(201,169,138,0.3);
+  border-radius: 20px;
+  padding: 5px 12px;
+  margin-bottom: 14px;
+}
+.mk-photo-badge--miss {
+  color: var(--muted);
+  background: rgba(150,150,150,0.07);
+  border-color: rgba(150,150,150,0.2);
+}
+.mk-photo-badge--uncertain {
+  color: #b06800;
+  background: rgba(180,104,0,0.08);
+  border-color: rgba(180,104,0,0.25);
+}
 .mk-question-hint {
   font-size: 0.82rem;
   color: var(--muted);

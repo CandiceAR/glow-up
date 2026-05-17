@@ -1097,8 +1097,11 @@ const Questionnaire = (() => {
     const analysis    = AppState?.face?.skinAnalysis;
     const photoVal    = q.photoKey ? analysis?.[q.photoKey]?.type : null;
     const photoDetect = photoVal && answers[q.key] === photoVal;
-    const photoBadge  = photoDetect
-      ? `<div class="mk-photo-badge">📸 Détecté depuis ton analyse photo · tu peux modifier si besoin</div>`
+    const photoConf  = photoVal ? (analysis?.[q.photoKey]?.confidence || 'medium') : null;
+    const photoBadge = photoDetect
+      ? photoConf === 'low'
+        ? `<div class="mk-photo-badge mk-photo-badge--uncertain">📷 Résultat incertain — confirme ou modifie ci-dessous</div>`
+        : `<div class="mk-photo-badge">📸 Détecté depuis ton analyse photo · tu peux modifier si besoin</div>`
       : (analysis && q.photoKey && !photoVal
           ? `<div class="mk-photo-badge mk-photo-badge--miss">📷 Non détecté par la photo — choisis ci-dessous</div>`
           : '');
