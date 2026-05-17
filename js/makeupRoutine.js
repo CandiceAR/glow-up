@@ -23,7 +23,7 @@ const MakeupRoutine = (() => {
         allProducts = await FirestoreProducts.loadAll();
       }
       if (!allProducts) {
-        const res  = await fetch('data/products-manual.json?v=57');
+        const res  = await fetch('data/products-manual.json?v=58');
         const data = await res.json();
         allProducts = Array.isArray(data) ? data : (data.products || []);
       }
@@ -233,11 +233,11 @@ const MakeupRoutine = (() => {
   // m117 Rimmel Medium Deep(13€) — carnation foncée
   function selectHighlighter({ carnation, undertone, budget, mkLuxe }) {
     const POOLS = {
-      dark:           ['m117', 'm110', 'm090'],
-      light:          ['m116', 'm090', 'm109'],
-      medium_warm:    ['m109', 'm117', 'm090'],
-      medium_cool:    ['m110', 'm116', 'm090'],
-      medium_neutral: ['m090', 'm109', 'm110', 'm116', 'm117']
+      dark:           ['m117', 'm110', 'm090', 'm196'],
+      light:          ['m116', 'm090', 'm109', 'm196'],
+      medium_warm:    ['m109', 'm117', 'm090', 'm196', 'm198'],
+      medium_cool:    ['m110', 'm116', 'm090', 'm196', 'm198'],
+      medium_neutral: ['m090', 'm109', 'm110', 'm116', 'm117', 'm196', 'm198']
     };
     const key     = carnation === 'dark'  ? 'dark'
                   : carnation === 'light' ? 'light'

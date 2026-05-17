@@ -3,8 +3,8 @@
     "version": "1.0",
     "source": "admin",
     "tag": "kand10ar-21",
-    "lastUpdated": "2026-05-15",
-    "totalProducts": 193
+    "lastUpdated": "2026-05-17",
+    "totalProducts": 198
   },
   "products": [
     {
@@ -4573,6 +4573,146 @@
         "medium": "https://dlaparis.com/wp-content/uploads/2026/03/BLUSH-BEGUIN-NAKED-SITE-NEW.jpg",
         "dark": "https://dlaparis.com/wp-content/uploads/2026/03/BLUSH-BEGUIN-NAKED-SITE-NEW.jpg"
       }
+    },
+    {
+      "id": "m194",
+      "name": "Tarte CC Under Eye Corrector — Light",
+      "brand": "Tarte",
+      "category": "corrector",
+      "correctorType": "peach",
+      "imageUrl": "assets/TARTE-LIGHTMEDIUMPEACHCORRECTEUR.jpeg",
+      "shopUrl": "https://tartecosmetics.com/en-fr/products/cc-undereye-corrector?variant=52729845841942",
+      "amazonUrl": null,
+      "price": 30,
+      "rating": 4.7,
+      "reviews": 1200,
+      "description": "Correcteur contour des yeux enrichi en huile de babassu. Teinte pêche pour neutraliser les cernes bleutés et violacés sur les carnations claires à moyennes.",
+      "correctorFor": [
+        "bleu_violet"
+      ],
+      "carnation": [
+        "light",
+        "medium"
+      ],
+      "isFeatured": true,
+      "active": true,
+      "concernTags": [
+        "couvrance",
+        "cernes"
+      ],
+      "makeupCategory": "corrector",
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-17"
+    },
+    {
+      "id": "m195",
+      "name": "Tarte CC Under Eye Corrector — Medium Tan Peach",
+      "brand": "Tarte",
+      "category": "corrector",
+      "correctorType": "orange",
+      "imageUrl": "assets/TARTE-LIGHTMEDIUMtanPEACHCORRECTEUR.jpeg",
+      "shopUrl": "https://tartecosmetics.com/en-fr/products/cc-undereye-corrector?variant=52729845809174",
+      "amazonUrl": null,
+      "price": 30,
+      "rating": 4.6,
+      "reviews": 980,
+      "description": "Correcteur contour des yeux enrichi en huile de babassu. Teinte orange-pêche pour neutraliser les cernes bruns et foncés sur les carnations mates à foncées.",
+      "correctorFor": [
+        "marron"
+      ],
+      "carnation": [
+        "medium",
+        "dark"
+      ],
+      "isFeatured": true,
+      "active": true,
+      "concernTags": [
+        "couvrance",
+        "cernes"
+      ],
+      "makeupCategory": "corrector",
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-17"
+    },
+    {
+      "id": "m196",
+      "name": "Rare Beauty Positive Light Luminizer",
+      "brand": "Rare Beauty",
+      "category": "highlighter",
+      "imageUrl": "assets/RAREBEAUTY-ENLUMINEUR.jpg",
+      "amazonUrl": "https://www.amazon.fr/dp/B09V5QMJ26?tag=kan10ar-21",
+      "shopUrl": null,
+      "price": 26,
+      "rating": 4.7,
+      "reviews": 2100,
+      "description": "Illuminateur liquide signature de Selena Gomez. Fini radieux naturel qui fond sur la peau. Buildable et lumineux sans effet métallique. Tous types de peau, toutes carnations.",
+      "isFeatured": true,
+      "active": true,
+      "concernTags": [
+        "teint_terne",
+        "eclat"
+      ],
+      "makeupCategory": "highlighter",
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-17"
+    },
+    {
+      "id": "m197",
+      "name": "Bronzer Sun in the City",
+      "brand": "DLA Paris",
+      "category": "bronzer",
+      "subcategory": "bronzer",
+      "imageUrl": "assets/DLA-SUN.jpg",
+      "shopUrl": "https://dlaparis.com/pinceaux/bronzer-sun-in-the-city/",
+      "amazonUrl": null,
+      "price": 29,
+      "currency": "EUR",
+      "rating": 4.8,
+      "description": "Premier produit cosmétique DLA : bronzer velouté ultra-fin pour un teint bonne mine naturel. Fini lumineux sans shimmer. Algue brune Undaria Pinnatifida pour élasticité et hydratation. Sans ingrédients animaux, parabènes, silicones, microplastiques, talc. Buildable, utilisable en poudre de finition ou mélangé au fond de teint.",
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "isFeatured": true,
+      "active": true,
+      "makeupCategory": "bronzer",
+      "concernTags": [
+        "eclat",
+        "teint_terne"
+      ],
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-17"
+    },
+    {
+      "id": "m198",
+      "name": "Makeup by Mario SoftSculpt Transforming Skin Perfector — Medium",
+      "brand": "Makeup by Mario",
+      "category": "highlighter",
+      "subcategory": "highlighter",
+      "shadeName": "Medium",
+      "imageUrl": "assets/BYMARIO-SoftSculpt-Transformant Skin Perfector.jpeg",
+      "shopUrl": "https://www.makeupbymario.com/products/softsculpt-transforming-skin-perfector?variant=39897347358785",
+      "amazonUrl": null,
+      "price": 33,
+      "currency": "EUR",
+      "rating": 4.8,
+      "reviews": 1500,
+      "description": "Skin perfector transformant à la texture fondante. Booste et réchauffe les carnations moyennes à mates avec un fini satiné naturel. Formule buildable, fini lumineux sans effet nacré.",
+      "carnation": [
+        "medium"
+      ],
+      "isFeatured": true,
+      "active": true,
+      "makeupCategory": "highlighter",
+      "concernTags": [
+        "teint_terne",
+        "eclat"
+      ],
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-17"
     }
   ]
 }
