@@ -266,9 +266,12 @@ const Admin = (() => {
       const stTags     = Array.isArray(p.skinTypeTags) && p.skinTypeTags.length > 0 && p.skinTypeTags.length < 5
         ? p.skinTypeTags.map(s => `${ST_ICONS[s] || ''}${s}`).join(' ')
         : null;
-      const profilCell = (p.undertone || carnStr || matStr || stTags)
+      const CORR_LABELS = { peach: '💜 Bleus/violets', orange: '🟤 Marrons/bruns', vert: '🔴 Rouges/rosés', rose: '⚫ Gris/ternes' };
+      const corrStr    = p.correctorType ? CORR_LABELS[p.correctorType] || p.correctorType : null;
+      const profilCell = (p.undertone || carnStr || matStr || stTags || corrStr)
         ? `<div style="font-size:0.72rem;line-height:1.8">
-             ${p.undertone ? `<span style="color:var(--nude);font-weight:500">${UT_LABELS[p.undertone] || p.undertone}</span>` : ''}
+             ${corrStr   ? `<span style="color:#6b4e8a;font-weight:600;background:#f3edf7;padding:1px 6px;border-radius:10px;">${corrStr}</span>` : ''}
+             ${p.undertone ? `${corrStr ? '<br>' : ''}<span style="color:var(--nude);font-weight:500">${UT_LABELS[p.undertone] || p.undertone}</span>` : ''}
              ${carnStr ? `<br><span style="color:var(--muted)">${carnStr}</span>` : ''}
              ${matStr  ? `<br><span style="color:var(--muted)">${matStr}</span>`  : ''}
              ${stTags  ? `<br><span style="color:#5a7a5a;font-weight:500">${stTags}</span>` : ''}
@@ -352,7 +355,9 @@ const Admin = (() => {
     document.getElementById('fFinish').value       = p.finish || 'naturel';
     document.getElementById('fMaturity').value     = p.maturity || 'all';
     document.getElementById('fFormat').value        = p.format || '';
-    document.getElementById('fFormatGroup').style.display = p.category === 'eyeshadow' ? 'flex' : 'none';
+    document.getElementById('fFormatGroup').style.display        = p.category === 'eyeshadow' ? 'flex'  : 'none';
+    document.getElementById('fCorrectorType').value              = p.correctorType || '';
+    document.getElementById('fCorrectorTypeGroup').style.display = p.category === 'corrector'  ? 'block' : 'none';
     // Type de peau — si skinTypeTags vide ou tous = tout coché
     const st = Array.isArray(p.skinTypeTags) && p.skinTypeTags.length > 0 ? p.skinTypeTags : [];
     document.getElementById('fSkinNormale').checked  = st.length === 0 || st.includes('normale');
@@ -403,7 +408,9 @@ const Admin = (() => {
     document.getElementById('fFinish').value       = 'naturel';
     document.getElementById('fMaturity').value     = 'all';
     document.getElementById('fFormat').value        = '';
-    document.getElementById('fFormatGroup').style.display = 'none';
+    document.getElementById('fFormatGroup').style.display        = 'none';
+    document.getElementById('fCorrectorType').value              = '';
+    document.getElementById('fCorrectorTypeGroup').style.display = 'none';
     ['fSkinNormale','fSkinGrasse','fSkinSeche','fSkinMixte','fSkinSensible'].forEach(id => {
       document.getElementById(id).checked = false;
     });
@@ -447,7 +454,8 @@ const Admin = (() => {
     });
     // Si tous cochés ou aucun coché = null (convient à tous)
     const skinTypeTags = skinTypes.length > 0 && skinTypes.length < 5 ? skinTypes : null;
-    const format = category === 'eyeshadow' ? (document.getElementById('fFormat').value || null) : null;
+    const format        = category === 'eyeshadow' ? (document.getElementById('fFormat').value        || null) : null;
+    const correctorType = category === 'corrector'  ? (document.getElementById('fCorrectorType').value || null) : null;
     const concernTags = Array.from(document.getElementById('fConcerns').selectedOptions).map(o => o.value);
     const ingredientTags = Array.from(document.getElementById('fIngredients').selectedOptions).map(o => o.value);
 
@@ -514,7 +522,8 @@ const Admin = (() => {
         finish:      finish || 'naturel',
         maturity:    maturity || 'all',
         skinTypeTags: skinTypeTags,
-        format:      format || null,
+        format:        format        || null,
+        correctorType: correctorType || null,
         concernTags: concernTags,
         ingredientTags: ingredientTags,
         curatedAt:   new Date().toISOString().split('T')[0]
@@ -540,7 +549,8 @@ const Admin = (() => {
         finish:      finish || 'naturel',
         maturity:    maturity || 'all',
         skinTypeTags: skinTypeTags,
-        format:      format || null,
+        format:        format        || null,
+        correctorType: correctorType || null,
         concernTags: concernTags,
         isFeatured,
         active: isActive,
@@ -1033,12 +1043,18 @@ const Admin = (() => {
     } catch { return url; }
   }
 
+  function onCategoryChange(cat) {
+    document.getElementById('fFormatGroup').style.display       = cat === 'eyeshadow' ? 'flex'  : 'none';
+    document.getElementById('fCorrectorTypeGroup').style.display = cat === 'corrector' ? 'block' : 'none';
+  }
+
   // BUG FIX: liste complète des 19+ catégories réelles du catalogue
   function getCatLabel(cat) {
     const m = {
       blush:       'Blush',
       bronzer:     'Bronzer',
       concealer:   'Correcteur / Anti-cernes',
+      corrector:   'Correcteur coloré cernes',
       cream:       'Crème visage',
       eye:         'Contour des yeux',
       eyepatch:    'Patchs yeux',
@@ -1317,7 +1333,7 @@ const Admin = (() => {
   return {
     login, logout,
     showAddForm, editProduct, duplicateProduct, cancelForm, saveProduct,
-    autoTagAll,
+    onCategoryChange, autoTagAll,
     toggleActive, toggleFeatured, deleteProduct,
     search, filterCat, filterIngredient, filterConcern, patchSkincareTags, importNewFromJSON, forceSyncAllFromJSON, showTab, checkMissingPhotos,
     extractASIN, extractASINFromUrl, checkTag, autoFillAmazonUrl, exportJSON,

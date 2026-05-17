@@ -412,7 +412,7 @@
 
               <div class="form-group full">
                 <label class="form-label">📂 Catégorie *</label>
-                <select id="fCategory" class="form-select" onchange="document.getElementById('fFormatGroup').style.display=this.value==='eyeshadow'?'flex':'none'">
+                <select id="fCategory" class="form-select" onchange="Admin.onCategoryChange(this.value)">
                   <option value="serum">Sérum</option>
                   <option value="cream">Crème visage</option>
                   <option value="moisturizer">Crème / Soin hydratant</option>
@@ -424,6 +424,7 @@
                   <option value="primer">Base / Primer</option>
                   <option value="foundation">Fond de teint</option>
                   <option value="concealer">Correcteur / Anti-cernes</option>
+                  <option value="corrector">Correcteur coloré cernes</option>
                   <option value="powder">Poudre</option>
                   <option value="blush">Blush</option>
                   <option value="bronzer">Bronzer</option>
@@ -510,6 +511,19 @@
                   <option value="mono">Fard individuel / Mono</option>
                   <option value="crayon">Crayon paupières</option>
                 </select>
+              </div>
+
+              <!-- Type de correcteur coloré (affiché uniquement si catégorie = corrector) -->
+              <div class="form-group full" id="fCorrectorTypeGroup" style="display:none">
+                <label class="form-label">🎨 Type de correcteur coloré cernes</label>
+                <select id="fCorrectorType" class="form-select">
+                  <option value="">— Non défini —</option>
+                  <option value="peach">💜 Cernes bleus / violets — correcteur pêche / abricot</option>
+                  <option value="orange">🟤 Cernes marrons / bruns — correcteur orange / caramel</option>
+                  <option value="vert">🔴 Cernes rouges / rosés — correcteur vert</option>
+                  <option value="rose">⚫ Cernes gris / ternes — correcteur rose / saumon</option>
+                </select>
+                <p style="font-size:0.75rem;color:var(--muted);margin-top:4px">Détermine quel correcteur est proposé selon la couleur des cernes déclarée dans le questionnaire</p>
               </div>
 
               <!-- Type de peau -->
@@ -679,6 +693,7 @@
             <option value="primer">Base / Primer</option>
             <option value="foundation">Fond de teint</option>
             <option value="concealer">Correcteur / Anti-cernes</option>
+            <option value="corrector">Correcteur coloré cernes</option>
             <option value="powder">Poudre</option>
             <option value="blush">Blush</option>
             <option value="bronzer">Bronzer</option>
