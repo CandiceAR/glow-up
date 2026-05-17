@@ -387,7 +387,14 @@ const SkinAnalysis = (() => {
 
     if (!Object.keys(zoneResults).length) return null;
 
-    const undertone   = detectUndertone(allSkinPixels, zoneResults);
+    // Blanc des yeux → référence balance des blancs (neutralise la lumière ambiante)
+    const scleraPixels = extractScleraPixels(sourceCanvas, landmarks, w, h);
+    console.log('[SkinAnalysis] Sclérotique:', scleraPixels.length, 'pixels',
+      scleraPixels.length >= 15
+        ? `R:${Math.round(avg(scleraPixels.map(p=>p.r)))} G:${Math.round(avg(scleraPixels.map(p=>p.g)))} B:${Math.round(avg(scleraPixels.map(p=>p.b)))}`
+        : '(référence insuffisante)');
+
+    const undertone   = detectUndertone(allSkinPixels, zoneResults, scleraPixels);
     const skinType    = detectSkinType(zoneResults);
     const globalScore = Math.round(
       Object.values(zoneResults).reduce((s, z) => s + z.score, 0) /
@@ -411,6 +418,35 @@ const SkinAnalysis = (() => {
     const eyeContrast = detectEyeContrast(sourceCanvas, landmarks, w, h, skinLumNorm);
 
     return { zones: zoneResults, undertone, skinType, globalScore, faceShape, cernes, carnation, eyeContrast };
+  }
+
+  // ─── Extraction sclérotique (blanc des yeux) pour balance des blancs ───────
+  // La sclérotique devrait être proche du blanc — si elle paraît jaune c'est
+  // l'éclairage ambiant, pas la peau. On s'en sert pour corriger la photo.
+
+  function extractScleraPixels(sourceCanvas, landmarks, w, h) {
+    const leftPx  = extractZonePixels(sourceCanvas, landmarks, w, h, EYE_LEFT_IDX);
+    const rightPx = extractZonePixels(sourceCanvas, landmarks, w, h, EYE_RIGHT_IDX);
+    // Garder uniquement les pixels brillants (sclérotique = blanc > iris sombre)
+    return [...leftPx, ...rightPx].filter(p => (0.299 * p.r + 0.587 * p.g + 0.114 * p.b) > 145);
+  }
+
+  // Correction de balance des blancs : utilise G comme canal ancrage (le plus stable)
+  // et ajuste R et B pour que la sclérotique soit perçue neutre.
+  function applyWhiteBalance(pixels, scleraPixels) {
+    if (!scleraPixels || scleraPixels.length < 15) return pixels;
+    const scR = avg(scleraPixels.map(p => p.r));
+    const scG = avg(scleraPixels.map(p => p.g));
+    const scB = avg(scleraPixels.map(p => p.b));
+    if (scG < 10 || scR < 10 || scB < 10) return pixels;
+    // Facteurs de correction : ramenés à G. Limités pour éviter les cas extrêmes.
+    const cR = clamp(scG / scR, 0.75, 1.30);
+    const cB = clamp(scG / scB, 0.75, 1.30);
+    return pixels.map(p => ({
+      r: Math.min(255, Math.round(p.r * cR)),
+      g: p.g,
+      b: Math.min(255, Math.round(p.b * cB))
+    }));
   }
 
   // ─── Extraction pixels par zone (polygon clipping) ───────────
@@ -521,7 +557,7 @@ const SkinAnalysis = (() => {
     return Math.round(clamp(100 - darkFraction * 450, 5, 100));
   }
 
-  function detectUndertone(allPixels, zoneResults) {
+  function detectUndertone(allPixels, zoneResults, scleraPixels) {
     // Préférer les joues : moins de bruit (ombres front, rouge nez)
     const cheekPixels = [
       ...(zoneResults?.leftCheek?.pixels  || []),
@@ -530,10 +566,13 @@ const SkinAnalysis = (() => {
     const source = cheekPixels.length >= 80 ? cheekPixels : allPixels;
 
     // Filtrer ombres (trop sombre) et reflets spéculaires (trop clair)
-    const filtered = source.filter(p => {
+    const preFilter = source.filter(p => {
       const lum = 0.299 * p.r + 0.587 * p.g + 0.114 * p.b;
       return lum > 45 && lum < 215;
     });
+
+    // Correction balance des blancs via la sclérotique → compense la lumière ambiante
+    const filtered = applyWhiteBalance(preFilter, scleraPixels);
     if (filtered.length < 20) {
       return { type: 'neutral', label: 'Neutre', colorHex: '#D4B896',
                desc: 'Sous-tons équilibrés — l\'or et l\'argent te conviennent également.', confidence: 'low' };
@@ -559,7 +598,7 @@ const SkinAnalysis = (() => {
     // ─── Vote multi-méthode ──────────────────────────────────────────────────
     let warmVotes = 0, coolVotes = 0;
 
-    // Vote chromaticité (poids 2 — plus fiable)
+    // Vote chromaticité (poids 2 — plus fiable après balance des blancs)
     if      (meanChrom > 0.19)  warmVotes += 2;
     else if (meanChrom > 0.165) warmVotes += 1;
     else if (meanChrom < 0.14)  coolVotes += 2;
@@ -568,6 +607,11 @@ const SkinAnalysis = (() => {
     // Vote LAB
     if (meanB > meanA + 3 && meanB > 7) warmVotes += 1;
     if (meanA > meanB + 2 && meanA > 5) coolVotes += 1;
+
+    console.log('[SkinAnalysis] Undertone →',
+      `chrom:${meanChrom.toFixed(3)} LAB a:${meanA.toFixed(1)} b:${meanB.toFixed(1)}`,
+      `pixels:${filtered.length} joues:${cheekPixels.length}`,
+      `votes warm:${warmVotes} cool:${coolVotes}`);
 
     // Confiance : à quelle distance de la frontière neutre
     const chromDiff = Math.abs(meanChrom - 0.17);
