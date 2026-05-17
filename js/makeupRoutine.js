@@ -87,15 +87,28 @@ const MakeupRoutine = (() => {
     return [pool[Math.floor(Math.random() * pool.length)]];
   }
 
+  // Marques considérées luxe — seules proposées quand mkLuxe est actif
+  const LUXURY_BRANDS = new Set([
+    'Clinique', 'Charlotte Tilbury', 'IT Cosmetics', 'IT COSMETIC',
+    'Victoria Beckham Beauty', 'DLA Paris', 'Elizabeth Arden',
+    'Summer Fridays', 'By Terry', 'NARS', 'HUDA BEAUTY',
+    'Laura Mercier', 'Erborian', 'ERBORIAN', 'Sacheu'
+  ]);
+
   // Picks randomly from the best-scored products across the full catalog
   // priorityIds get a +50 bonus so they appear in top-10 more often but aren't guaranteed
-  function pickFromCatalog(categories, budget, priorityIds = [], excludeIds = []) {
+  // luxeOnly: if true, restricts to LUXURY_BRANDS (falls back to full pool if no luxury product found)
+  function pickFromCatalog(categories, budget, priorityIds = [], excludeIds = [], luxeOnly = false) {
     const cats = Array.isArray(categories) ? categories : [categories];
     const excludeSet = new Set(excludeIds);
-    const all = filterByBudget(
+    let all = filterByBudget(
       getByCategories(cats).filter(p => !excludeSet.has(p.id)),
       budget
     );
+    if (luxeOnly) {
+      const luxury = all.filter(p => LUXURY_BRANDS.has(p.brand));
+      if (luxury.length) all = luxury;
+    }
     if (!all.length) return null;
     const prioritySet = new Set(priorityIds);
     const scored = all.map(p => ({
@@ -111,7 +124,7 @@ const MakeupRoutine = (() => {
   // ══════════════════════════════════════════════════════════════
 
   // 1. ANTI-CERNES MULTI-USAGE ───────────────────────────────────
-  function selectConcealer({ carnation, undertone, budget }) {
+  function selectConcealer({ carnation, undertone, budget, mkLuxe }) {
     let priority;
     if (carnation === 'light') {
       priority = undertone === 'cool'
@@ -126,41 +139,39 @@ const MakeupRoutine = (() => {
         ? ['m114','m038','m047','m043']
         : ['m038','m047','m114','m042'];
     }
-    return [pickFromCatalog('concealer', budget, priority)].filter(Boolean);
+    return [pickFromCatalog('concealer', budget, priority, [], mkLuxe)].filter(Boolean);
   }
 
   // 2. HIGHLIGHTER GLOW ─────────────────────────────────────────
-  function selectHighlighter({ carnation, budget }) {
+  function selectHighlighter({ carnation, budget, mkLuxe }) {
     const priority = carnation === 'dark'
       ? ['m117','m090','m110']
       : carnation === 'light'
         ? ['m116','m090','m109']
         : ['m090','m109','m116'];
-    return [pickFromCatalog('highlighter', budget, priority)].filter(Boolean);
+    return [pickFromCatalog('highlighter', budget, priority, [], mkLuxe)].filter(Boolean);
   }
 
   // 3. BLUSH ────────────────────────────────────────────────────
-  function selectBlush({ undertone, carnation, budget, ageGroup }) {
+  function selectBlush({ undertone, carnation, budget, ageGroup, mkLuxe }) {
     const isDark  = carnation === 'dark';
     const is40plus = ageGroup === '40+';
 
     if (is40plus) {
-      // 40+ : uniquement DLA Blush Béguin, teinte selon carnation
       const id = isDark ? 'm193' : 'm192';
       const p  = getById(id);
-      return p ? [p] : [pickFromCatalog('blush', budget, ['m193','m192'], ['m128'])].filter(Boolean);
+      return p ? [p] : [pickFromCatalog('blush', budget, ['m193','m192'], ['m128'], mkLuxe)].filter(Boolean);
     }
 
-    // Moins de 40 ans : catalogue existant, DLA exclus
     let priority;
     if (undertone === 'warm')      priority = isDark ? ['m193','m105'] : ['m105'];
     else if (undertone === 'cool') priority = isDark ? ['m104','m112'] : ['m104','m112'];
     else                           priority = ['m104'];
-    return [pickFromCatalog('blush', budget, priority, ['m128','m192','m193'])].filter(Boolean);
+    return [pickFromCatalog('blush', budget, priority, ['m128','m192','m193'], mkLuxe)].filter(Boolean);
   }
 
   // 4. POUDRE LIBRE ─────────────────────────────────────────────
-  function selectPowder({ skinType, undertone, carnation, budget }) {
+  function selectPowder({ skinType, undertone, carnation, budget, mkLuxe }) {
     let priority;
     if (skinType === 'grasse' || skinType === 'mixte') {
       priority = ['m099','m097','m127'];
@@ -169,21 +180,21 @@ const MakeupRoutine = (() => {
     } else {
       priority = ['m097','m127','m099'];
     }
-    return [pickFromCatalog('powder', budget, priority)].filter(Boolean);
+    return [pickFromCatalog('powder', budget, priority, [], mkLuxe)].filter(Boolean);
   }
 
   // 5. CRAYON YEUX ESTOMPABLE ───────────────────────────────────
-  function selectEyeliner({ undertone, budget }) {
+  function selectEyeliner({ undertone, budget, mkLuxe }) {
     const priority = undertone === 'warm'
       ? ['m032','m033','m035']
       : undertone === 'cool'
         ? ['m031','m037','m036']
         : ['m036','m034','m031'];
-    return [pickFromCatalog('eyeliner', budget, priority)].filter(Boolean);
+    return [pickFromCatalog('eyeliner', budget, priority, [], mkLuxe)].filter(Boolean);
   }
 
   // 6. MASCARA ──────────────────────────────────────────────────
-  function selectMascara({ undertone, carnation, budget }) {
+  function selectMascara({ undertone, carnation, budget, mkLuxe }) {
     let priority;
     if (undertone === 'warm') {
       priority = carnation === 'dark'
@@ -192,11 +203,11 @@ const MakeupRoutine = (() => {
     } else {
       priority = ['m055','m051','m056'];
     }
-    return [pickFromCatalog('mascara', budget, priority)].filter(Boolean);
+    return [pickFromCatalog('mascara', budget, priority, [], mkLuxe)].filter(Boolean);
   }
 
   // 7. CRAYON LÈVRES LONGUE TENUE ───────────────────────────────
-  function selectLipliner({ undertone, carnation, budget }) {
+  function selectLipliner({ undertone, carnation, budget, mkLuxe }) {
     let priority;
     if (undertone === 'warm') {
       priority = carnation === 'dark'
@@ -209,11 +220,11 @@ const MakeupRoutine = (() => {
     } else {
       priority = ['m068','m062','m079'];
     }
-    return [pickFromCatalog('lipliner', budget, priority)].filter(Boolean);
+    return [pickFromCatalog('lipliner', budget, priority, [], mkLuxe)].filter(Boolean);
   }
 
   // 8. LÈVRES — GLOSS OU BAUME TEINTÉ ──────────────────────────
-  function selectLips({ undertone, carnation, budget }) {
+  function selectLips({ undertone, carnation, budget, mkLuxe }) {
     let priority;
     if (undertone === 'warm') {
       priority = carnation === 'dark'
@@ -226,7 +237,7 @@ const MakeupRoutine = (() => {
     } else {
       priority = ['m064','m060','m075'];
     }
-    return [pickFromCatalog(['lipstick','lipgloss'], budget, priority)].filter(Boolean);
+    return [pickFromCatalog(['lipstick','lipgloss'], budget, priority, [], mkLuxe)].filter(Boolean);
   }
 
   // BONUS 1 — GLOW BRONZANT LIQUIDE ─────────────────────────────
@@ -495,7 +506,8 @@ const MakeupRoutine = (() => {
       mkFocus:   mkQuiz.mkFocus  || null,
       mkLook:    mkQuiz.mkLook   || null,
       mkTime:    mkQuiz.mkTime   || null,
-      ageGroup:  skinQuiz?.ageGroup     || null
+      ageGroup:  skinQuiz?.ageGroup     || null,
+      mkLuxe:    mkQuiz.mkBudget === 'premium'
     };
 
     console.log('[MakeupRoutine] Profil:', profile);

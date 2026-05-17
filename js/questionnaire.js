@@ -1075,6 +1075,10 @@ const Questionnaire = (() => {
     document.querySelectorAll('.q-option-premium').forEach(el => el.classList.remove('selected'));
     document.querySelector(`[data-value="${value}"]`)?.classList.add('selected');
     AppState.makeupQuiz[key] = value;
+    // Auto-activer le filtre luxe quand premium est sélectionné
+    if (key === 'mkBudget') {
+      AppState.makeupQuiz.mkLuxe = value === 'premium';
+    }
     const q = MAKEUP_QUESTIONS[makeupIndex];
     _updateMkBtn(q, AppState.makeupQuiz);
     setTimeout(() => {
