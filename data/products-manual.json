@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-05-17",
-    "totalProducts": 200
+    "totalProducts": 207
   },
   "products": [
     {
@@ -4763,6 +4763,153 @@
         "cernes"
       ],
       "makeupCategory": "corrector",
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-17"
+    },
+    {
+      "id": "m201",
+      "name": "NYX Away We Glow Liquid Highlighter",
+      "brand": "NYX",
+      "category": "highlighter",
+      "imageUrl": null,
+      "amazonUrl": "https://www.amazon.fr/s?k=NYX+Away+We+Glow+Liquid+Highlighter&tag=kan10ar-21",
+      "price": 10.5,
+      "rating": 4.3,
+      "reviews": 1400,
+      "description": "Enlumineur liquide buildable pour un éclat intense et lumineux. Formule légère qui fond sur la peau. Toutes carnations.",
+      "isFeatured": true,
+      "active": true,
+      "concernTags": [
+        "teint_terne",
+        "eclat"
+      ],
+      "makeupCategory": "highlighter",
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-17"
+    },
+    {
+      "id": "m202",
+      "name": "e.l.f. Halo Glow Liquid Filter",
+      "brand": "e.l.f.",
+      "category": "highlighter",
+      "imageUrl": null,
+      "amazonUrl": "https://www.amazon.fr/s?k=elf+Halo+Glow+Liquid+Filter&tag=kan10ar-21",
+      "price": 14,
+      "rating": 4.6,
+      "reviews": 3200,
+      "description": "Filtre liquide illuminateur viral. S'applique seul ou mélangé au fond de teint pour un fini glass skin lumineux. Toutes carnations.",
+      "isFeatured": true,
+      "active": true,
+      "concernTags": [
+        "teint_terne",
+        "eclat"
+      ],
+      "makeupCategory": "highlighter",
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-17"
+    },
+    {
+      "id": "m203",
+      "name": "Catrice Glow Time Highlighter",
+      "brand": "Catrice",
+      "category": "highlighter",
+      "imageUrl": null,
+      "amazonUrl": "https://www.amazon.fr/s?k=Catrice+Glow+Time+Highlighter&tag=kan10ar-21",
+      "price": 6.5,
+      "rating": 4.2,
+      "reviews": 820,
+      "description": "Enlumineur poudre compact ultra-accessible. Fini nacré naturel et lumineux. Carnations claires à moyennes.",
+      "isFeatured": false,
+      "active": true,
+      "concernTags": [
+        "teint_terne",
+        "eclat"
+      ],
+      "makeupCategory": "highlighter",
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-17"
+    },
+    {
+      "id": "m204",
+      "name": "Essence Liquid Highlighter",
+      "brand": "Essence",
+      "category": "highlighter",
+      "imageUrl": null,
+      "amazonUrl": "https://www.amazon.fr/s?k=Essence+Liquid+Highlighter&tag=kan10ar-21",
+      "price": 4.5,
+      "rating": 4.1,
+      "reviews": 1100,
+      "description": "Enlumineur liquide petit prix pour un éclat subtil et naturel. Buildable et facile à appliquer au doigt. Toutes carnations.",
+      "isFeatured": false,
+      "active": true,
+      "concernTags": [
+        "teint_terne",
+        "eclat"
+      ],
+      "makeupCategory": "highlighter",
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-17"
+    },
+    {
+      "id": "m205",
+      "name": "Makeup Revolution Luminize Highlighter",
+      "brand": "Makeup Revolution",
+      "category": "highlighter",
+      "imageUrl": null,
+      "amazonUrl": "https://www.amazon.fr/s?k=Makeup+Revolution+Luminize+Highlighter&tag=kan10ar-21",
+      "price": 8,
+      "rating": 4.2,
+      "reviews": 970,
+      "description": "Enlumineur poudre buildable pour un éclat intense et multidimensionnel. Toutes carnations.",
+      "isFeatured": false,
+      "active": true,
+      "concernTags": [
+        "teint_terne",
+        "eclat"
+      ],
+      "makeupCategory": "highlighter",
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-17"
+    },
+    {
+      "id": "m206",
+      "name": "Wet n Wild MegaGlo Highlighting Powder",
+      "brand": "Wet n Wild",
+      "category": "highlighter",
+      "imageUrl": null,
+      "amazonUrl": "https://www.amazon.fr/s?k=Wet+n+Wild+MegaGlo+Highlighting+Powder&tag=kan10ar-21",
+      "price": 7,
+      "rating": 4.3,
+      "reviews": 1600,
+      "description": "Poudre illuminatrice ultra-pigmentée pour un éclat éclatant. Particulièrement flatteuse sur les carnations moyennes à foncées.",
+      "isFeatured": false,
+      "active": true,
+      "concernTags": [
+        "teint_terne",
+        "eclat"
+      ],
+      "makeupCategory": "highlighter",
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-17"
+    },
+    {
+      "id": "m207",
+      "name": "Sleek MakeUP Highlighting Palette",
+      "brand": "Sleek",
+      "category": "highlighter",
+      "imageUrl": null,
+      "amazonUrl": "https://www.amazon.fr/s?k=Sleek+MakeUP+Highlighting+Palette&tag=kan10ar-21",
+      "price": 11,
+      "rating": 4.4,
+      "reviews": 730,
+      "description": "Palette d'enlumineurs avec plusieurs teintes dorées et cuivrées. Idéale pour les carnations moyennes à foncées. Pigmentation intense.",
+      "isFeatured": false,
+      "active": true,
+      "concernTags": [
+        "teint_terne",
+        "eclat"
+      ],
+      "makeupCategory": "highlighter",
       "curatedBy": "admin",
       "curatedAt": "2026-05-17"
     }
