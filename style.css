@@ -618,6 +618,25 @@ em { font-style: italic; color: var(--nude); }
   color: white;
 }
 
+.mk-question-hint {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin: 0 0 14px;
+  line-height: 1.4;
+}
+.mk-multi-count {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--nude);
+  background: rgba(201,169,138,0.12);
+  border: 1px solid rgba(201,169,138,0.3);
+  border-radius: 20px;
+  padding: 3px 10px;
+  margin-bottom: 14px;
+  letter-spacing: 0.01em;
+}
+
 /* Slider */
 .q-slider-wrap    { margin: 24px 0 20px; }
 .q-slider-value-display {

@@ -160,6 +160,52 @@ const MakeupRoutine = (() => {
     return tip ? `${tip}<br><small style="opacity:0.75;">${CORRECTOR_WARNING}</small>` : CORRECTOR_WARNING;
   }
 
+  // ── Soins ciblés selon besoins makeup déclarés ───────────────
+  const CONCERN_STEP_TITLES = {
+    rougeurs:      'Neutraliser les rougeurs',
+    pores:         'Estomper les pores',
+    eclat:         'Booster l\'éclat',
+    matifiant:     'Contrôler les brillances',
+    imperfections: 'Couvrir les imperfections',
+    ridules:       'Lisser les ridules',
+    uniformite:    'Uniformiser le teint'
+  };
+
+  const CONCERN_STEP_TIPS = {
+    rougeurs:      'Tamponne sur les zones réactives (ailes du nez, joues) avant l\'anti-cernes. Le correcteur vert neutralise le rouge par contraste chromatique.',
+    pores:         'Applique après ton soin et avant le teint. Lisse le grain de peau et prolonge la tenue du maquillage.',
+    eclat:         'Une touche lumineuse sur les pommettes et l\'arc de Cupidon pour un effet bonne mine instantané.',
+    matifiant:     'Concentre sur la zone T. Fixe le teint et réduit les brillances toute la journée.',
+    imperfections: 'Tapote avec la pulpe du doigt sur chaque imperfection. Scelle avec un voile de poudre pour la tenue.',
+    ridules:       'Masse en mouvements circulaires sur les zones à lisser avant le fond de teint. Comble et lisse les micro-reliefs.',
+    uniformite:    'Chauffe entre les doigts et applique de l\'intérieur vers l\'extérieur. Estompe les contours pour un fondu naturel.'
+  };
+
+  const CONCERN_CAT_MAP = {
+    rougeurs:      ['primer'],
+    pores:         ['primer'],
+    eclat:         ['highlighter'],
+    matifiant:     ['powder'],
+    imperfections: ['primer'],
+    ridules:       ['primer'],
+    uniformite:    ['foundation']
+  };
+
+  function selectConcernProducts(profile, excludeIds) {
+    const concerns = profile.mkConcerns || [];
+    if (!concerns.length) return {};
+    const result  = {};
+    const usedIds = [...(excludeIds || [])];
+    for (const concern of concerns) {
+      if (concern === 'cernes') continue;
+      const cats = CONCERN_CAT_MAP[concern];
+      if (!cats) continue;
+      const p = pickFromCatalog(cats, profile.budget, [], usedIds, profile.mkLuxe);
+      if (p) { result[concern] = p; usedIds.push(p.id); }
+    }
+    return result;
+  }
+
   // 1. ANTI-CERNES MULTI-USAGE ───────────────────────────────────
   function selectConcealer({ carnation, undertone, budget, mkLuxe }) {
     let priority;
@@ -379,7 +425,13 @@ const MakeupRoutine = (() => {
     const [powder]       = selectPowder(profile)       || [null];
     const [brush]        = selectBrushes(profile)      || [null];
 
-    const coreProducts  = [corrector, concealer, highlighter, blush, eyeliner, mascara, lipliner, lips].filter(Boolean);
+    // Produits ciblés selon besoins makeup déclarés
+    const coreExcludeIds = [corrector, concealer, highlighter, blush, eyeliner, mascara, lipliner, lips]
+      .filter(Boolean).map(p => p.id);
+    const concernProds = selectConcernProducts(profile, coreExcludeIds);
+    const concernList  = (profile.mkConcerns || []).filter(c => c !== 'cernes' && concernProds[c]);
+
+    const coreProducts  = [...concernList.map(c => concernProds[c]), corrector, concealer, highlighter, blush, eyeliner, mascara, lipliner, lips].filter(Boolean);
     const bonusProducts = [glowBronzer, powder, brush].filter(Boolean);
     const coreTotal     = computeTotal(coreProducts);
     const totalWithBonus= computeTotal([...coreProducts, ...bonusProducts]);
@@ -397,8 +449,13 @@ const MakeupRoutine = (() => {
       ? renderStep(stepNum++, 'Correcteur coloré cernes', _getCorrectorTip(profile.cernesColor), corrector)
       : '';
 
+    const concernSteps = concernList
+      .map(c => renderStep(stepNum++, CONCERN_STEP_TITLES[c] || c, CONCERN_STEP_TIPS[c] || '', concernProds[c]))
+      .join('');
+
     const steps = [
       correctorStep,
+      concernSteps,
       renderStep(stepNum++, 'Anti-cernes',    'Tapote avec le doigt sous les yeux et sur les petites imperfections. Effet seconde peau.',               concealer),
       renderStep(stepNum++, 'Highlighter',    'Une touche sur les pommettes et l\'arc de Cupidon. Le doigt suffit — pas besoin de pinceau.',            highlighter),
       renderStep(stepNum++, 'Blush',          'Souris et dépose sur les rondeurs des joues. Estompe vers les tempes pour un effet bonne mine naturel.',  blush),
@@ -528,6 +585,22 @@ const MakeupRoutine = (() => {
     const skinQuiz = AppState?.questionnaire?.answers || {};
     const mkQuiz   = AppState?.makeupQuiz || {};
 
+    // Merge makeup concerns into skincare complexes so skincare recommandations en bénéficient
+    const MK_TO_COMPLEX = {
+      rougeurs: 'rougeurs', cernes: 'cernes', pores: 'pores',
+      eclat: 'eclat', imperfections: 'acne', ridules: 'rides', uniformite: 'taches'
+    };
+    if (mkQuiz.mkConcerns?.length) {
+      const existing = Array.isArray(skinQuiz.complexes) ? [...skinQuiz.complexes] : [];
+      for (const c of mkQuiz.mkConcerns) {
+        const mapped = MK_TO_COMPLEX[c];
+        if (mapped && !existing.includes(mapped)) existing.push(mapped);
+      }
+      AppState.questionnaire = AppState.questionnaire || {};
+      AppState.questionnaire.answers = AppState.questionnaire.answers || {};
+      AppState.questionnaire.answers.complexes = existing;
+    }
+
     // Carnation : quiz makeup (choix manuel) > photo > quiz skincare
     const carnationMap = { light:'light', clair:'light', medium:'medium', fonce:'dark', dark:'dark' };
     const carnationRaw = mkQuiz.mkCarnation || analysis?.carnation?.type || skinQuiz?.skinTone || 'medium';
@@ -553,7 +626,8 @@ const MakeupRoutine = (() => {
       mkTime:      mkQuiz.mkTime   || null,
       ageGroup:    skinQuiz?.ageGroup     || null,
       mkLuxe:      mkQuiz.mkBudget === 'premium',
-      cernesColor: skinQuiz?.cernesColor || null
+      mkConcerns:  mkQuiz.mkConcerns || null,
+      cernesColor: mkQuiz.mkCernesColor || skinQuiz?.cernesColor || null
     };
 
     console.log('[MakeupRoutine] Profil:', profile);

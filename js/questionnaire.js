@@ -800,7 +800,8 @@ const Questionnaire = (() => {
 
       const answers = AppState.makeupQuiz || {};
       if (q.required && !answers[q.key]) return;
-      if (makeupIndex < MAKEUP_QUESTIONS.length - 1) { makeupIndex++; _renderMakeupLegacy(); }
+      const nextMkIdx = _mkNextActive(makeupIndex);
+      if (nextMkIdx >= 0) { makeupIndex = nextMkIdx; _renderMakeupLegacy(); }
       else { showScreen('makeup'); }
       return;
     }
@@ -827,7 +828,8 @@ const Questionnaire = (() => {
 
   function prev() {
     if (mode === 'makeup') {
-      if (makeupIndex > 0) { makeupIndex--; _renderMakeupLegacy(); }
+      const prevMkIdx = _mkPrevActive(makeupIndex);
+      if (prevMkIdx >= 0) { makeupIndex = prevMkIdx; _renderMakeupLegacy(); }
       return;
     }
     const prevIdx = _prevActive(currentIndex);
@@ -962,6 +964,33 @@ const Questionnaire = (() => {
       ]
     },
     {
+      id: 'mq_concerns', key: 'mkConcerns', type: 'mk-multiple', max: 3, required: false,
+      question: 'Qu\'est-ce que tu veux camoufler ou améliorer ?',
+      subtitle: 'Choisis jusqu\'à 3 besoins — ta routine sera adaptée',
+      options: [
+        { value: 'rougeurs',      emoji: '🌸', label: 'Rougeurs',                  desc: 'Zones réactives à neutraliser' },
+        { value: 'cernes',        emoji: '👁',  label: 'Cernes',                    desc: 'Regard fatigué, cercles sombres' },
+        { value: 'pores',         emoji: '🔬', label: 'Pores dilatés',              desc: 'Texture à affiner, brillances' },
+        { value: 'eclat',         emoji: '✨', label: 'Teint terne',                desc: 'Besoin de luminosité et bonne mine' },
+        { value: 'matifiant',     emoji: '✦',  label: 'Brillances',                 desc: 'Zone T, peau grasse à matifier' },
+        { value: 'imperfections', emoji: '⚬',  label: 'Imperfections',              desc: 'Boutons, cicatrices à camoufler' },
+        { value: 'ridules',       emoji: '〰', label: 'Ridules',                    desc: 'Marquer moins les plis' },
+        { value: 'uniformite',    emoji: '🎨', label: 'Taches / Teint irrégulier',  desc: 'Uniformiser le teint' }
+      ]
+    },
+    {
+      id: 'mq_cernes_color', key: 'mkCernesColor', type: 'single', required: false,
+      skipIfMk: (answers) => !answers.mkConcerns?.includes('cernes'),
+      question: 'De quelle couleur sont tes cernes ?',
+      subtitle: 'Pour te proposer le bon correcteur coloré',
+      options: [
+        { value: 'bleu_violet', emoji: '💜', label: 'Bleus / Violets', desc: 'Circulation sanguine visible, fatigue, peau fine' },
+        { value: 'marron',      emoji: '🟤', label: 'Marrons / Bruns',  desc: 'Hyperpigmentation, soleil, hérédité' },
+        { value: 'rouge_rose',  emoji: '🔴', label: 'Rouges / Rosés',   desc: 'Irritation, sensibilité, inflammation' },
+        { value: 'gris',        emoji: '⚫', label: 'Gris / Ternes',    desc: 'Manque d\'éclat, fatigue chronique' }
+      ]
+    },
+    {
       id: 'mq2', key: 'mkLook', type: 'single', required: true,
       question: 'Aujourd\'hui, je veux un maquillage :',
       options: [
@@ -1000,6 +1029,34 @@ const Questionnaire = (() => {
     }
   ];
 
+  // ─── Makeup navigation helpers (skip logic pour questions conditionnelles) ──
+  function _mkShouldSkip(q) {
+    if (!q.skipIfMk) return false;
+    return q.skipIfMk(AppState.makeupQuiz || {});
+  }
+  function _mkNextActive(from) {
+    for (let i = from + 1; i < MAKEUP_QUESTIONS.length; i++) {
+      if (!_mkShouldSkip(MAKEUP_QUESTIONS[i])) return i;
+    }
+    return -1;
+  }
+  function _mkPrevActive(from) {
+    for (let i = from - 1; i >= 0; i--) {
+      if (!_mkShouldSkip(MAKEUP_QUESTIONS[i])) return i;
+    }
+    return -1;
+  }
+  function _mkVisibleCount() {
+    return MAKEUP_QUESTIONS.filter(q => !_mkShouldSkip(q)).length;
+  }
+  function _mkVisiblePosition(idx) {
+    let pos = 0;
+    for (let i = 0; i <= idx; i++) {
+      if (!_mkShouldSkip(MAKEUP_QUESTIONS[i])) pos++;
+    }
+    return pos;
+  }
+
   let makeupIndex = 0;
 
   function _renderMakeupLegacy() {
@@ -1030,9 +1087,11 @@ const Questionnaire = (() => {
       return;
     }
 
-    const answers  = AppState.makeupQuiz || {};
-    const progress = Math.round(((makeupIndex + 1) / MAKEUP_QUESTIONS.length) * 100);
-    const isLast   = makeupIndex === MAKEUP_QUESTIONS.length - 1;
+    const answers    = AppState.makeupQuiz || {};
+    const visiblePos = _mkVisiblePosition(makeupIndex);
+    const visibleCnt = _mkVisibleCount();
+    const progress   = Math.round((visiblePos / visibleCnt) * 100);
+    const isLast     = _mkNextActive(makeupIndex) === -1;
 
     // Badge "Détecté depuis ta photo" si la valeur vient de l'analyse photo
     const analysis    = AppState?.face?.skinAnalysis;
@@ -1046,7 +1105,7 @@ const Questionnaire = (() => {
 
     container.innerHTML = `
       <div class="q-progress-header">
-        <span class="q-progress-counter">${makeupIndex + 1} / ${MAKEUP_QUESTIONS.length}</span>
+        <span class="q-progress-counter">${visiblePos} / ${visibleCnt}</span>
       </div>
       <div class="q-progress-bar">
         <div class="q-progress-fill" style="width:${progress}%"></div>
@@ -1054,11 +1113,13 @@ const Questionnaire = (() => {
       <div class="q-card" id="qCard">
         ${photoBadge}
         <h2 class="q-question">${q.question}</h2>
-        ${q.hint ? `<p class="mk-question-hint">${q.hint}</p>` : ''}
+        ${q.subtitle ? `<p class="mk-question-hint">${q.subtitle}</p>` : ''}
+        ${q.hint     ? `<p class="mk-question-hint">${q.hint}</p>`     : ''}
+        ${q.type === 'mk-multiple' ? `<p class="mk-multi-count" id="mkMultiBadge">${answers[q.key]?.length || 0}/${q.max || 3} sélectionnée${(answers[q.key]?.length || 0) > 1 ? 's' : ''}</p>` : ''}
         <div id="qOptionsWrap">${_renderMkChoices(q, answers)}</div>
       </div>
       <div class="q-navigation">
-        ${makeupIndex > 0
+        ${_mkPrevActive(makeupIndex) >= 0
           ? '<button class="btn btn-outline q-back" onclick="Questionnaire.prev()">← Retour</button>'
           : '<div></div>'}
         <button class="btn btn-dark q-next" id="qNextBtn" onclick="Questionnaire.next()">
@@ -1069,19 +1130,25 @@ const Questionnaire = (() => {
   }
 
   function _renderMkChoices(q, answers) {
-    const sel    = answers[q.key];
-    const selArr = Array.isArray(sel) ? sel : (sel ? [sel] : []);
-    return q.options.map(opt => `
+    const sel     = answers[q.key];
+    const selArr  = Array.isArray(sel) ? sel : (sel ? [sel] : []);
+    const isMulti = q.type === 'mk-multiple';
+    return q.options.map(opt => {
+      const onclick = isMulti
+        ? `Questionnaire.selectMkMulti('${q.key}','${opt.value}',${q.max || 99})`
+        : `Questionnaire.selectMkOption('${q.key}','${opt.value}')`;
+      return `
       <div class="q-option-premium${selArr.includes(opt.value) ? ' selected' : ''}"
            data-value="${opt.value}"
-           onclick="Questionnaire.selectMkOption('${q.key}','${opt.value}')">
+           onclick="${onclick}">
         <span class="q-option-emoji">${opt.emoji || ''}</span>
         <div class="q-option-body">
           <div class="q-option-label">${opt.label}</div>
           ${opt.desc ? `<div class="q-option-desc">${opt.desc}</div>` : ''}
         </div>
         <div class="q-option-check">✓</div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
   }
 
   function selectMkOption(key, value) {
@@ -1096,9 +1163,29 @@ const Questionnaire = (() => {
     const q = MAKEUP_QUESTIONS[makeupIndex];
     _updateMkBtn(q, AppState.makeupQuiz);
     setTimeout(() => {
-      if (makeupIndex < MAKEUP_QUESTIONS.length - 1) { makeupIndex++; _renderMakeupLegacy(); }
+      const nextMkIdx = _mkNextActive(makeupIndex);
+      if (nextMkIdx >= 0) { makeupIndex = nextMkIdx; _renderMakeupLegacy(); }
       else { showScreen('makeup'); }
     }, 220);
+  }
+
+  function selectMkMulti(key, value, max) {
+    AppState.makeupQuiz = AppState.makeupQuiz || {};
+    const current = Array.isArray(AppState.makeupQuiz[key]) ? [...AppState.makeupQuiz[key]] : [];
+    const idx = current.indexOf(value);
+    if (idx >= 0) {
+      current.splice(idx, 1);
+    } else {
+      if (current.length >= max) { showToast(`Maximum ${max} choix`, 'warning'); return; }
+      current.push(value);
+    }
+    AppState.makeupQuiz[key] = current;
+    const q = MAKEUP_QUESTIONS[makeupIndex];
+    const wrap = document.getElementById('qOptionsWrap');
+    if (wrap) wrap.innerHTML = _renderMkChoices(q, AppState.makeupQuiz);
+    const badge = document.getElementById('mkMultiBadge');
+    if (badge) badge.textContent = `${current.length}/${max} sélectionnée${current.length > 1 ? 's' : ''}`;
+    _updateMkBtn(q, AppState.makeupQuiz);
   }
 
   function _updateMkBtn(q, answers) {
@@ -1126,7 +1213,7 @@ const Questionnaire = (() => {
   return {
     startSkincare, startMakeup,
     reset, render,
-    selectOption, selectMkOption,
+    selectOption, selectMkOption, selectMkMulti,
     onSlider, toggleZone, onTextarea,
     takePhoto, retakePhoto, uploadPhoto, skipPhoto, resumeFromPhoto,
     next, prev, submit,
