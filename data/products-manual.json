@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-05-17",
-    "totalProducts": 198
+    "totalProducts": 200
   },
   "products": [
     {
@@ -4711,6 +4711,58 @@
         "teint_terne",
         "eclat"
       ],
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-17"
+    },
+    {
+      "id": "m199",
+      "name": "Maybelline Master Camo Correcteur Cernes Gris — Rose Saumon",
+      "brand": "Maybelline",
+      "category": "corrector",
+      "correctorType": "rose",
+      "imageUrl": "assets/MAYBELLINE-correcteurrosesaumonCERNESGRIS.jpg",
+      "amazonUrl": "https://www.amazon.fr/s?k=Maybelline+Master+Camo+rose+correcteur&tag=kan10ar-21",
+      "shopUrl": null,
+      "price": 9.9,
+      "rating": 4.2,
+      "reviews": 540,
+      "description": "Correcteur rose saumon pour neutraliser les cernes gris et ternes. Redonne chaleur et luminosité avant l'anticernes. Idéal pour les cernes liés à la fatigue chronique.",
+      "correctorFor": [
+        "gris"
+      ],
+      "isFeatured": true,
+      "active": true,
+      "concernTags": [
+        "couvrance",
+        "cernes"
+      ],
+      "makeupCategory": "corrector",
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-17"
+    },
+    {
+      "id": "m200",
+      "name": "NYX Correcteur Couleur Cernes Gris — Rose",
+      "brand": "NYX",
+      "category": "corrector",
+      "correctorType": "rose",
+      "imageUrl": "assets/NYX-CORRECTEURCERNESGRISE.jpg",
+      "amazonUrl": "https://www.amazon.fr/s?k=NYX+correcteur+couleur+rose+cernes&tag=kan10ar-21",
+      "shopUrl": null,
+      "price": 8.5,
+      "rating": 4.1,
+      "reviews": 380,
+      "description": "Correcteur rose pour neutraliser les cernes gris et fatigués. Formule légère et buildable. Redonne éclat et bonne mine avant l'application du fond de teint.",
+      "correctorFor": [
+        "gris"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "concernTags": [
+        "couvrance",
+        "cernes"
+      ],
+      "makeupCategory": "corrector",
       "curatedBy": "admin",
       "curatedAt": "2026-05-17"
     }

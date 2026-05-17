@@ -141,9 +141,7 @@ const MakeupRoutine = (() => {
       const pool = filterByBudget(match, budget);
       return pool[Math.floor(Math.random() * pool.length)] || match[0];
     }
-    // Fallback : n'importe quel correcteur dispo dans le catalogue
-    const fallback = filterByBudget(correctors, budget);
-    return fallback.length ? fallback[0] : null;
+    return null;
   }
 
   const CORRECTOR_TIPS = {
