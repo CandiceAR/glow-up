@@ -225,14 +225,29 @@ const MakeupRoutine = (() => {
     return [pickFromCatalog('concealer', budget, priority, [], mkLuxe)].filter(Boolean);
   }
 
-  // 2. HIGHLIGHTER GLOW ─────────────────────────────────────────
-  function selectHighlighter({ carnation, budget, mkLuxe }) {
-    const priority = carnation === 'dark'
-      ? ['m117','m090','m110']
-      : carnation === 'light'
-        ? ['m116','m090','m109']
-        : ['m090','m109','m116'];
-    return [pickFromCatalog('highlighter', budget, priority, [], mkLuxe)].filter(Boolean);
+  // 2. ENLUMINEUR ────────────────────────────────────────────────
+  // m090 Charlotte Tilbury (42€) — neutre premium
+  // m109 L'Oréal 902       (12€) — teinte claire/warm
+  // m110 L'Oréal 903      (13€)  — teinte medium/cool
+  // m116 Rimmel Fair Light (25€) — carnation claire
+  // m117 Rimmel Medium Deep(13€) — carnation foncée
+  function selectHighlighter({ carnation, undertone, budget, mkLuxe }) {
+    const POOLS = {
+      dark:           ['m117', 'm110', 'm090'],
+      light:          ['m116', 'm090', 'm109'],
+      medium_warm:    ['m109', 'm117', 'm090'],
+      medium_cool:    ['m110', 'm116', 'm090'],
+      medium_neutral: ['m090', 'm109', 'm110', 'm116', 'm117']
+    };
+    const key     = carnation === 'dark'  ? 'dark'
+                  : carnation === 'light' ? 'light'
+                  : `medium_${undertone || 'neutral'}`;
+    const poolIds = new Set(POOLS[key] || POOLS.medium_neutral);
+    const all     = filterByBudget(getByCategory('highlighter'), budget);
+    const pool    = all.filter(p => poolIds.has(p.id));
+    const pick    = pool.length ? pool : all;
+    if (!pick.length) return [];
+    return [pick[Math.floor(Math.random() * pick.length)]];
   }
 
   // 3. BLUSH ────────────────────────────────────────────────────
