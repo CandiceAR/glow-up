@@ -434,7 +434,6 @@ const MakeupRoutine = (() => {
     const [mascara]      = selectMascara(profile)      || [null];
     const [lipliner]     = selectLipliner(profile)     || [null];
     const [lips]         = selectLips(profile)         || [null];
-    const [glowBronzer]  = selectGlowBronzer(profile)  || [null];
     const [powder]       = selectPowder(profile)       || [null];
     const [brush]        = selectBrushes(profile)      || [null];
 
@@ -445,7 +444,7 @@ const MakeupRoutine = (() => {
     const concernList  = (profile.mkConcerns || []).filter(c => c !== 'cernes' && concernProds[c]);
 
     const coreProducts  = [...concernList.map(c => concernProds[c]), corrector, concealer, highlighter, blush, eyeliner, mascara, lipliner, lips].filter(Boolean);
-    const bonusProducts = [glowBronzer, powder, brush].filter(Boolean);
+    const bonusProducts = [powder, brush].filter(Boolean);
     const coreTotal     = computeTotal(coreProducts);
     const totalWithBonus= computeTotal([...coreProducts, ...bonusProducts]);
 
@@ -485,21 +484,13 @@ const MakeupRoutine = (() => {
         <strong class="cg-total-amount">${coreTotal.toFixed(2)} €</strong>
       </div>` : '';
 
-    const bonusHtml = (glowBronzer || powder || brush) ? `
+    const bonusHtml = (powder || brush) ? `
       <div class="cg-bonus">
         <div class="cg-bonus-header">
           <span class="cg-bonus-tag">Bonus</span>
           <h2 class="cg-bonus-title">Pour aller plus loin ✦</h2>
           <p class="cg-bonus-subtitle">Produits optionnels pour parfaire ta routine.</p>
         </div>
-        ${glowBronzer ? `
-        <div class="cg-bonus-item">
-          <div class="cg-bonus-item-label">
-            <h3>Glow bronzant liquide</h3>
-            <p>Quelques gouttes sur les pommettes ou mélangées à ta crème pour un effet bonne mine ensoleillé.</p>
-          </div>
-          <div class="cg-bonus-item-card">${renderCard(glowBronzer)}</div>
-        </div>` : ''}
         ${powder ? `
         <div class="cg-bonus-item">
           <div class="cg-bonus-item-label">
