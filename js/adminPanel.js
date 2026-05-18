@@ -1062,6 +1062,7 @@ const Admin = (() => {
       eye:         'Contour des yeux',
       eyepatch:    'Patchs yeux',
       eyeliner:    'Eyeliner',
+      eyebrow:     'Crayon / Gel sourcils',
       eyeshadow:   'Fard à paupières',
       foundation:  'Fond de teint',
       highlighter: 'Enlumineur',
