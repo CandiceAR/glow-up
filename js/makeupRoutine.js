@@ -23,7 +23,7 @@ const MakeupRoutine = (() => {
         allProducts = await FirestoreProducts.loadAll();
       }
       if (!allProducts) {
-        const res  = await fetch('data/products-manual.json?v=63');
+        const res  = await fetch('data/products-manual.json?v=64');
         const data = await res.json();
         allProducts = Array.isArray(data) ? data : (data.products || []);
       }
@@ -356,8 +356,7 @@ const MakeupRoutine = (() => {
         <a href="${safeUrl}" target="_blank" rel="noopener nofollow${isAffiliate ? ' sponsored' : ''}" class="premium-card-link">
           <div class="premium-card-image-wrap">
             <div class="premium-card-glow"></div>
-            <img src="${imageUrl}" alt="${name}" class="premium-card-image" loading="lazy"
-                 onerror="this.onerror=null;this.style.display='none'">
+            ${imageUrl ? `<img src="${imageUrl}" alt="${name}" class="premium-card-image" loading="lazy" onerror="this.onerror=null;this.style.display='none'">` : ''}
           </div>
           <div class="premium-card-content">
             <span class="premium-card-brand">${brand}</span>
