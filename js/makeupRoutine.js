@@ -23,7 +23,7 @@ const MakeupRoutine = (() => {
         allProducts = await FirestoreProducts.loadAll();
       }
       if (!allProducts) {
-        const res  = await fetch('data/products-manual.json?v=61');
+        const res  = await fetch('data/products-manual.json?v=62');
         const data = await res.json();
         allProducts = Array.isArray(data) ? data : (data.products || []);
       }
@@ -263,11 +263,11 @@ const MakeupRoutine = (() => {
   function selectPowder({ skinType, undertone, carnation, budget, mkLuxe }) {
     let priority;
     if (skinType === 'grasse' || skinType === 'mixte') {
-      priority = ['m099','m097','m127'];
+      priority = ['m099','m127'];
     } else if (undertone === 'warm' && carnation !== 'clair') {
-      priority = ['m126','m097','m127'];
+      priority = ['m126','m127'];
     } else {
-      priority = ['m097','m127','m099'];
+      priority = ['m127','m099'];
     }
     return [pickFromCatalog('powder', budget, priority, [], mkLuxe)].filter(Boolean);
   }
