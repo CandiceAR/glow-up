@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-05-17",
-    "totalProducts": 219
+    "totalProducts": 221
   },
   "products": [
     {
@@ -5053,13 +5053,13 @@
     },
     {
       "id": "m214",
-      "name": "Anastasia Beverly Hills Brow Wiz",
+      "name": "Anastasia Beverly Hills Brow Definer — Medium Brown",
       "brand": "Anastasia Beverly Hills",
       "category": "eyebrow",
       "shadeName": "Medium Brown",
       "colorHex": "#7A5230",
-      "imageUrl": null,
-      "amazonUrl": "https://www.amazon.fr/s?k=Anastasia+Beverly+Hills+Brow+Wiz&tag=kan10ar-21",
+      "imageUrl": "assets/ABH-CRAYONSOURICLMARRONMOYEN.jpg",
+      "amazonUrl": "https://www.amazon.fr/dp/B0CV4JSWKK?tag=kan10ar-21",
       "price": 23,
       "rating": 4.6,
       "reviews": 8200,
@@ -5070,7 +5070,8 @@
       "concernTags": [],
       "makeupCategory": "eyebrow",
       "curatedBy": "admin",
-      "curatedAt": "2026-05-17"
+      "curatedAt": "2026-05-17",
+      "asin": "B0CV4JSWKK"
     },
     {
       "id": "m215",
@@ -5143,7 +5144,7 @@
       "shadeName": "Medium Brown",
       "colorHex": "#7A5230",
       "imageUrl": null,
-      "amazonUrl": "https://www.amazon.fr/s?k=Maybelline+Express+Brow+Ultra+Slim&tag=kan10ar-21",
+      "amazonUrl": "https://www.amazon.fr/dp/B0CJ5FX1ML?tag=kan10ar-21",
       "price": 9,
       "rating": 4.3,
       "reviews": 4800,
@@ -5154,7 +5155,8 @@
       "concernTags": [],
       "makeupCategory": "eyebrow",
       "curatedBy": "admin",
-      "curatedAt": "2026-05-17"
+      "curatedAt": "2026-05-17",
+      "asin": "B0CJ5FX1ML"
     },
     {
       "id": "m219",
@@ -5164,7 +5166,7 @@
       "shadeName": "Clear",
       "colorHex": "#F5F0EA",
       "imageUrl": null,
-      "amazonUrl": "https://www.amazon.fr/s?k=NYX+Control+Freak+Eyebrow+Gel&tag=kan10ar-21",
+      "amazonUrl": "https://www.amazon.fr/dp/B00INCDKDQ?tag=kan10ar-21",
       "price": 8,
       "rating": 4.4,
       "reviews": 3200,
@@ -5175,7 +5177,8 @@
       "concernTags": [],
       "makeupCategory": "eyebrow",
       "curatedBy": "admin",
-      "curatedAt": "2026-05-17"
+      "curatedAt": "2026-05-17",
+      "asin": "B00INCDKDQ"
     },
     {
       "id": "m220",
@@ -5191,6 +5194,58 @@
       "reviews": 9100,
       "description": "Gel sourcils teinte culte de Glossier. Coiffe, epaissit et teinte les sourcils pour un effet naturel et plein. Formule legere, fini souple et non collant.",
       "carnation": null,
+      "isFeatured": true,
+      "active": true,
+      "concernTags": [],
+      "makeupCategory": "eyebrow",
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-17"
+    },
+    {
+      "id": "m221",
+      "name": "Anastasia Beverly Hills Brow Definer — Taupe",
+      "brand": "Anastasia Beverly Hills",
+      "category": "eyebrow",
+      "shadeName": "Taupe",
+      "colorHex": "#A08060",
+      "imageUrl": null,
+      "amazonUrl": "https://www.amazon.fr/dp/B0CV4KNGWC?tag=kan10ar-21",
+      "asin": "B0CV4KNGWC",
+      "price": 23,
+      "rating": 4.6,
+      "reviews": 7100,
+      "description": "Crayon sourcils ultra-precis triple embout. Formule longue tenue pour des traits fins effet poils. Teinte froide/taupe pour les carnations claires a medium sous-ton froid.",
+      "carnation": [
+        "clair",
+        "medium"
+      ],
+      "undertone": "cool",
+      "isFeatured": true,
+      "active": true,
+      "concernTags": [],
+      "makeupCategory": "eyebrow",
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-17"
+    },
+    {
+      "id": "m222",
+      "name": "Makeup Revolution Precise Brow Pencil — Dark Brown",
+      "brand": "Makeup Revolution",
+      "category": "eyebrow",
+      "shadeName": "Dark Brown",
+      "colorHex": "#5C3A1E",
+      "imageUrl": null,
+      "amazonUrl": "https://www.amazon.fr/dp/B07VRLPNY1?tag=kan10ar-21",
+      "asin": "B07VRLPNY1",
+      "price": 5,
+      "rating": 4.3,
+      "reviews": 2100,
+      "description": "Crayon sourcils ultra-precis petit prix. Pointe fine pour des traits nets et naturels. Teinte marron foncee pour les carnations medium a foncees.",
+      "carnation": [
+        "medium",
+        "fonce"
+      ],
+      "undertone": null,
       "isFeatured": true,
       "active": true,
       "concernTags": [],
