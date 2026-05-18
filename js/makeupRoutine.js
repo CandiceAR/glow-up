@@ -230,21 +230,14 @@ const MakeupRoutine = (() => {
   // m116 Rimmel Fair Light (25€) — carnation claire
   // m117 Rimmel Medium Deep(13€) — carnation foncée
   function selectHighlighter({ carnation, undertone, budget, mkLuxe }) {
-    const POOLS = {
-      dark:           ['m117', 'm110', 'm090', 'm196', 'm201', 'm202', 'm204', 'm205', 'm206', 'm207', 'm223', 'm224'],
-      light:          ['m116', 'm090', 'm109', 'm196', 'm201', 'm202', 'm203', 'm204', 'm205', 'm223', 'm225'],
-      medium_warm:    ['m109', 'm117', 'm090', 'm196', 'm198', 'm201', 'm202', 'm204', 'm205', 'm206', 'm207', 'm223', 'm224'],
-      medium_cool:    ['m110', 'm116', 'm090', 'm196', 'm198', 'm201', 'm202', 'm203', 'm204', 'm205', 'm223', 'm225'],
-      medium_neutral: ['m090', 'm109', 'm110', 'm116', 'm117', 'm196', 'm198', 'm201', 'm202', 'm203', 'm204', 'm205', 'm206', 'm207', 'm223', 'm224', 'm225']
-    };
-    const key     = carnation === 'dark'  ? 'dark'
-                  : carnation === 'light' ? 'light'
-                  : `medium_${undertone || 'neutral'}`;
-    const poolIds = new Set(POOLS[key] || POOLS.medium_neutral);
-    const all     = filterByBudget(getByCategory('highlighter'), budget);
-    const pool    = all.filter(p => poolIds.has(p.id));
-    const pick    = pool.length ? pool : all;
-    if (!pick.length) return [];
+    const all = filterByBudget(getByCategory('highlighter'), budget);
+    if (!all.length) return [];
+    const relevant = all.filter(p => {
+      const okUndertone = !p.undertone || !undertone || p.undertone === undertone;
+      const okCarnation = !Array.isArray(p.carnation) || !carnation || p.carnation.includes(carnation);
+      return okUndertone && okCarnation;
+    });
+    const pick = relevant.length ? relevant : all;
     return [pick[Math.floor(Math.random() * pick.length)]];
   }
 
@@ -434,7 +427,6 @@ const MakeupRoutine = (() => {
     const [mascara]      = selectMascara(profile)      || [null];
     const [lipliner]     = selectLipliner(profile)     || [null];
     const [lips]         = selectLips(profile)         || [null];
-    const [powder]       = selectPowder(profile)       || [null];
     const [brush]        = selectBrushes(profile)      || [null];
 
     // Produits ciblés selon besoins makeup déclarés
@@ -444,7 +436,7 @@ const MakeupRoutine = (() => {
     const concernList  = (profile.mkConcerns || []).filter(c => c !== 'cernes' && concernProds[c]);
 
     const coreProducts  = [...concernList.map(c => concernProds[c]), corrector, concealer, highlighter, blush, eyeliner, mascara, lipliner, lips].filter(Boolean);
-    const bonusProducts = [powder, brush].filter(Boolean);
+    const bonusProducts = [brush].filter(Boolean);
     const coreTotal     = computeTotal(coreProducts);
     const totalWithBonus= computeTotal([...coreProducts, ...bonusProducts]);
 
@@ -484,21 +476,13 @@ const MakeupRoutine = (() => {
         <strong class="cg-total-amount">${coreTotal.toFixed(2)} €</strong>
       </div>` : '';
 
-    const bonusHtml = (powder || brush) ? `
+    const bonusHtml = brush ? `
       <div class="cg-bonus">
         <div class="cg-bonus-header">
           <span class="cg-bonus-tag">Bonus</span>
           <h2 class="cg-bonus-title">Pour aller plus loin ✦</h2>
           <p class="cg-bonus-subtitle">Produits optionnels pour parfaire ta routine.</p>
         </div>
-        ${powder ? `
-        <div class="cg-bonus-item">
-          <div class="cg-bonus-item-label">
-            <h3>Poudre libre</h3>
-            <p>Presse légèrement sur la zone T pour fixer le maquillage. Une fine couche suffit — évite l'effet masque.</p>
-          </div>
-          <div class="cg-bonus-item-card">${renderCard(powder)}</div>
-        </div>` : ''}
         ${brush ? `
         <div class="cg-bonus-item">
           <div class="cg-bonus-item-label">
