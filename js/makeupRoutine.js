@@ -23,7 +23,7 @@ const MakeupRoutine = (() => {
         allProducts = await FirestoreProducts.loadAll();
       }
       if (!allProducts) {
-        const res  = await fetch('data/products-manual.json?v=64');
+        const res  = await fetch('data/products-manual.json?v=65');
         const data = await res.json();
         allProducts = Array.isArray(data) ? data : (data.products || []);
       }
@@ -286,7 +286,7 @@ const MakeupRoutine = (() => {
   function selectMascara({ undertone, carnation, budget, mkLuxe }) {
     let priority;
     if (undertone === 'warm') {
-      priority = carnation === 'dark'
+      priority = carnation === 'fonce'
         ? ['m050','m049','m052']
         : ['m052','m050','m054'];
     } else {
@@ -299,11 +299,11 @@ const MakeupRoutine = (() => {
   function selectLipliner({ undertone, carnation, budget, mkLuxe }) {
     let priority;
     if (undertone === 'warm') {
-      priority = carnation === 'dark'
+      priority = carnation === 'fonce'
         ? ['m079','m063','m068']
         : ['m068','m063','m079'];
     } else if (undertone === 'cool') {
-      priority = carnation === 'dark'
+      priority = carnation === 'fonce'
         ? ['m061','m062']
         : ['m062','m061'];
     } else {
@@ -316,11 +316,11 @@ const MakeupRoutine = (() => {
   function selectLips({ undertone, carnation, budget, mkLuxe }) {
     let priority;
     if (undertone === 'warm') {
-      priority = carnation === 'dark'
+      priority = carnation === 'fonce'
         ? ['m060','m071','m075']
         : ['m060','m075','m071'];
     } else if (undertone === 'cool') {
-      priority = carnation === 'dark'
+      priority = carnation === 'fonce'
         ? ['m064','m118','m071']
         : ['m064','m118','m111'];
     } else {
@@ -329,17 +329,78 @@ const MakeupRoutine = (() => {
     return [pickFromCatalog(['lipstick','lipgloss'], budget, priority, [], mkLuxe)].filter(Boolean);
   }
 
-  // BONUS 1 — GLOW BRONZANT LIQUIDE ─────────────────────────────
-  function selectGlowBronzer({ budget }) {
-    const liquidBronzers = getByCategory('bronzer').filter(p =>
-      ['sérum','serum','liquid','teint','glow'].some(kw => p.name?.toLowerCase().includes(kw))
-    );
-    return pick1(liquidBronzers.length ? liquidBronzers : getByCategory('bronzer'), budget);
-  }
-
-  // BONUS 2 — PINCEAUX ──────────────────────────────────────────
+  // PINCEAUX ────────────────────────────────────────────────────
   function selectBrushes({ budget }) {
     return pick1(getByCategory('tools'), budget);
+  }
+
+  // 6ÈME PRODUIT INTELLIGENT ────────────────────────────────────
+  function selectSmartSixth(profile, excludeIds) {
+    const { cernesColor, skinType, mkFocus, mkLook, budget, mkLuxe } = profile;
+    const excl = new Set(excludeIds || []);
+
+    if (cernesColor) {
+      const c = selectColorCorrector(profile);
+      if (c && !excl.has(c.id)) return { product: c, label: 'Correcteur coloré cernes', tip: _getCorrectorTip(cernesColor) };
+    }
+    if (skinType === 'grasse' || skinType === 'mixte') {
+      const [p] = selectPowder(profile);
+      if (p && !excl.has(p.id)) return { product: p, label: 'Poudre matifiante', tip: 'Concentre sur la zone T pour fixer le teint et réduire les brillances. Une légère couche suffit.' };
+    }
+    if (mkFocus === 'teint') {
+      const p = pickFromCatalog('foundation', budget, [], [...excl], mkLuxe);
+      if (p) return { product: p, label: 'Fond de teint', tip: 'Chauffe entre les doigts, applique en tapotant du centre vers l\'extérieur. Laisse ta peau respirer.' };
+    }
+    if (mkFocus === 'yeux') {
+      const p = pickFromCatalog('eyebrow', budget, [], [...excl], mkLuxe);
+      if (p) return { product: p, label: 'Crayon sourcils', tip: 'Remplis les petits espaces avec de légères touches dans le sens du poil. Les sourcils encadrent tout le visage.' };
+    }
+    if (mkFocus === 'yeux' || mkLook === 'glam') {
+      const [p] = selectEyeliner(profile);
+      if (p && !excl.has(p.id)) return { product: p, label: 'Crayon yeux', tip: 'Trace au plus près des cils et estompe avec le doigt. En waterline nude, il agrandit le regard.' };
+    }
+    if (mkFocus === 'levres' && mkLook === 'glam') {
+      const [p] = selectLipliner(profile);
+      if (p && !excl.has(p.id)) return { product: p, label: 'Crayon lèvres', tip: 'Contourne les lèvres puis remplis-les entièrement. Prolonge la tenue du gloss toute la journée.' };
+    }
+    return null;
+  }
+
+  // BONUS REGARD ────────────────────────────────────────────────
+  function selectBonusRegard(profile, excludeIds) {
+    const excl = new Set(excludeIds || []);
+    const result = [];
+    const eyeliner = pickFromCatalog('eyeliner', profile.budget, [], [...excl], profile.mkLuxe);
+    if (eyeliner) { result.push(eyeliner); excl.add(eyeliner.id); }
+    const brow = pickFromCatalog('eyebrow', profile.budget, [], [...excl], profile.mkLuxe);
+    if (brow) result.push(brow);
+    return result;
+  }
+
+  // BONUS TEINT ─────────────────────────────────────────────────
+  function selectBonusTeint(profile, excludeIds) {
+    const excl = new Set(excludeIds || []);
+    const result = [];
+    const powder = pickFromCatalog('powder', profile.budget, [], [...excl], profile.mkLuxe);
+    if (powder) { result.push(powder); excl.add(powder.id); }
+    const bronzer = pickFromCatalog('bronzer', profile.budget, [], [...excl], profile.mkLuxe);
+    if (bronzer) { result.push(bronzer); excl.add(bronzer.id); }
+    if (profile.cernesColor) {
+      const c = selectColorCorrector(profile);
+      if (c && !excl.has(c.id)) result.push(c);
+    }
+    return result;
+  }
+
+  // BONUS LÈVRES ────────────────────────────────────────────────
+  function selectBonusLevres(profile, excludeIds) {
+    const excl = new Set(excludeIds || []);
+    const result = [];
+    const lipliner = pickFromCatalog('lipliner', profile.budget, [], [...excl], profile.mkLuxe);
+    if (lipliner) { result.push(lipliner); excl.add(lipliner.id); }
+    const extra = pickFromCatalog(['lipstick','lipgloss'], profile.budget, [], [...excl], profile.mkLuxe);
+    if (extra) result.push(extra);
+    return result;
   }
 
   // ══════════════════════════════════════════════════════════════
@@ -396,7 +457,7 @@ const MakeupRoutine = (() => {
       faceShape:  { oval:'Ovale', round:'Rond', square:'Carré', heart:'Cœur', long:'Allongé' },
       undertone:  { warm:'Sous-ton chaud', cool:'Sous-ton froid', neutral:'Sous-ton neutre' },
       skinType:   { grasse:'Peau grasse', mixte:'Peau mixte', seche:'Peau sèche', sensible:'Peau sensible', normale:'Peau normale' },
-      carnation:  { light:'Carnation claire', medium:'Carnation medium', dark:'Carnation foncée' }
+      carnation:  { clair:'Carnation claire', medium:'Carnation medium', fonce:'Carnation foncée' }
     };
     const chips = [
       labels.carnation[profile.carnation],
@@ -417,27 +478,20 @@ const MakeupRoutine = (() => {
   // ══════════════════════════════════════════════════════════════
 
   function render(container, profile) {
-    // Sélection
-    const corrector      = profile.cernesColor ? selectColorCorrector(profile) : null;
-    const [concealer]    = selectConcealer(profile)   || [null];
-    const [highlighter]  = selectHighlighter(profile)  || [null];
-    const [blush]        = selectBlush(profile)        || [null];
-    const [eyeliner]     = selectEyeliner(profile)     || [null];
-    const [mascara]      = selectMascara(profile)      || [null];
-    const [lipliner]     = selectLipliner(profile)     || [null];
-    const [lips]         = selectLips(profile)         || [null];
-    const [brush]        = selectBrushes(profile)      || [null];
+    // ── Les 5 indispensables fixes ───────────────────────────────
+    const [concealer]   = selectConcealer(profile)   || [null];
+    const [highlighter] = selectHighlighter(profile)  || [null];
+    const [blush]       = selectBlush(profile)        || [null];
+    const [mascara]     = selectMascara(profile)      || [null];
+    const [lips]        = selectLips(profile)         || [null];
 
-    // Produits ciblés selon besoins makeup déclarés
-    const coreExcludeIds = [corrector, concealer, highlighter, blush, eyeliner, mascara, lipliner, lips]
-      .filter(Boolean).map(p => p.id);
-    const concernProds = selectConcernProducts(profile, coreExcludeIds);
-    const concernList  = (profile.mkConcerns || []).filter(c => c !== 'cernes' && concernProds[c]);
+    // ── 6ème produit intelligent ─────────────────────────────────
+    const coreIds = [concealer, highlighter, blush, mascara, lips].filter(Boolean).map(p => p.id);
+    const sixth   = selectSmartSixth(profile, coreIds);
+    const sixthProd = sixth?.product || null;
 
-    const coreProducts  = [...concernList.map(c => concernProds[c]), corrector, concealer, highlighter, blush, eyeliner, mascara, lipliner, lips].filter(Boolean);
-    const bonusProducts = [brush].filter(Boolean);
-    const coreTotal     = computeTotal(coreProducts);
-    const totalWithBonus= computeTotal([...coreProducts, ...bonusProducts]);
+    const allCoreIds   = [...coreIds, sixthProd?.id].filter(Boolean);
+    const coreProducts = [concealer, highlighter, blush, mascara, lips, sixthProd].filter(Boolean);
 
     if (!coreProducts.length) {
       container.innerHTML = `<div class="premium-routine"><div class="premium-empty">
@@ -447,77 +501,91 @@ const MakeupRoutine = (() => {
       return;
     }
 
+    // ── Bonus ────────────────────────────────────────────────────
+    const bonusRegard = selectBonusRegard(profile, allCoreIds);
+    const allAfterRegard = [...allCoreIds, ...bonusRegard.map(p => p.id)];
+    const bonusTeint  = selectBonusTeint(profile, allAfterRegard);
+    const allAfterTeint = [...allAfterRegard, ...bonusTeint.map(p => p.id)];
+    const bonusLevres = selectBonusLevres(profile, allAfterTeint);
+    const [brush]     = selectBrushes(profile) || [null];
+
+    // ── Totaux ───────────────────────────────────────────────────
+    const coreTotal      = computeTotal(coreProducts);
+    const allBonus       = [...bonusRegard, ...bonusTeint, ...bonusLevres, brush].filter(Boolean);
+    const totalWithBonus = computeTotal([...coreProducts, ...allBonus]);
+
+    // ── Steps indispensables ─────────────────────────────────────
     let stepNum = 1;
-    const correctorStep = corrector
-      ? renderStep(stepNum++, 'Correcteur coloré cernes', _getCorrectorTip(profile.cernesColor), corrector)
-      : '';
-
-    const concernSteps = concernList
-      .map(c => renderStep(stepNum++, CONCERN_STEP_TITLES[c] || c, CONCERN_STEP_TIPS[c] || '', concernProds[c]))
-      .join('');
-
     const steps = [
-      correctorStep,
-      concernSteps,
-      renderStep(stepNum++, 'Anti-cernes',    'Tapote avec le doigt sous les yeux et sur les petites imperfections. Effet seconde peau.',               concealer),
-      renderStep(stepNum++, 'Highlighter',    'Une touche sur les pommettes et l\'arc de Cupidon. Le doigt suffit — pas besoin de pinceau.',            highlighter),
-      renderStep(stepNum++, 'Blush',          'Souris et dépose sur les rondeurs des joues. Estompe vers les tempes pour un effet bonne mine naturel.',  blush),
-      renderStep(stepNum++, 'Crayon yeux',    'Trace au plus près des cils et estompe avec le doigt. En waterline nude, il agrandit le regard.',         eyeliner),
-      renderStep(stepNum++, 'Mascara',        'Zigzague la brosse de la racine vers les pointes. Une couche pour le naturel, deux pour l\'intensité.',   mascara),
-      renderStep(stepNum++, 'Crayon lèvres',  'Contourne les lèvres puis remplis-les entièrement. Ça prolonge la tenue du gloss toute la journée.',     lipliner),
-      renderStep(stepNum++, 'Lèvres',         'Applique directement depuis l\'embout. Tamponne au doigt pour un rendu encore plus naturel.',             lips)
+      renderStep(stepNum++, 'Anti-cernes',   'Tapote avec le doigt sous les yeux et sur les petites imperfections. Effet seconde peau.',               concealer),
+      renderStep(stepNum++, 'Enlumineur',    'Une touche sur les pommettes et l\'arc de Cupidon. Le doigt suffit — pas besoin de pinceau.',            highlighter),
+      renderStep(stepNum++, 'Blush',         'Souris et dépose sur les rondeurs des joues. Estompe vers les tempes pour un effet bonne mine naturel.', blush),
+      renderStep(stepNum++, 'Mascara',       'Zigzague la brosse de la racine vers les pointes. Une couche pour le naturel, deux pour l\'intensité.',  mascara),
+      renderStep(stepNum++, 'Lèvres',        'Applique directement depuis l\'embout. Tamponne au doigt pour un rendu encore plus naturel.',            lips),
+      sixth ? renderStep(stepNum++, sixth.label, sixth.tip, sixthProd) : ''
     ].join('');
 
-    const productCount = coreProducts.length;
-    const coreTotalHtml = coreTotal > 0 ? `
-      <div class="cg-total">
-        <span class="cg-total-label">Total routine (${productCount} produit${productCount > 1 ? 's' : ''})</span>
-        <strong class="cg-total-amount">${coreTotal.toFixed(2)} €</strong>
-      </div>` : '';
+    // ── Bonus HTML ───────────────────────────────────────────────
+    const bonusSection = (title, icon, items) => {
+      if (!items.length) return '';
+      return `
+        <div class="cg-bonus-section">
+          <h3 class="cg-bonus-section-title">${icon} ${title}</h3>
+          <div class="cg-bonus-cards">${items.map(p => renderCard(p)).join('')}</div>
+        </div>`;
+    };
 
-    const bonusHtml = brush ? `
+    const hasBonusContent = allBonus.length > 0;
+    const bonusHtml = hasBonusContent ? `
       <div class="cg-bonus">
         <div class="cg-bonus-header">
           <span class="cg-bonus-tag">Bonus</span>
           <h2 class="cg-bonus-title">Pour aller plus loin ✦</h2>
-          <p class="cg-bonus-subtitle">Produits optionnels pour parfaire ta routine.</p>
+          <p class="cg-bonus-subtitle">Optionnel — pour intensifier ta routine selon tes envies.</p>
         </div>
+        ${bonusSection('Bonus Regard', '👁', bonusRegard)}
+        ${bonusSection('Bonus Teint',  '✨', bonusTeint)}
+        ${bonusSection('Bonus Lèvres', '💋', bonusLevres)}
         ${brush ? `
-        <div class="cg-bonus-item">
-          <div class="cg-bonus-item-label">
-            <h3>Pinceaux ✦</h3>
-            <p>De bons pinceaux, ça change tout. Un outil de qualité fait la différence entre un maquillage ordinaire et un résultat parfaitement estompé — plus naturel, plus précis, plus longue tenue.</p>
-          </div>
-          <div class="cg-bonus-item-card">${renderCard(brush)}</div>
+        <div class="cg-bonus-section">
+          <h3 class="cg-bonus-section-title">🖌 Accessoires</h3>
+          <p class="cg-bonus-section-desc">De bons pinceaux font toute la différence — estompe plus précis, tenue longue durée.</p>
+          <div class="cg-bonus-cards">${renderCard(brush)}</div>
         </div>` : ''}
       </div>` : '';
 
-    const totalWithBonusHtml = bonusProducts.length > 0 && totalWithBonus > 0 ? `
-      <div class="cg-total cg-total-bonus">
-        <span class="cg-total-label">Total avec bonus</span>
-        <strong class="cg-total-amount">${totalWithBonus.toFixed(2)} €</strong>
-      </div>` : '';
-
+    const productCount = coreProducts.length;
     container.innerHTML = `
       <div class="makeup-routine">
 
         <header class="premium-header">
           <span class="premium-tag">Ta sélection personnalisée</span>
           <h1 class="premium-title">Clean Girl Routine ✦</h1>
-          <p class="premium-subtitle">${productCount} produit${productCount > 1 ? 's' : ''} · Adapté à ton profil beauté</p>
+          <p class="premium-subtitle">L'essentiel, pensé pour toi. Pas un produit de trop.</p>
         </header>
 
         ${renderProfile(profile)}
 
-        <div class="cg-steps">
-          ${steps}
-        </div>
-
-        ${coreTotalHtml}
+        <section class="cg-indispensables">
+          <div class="cg-section-header">
+            <h2 class="cg-section-title">Les Indispensables</h2>
+            <p class="cg-section-desc">${productCount} produit${productCount > 1 ? 's' : ''} · Adapté à ton profil beauté</p>
+          </div>
+          <div class="cg-steps">${steps}</div>
+          ${coreTotal > 0 ? `
+          <div class="cg-total">
+            <span class="cg-total-label">Total routine (${productCount} produit${productCount > 1 ? 's' : ''})</span>
+            <strong class="cg-total-amount">${coreTotal.toFixed(2)} €</strong>
+          </div>` : ''}
+        </section>
 
         ${bonusHtml}
 
-        ${totalWithBonusHtml}
+        ${allBonus.length > 0 && totalWithBonus > coreTotal ? `
+        <div class="cg-total cg-total-bonus">
+          <span class="cg-total-label">Total avec bonus</span>
+          <strong class="cg-total-amount">${totalWithBonus.toFixed(2)} €</strong>
+        </div>` : ''}
 
         <footer class="premium-footer">
           <p>Liens affiliés Amazon · Même commission sur tous les produits</p>
@@ -589,7 +657,7 @@ const MakeupRoutine = (() => {
     }
 
     // Carnation : quiz makeup (choix manuel) > photo > quiz skincare
-    const carnationMap = { light:'light', clair:'light', medium:'medium', fonce:'dark', dark:'dark' };
+    const carnationMap = { light:'clair', clair:'clair', medium:'medium', fonce:'fonce', dark:'fonce' };
     const carnationRaw = mkQuiz.mkCarnation || analysis?.carnation?.type || skinQuiz?.skinTone || 'medium';
     const carnation    = carnationMap[carnationRaw] || 'medium';
 
