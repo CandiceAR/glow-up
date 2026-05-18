@@ -23,7 +23,7 @@ const MakeupRoutine = (() => {
         allProducts = await FirestoreProducts.loadAll();
       }
       if (!allProducts) {
-        const res  = await fetch('data/products-manual.json?v=60');
+        const res  = await fetch('data/products-manual.json?v=61');
         const data = await res.json();
         allProducts = Array.isArray(data) ? data : (data.products || []);
       }
@@ -208,11 +208,11 @@ const MakeupRoutine = (() => {
   // 1. ANTI-CERNES MULTI-USAGE ───────────────────────────────────
   function selectConcealer({ carnation, undertone, budget, mkLuxe }) {
     let priority;
-    if (carnation === 'light') {
+    if (carnation === 'clair') {
       priority = undertone === 'cool'
         ? ['m115','m042','m046','m038']
         : ['m115','m038','m047','m046'];
-    } else if (carnation === 'dark') {
+    } else if (carnation === 'fonce') {
       priority = undertone === 'warm'
         ? ['m044','m038','m039','m114']
         : ['m038','m044','m039','m113'];
@@ -264,7 +264,7 @@ const MakeupRoutine = (() => {
     let priority;
     if (skinType === 'grasse' || skinType === 'mixte') {
       priority = ['m099','m097','m127'];
-    } else if (undertone === 'warm' && carnation !== 'light') {
+    } else if (undertone === 'warm' && carnation !== 'clair') {
       priority = ['m126','m097','m127'];
     } else {
       priority = ['m097','m127','m099'];
