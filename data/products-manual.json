@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-05-17",
-    "totalProducts": 221
+    "totalProducts": 224
   },
   "products": [
     {
@@ -5249,6 +5249,87 @@
       "active": true,
       "concernTags": [],
       "makeupCategory": "eyebrow",
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-17"
+    },
+    {
+      "id": "m223",
+      "name": "Makeup Revolution Highlighter Reloaded — Just My Type",
+      "brand": "Makeup Revolution",
+      "category": "highlighter",
+      "shadeName": "Just My Type",
+      "colorHex": "#F0D8A8",
+      "imageUrl": "assets/MAKEUPREVOLUTION-ENLUMINEUR.jpg",
+      "amazonUrl": "https://www.amazon.fr/dp/B07QPZH86C?tag=kan10ar-21",
+      "asin": "B07QPZH86C",
+      "price": 7,
+      "rating": 4.4,
+      "reviews": 3100,
+      "description": "Enlumineur poudre pressee ultra-pigmente. Teinte champagne doree universelle pour un eclat multidimensionnel. Toutes carnations.",
+      "carnation": null,
+      "undertone": null,
+      "isFeatured": true,
+      "active": true,
+      "concernTags": [
+        "teint_terne",
+        "eclat"
+      ],
+      "makeupCategory": "highlighter",
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-17"
+    },
+    {
+      "id": "m224",
+      "name": "L'Oreal Paris Lumi Glass Highlighter Stick — Teinte Doree",
+      "brand": "L'Oreal Paris",
+      "category": "highlighter",
+      "shadeName": "Teinte Doree",
+      "colorHex": "#E8C97A",
+      "imageUrl": "assets/loreal-ENLUMINEURSTICK.jpg",
+      "amazonUrl": "https://www.amazon.fr/dp/B0DGQT3MG1?tag=kan10ar-21",
+      "asin": "B0DGQT3MG1",
+      "price": 14,
+      "rating": 4.5,
+      "reviews": 820,
+      "description": "Stick enlumineur multi-usages format pratique. Fini glass skin lumineux, teinte doree pour les sous-tons chauds et neutres. S'applique au doigt ou au pinceau.",
+      "carnation": null,
+      "undertone": "warm",
+      "isFeatured": true,
+      "active": true,
+      "concernTags": [
+        "teint_terne",
+        "eclat"
+      ],
+      "makeupCategory": "highlighter",
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-17"
+    },
+    {
+      "id": "m225",
+      "name": "L'Oreal Paris Lumi Glass Highlighter Stick — 620 Pink Ballet",
+      "brand": "L'Oreal Paris",
+      "category": "highlighter",
+      "shadeName": "620 Pink Ballet",
+      "colorHex": "#F2C8D0",
+      "imageUrl": "assets/loreal-ENLUMINEURSTICKsoustonfroid.jpg",
+      "amazonUrl": "https://www.amazon.fr/dp/B0DGQST8RR?tag=kan10ar-21",
+      "asin": "B0DGQST8RR",
+      "price": 14,
+      "rating": 4.5,
+      "reviews": 690,
+      "description": "Stick enlumineur multi-usages. Fini glass skin lumineux, teinte rose nacre pour les sous-tons froids. Ideal pour les carnations claires a moyennes avec sous-ton froid.",
+      "carnation": [
+        "clair",
+        "medium"
+      ],
+      "undertone": "cool",
+      "isFeatured": true,
+      "active": true,
+      "concernTags": [
+        "teint_terne",
+        "eclat"
+      ],
+      "makeupCategory": "highlighter",
       "curatedBy": "admin",
       "curatedAt": "2026-05-17"
     }

@@ -231,11 +231,11 @@ const MakeupRoutine = (() => {
   // m117 Rimmel Medium Deep(13€) — carnation foncée
   function selectHighlighter({ carnation, undertone, budget, mkLuxe }) {
     const POOLS = {
-      dark:           ['m117', 'm110', 'm090', 'm196', 'm201', 'm202', 'm204', 'm205', 'm206', 'm207'],
-      light:          ['m116', 'm090', 'm109', 'm196', 'm201', 'm202', 'm203', 'm204', 'm205'],
-      medium_warm:    ['m109', 'm117', 'm090', 'm196', 'm198', 'm201', 'm202', 'm204', 'm205', 'm206', 'm207'],
-      medium_cool:    ['m110', 'm116', 'm090', 'm196', 'm198', 'm201', 'm202', 'm203', 'm204', 'm205'],
-      medium_neutral: ['m090', 'm109', 'm110', 'm116', 'm117', 'm196', 'm198', 'm201', 'm202', 'm203', 'm204', 'm205', 'm206', 'm207']
+      dark:           ['m117', 'm110', 'm090', 'm196', 'm201', 'm202', 'm204', 'm205', 'm206', 'm207', 'm223', 'm224'],
+      light:          ['m116', 'm090', 'm109', 'm196', 'm201', 'm202', 'm203', 'm204', 'm205', 'm223', 'm225'],
+      medium_warm:    ['m109', 'm117', 'm090', 'm196', 'm198', 'm201', 'm202', 'm204', 'm205', 'm206', 'm207', 'm223', 'm224'],
+      medium_cool:    ['m110', 'm116', 'm090', 'm196', 'm198', 'm201', 'm202', 'm203', 'm204', 'm205', 'm223', 'm225'],
+      medium_neutral: ['m090', 'm109', 'm110', 'm116', 'm117', 'm196', 'm198', 'm201', 'm202', 'm203', 'm204', 'm205', 'm206', 'm207', 'm223', 'm224', 'm225']
     };
     const key     = carnation === 'dark'  ? 'dark'
                   : carnation === 'light' ? 'light'
