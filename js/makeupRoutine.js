@@ -23,7 +23,7 @@ const MakeupRoutine = (() => {
         allProducts = await FirestoreProducts.loadAll();
       }
       if (!allProducts) {
-        const res  = await fetch('data/products-manual.json?v=62');
+        const res  = await fetch('data/products-manual.json?v=63');
         const data = await res.json();
         allProducts = Array.isArray(data) ? data : (data.products || []);
       }
@@ -357,7 +357,7 @@ const MakeupRoutine = (() => {
           <div class="premium-card-image-wrap">
             <div class="premium-card-glow"></div>
             <img src="${imageUrl}" alt="${name}" class="premium-card-image" loading="lazy"
-                 onerror="this.src='assets/placeholder.jpg'">
+                 onerror="this.onerror=null;this.style.display='none'">
           </div>
           <div class="premium-card-content">
             <span class="premium-card-brand">${brand}</span>

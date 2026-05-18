@@ -193,9 +193,9 @@ const RoutineRenderer = (() => {
     return `
       <div class="step-product-card" onclick="event.stopPropagation(); ProductCatalog.openProductModal('${product.id}')">
         <img class="step-product-img"
-             src="${product.imageUrl || 'assets/images/placeholder.jpg'}"
+             src="${product.imageUrl || ''}"
              alt="${product.name}"
-             onerror="this.src='assets/images/placeholder.jpg'">
+             onerror="this.onerror=null;this.style.display='none'">
         <div class="step-product-info">
           <div class="step-product-brand">${product.brand}</div>
           <div class="step-product-name">${product.name}</div>
