@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-05-17",
-    "totalProducts": 210
+    "totalProducts": 209
   },
   "products": [
     {
@@ -4591,7 +4591,7 @@
         "bleu_violet"
       ],
       "carnation": [
-        "light",
+        "clair",
         "medium"
       ],
       "isFeatured": true,
@@ -4622,7 +4622,7 @@
       ],
       "carnation": [
         "medium",
-        "dark"
+        "fonce"
       ],
       "isFeatured": true,
       "active": true,
@@ -4768,22 +4768,29 @@
     },
     {
       "id": "m201",
-      "name": "NYX Away We Glow Liquid Highlighter",
+      "name": "NYX Born to Glow Naturally Radiant Foundation",
       "brand": "NYX",
-      "category": "highlighter",
-      "imageUrl": null,
-      "amazonUrl": "https://www.amazon.fr/s?k=NYX+Away+We+Glow+Liquid+Highlighter&tag=kan10ar-21",
-      "price": 10.5,
-      "rating": 4.3,
-      "reviews": 1400,
-      "description": "Enlumineur liquide buildable pour un éclat intense et lumineux. Formule légère qui fond sur la peau. Toutes carnations.",
+      "category": "foundation",
+      "imageUrl": "assets/nyx-borntoglowwcarnationmoyen.jpg",
+      "amazonUrl": "https://www.amazon.fr/dp/B07SB2KVM3?tag=kan10ar-21",
+      "asin": "B07SB2KVM3",
+      "price": 14,
+      "rating": 4.4,
+      "reviews": 3800,
+      "description": "Fond de teint lumineux à couvrance modulable. Fini naturel éclatant, formule légère effet seconde peau. Idéal pour les carnations moyennes à foncées avec sous-ton chaud.",
+      "carnation": [
+        "medium",
+        "fonce"
+      ],
+      "undertone": "warm",
       "isFeatured": true,
       "active": true,
       "concernTags": [
-        "teint_terne",
-        "eclat"
+        "couvrance",
+        "eclat",
+        "teint_terne"
       ],
-      "makeupCategory": "highlighter",
+      "makeupCategory": "foundation",
       "curatedBy": "admin",
       "curatedAt": "2026-05-17"
     },
@@ -4927,7 +4934,7 @@
       "reviews": 4200,
       "description": "Le Flawless Filter grand format (30 ml) — primer, highlighter et fond de teint en un. Teinte 2 Fair pour les carnations claires. Fini lumineux naturel, effet peau parfaite.",
       "carnation": [
-        "light"
+        "clair"
       ],
       "isFeatured": true,
       "active": true,
@@ -4955,33 +4962,6 @@
       "description": "Le Flawless Filter grand format (30 ml) — primer, highlighter et fond de teint en un. Teinte 5 Medium pour les carnations moyennes. Fini lumineux naturel, effet peau parfaite.",
       "carnation": [
         "medium"
-      ],
-      "isFeatured": true,
-      "active": true,
-      "concernTags": [
-        "couvrance",
-        "eclat",
-        "teint_terne"
-      ],
-      "makeupCategory": "foundation",
-      "curatedBy": "admin",
-      "curatedAt": "2026-05-17"
-    },
-    {
-      "id": "m210",
-      "name": "Charlotte Tilbury Flawless Filter — 8 Deep",
-      "brand": "Charlotte Tilbury",
-      "category": "foundation",
-      "shadeName": "8 Deep",
-      "colorHex": "#7A4528",
-      "imageUrl": null,
-      "amazonUrl": "https://www.amazon.fr/s?k=Charlotte+Tilbury+Flawless+Filter+8+Deep+30ml&tag=kan10ar-21",
-      "price": 47,
-      "rating": 4.8,
-      "reviews": 2900,
-      "description": "Le Flawless Filter grand format (30 ml) — primer, highlighter et fond de teint en un. Teinte 8 Deep pour les carnations foncées. Fini lumineux naturel, effet peau parfaite.",
-      "carnation": [
-        "dark"
       ],
       "isFeatured": true,
       "active": true,

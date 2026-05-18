@@ -338,7 +338,8 @@ const Admin = (() => {
     document.getElementById('fCategory').value  = p.category || 'serum';
     document.getElementById('fAmazonUrl').value = p.amazonUrl || '';
     document.getElementById('fShopUrl').value   = p.shopUrl   || '';
-    document.getElementById('fImageUrl').value  = p.imageUrl || '';
+    document.getElementById('fImageUrl').value   = p.imageUrl || '';
+    document.getElementById('fDescription').value = p.description || '';
     // BUG FIX: fActive et fFeatured sont maintenant de vrais checkboxes
     document.getElementById('fPrice').value       = p.price != null ? p.price : '';
     document.getElementById('fRating').value      = p.rating != null ? p.rating : '';
@@ -393,7 +394,7 @@ const Admin = (() => {
   }
 
   function clearForm() {
-    ['fId', 'fAsin', 'fName', 'fBrand', 'fAmazonUrl', 'fImageUrl', 'fPrice', 'fRating', 'fReviews', 'fColorHexText', 'fShadeName'].forEach(id => {
+    ['fId', 'fAsin', 'fName', 'fBrand', 'fAmazonUrl', 'fImageUrl', 'fDescription', 'fPrice', 'fRating', 'fReviews', 'fColorHexText', 'fShadeName'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
@@ -426,11 +427,12 @@ const Admin = (() => {
   }
 
   async function saveProduct() {
-    const amazonUrl  = document.getElementById('fAmazonUrl').value.trim();
-    const shopUrl    = document.getElementById('fShopUrl').value.trim();
-    const name       = document.getElementById('fName').value.trim();
-    const brand      = document.getElementById('fBrand').value.trim();
-    const imageUrl   = document.getElementById('fImageUrl').value.trim();
+    const amazonUrl   = document.getElementById('fAmazonUrl').value.trim();
+    const shopUrl     = document.getElementById('fShopUrl').value.trim();
+    const name        = document.getElementById('fName').value.trim();
+    const brand       = document.getElementById('fBrand').value.trim();
+    const imageUrl    = document.getElementById('fImageUrl').value.trim();
+    const description = document.getElementById('fDescription').value.trim();
     const category   = document.getElementById('fCategory').value;
     // BUG FIX: lire les vrais checkboxes
     const priceRaw   = document.getElementById('fPrice').value.trim();
@@ -460,8 +462,8 @@ const Admin = (() => {
     const ingredientTags = Array.from(document.getElementById('fIngredients').selectedOptions).map(o => o.value);
 
     const hasLink = amazonUrl || shopUrl;
-    if (!hasLink || !name || !brand || !imageUrl) {
-      toast('Remplis tous les champs obligatoires (lien Amazon ou boutique, nom, marque, image)', 'error');
+    if (!hasLink || !name || !brand) {
+      toast('Remplis les champs obligatoires : lien Amazon ou boutique, nom, marque', 'error');
       return;
     }
 
@@ -526,6 +528,7 @@ const Admin = (() => {
         correctorType: correctorType || null,
         concernTags: concernTags,
         ingredientTags: ingredientTags,
+        description: description || existing.description || '',
         curatedAt:   new Date().toISOString().split('T')[0]
       };
     } else {
@@ -554,7 +557,7 @@ const Admin = (() => {
         concernTags: concernTags,
         isFeatured,
         active: isActive,
-        description: '',
+        description: description || '',
         curatedBy: 'admin',
         curatedAt: new Date().toISOString().split('T')[0],
         notes: ''
