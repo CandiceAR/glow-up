@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-05-17",
-    "totalProducts": 224
+    "totalProducts": 223
   },
   "products": [
     {
@@ -1666,28 +1666,6 @@
       "active": true,
       "concernTags": [
         "couvrance"
-      ]
-    },
-    {
-      "id": "m097",
-      "name": "Sun Lover Poudre Fixatrice",
-      "brand": "Sun Lover",
-      "category": "powder",
-      "imageUrl": "assets/SUNLOVER-POUDRE.jpg",
-      "amazonUrl": "https://www.amazon.fr/s?k=Sun+Lover+Setting+Powder&tag=kan10ar-21",
-      "price": 14,
-      "rating": 4.3,
-      "reviews": 580,
-      "description": "Poudre libre fixatrice translucide. Matifie sans assécher.",
-      "isFeatured": false,
-      "active": true,
-      "concernTags": [
-        "couvrance",
-        "matifiant"
-      ],
-      "skinTypeTags": [
-        "grasse",
-        "mixte"
       ]
     },
     {
