@@ -1056,7 +1056,7 @@ const Admin = (() => {
     const m = {
       blush:       'Blush',
       bronzer:     'Bronzer',
-      concealer:   'Correcteur / Anti-cernes',
+      concealer:   'Anti-cernes',
       corrector:   'Correcteur coloré cernes',
       cream:       'Crème visage',
       eye:         'Contour des yeux',
