@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-05-17",
-    "totalProducts": 221
+    "totalProducts": 222
   },
   "products": [
     {
@@ -5244,6 +5244,30 @@
       "makeupCategory": "highlighter",
       "curatedBy": "admin",
       "curatedAt": "2026-05-17"
+    },
+    {
+      "id": "m226",
+      "name": "Baby Cheeks Blush Stick — Petal",
+      "brand": "Westman Atelier",
+      "category": "blush",
+      "shadeName": "Petal",
+      "colorHex": "#F2A5A5",
+      "imageUrl": null,
+      "shopUrl": "https://www.westman-atelier.com/products/baby-cheeks-blush-stick-petal",
+      "amazonUrl": null,
+      "price": 48,
+      "currency": "EUR",
+      "rating": 4.9,
+      "reviews": 850,
+      "undertone": "cool",
+      "carnation": ["clair"],
+      "description": "Blush stick clean beauty ultra-pigmenté. Teinte rose poudré froid pour les carnations claires avec sous-ton froid. Formule légère enrichie en ingrédients clean, fini naturel satiné.",
+      "isFeatured": true,
+      "active": true,
+      "concernTags": ["eclat"],
+      "makeupCategory": "blush",
+      "curatedBy": "admin",
+      "curatedAt": "2026-05-18"
     }
   ]
 }

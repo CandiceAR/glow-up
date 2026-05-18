@@ -23,7 +23,7 @@ const MakeupRoutine = (() => {
         allProducts = await FirestoreProducts.loadAll();
       }
       if (!allProducts) {
-        const res  = await fetch('data/products-manual.json?v=59');
+        const res  = await fetch('data/products-manual.json?v=60');
         const data = await res.json();
         allProducts = Array.isArray(data) ? data : (data.products || []);
       }
@@ -92,7 +92,8 @@ const MakeupRoutine = (() => {
     'Clinique', 'Charlotte Tilbury', 'IT Cosmetics', 'IT COSMETIC',
     'Victoria Beckham Beauty', 'DLA Paris', 'Elizabeth Arden',
     'Summer Fridays', 'By Terry', 'NARS', 'HUDA BEAUTY',
-    'Laura Mercier', 'Erborian', 'ERBORIAN', 'Sacheu'
+    'Laura Mercier', 'Erborian', 'ERBORIAN', 'Sacheu',
+    'Westman Atelier'
   ]);
 
   // Picks randomly from the best-scored products across the full catalog
