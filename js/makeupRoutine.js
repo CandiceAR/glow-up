@@ -23,7 +23,7 @@ const MakeupRoutine = (() => {
         allProducts = await FirestoreProducts.loadAll();
       }
       if (!allProducts) {
-        const res  = await fetch('data/products-manual.json?v=58');
+        const res  = await fetch('data/products-manual.json?v=59');
         const data = await res.json();
         allProducts = Array.isArray(data) ? data : (data.products || []);
       }
@@ -242,21 +242,20 @@ const MakeupRoutine = (() => {
   }
 
   // 3. BLUSH ────────────────────────────────────────────────────
-  function selectBlush({ undertone, carnation, budget, ageGroup, mkLuxe }) {
-    const isDark  = carnation === 'dark';
-    const is40plus = ageGroup === '40+';
-
-    if (is40plus) {
-      const id = isDark ? 'm193' : 'm192';
-      const p  = getById(id);
-      return p ? [p] : [pickFromCatalog('blush', budget, ['m193','m192'], ['m128'], mkLuxe)].filter(Boolean);
+  function selectBlush({ undertone, carnation, budget, mkLuxe }) {
+    let all = filterByBudget(getByCategory('blush'), budget);
+    if (!all.length) return [];
+    if (mkLuxe) {
+      const luxe = all.filter(p => LUXURY_BRANDS.has(p.brand));
+      if (luxe.length) all = luxe;
     }
-
-    let priority;
-    if (undertone === 'warm')      priority = isDark ? ['m193','m105'] : ['m105'];
-    else if (undertone === 'cool') priority = isDark ? ['m104','m112'] : ['m104','m112'];
-    else                           priority = ['m104'];
-    return [pickFromCatalog('blush', budget, priority, ['m128','m192','m193'], mkLuxe)].filter(Boolean);
+    const relevant = all.filter(p => {
+      const okUndertone = !p.undertone || !undertone || p.undertone === undertone;
+      const okCarnation = !Array.isArray(p.carnation) || !carnation || p.carnation.includes(carnation);
+      return okUndertone && okCarnation;
+    });
+    const pool = relevant.length ? relevant : all;
+    return [pool[Math.floor(Math.random() * pool.length)]];
   }
 
   // 4. POUDRE LIBRE ─────────────────────────────────────────────

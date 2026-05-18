@@ -4,7 +4,7 @@
     "source": "admin",
     "tag": "kand10ar-21",
     "lastUpdated": "2026-05-17",
-    "totalProducts": 223
+    "totalProducts": 221
   },
   "products": [
     {
@@ -1741,82 +1741,6 @@
       "concernTags": []
     },
     {
-      "id": "m102",
-      "asin": "B0DK74S66Z",
-      "name": "Blush liquide - pigmentation intense",
-      "brand": "L'Oréal Paris",
-      "category": "blush",
-      "subcategory": "blush",
-      "shadeName": null,
-      "colorHex": null,
-      "imageUrl": "assets/loreal-blushliquid.jpg",
-      "amazonUrl": "https://www.amazon.fr/LOr%C3%A9al-Paris-Pigmentation-Intensit%C3%A9-Modulable/dp/B0DK74S66Z?__mk_fr_FR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=2PY9RMA410C6G&dib=eyJ2IjoiMSJ9.ul9y37ML_B2DlfbwGs25IePWg0Xy8eZDP_r9yWMrrO-EPYX2IVqS8hEJFFM_7DulqWxKlmi6-eL_LNK-XA-MfiGxME9N2oWvR_OBE2tSWdjL6OezkxVWsAiCxP-GUWVnDP6bJGd4TYUV3antNoCtu3-xy_VxjXMvqhU_lcLjokPtZzpdp1LWRMdvH90eWXFwJIUCUXwL-UK1ijN3P4OcfuPcP5x28jqIKkJJzkqxboNB0qJasLyiXLem7pvhjRk0HHzFwMHS6zIipWFUixn4zFqRUOHF_f0teV7k7R9ypg8.g1_5JDV_pCsn5SXCCbDwZZT1J_F0bPFj9zX02d_SVFQ&dib_tag=se&keywords=after%2Bglow%2Bliquid%2Bblush&qid=1774772323&s=beauty&sprefix=after%2Bglow%2Bliquid%2Bblush%2Cbeauty%2C235&sr=1-2&th=1&linkCode=ll2&tag=kan10ar-21&linkId=12699b5c9545d6857b2f602a32ca9df2&ref_=as_li_ss_tl",
-      "price": null,
-      "currency": "EUR",
-      "rating": null,
-      "skinTypeTags": [
-        "normale",
-        "mixte",
-        "seche",
-        "grasse",
-        "sensible"
-      ],
-      "concernTags": [],
-      "makeupCategory": "blush",
-      "finish": "mat",
-      "coverage": null,
-      "isFeatured": false,
-      "active": true,
-      "skinTonePreview": {
-        "mode": "images",
-        "light": "assets/previews/m102_light.jpg",
-        "medium": "assets/previews/m102_medium.jpg",
-        "dark": "assets/previews/m102_dark.jpg"
-      },
-      "description": "",
-      "curatedBy": "admin",
-      "curatedAt": "2026-03-30",
-      "notes": ""
-    },
-    {
-      "id": "m103",
-      "asin": "B0CTG3VSTH",
-      "name": "Blush liquide - Afterglow",
-      "brand": "NARS",
-      "category": "blush",
-      "subcategory": "blush",
-      "shadeName": null,
-      "colorHex": null,
-      "imageUrl": "assets/NARS-Aftregloxwliquid.jpg",
-      "amazonUrl": "https://www.amazon.fr/Afterglow-Liquid-Blush-Secret-Lover/dp/B0CTG3VSTH?__mk_fr_FR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=FSEEHB00KKP6&dib=eyJ2IjoiMSJ9.Gbpzpq6pbHPhnmVYVSfSzopGB9uErOBrZMpBd1Yfz_BB4qqcbPJuOC-0U0OMo2_DT_dc2wbfU3B0teKYWQX340wGJ2BovcZ2Cfb-2StBrldzfPlpoWdYOk6s4gPzB6xmhvRk3RrVUHm-hVPulGCPHHZHCp1ndueDRdika3jTBRsRkZNpijIJMVwvtRU78oVSTNlsLhCWTbCKcFbFKbrHw_-1QnF859vY_H0KA4cQl6pMyhqxKWQDc7yabE4Pb1VW-OVtM6HP3cbihd4zksNlcd_G6j0GBVNifY5b1wNkvsU.S7bcBut7qp_VEeFVGieevyu5HKiUIIRqHkxdIqCutew&dib_tag=se&keywords=after%2Bglow%2Bliquid%2Bblush%2Bnars&qid=1774772410&s=beauty&sprefix=after%2Bglow%2Bliquid%2Bblush%2Bna%2Cbeauty%2C232&sr=1-1&th=1&linkCode=ll2&tag=kan10ar-21&linkId=7db57186ede6fa7eb15552fc6fd4c969&ref_=as_li_ss_tl",
-      "price": null,
-      "currency": "EUR",
-      "rating": null,
-      "skinTypeTags": [
-        "normale",
-        "mixte",
-        "seche",
-        "grasse",
-        "sensible"
-      ],
-      "concernTags": [],
-      "makeupCategory": "blush",
-      "finish": "mat",
-      "coverage": null,
-      "isFeatured": false,
-      "active": true,
-      "skinTonePreview": {
-        "mode": "images",
-        "light": "assets/previews/m103_light.jpg",
-        "medium": "assets/previews/m103_medium.jpg",
-        "dark": "assets/previews/m103_dark.jpg"
-      },
-      "description": "",
-      "curatedBy": "admin",
-      "curatedAt": "2026-03-30",
-      "notes": ""
-    },
-    {
       "id": "m104",
       "asin": "B0DZPFZZCK",
       "name": "PINK",
@@ -1827,6 +1751,8 @@
       "price": 15,
       "currency": "EUR",
       "rating": 4.6,
+      "undertone": "cool",
+      "carnation": ["clair", "medium"],
       "skinTypeTags": [
         "normale",
         "mixte",
@@ -1855,6 +1781,8 @@
       "currency": "EUR",
       "rating": 4.6,
       "reviews": 129,
+      "undertone": "warm",
+      "carnation": ["medium", "fonce"],
       "skinTypeTags": [
         "normale",
         "mixte",
@@ -2052,6 +1980,8 @@
       "name": "Mauve",
       "brand": "REVLON",
       "category": "blush",
+      "undertone": "cool",
+      "carnation": ["clair", "medium"],
       "imageUrl": "assets/REVLON-BLUSHJOUES.jpg",
       "amazonUrl": "https://www.amazon.fr/Illuminance-Visiblement-Repulp%C3%A9e-Hydratation-Enchanting/dp/B0CKK367DN?__mk_fr_FR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=2D6UT0NGSUEME&dib=eyJ2IjoiMSJ9.2NiotLVuY-Uj9p39siFRZwK0ZY7vXDJ54CsWn9PLgc6l4TH3Cdhs1m3xvgT3-zqgevwsvdOVmrYVN9eJy4IdHDMTpK4oo84i0mI-8vFbfoSNJijMubSrigvWUNHJpMP6BDOCIOEZmHCcvA5qQVngfZWq_39uILNftgzi_tdihZux27rTFkz2K9c2NNy0zP7y0NPDzmhzpb7bDprQYaU3uw2BrqJ1wRWQy8p4h8gSk6EaRvXrxVRrUy6Ert-Q55PXDiyVdsrrVkjZ7hXXGB5PyLKsG_xle6EWo1UgWAucrJ8.oC5THWXQDMX65lI4JYsrNYHtTsz-HPsT4ucPPelTv4Q&dib_tag=se&keywords=blush%2Bmousse&qid=1774772939&rdc=1&s=beauty&sprefix=blush%2Bmouss%2Cbeauty%2C252&sr=1-19-spons&aref=SCv3f2cfTs&sp_csd=d2lkZ2V0TmFtZT1zcF9tdGY&th=1&linkCode=ll2&tag=kan10ar-21&linkId=5511977b6cc727bae11803668eb20b9a&ref_=as_li_ss_tl",
       "price": 9.49,
@@ -2544,7 +2474,7 @@
       "asin": "B0F47P3FVF",
       "name": "SHEGLAM Sun Sculpt Poudre Contour Bronzante",
       "brand": "SHEGLAM",
-      "category": "blush",
+      "category": "bronzer",
       "imageUrl": "https://m.media-amazon.com/images/I/51Q0t4n0B0L._AC_SY879_.jpg",
       "amazonUrl": "https://www.amazon.fr/dp/B0F47P3FVF?tag=kan10ar-21",
       "price": 17.52,
@@ -4498,6 +4428,8 @@
       "price": 26,
       "currency": "EUR",
       "rating": 4.9,
+      "undertone": "warm",
+      "carnation": ["clair", "medium"],
       "description": "Blush velouté ultra-pigmenté. Teinte corail chaud idéale pour les carnations claires à medium. Formule modulable, fini satiné naturel. Utilisable sur joues, lèvres et paupières.",
       "skinTypeTags": [
         "normale",
@@ -4532,6 +4464,8 @@
       "price": 26,
       "currency": "EUR",
       "rating": 4.9,
+      "undertone": "warm",
+      "carnation": ["medium", "fonce"],
       "description": "Blush velouté ultra-pigmenté. Teinte nude terracotta parfaite pour les carnations medium à foncées. Formule modulable, fini satiné naturel. Utilisable sur joues, lèvres et paupières.",
       "skinTypeTags": [
         "normale",
