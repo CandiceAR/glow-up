@@ -865,11 +865,24 @@ const Questionnaire = (() => {
       cernes:    result.cernes?.detected
         ? { detected: true, type: result.cernes.type, intensity: result.cernes.intensity }
         : null,
-      insights: insights.map(({ key, severity, zones }) => ({
-        key,
-        severity,
-        zones: (zones || []).map(z => z.zoneKey).filter(Boolean)
-      }))
+      insights: insights.map(({ key, severity, zones, zoneKey }) => {
+        const pm = result.zones?.[zoneKey] || {};
+        return {
+          key,
+          severity,
+          zonesDetail: (zones || []).map(z => ({
+            zone: z.zoneKey,
+            severity: Math.round(z.severity)
+          })),
+          primaryMetrics: {
+            redness: Math.round(pm.redness ?? 0),
+            pores:   Math.round(pm.pores   ?? 0),
+            eclat:   Math.round(pm.eclat   ?? 0),
+            taches:  Math.round(pm.taches  ?? 0),
+            texture: Math.round(pm.texture ?? 0)
+          }
+        };
+      })
     };
 
     try {

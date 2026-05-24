@@ -1700,84 +1700,111 @@ const SkinAnalysis = (() => {
     return 'ok';
   }
 
-  // Generate emotional, personalized phrases for each insight type
+  // Generate precise, location-aware phrases for each insight type (template fallback)
   function _generateInsightText(key, result, g) {
-    const st  = result.skinType?.type  || 'normale';
-    const ut  = result.undertone?.type || 'neutral';
-    const sev = g.severity || 50;
-    const cer = result.cernes;
+    const st    = result.skinType?.type  || 'normale';
+    const ut    = result.undertone?.type || 'neutral';
+    const sev   = g.severity || 50;
+    const cer   = result.cernes;
+    const zones = g.zones || [];
+
+    const zoneKeys    = zones.map(z => z.zoneKey);
+    const primaryZone = zones[0]?.zoneKey;
+    const bothCheeks  = zoneKeys.length >= 2 && zoneKeys.every(z => z === 'leftCheek' || z === 'rightCheek');
+    const hasNose     = zoneKeys.includes('nose');
+    const hasForehead = zoneKeys.includes('forehead');
+
+    const LOC = {
+      leftCheek: 'sur la joue gauche', rightCheek: 'sur la joue droite',
+      forehead:  'sur le front',       nose:       'au niveau du nez',
+      chin:      'sur le menton',      eyes:       'sous les yeux',
+    };
+
+    const locationStr = bothCheeks
+      ? (hasNose ? 'sur les joues et les ailes du nez' : 'sur les deux joues')
+      : primaryZone ? (LOC[primaryZone] || '') : '';
 
     const DATA = {
       redness: {
         pillLabel: 'Zone sensibilisée',
         sentence: () => {
-          if (sev > 72) return 'La peau réagit — quelques zones montrent une sensibilité marquée à apaiser en priorité.';
-          if (st === 'sensible') return 'Ta peau sensible signale quelques rougeurs — un soin calmant aidera à rééquilibrer.';
-          return 'Quelques zones semblent légèrement sensibilisées aujourd\'hui.';
+          const loc = locationStr || 'sur les joues';
+          if (sev > 72) return `Une rougeur assez marquée est visible ${loc} — la peau réagit et réclame un soin apaisant en priorité.`;
+          if (st === 'sensible') return `Une légère sensibilité apparaît ${loc} — ta peau réactive signale un besoin de calmants.`;
+          return `Quelques rougeurs légères apparaissent ${loc} — probablement de la réactivité passagère.`;
         },
         advice: () => {
-          if (st === 'sensible') return 'Centella asiatica ou eau thermale — évite les actifs irritants.';
-          return 'Sérum à la niacinamide 5–10 % — apaisant et anti-rougeurs sans irriter.';
+          if (st === 'sensible') return 'Centella asiatica ou eau thermale — évite tout actif irritant, parfum ou exfoliant fort.';
+          return `Niacinamide 5–10 % ciblé ${locationStr || 'sur les zones rouges'} — apaisant sans assécher.`;
         }
       },
       cernes: {
         pillLabel: 'Regard fatigué',
         sentence: () => {
-          if (cer?.type === 'bleu_violet') return 'Le regard paraît légèrement fatigué — la microcirculation transparaît sous la peau fine du contour des yeux.';
-          if (cer?.type === 'marron')      return 'Le contour des yeux porte une légère marque pigmentaire — souvent héréditaire ou liée au soleil.';
-          if (cer?.intensity === 'marqués') return 'Le regard semble fatigué — le contour des yeux appelle une attention particulière.';
-          return 'Le regard paraît légèrement fatigué — quelques soins ciblés suffiront à le raviver.';
+          if (cer?.type === 'bleu_violet') return `Une légère teinte bleutée apparaît sous le contour des yeux${cer.intensity === 'marqués' ? ', assez visible' : ''} — la microcirculation transparaît sous la peau fine de cette zone.`;
+          if (cer?.type === 'marron')      return `Le contour des yeux présente une légère coloration brune${cer.intensity === 'marqués' ? ', bien visible' : ''} — souvent une signature pigmentaire, héréditaire ou liée au soleil.`;
+          if (cer?.type === 'rouge_rose')  return 'Le contour des yeux semble légèrement rosé ou irrité — probablement lié à une sensibilité ou à des frottements fréquents.';
+          if (cer?.type === 'gris')        return 'Le contour des yeux paraît gris et terne — signe d\'une fatigue accumulée ou d\'un manque d\'hydratation localisé.';
+          return 'Le regard paraît légèrement fatigué — le contour des yeux appelle quelques soins ciblés.';
         },
         advice: () => {
-          if (cer?.type === 'bleu_violet') return 'Crème contour yeux à la caféine + correcteur couleur saumon ou pêche.';
-          if (cer?.type === 'marron')      return 'Vitamine C ou acide kojique en contour yeux + SPF protecteur.';
-          return 'Crème défatigante contour yeux + patches hydratants le soir.';
+          if (cer?.type === 'bleu_violet') return 'Crème contour yeux à la caféine (drainage) + correcteur couleur saumon ou pêche pour neutraliser le bleu.';
+          if (cer?.type === 'marron')      return 'Vitamine C ou acide kojique en contour yeux + SPF chaque matin pour stopper l\'aggravation.';
+          if (cer?.type === 'rouge_rose')  return 'Soin contour apaisant sans parfum + correcteur vert très léger si besoin de neutralisation.';
+          return 'Crème contour yeux défatigante à la caféine ou aux peptides + patches hydratants le soir.';
         }
       },
       sebum: {
         pillLabel: 'Zone T brillante',
         sentence: () => {
-          if (st === 'grasse') return 'La brillance couvre l\'ensemble du visage — la peau surproduit du sébum, à réguler en douceur.';
-          if (st === 'mixte')  return 'La zone T est plus active que les joues — un équilibre naturel à réguler sans dessécher les autres zones.';
-          return 'La zone T paraît un peu plus brillante aujourd\'hui — un soin régulateur doux suffit.';
+          const loc = (hasForehead && hasNose) ? 'sur le front et l\'arête du nez'
+            : hasForehead ? 'principalement sur le front'
+            : hasNose    ? 'surtout au niveau du nez et des ailes'
+            : 'sur la zone centrale du visage';
+          if (st === 'grasse') return `La brillance est visible ${loc} et tend à s\'étendre — la peau produit beaucoup de sébum.`;
+          if (st === 'mixte')  return `La zone T est plus active ${loc}, les joues restent équilibrées — c\'est le centre qui demande un soin régulateur ciblé.`;
+          return `Une légère brillance apparaît ${loc} — la production de sébum est concentrée sur cette zone.`;
         },
         advice: () => {
-          if (st === 'grasse') return 'Exfoliant BHA (acide salicylique) 2×/sem + sérum niacinamide matifiant longue durée.';
-          return 'Niacinamide concentré sur la zone T + émulsion équilibrante légère sur les joues.';
+          const loc = (hasForehead && hasNose) ? 'le front et le nez' : hasForehead ? 'le front' : 'le nez';
+          if (st === 'grasse') return 'BHA (acide salicylique) 2×/sem + niacinamide matifiant sur tout le visage, pas uniquement la zone T.';
+          return `Niacinamide concentré uniquement sur ${loc} — ne traite pas les joues pour garder l\'équilibre naturel.`;
         }
       },
       taches: {
         pillLabel: 'Teint irrégulier',
         sentence: () => {
-          if (ut === 'warm') return 'Quelques variations de pigmentation visibles — les peaux à sous-ton chaud y sont souvent plus sensibles.';
-          return 'Le teint présente quelques irrégularités de pigmentation — à corriger progressivement et en douceur.';
+          const loc = locationStr ? `principalement ${locationStr}` : 'par endroits';
+          if (ut === 'warm') return `Des variations de pigmentation sont visibles ${loc} — les peaux à sous-ton chaud y sont souvent plus exposées, surtout avec le soleil.`;
+          return `Le teint présente quelques irrégularités ${loc} — à corriger progressivement sans agresser la peau.`;
         },
         advice: () => {
-          if (st === 'sensible') return 'Vitamine C douce (ester de vitamine C) + SPF 50 sans faute chaque matin.';
-          return 'Vitamine C le matin + SPF 50 indispensable pour stopper l\'aggravation des taches.';
+          if (st === 'sensible') return 'Ester de vitamine C (forme douce) + SPF 50 indispensable — évite les formes acides irritantes.';
+          return 'Vitamine C 10–15 % le matin + SPF 50 sans exception — c\'est la base de tout protocole anti-taches efficace.';
         }
       },
       terne: {
         pillLabel: 'Manque d\'éclat',
         sentence: () => {
-          if (st === 'seche') return 'Le teint manque d\'éclat — la sécheresse peut voiler la luminosité naturelle de la peau.';
-          if (sev > 65)       return 'Le teint paraît terne — un boost d\'éclat lui redonnera de la vitalité rapidement.';
-          return 'Le teint pourrait gagner en luminosité — quelques soins éclat feront toute la différence.';
+          if (st === 'seche') return 'Le teint manque de luminosité — la sécheresse ou la déshydratation voile l\'éclat naturel de la peau en surface.';
+          if (sev > 65)       return 'Le teint paraît terne sur l\'ensemble du visage — un boost d\'éclat lui redonnera rapidement de la vitalité.';
+          return 'Le teint manque légèrement de luminosité — quelques soins ciblés suffiront à le raviver durablement.';
         },
         advice: () => {
-          if (st === 'seche') return 'Acide hyaluronique + AHA doux 1×/sem pour révéler l\'éclat sous-jacent.';
-          return 'Sérum vitamine C le matin + exfoliant enzymatique doux une fois par semaine.';
+          if (st === 'seche') return 'Acide hyaluronique pour hydrater en profondeur + AHA doux 1×/sem pour révéler l\'éclat sous-jacent.';
+          return 'Vitamine C le matin + exfoliant enzymatique doux 1×/sem — duo classique pour un teint plus lumineux rapidement.';
         }
       },
       texture: {
         pillLabel: 'Grain irrégulier',
         sentence: () => {
-          if (st === 'sensible') return 'La texture semble légèrement irrégulière — une exfoliation enzymatique douce aidera sans irriter.';
-          return 'La texture de peau paraît légèrement irrégulière — une routine exfoliante ciblée l\'uniformisera.';
+          const loc = locationStr || 'sur certaines zones';
+          if (st === 'sensible') return `La texture semble légèrement irrégulière ${loc} — une exfoliation enzymatique très douce suffit sans agresser.`;
+          return `Le grain de peau est légèrement irrégulier ${loc} — une routine exfoliante progressive l\'uniformisera.`;
         },
         advice: () => {
-          if (st === 'sensible') return 'Exfoliant enzymatique doux — évite les acides forts si la peau est réactive.';
-          return 'AHA ou rétinol en cure progressive pour affiner visiblement le grain de peau.';
+          if (st === 'sensible') return 'Exfoliant enzymatique à la papaïne ou bromélaïne — pas d\'acides forts sur peau réactive.';
+          return 'AHA (glycolique ou lactique) 1–2×/sem en soin de nuit, ou rétinol en cure progressive selon ta tolérance.';
         }
       }
     };
