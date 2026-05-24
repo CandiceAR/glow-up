@@ -163,9 +163,95 @@ const SkinAnalysis = (() => {
     }
   }
 
+  // ─── Contrôle qualité photo en temps réel ────────────────────
+
+  let _qCanvas = null, _qCtx = null;
+
+  function checkLiveQuality(videoEl, landmarks, w, h) {
+    // Canvas basse résolution réutilisable pour l'échantillonnage pixel
+    if (!_qCanvas) {
+      _qCanvas = document.createElement('canvas');
+      _qCanvas.width  = 160;
+      _qCanvas.height = 120;
+      _qCtx = _qCanvas.getContext('2d', { willReadFrequently: true });
+    }
+    const sw = 160, sh = 120;
+    _qCtx.drawImage(videoEl, 0, 0, sw, sh);
+
+    const issues = [];
+    let score    = 100;
+
+    // ── 1. Taille du visage (distance) ────────────────────────────
+    const faceXs = FACE_OVAL_IDX.map(i => landmarks[i].x);
+    const faceW  = Math.max(...faceXs) - Math.min(...faceXs);
+    if (faceW < 0.26) {
+      issues.push({ key: 'tooFar',   msg: 'Rapproche-toi — ton visage est trop loin',  w: 50 });
+      score -= 50;
+    } else if (faceW > 0.93) {
+      issues.push({ key: 'tooClose', msg: 'Recule légèrement',                          w: 15 });
+      score -= 15;
+    }
+
+    // ── 2. Inclinaison de la tête ─────────────────────────────────
+    const eyeL  = landmarks[33];
+    const eyeR  = landmarks[263];
+    const tilt  = Math.abs(Math.atan2(eyeR.y - eyeL.y, eyeR.x - eyeL.x) * 180 / Math.PI);
+    if (tilt > 13) {
+      issues.push({ key: 'tilted',   msg: 'Redresse légèrement la tête',               w: 25 });
+      score -= 25;
+    }
+
+    // ── 3. Luminosité + ombres ────────────────────────────────────
+    function sampleLum(lmPt) {
+      const px = Math.round(lmPt.x * sw);
+      const py = Math.round(lmPt.y * sh);
+      if (px < 3 || px > sw - 3 || py < 3 || py > sh - 3) return null;
+      const d = _qCtx.getImageData(px - 3, py - 3, 7, 7).data;
+      let s = 0, c = 0;
+      for (let i = 0; i < d.length; i += 4) {
+        s += 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+        c++;
+      }
+      return c ? s / c : null;
+    }
+
+    const lumSamples = [landmarks[10], landmarks[151], landmarks[234], landmarks[454]]
+      .map(sampleLum).filter(v => v !== null);
+
+    if (lumSamples.length >= 2) {
+      const avgLum = lumSamples.reduce((a, b) => a + b, 0) / lumSamples.length;
+      if (avgLum < 52) {
+        issues.push({ key: 'tooDark',   msg: 'Besoin de plus de lumière — approche-toi d\'une fenêtre', w: 40 });
+        score -= 40;
+      } else if (avgLum > 218) {
+        issues.push({ key: 'tooBright', msg: 'Trop de lumière directe — décale-toi légèrement',        w: 20 });
+        score -= 20;
+      }
+
+      // ── Asymétrie gauche / droite (ombres latérales) ────────────
+      const leftLum  = sampleLum(landmarks[234]);
+      const rightLum = sampleLum(landmarks[454]);
+      if (leftLum !== null && rightLum !== null && Math.abs(leftLum - rightLum) > 42) {
+        issues.push({ key: 'shadows',  msg: 'Ombres latérales — place-toi face à ta source de lumière', w: 28 });
+        score -= 28;
+      }
+    }
+
+    // Plus grosse issue en premier
+    issues.sort((a, b) => b.w - a.w);
+
+    const ok = score >= 72 && issues.length === 0;
+    return {
+      ok,
+      score:      Math.max(0, score),
+      primaryMsg: ok ? 'Photo validée ✓' : (issues[0]?.msg || 'Ajuste ta position'),
+      issues:     issues.map(i => i.msg)
+    };
+  }
+
   // ─── Analyse en temps réel (caméra) ──────────────────────────
 
-  async function startLiveAnalysis(videoEl, overlayEl) {
+  async function startLiveAnalysis(videoEl, overlayEl, onQuality) {
     if (videoRaf) stopLiveAnalysis();
 
     const detector = await getOrInitVideoDetector();
@@ -187,9 +273,14 @@ const SkinAnalysis = (() => {
           try {
             const res = detector.detectForVideo(videoEl, ts);
             if (res.faceLandmarks?.length) {
-              drawLiveZones(ctx, res.faceLandmarks[0], w, h, ts);
+              const lm = res.faceLandmarks[0];
+              drawLiveZones(ctx, lm, w, h, ts);
+              if (onQuality) {
+                try { onQuality(checkLiveQuality(videoEl, lm, w, h)); } catch {}
+              }
             } else {
               drawFaceGuide(ctx, w, h);
+              if (onQuality) onQuality({ ok: false, score: 0, primaryMsg: 'Centre ton visage dans le cadre', issues: [] });
             }
           } catch {
             drawFaceGuide(ctx, w, h);
@@ -337,22 +428,50 @@ const SkinAnalysis = (() => {
     img.src   = photoDataUrl;
     await new Promise((res, rej) => { img.onload = res; img.onerror = rej; });
 
-    const w = img.naturalWidth;
-    const h = img.naturalHeight;
+    const MAX_DIM = 960;
+    const scale = Math.min(1, MAX_DIM / Math.max(img.naturalWidth, img.naturalHeight));
+    const w = Math.round(img.naturalWidth  * scale);
+    const h = Math.round(img.naturalHeight * scale);
 
     const sourceCanvas = document.createElement('canvas');
     sourceCanvas.width  = w;
     sourceCanvas.height = h;
     const srcCtx = sourceCanvas.getContext('2d', { willReadFrequently: true });
-    srcCtx.drawImage(img, 0, 0);
+    srcCtx.drawImage(img, 0, 0, w, h);
     AppState.face.sourceCanvas = sourceCanvas;
 
     let landmarks = AppState.face.landmarks;
     if (!landmarks) {
       const detector = await getOrInitDetector();
       if (!detector) return null;
-      const results = detector.detect(img);
-      if (!results.faceLandmarks?.length) return null;
+
+      let results;
+      try {
+        results = detector.detect(img);
+      } catch (gpuErr) {
+        console.warn('[SkinAnalysis] GPU inference échouée, retry CPU…', gpuErr?.message || gpuErr);
+        window._glowFaceLandmarker = null;
+        const { FaceLandmarker, FilesetResolver } = await import(
+          'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs'
+        );
+        const fs = await FilesetResolver.forVisionTasks(
+          'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm'
+        );
+        const cpuDet = await FaceLandmarker.createFromOptions(fs, {
+          baseOptions: {
+            modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
+            delegate: 'CPU'
+          },
+          outputFaceBlendshapes: false,
+          runningMode: 'IMAGE',
+          numFaces: 1
+        });
+        window._glowFaceLandmarker = cpuDet;
+        console.log('[SkinAnalysis] Détecteur IMAGE CPU (fallback)');
+        try { results = cpuDet.detect(img); } catch (e2) { console.error('[SkinAnalysis] CPU inference échouée aussi:', e2); return null; }
+      }
+
+      if (!results?.faceLandmarks?.length) return null;
       landmarks = results.faceLandmarks[0];
       AppState.face.landmarks = landmarks;
     }
@@ -1560,6 +1679,379 @@ const SkinAnalysis = (() => {
       </div>`;
   }
 
+  // ─── Phase 2 : overlay zones cutanées sur photo ──────────────
+
+  const OVERLAY_COLORS = {
+    redness:  { css: 'rgba(220,60,40,0.38)',   dot: '#DC3C28', label: 'Rougeurs' },
+    sebum:    { css: 'rgba(210,170,0,0.38)',    dot: '#D2AA00', label: 'Sébum' },
+    taches:   { css: 'rgba(155,90,40,0.35)',    dot: '#9B5A28', label: 'Taches' },
+    terne:    { css: 'rgba(220,110,20,0.35)',   dot: '#DC6E14', label: 'Teint terne' },
+    texture:  { css: 'rgba(80,110,180,0.30)',   dot: '#506EB4', label: 'Texture' },
+    cernes:   { css: 'rgba(120,60,180,0.38)',   dot: '#783CB4', label: 'Cernes' },
+    ok:       { css: 'rgba(50,160,60,0.18)',    dot: '#32A03C', label: 'Sain' }
+  };
+
+  function _zoneOverlayKey(z) {
+    if (z.redness  > 55)  return 'redness';
+    if (z.pores    < 42)  return 'sebum';
+    if (z.taches   < 48)  return 'taches';
+    if (z.eclat    < 46)  return 'terne';
+    if (z.texture  < 48)  return 'texture';
+    return 'ok';
+  }
+
+  // Generate emotional, personalized phrases for each insight type
+  function _generateInsightText(key, result, g) {
+    const st  = result.skinType?.type  || 'normale';
+    const ut  = result.undertone?.type || 'neutral';
+    const sev = g.severity || 50;
+    const cer = result.cernes;
+
+    const DATA = {
+      redness: {
+        pillLabel: 'Zone sensibilisée',
+        sentence: () => {
+          if (sev > 72) return 'La peau réagit — quelques zones montrent une sensibilité marquée à apaiser en priorité.';
+          if (st === 'sensible') return 'Ta peau sensible signale quelques rougeurs — un soin calmant aidera à rééquilibrer.';
+          return 'Quelques zones semblent légèrement sensibilisées aujourd\'hui.';
+        },
+        advice: () => {
+          if (st === 'sensible') return 'Centella asiatica ou eau thermale — évite les actifs irritants.';
+          return 'Sérum à la niacinamide 5–10 % — apaisant et anti-rougeurs sans irriter.';
+        }
+      },
+      cernes: {
+        pillLabel: 'Regard fatigué',
+        sentence: () => {
+          if (cer?.type === 'bleu_violet') return 'Le regard paraît légèrement fatigué — la microcirculation transparaît sous la peau fine du contour des yeux.';
+          if (cer?.type === 'marron')      return 'Le contour des yeux porte une légère marque pigmentaire — souvent héréditaire ou liée au soleil.';
+          if (cer?.intensity === 'marqués') return 'Le regard semble fatigué — le contour des yeux appelle une attention particulière.';
+          return 'Le regard paraît légèrement fatigué — quelques soins ciblés suffiront à le raviver.';
+        },
+        advice: () => {
+          if (cer?.type === 'bleu_violet') return 'Crème contour yeux à la caféine + correcteur couleur saumon ou pêche.';
+          if (cer?.type === 'marron')      return 'Vitamine C ou acide kojique en contour yeux + SPF protecteur.';
+          return 'Crème défatigante contour yeux + patches hydratants le soir.';
+        }
+      },
+      sebum: {
+        pillLabel: 'Zone T brillante',
+        sentence: () => {
+          if (st === 'grasse') return 'La brillance couvre l\'ensemble du visage — la peau surproduit du sébum, à réguler en douceur.';
+          if (st === 'mixte')  return 'La zone T est plus active que les joues — un équilibre naturel à réguler sans dessécher les autres zones.';
+          return 'La zone T paraît un peu plus brillante aujourd\'hui — un soin régulateur doux suffit.';
+        },
+        advice: () => {
+          if (st === 'grasse') return 'Exfoliant BHA (acide salicylique) 2×/sem + sérum niacinamide matifiant longue durée.';
+          return 'Niacinamide concentré sur la zone T + émulsion équilibrante légère sur les joues.';
+        }
+      },
+      taches: {
+        pillLabel: 'Teint irrégulier',
+        sentence: () => {
+          if (ut === 'warm') return 'Quelques variations de pigmentation visibles — les peaux à sous-ton chaud y sont souvent plus sensibles.';
+          return 'Le teint présente quelques irrégularités de pigmentation — à corriger progressivement et en douceur.';
+        },
+        advice: () => {
+          if (st === 'sensible') return 'Vitamine C douce (ester de vitamine C) + SPF 50 sans faute chaque matin.';
+          return 'Vitamine C le matin + SPF 50 indispensable pour stopper l\'aggravation des taches.';
+        }
+      },
+      terne: {
+        pillLabel: 'Manque d\'éclat',
+        sentence: () => {
+          if (st === 'seche') return 'Le teint manque d\'éclat — la sécheresse peut voiler la luminosité naturelle de la peau.';
+          if (sev > 65)       return 'Le teint paraît terne — un boost d\'éclat lui redonnera de la vitalité rapidement.';
+          return 'Le teint pourrait gagner en luminosité — quelques soins éclat feront toute la différence.';
+        },
+        advice: () => {
+          if (st === 'seche') return 'Acide hyaluronique + AHA doux 1×/sem pour révéler l\'éclat sous-jacent.';
+          return 'Sérum vitamine C le matin + exfoliant enzymatique doux une fois par semaine.';
+        }
+      },
+      texture: {
+        pillLabel: 'Grain irrégulier',
+        sentence: () => {
+          if (st === 'sensible') return 'La texture semble légèrement irrégulière — une exfoliation enzymatique douce aidera sans irriter.';
+          return 'La texture de peau paraît légèrement irrégulière — une routine exfoliante ciblée l\'uniformisera.';
+        },
+        advice: () => {
+          if (st === 'sensible') return 'Exfoliant enzymatique doux — évite les acides forts si la peau est réactive.';
+          return 'AHA ou rétinol en cure progressive pour affiner visiblement le grain de peau.';
+        }
+      }
+    };
+
+    const d = DATA[key];
+    if (!d) return { pillLabel: key, sentence: '', advice: '' };
+    return { pillLabel: d.pillLabel, sentence: d.sentence(), advice: d.advice() };
+  }
+
+  function getTopInsights(result) {
+    if (!result?.zones) return [];
+
+    const groups = {};
+    for (const [zoneKey, z] of Object.entries(result.zones)) {
+      const key = _zoneOverlayKey(z);
+      if (key === 'ok') continue;
+      let severity;
+      if      (key === 'redness') severity = z.redness;
+      else if (key === 'sebum')   severity = 100 - z.pores;
+      else if (key === 'taches')  severity = 100 - z.taches;
+      else if (key === 'terne')   severity = 100 - z.eclat;
+      else if (key === 'texture') severity = 100 - z.texture;
+      else severity = 50;
+      if (!groups[key]) groups[key] = { key, zones: [], severity: 0 };
+      groups[key].zones.push({ zoneKey, severity });
+      groups[key].severity = Math.max(groups[key].severity, severity);
+    }
+    if (result.cernes?.detected) {
+      const cerSev = result.cernes.intensity === 'marqués' ? 72 : 58;
+      groups.cernes = { key: 'cernes', zones: [{ zoneKey: 'eyes', severity: cerSev }], severity: cerSev };
+    }
+
+    return Object.values(groups)
+      .sort((a, b) => b.severity - a.severity)
+      .slice(0, 3)
+      .map((g, rank) => {
+        const primaryZone = g.zones[0]?.zoneKey;
+        const bothCheeks  = g.zones.length >= 2
+          && g.zones.every(z => z.zoneKey === 'leftCheek' || z.zoneKey === 'rightCheek');
+        const FIXED_SUMMARY = { sebum: 'Zone T', cernes: 'Yeux', terne: 'Joues & front' };
+        const zoneSummary   = FIXED_SUMMARY[g.key]
+          || (bothCheeks ? 'Joues' : (ZONE_REGIONS[primaryZone]?.label || ''));
+
+        const { pillLabel, sentence, advice } = _generateInsightText(g.key, result, g);
+
+        return {
+          ...g,
+          rank,
+          zoneKey:   primaryZone,
+          zoneLabel: ZONE_REGIONS[primaryZone]?.label || '',
+          zoneSummary,
+          pillLabel,
+          sentence,
+          advice,
+        };
+      });
+  }
+
+  function renderFaceOverlay(target, photo, landmarks, result) {
+    if (!photo || !landmarks?.length || !result?.zones) return;
+
+    const NS = 'http://www.w3.org/2000/svg';
+    const insights = getTopInsights(result).slice(0, 3);
+    if (!insights.length) return;
+
+    // Beauty palette — soft tones, not medical
+    const BEAUTY_CFG = {
+      redness: { r:210, g:90,  b:80,  dot:'#D2584E' },
+      cernes:  { r:120, g:85,  b:195, dot:'#7855C4' },
+      sebum:   { r:195, g:148, b:28,  dot:'#C4941C' },
+      taches:  { r:150, g:95,  b:52,  dot:'#946034' },
+      terne:   { r:190, g:100, b:35,  dot:'#BE6423' },
+      texture: { r:80,  g:105, b:172, dot:'#5069AC' },
+    };
+
+    const PRECISE_LM = {
+      leftCheek:  [116, 117, 118, 50, 101, 205, 36],
+      rightCheek: [345, 346, 347, 280, 352, 425, 266],
+      forehead:   [10, 338, 297, 109, 67, 103, 54, 21, 151],
+      nose:       [1, 5, 4, 195, 197, 2, 98, 327],
+      chin:       [152, 200, 199, 175, 171, 377],
+      eyes:       [33, 144, 145, 153, 362, 374, 373, 390],
+    };
+
+    const wrap = document.createElement('div');
+    wrap.className = 'fo-wrap';
+    target.appendChild(wrap);
+
+    const mediaWrap = document.createElement('div');
+    mediaWrap.className = 'fo-media-wrap';
+    wrap.appendChild(mediaWrap);
+
+    const imgEl = document.createElement('img');
+    imgEl.className = 'fo-photo';
+    imgEl.alt = 'Analyse beauté';
+    mediaWrap.appendChild(imgEl);
+
+    imgEl.onload = () => {
+      const W = imgEl.naturalWidth;
+      const H = imgEl.naturalHeight;
+      mediaWrap.style.aspectRatio = `${W} / ${H}`;
+
+      const _ellipseFromLM = (lmIdx) => {
+        const pts = lmIdx
+          .map(i => landmarks[i] ? { x: landmarks[i].x * W, y: landmarks[i].y * H } : null)
+          .filter(Boolean);
+        if (pts.length < 3) return null;
+        const cx = pts.reduce((s, p) => s + p.x, 0) / pts.length;
+        const cy = pts.reduce((s, p) => s + p.y, 0) / pts.length;
+        const rx = Math.min(pts.reduce((s, p) => s + Math.abs(p.x - cx), 0) / pts.length * 1.5, W * 0.14);
+        const ry = Math.min(pts.reduce((s, p) => s + Math.abs(p.y - cy), 0) / pts.length * 1.5, H * 0.11);
+        return { cx, cy, rx, ry };
+      };
+
+      const svg = document.createElementNS(NS, 'svg');
+      svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+      svg.setAttribute('preserveAspectRatio', 'none');
+      svg.setAttribute('class', 'fo-svg');
+      mediaWrap.appendChild(svg);
+
+      const defs = document.createElementNS(NS, 'defs');
+      svg.appendChild(defs);
+
+      // Slow, subtle breathing — narrower opacity range for organic feel
+      const styleEl = document.createElementNS(NS, 'style');
+      styleEl.textContent =
+        '@keyframes fo-breathe{0%,100%{opacity:1}50%{opacity:.32}}' +
+        '.fo-b0{animation:fo-breathe 3.8s ease-in-out infinite}' +
+        '.fo-b1{animation:fo-breathe 4.6s ease-in-out infinite 1.2s}' +
+        '.fo-b2{animation:fo-breathe 5.2s ease-in-out infinite 2.1s}';
+      defs.appendChild(styleEl);
+
+      const faceCx = landmarks[1].x * W;
+      const LABEL_Y = [H * 0.20, H * 0.50, H * 0.76];
+
+      insights.forEach(({ key, zones, rank, pillLabel }) => {
+        const cfg   = BEAUTY_CFG[key] || BEAUTY_CFG.redness;
+        const { r, g, b } = cfg;
+        const isPri = rank === 0;
+
+        // Outer ambient gradient — large, very faint, static organic glow
+        const outerGradId = `fo-og-${rank}`;
+        const outerGrad   = document.createElementNS(NS, 'radialGradient');
+        outerGrad.setAttribute('id', outerGradId);
+        outerGrad.setAttribute('cx', '50%'); outerGrad.setAttribute('cy', '50%'); outerGrad.setAttribute('r', '50%');
+        [
+          ['0%',   `rgb(${r},${g},${b})`, isPri ? '0.12' : '0.07'],
+          ['50%',  `rgb(${r},${g},${b})`, isPri ? '0.04' : '0.02'],
+          ['100%', `rgb(${r},${g},${b})`, '0'],
+        ].forEach(([off, col, op]) => {
+          const s = document.createElementNS(NS, 'stop');
+          s.setAttribute('offset', off); s.setAttribute('stop-color', col); s.setAttribute('stop-opacity', op);
+          outerGrad.appendChild(s);
+        });
+        defs.appendChild(outerGrad);
+
+        // Inner breathing gradient — 3-stop smooth fade
+        const innerGradId = `fo-ig-${rank}`;
+        const innerGrad   = document.createElementNS(NS, 'radialGradient');
+        innerGrad.setAttribute('id', innerGradId);
+        innerGrad.setAttribute('cx', '50%'); innerGrad.setAttribute('cy', '50%'); innerGrad.setAttribute('r', '50%');
+        [
+          ['0%',   `rgb(${r},${g},${b})`, isPri ? '0.32' : '0.20'],
+          ['55%',  `rgb(${r},${g},${b})`, isPri ? '0.09' : '0.05'],
+          ['100%', `rgb(${r},${g},${b})`, '0'],
+        ].forEach(([off, col, op]) => {
+          const s = document.createElementNS(NS, 'stop');
+          s.setAttribute('offset', off); s.setAttribute('stop-color', col); s.setAttribute('stop-opacity', op);
+          innerGrad.appendChild(s);
+        });
+        defs.appendChild(innerGrad);
+
+        let primaryEl = null;
+
+        zones.forEach(({ zoneKey }) => {
+          const lmIdx = PRECISE_LM[zoneKey] || PRECISE_LM.eyes;
+          const el    = _ellipseFromLM(lmIdx);
+          if (!el) return;
+          if (!primaryEl) primaryEl = el;
+          const { cx, cy, rx, ry } = el;
+
+          // Outer ambient glow — very large, static, purely organic feel
+          const outerGlow = document.createElementNS(NS, 'ellipse');
+          outerGlow.setAttribute('cx', cx.toFixed(1));         outerGlow.setAttribute('cy', cy.toFixed(1));
+          outerGlow.setAttribute('rx', (rx * 2.8).toFixed(1)); outerGlow.setAttribute('ry', (ry * 2.6).toFixed(1));
+          outerGlow.setAttribute('fill', `url(#${outerGradId})`);
+          svg.appendChild(outerGlow);
+
+          // Inner zone halo — breathing, tighter
+          const innerGlow = document.createElementNS(NS, 'ellipse');
+          innerGlow.setAttribute('cx', cx.toFixed(1));         innerGlow.setAttribute('cy', cy.toFixed(1));
+          innerGlow.setAttribute('rx', (rx * 1.5).toFixed(1)); innerGlow.setAttribute('ry', (ry * 1.5).toFixed(1));
+          innerGlow.setAttribute('fill', `url(#${innerGradId})`);
+          innerGlow.setAttribute('class', `fo-b${rank}`);
+          svg.appendChild(innerGlow);
+
+          // Ultra-light contour — barely visible, just a hint
+          const contour = document.createElementNS(NS, 'ellipse');
+          contour.setAttribute('cx', cx.toFixed(1)); contour.setAttribute('cy', cy.toFixed(1));
+          contour.setAttribute('rx', rx.toFixed(1)); contour.setAttribute('ry', ry.toFixed(1));
+          contour.setAttribute('fill', 'none');
+          contour.setAttribute('stroke', `rgba(${r},${g},${b},${isPri ? 0.20 : 0.12})`);
+          contour.setAttribute('stroke-width', Math.max(0.5, W * 0.001).toFixed(1));
+          svg.appendChild(contour);
+
+          // Center pin — small, soft
+          const pin = document.createElementNS(NS, 'circle');
+          pin.setAttribute('cx', cx.toFixed(1)); pin.setAttribute('cy', cy.toFixed(1));
+          pin.setAttribute('r', (W * 0.0038).toFixed(1));
+          pin.setAttribute('fill', `rgba(${r},${g},${b},${isPri ? 0.65 : 0.42})`);
+          svg.appendChild(pin);
+        });
+
+        if (!primaryEl) return;
+
+        const { cx: zoneCx, cy: zoneCy } = primaryEl;
+        const isCentral = Math.abs(zoneCx - faceCx) < W * 0.08;
+        const onRight   = isCentral ? (rank % 2 === 0) : (zoneCx >= faceCx);
+
+        const pillW  = isPri ? W * 0.245 : W * 0.205;
+        const pillH  = isPri ? W * 0.054 : W * 0.046;
+        const pillCx = onRight ? W * 0.840 : W * 0.160;
+        const pillCy = LABEL_Y[rank];
+        const fs     = isPri ? W * 0.025 : W * 0.021;
+
+        // Callout line — ultra thin, colored
+        const pillEdgeX = onRight ? pillCx - pillW / 2 - W * 0.005 : pillCx + pillW / 2 + W * 0.005;
+        const line = document.createElementNS(NS, 'line');
+        line.setAttribute('x1', zoneCx.toFixed(1));    line.setAttribute('y1', zoneCy.toFixed(1));
+        line.setAttribute('x2', pillEdgeX.toFixed(1)); line.setAttribute('y2', pillCy.toFixed(1));
+        line.setAttribute('stroke', `rgba(${r},${g},${b},${isPri ? 0.38 : 0.25})`);
+        line.setAttribute('stroke-width', Math.max(0.4, W * 0.001).toFixed(1));
+        line.setAttribute('stroke-linecap', 'round');
+        svg.appendChild(line);
+
+        // Glass pill — white, very slightly tinted border
+        const pill = document.createElementNS(NS, 'rect');
+        pill.setAttribute('x',      (pillCx - pillW / 2).toFixed(1));
+        pill.setAttribute('y',      (pillCy - pillH / 2).toFixed(1));
+        pill.setAttribute('width',  pillW.toFixed(1));
+        pill.setAttribute('height', pillH.toFixed(1));
+        pill.setAttribute('rx',     (pillH / 2).toFixed(1));
+        pill.setAttribute('fill',   `rgba(255,255,255,${isPri ? 0.90 : 0.80})`);
+        pill.setAttribute('stroke', `rgba(${r},${g},${b},${isPri ? 0.22 : 0.14})`);
+        pill.setAttribute('stroke-width', '0.7');
+        svg.appendChild(pill);
+
+        // Colored dot in pill
+        const dotR = pillH * 0.19;
+        const dotX = (pillCx - pillW / 2 + pillH * 0.54).toFixed(1);
+        const dot  = document.createElementNS(NS, 'circle');
+        dot.setAttribute('cx', dotX); dot.setAttribute('cy', pillCy.toFixed(1));
+        dot.setAttribute('r',  dotR.toFixed(1)); dot.setAttribute('fill', cfg.dot);
+        dot.setAttribute('opacity', isPri ? '0.88' : '0.68');
+        svg.appendChild(dot);
+
+        // Emotional phrase — dark text on white pill
+        const txt = document.createElementNS(NS, 'text');
+        txt.setAttribute('x', (pillCx - pillW / 2 + pillH * 0.98).toFixed(1));
+        txt.setAttribute('y', (pillCy + fs * 0.38).toFixed(1));
+        txt.setAttribute('fill',        `rgba(22,18,30,${isPri ? 0.86 : 0.70})`);
+        txt.setAttribute('font-size',   fs.toFixed(1));
+        txt.setAttribute('font-weight', isPri ? '500' : '400');
+        txt.setAttribute('font-family', 'DM Sans, sans-serif');
+        txt.textContent = pillLabel || key;
+        svg.appendChild(txt);
+      });
+    };
+
+    imgEl.src = photo;
+  }
+
+  // ─── Rapport principal ────────────────────────────────────────
+
   function renderReport(result, content) {
     const { zones, undertone, skinType, faceShape, globalScore, cernes, carnation, eyeContrast } = result;
 
@@ -1808,6 +2300,9 @@ const SkinAnalysis = (() => {
           ${makeupWarn}
         </div>
 
+        <!-- PHASE 2 — Carte zones cutanées -->
+        <div id="face-overlay-target"></div>
+
         <!-- BLOC 1 — RÉSULTAT -->
         <div class="mkr-bloc">
           <h2 class="mkr-bloc-title">✦ Ton profil</h2>
@@ -1922,6 +2417,12 @@ const SkinAnalysis = (() => {
         <p class="diag-disclaimer">Analyse colorimétrique locale par MediaPipe — indicatif, non médical.</p>
       </div>`;
 
+    // Phase 2 — overlay zones sur la photo
+    const overlayTarget = content.querySelector('#face-overlay-target');
+    if (overlayTarget && AppState.face?.photo && AppState.face?.landmarks?.length) {
+      renderFaceOverlay(overlayTarget, AppState.face.photo, AppState.face.landmarks, result);
+    }
+
     window.switchMkrTab = function(btn, tab) {
       document.querySelectorAll('.mkr-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.mkr-tab-panel').forEach(t => t.classList.remove('active'));
@@ -2014,7 +2515,7 @@ const SkinAnalysis = (() => {
 
   // ─── API publique ─────────────────────────────────────────────
 
-  return { initScreen, startLiveAnalysis, stopLiveAnalysis, analyzeFromPhoto };
+  return { initScreen, startLiveAnalysis, stopLiveAnalysis, analyzeFromPhoto, renderFaceOverlay, getTopInsights };
 
 })();
 

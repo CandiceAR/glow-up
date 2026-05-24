@@ -10,6 +10,9 @@
     "api/coach.js": {
       "maxDuration": 30
     },
+    "api/skinInsights.js": {
+      "maxDuration": 20
+    },
     "api/uploadImage.js": {
       "maxDuration": 30
     },

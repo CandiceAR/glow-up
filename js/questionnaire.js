@@ -595,24 +595,62 @@ const Questionnaire = (() => {
   }
 
   function _renderPhotoMiniResult(photo) {
-    const skinLabel = { normale:'Normale', grasse:'Grasse', seche:'Sèche', mixte:'Mixte', sensible:'Sensible' };
-    const items = [];
-    if (photo.skinType?.type)   items.push(`🧬 Type de peau : <strong>${skinLabel[photo.skinType.type] || photo.skinType.type}</strong>`);
-    if (photo.undertone?.label) items.push(`🎨 Sous-ton : <strong>${photo.undertone.label}</strong>`);
-    if (photo.cernes?.detected) items.push(`👁 Cernes détectés`);
-    if (photo.carnation?.label) items.push(`✨ Carnation : <strong>${photo.carnation.label}</strong>`);
-
     const photoSrc = AppState.face?.photo;
-    const imgHtml  = photoSrc
-      ? `<img src="${photoSrc}" class="q-photo-step-preview" alt="Ta photo">`
+    const overlayDiv = photoSrc
+      ? `<div id="q-face-overlay-target"></div>`
       : `<div style="font-size:3rem;margin-bottom:12px;">📸</div>`;
 
+    const score = photo.globalScore ?? null;
+    let scoreMood = '';
+    if (score !== null) {
+      if (score >= 80)      scoreMood = 'Ta peau rayonne';
+      else if (score >= 65) scoreMood = 'Belle condition générale';
+      else if (score >= 50) scoreMood = 'Quelques zones à chouchouter';
+      else                  scoreMood = 'Ta peau a besoin de toi';
+    }
+
+    const INSIGHT_EMOJI = {
+      redness: '🌿', sebum: '✨', taches: '☀️', terne: '💫', texture: '🫧', cernes: '🌙'
+    };
+
+    const insights = (typeof SkinAnalysis !== 'undefined' && SkinAnalysis.getTopInsights)
+      ? SkinAnalysis.getTopInsights(photo) : [];
+
+    const insightsHtml = insights.length ? `
+      <div class="q-insights">
+        <div class="q-insights-title">Ce que Glow Up a détecté</div>
+        ${insights.map(({ key, pillLabel, sentence, advice, rank }) => {
+          const emoji = INSIGHT_EMOJI[key] || '◆';
+          const isPri = rank === 0;
+          return `<div class="q-insight-item${isPri ? ' q-insight-primary' : ''}" data-insight-key="${key}">
+            <span class="q-insight-emoji">${emoji}</span>
+            <div class="q-insight-body">
+              <div class="q-insight-name">${pillLabel || key}</div>
+              <div class="q-insight-sentence">${sentence || ''}</div>
+              <div class="q-insight-advice">${advice || ''}</div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>` : '';
+
+    const skinLabel = { normale:'Normale', grasse:'Grasse', seche:'Sèche', mixte:'Mixte', sensible:'Sensible' };
+    const chips = [];
+    if (photo.skinType?.type)   chips.push(`🧬 ${skinLabel[photo.skinType.type] || photo.skinType.type}`);
+    if (photo.undertone?.label) chips.push(`🎨 ${photo.undertone.label}`);
+    if (photo.carnation?.label) chips.push(`✨ ${photo.carnation.label}`);
+    const chipsHtml = chips.length
+      ? `<div class="q-photo-base-chips">${chips.map(c => `<span class="q-photo-chip">${c}</span>`).join('')}</div>`
+      : '';
+
     return `<div class="q-photo-step">
-      ${imgHtml}
-      <div class="q-photo-result-mini">
-        <div class="q-photo-result-mini-title">✦ Analyse photo active</div>
-        ${items.map(i => `<div class="q-photo-result-mini-item">${i}</div>`).join('')}
-      </div>
+      ${overlayDiv}
+      ${score !== null ? `<div class="q-skin-score">
+        <span class="q-skin-score-num">${Math.round(score)}</span>
+        <span class="q-skin-score-denom">/100</span>
+        <span class="q-skin-score-mood">${scoreMood}</span>
+      </div>` : ''}
+      ${insightsHtml}
+      ${chipsHtml}
       <div class="q-photo-buttons" style="margin-top:16px;">
         <button class="btn btn-outline" onclick="Questionnaire.retakePhoto()" style="font-size:0.85rem;">
           🔄 Refaire l'analyse photo
@@ -772,11 +810,113 @@ const Questionnaire = (() => {
   function _showPhotoResult() {
     showScreen('questionnaire');
     render();
-    // Avance automatiquement après 1.5s pour montrer le résumé
-    setTimeout(() => {
-      const nextIdx = _nextActive(currentIndex);
-      if (nextIdx >= 0) _slideTo(nextIdx, 'forward');
-    }, 1800);
+    const overlayTarget = document.getElementById('q-face-overlay-target');
+    if (overlayTarget && typeof SkinAnalysis !== 'undefined') {
+      SkinAnalysis.renderFaceOverlay(
+        overlayTarget,
+        AppState.face?.photo,
+        AppState.face?.landmarks,
+        AppState.face?.skinAnalysis
+      );
+    }
+    // Enrichissement IA async — n'attend pas, affiche le template en attendant
+    _enrichWithAI();
+  }
+
+  // ─── IA enrichissement — génère des insights personnalisés via Haiku ──
+
+  function _canUseSkinAI() {
+    const plan = AppState.user?.plan;
+    if (plan === 'glow' || plan === 'glowplus') return true;
+    // Si déjà enrichi dans cette session → ne rappelle pas
+    if (AppState.face?.skinAnalysis?.aiInsights) return false;
+    // Free : une seule fois à vie
+    if (localStorage.getItem('glow_skin_ai_used')) return false;
+    return true;
+  }
+
+  function _markSkinAIUsed() {
+    const plan = AppState.user?.plan;
+    if (plan === 'glow' || plan === 'glowplus') return;
+    localStorage.setItem('glow_skin_ai_used', '1');
+  }
+
+  async function _enrichWithAI() {
+    const result = AppState.face?.skinAnalysis;
+    if (!result) return;
+    if (!_canUseSkinAI()) {
+      // Si déjà en cache dans AppState (même session), réappliquer directement
+      if (result.aiInsights?.length) _swapInsightTexts(result.aiInsights);
+      return;
+    }
+
+    const insights = (typeof SkinAnalysis !== 'undefined' && SkinAnalysis.getTopInsights)
+      ? SkinAnalysis.getTopInsights(result) : [];
+    if (!insights.length) return;
+
+    // Indicateur discret pendant le chargement
+    _setInsightsLoading(true);
+
+    const analysisData = {
+      score:     result.globalScore ?? 65,
+      skinType:  result.skinType?.type  || 'normale',
+      undertone: result.undertone?.type || 'neutral',
+      carnation: result.carnation?.type || 'medium',
+      cernes:    result.cernes?.detected
+        ? { detected: true, type: result.cernes.type, intensity: result.cernes.intensity }
+        : null,
+      insights: insights.map(({ key, severity, zones }) => ({
+        key,
+        severity,
+        zones: (zones || []).map(z => z.zoneKey).filter(Boolean)
+      }))
+    };
+
+    try {
+      const resp = await fetch('/api/skinInsights', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ analysisData })
+      });
+      _setInsightsLoading(false);
+      if (!resp.ok) return;
+      const { insights: aiInsights } = await resp.json();
+      if (!Array.isArray(aiInsights) || !aiInsights.length) return;
+
+      _swapInsightTexts(aiInsights);
+      _markSkinAIUsed();
+      // Cache dans AppState pour ne pas rappeler si l'user revient à l'étape
+      result.aiInsights = aiInsights;
+
+    } catch (err) {
+      _setInsightsLoading(false);
+      console.warn('[GlowAI] enrichissement échoué, templates conservés :', err.message);
+    }
+  }
+
+  function _setInsightsLoading(on) {
+    const wrap = document.querySelector('.q-insights');
+    if (!wrap) return;
+    if (on) wrap.classList.add('q-insights--loading');
+    else    wrap.classList.remove('q-insights--loading');
+  }
+
+  function _swapInsightTexts(aiInsights) {
+    aiInsights.forEach(({ key, phrase, conseil }) => {
+      const item = document.querySelector(`[data-insight-key="${key}"]`);
+      if (!item) return;
+      const sentenceEl = item.querySelector('.q-insight-sentence');
+      const adviceEl   = item.querySelector('.q-insight-advice');
+
+      // Fondu doux pour le remplacement
+      [sentenceEl, adviceEl].forEach(el => {
+        if (el) { el.style.transition = 'opacity 0.35s'; el.style.opacity = '0'; }
+      });
+      setTimeout(() => {
+        if (sentenceEl && phrase)  { sentenceEl.textContent = phrase;  sentenceEl.style.opacity = '1'; }
+        if (adviceEl   && conseil) { adviceEl.textContent   = conseil; adviceEl.style.opacity   = '1'; }
+      }, 380);
+    });
   }
 
   // ─── Navigation ───────────────────────────────────────────────
