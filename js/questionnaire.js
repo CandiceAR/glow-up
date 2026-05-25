@@ -631,6 +631,7 @@ const Questionnaire = (() => {
             </div>
           </div>`;
         }).join('')}
+        <div class="q-insight-synthese" style="display:none"></div>
       </div>` : '';
 
     const skinLabel = { normale:'Normale', grasse:'Grasse', seche:'Sèche', mixte:'Mixte', sensible:'Sensible' };
@@ -846,7 +847,11 @@ const Questionnaire = (() => {
     if (!result) return;
     if (!_canUseSkinAI()) {
       // Si déjà en cache dans AppState (même session), réappliquer directement
-      if (result.aiInsights?.length) _swapInsightTexts(result.aiInsights);
+      const cached = result.aiInsights;
+      if (cached) {
+        _swapInsightTexts(cached.insights || cached);
+        if (cached.synthese) _showSynthese(cached.synthese);
+      }
       return;
     }
 
@@ -882,7 +887,10 @@ const Questionnaire = (() => {
             texture: Math.round(pm.texture ?? 0)
           }
         };
-      })
+      }),
+      precision: (typeof SkinAnalysis !== 'undefined' && SkinAnalysis.buildPrecisionContext)
+        ? SkinAnalysis.buildPrecisionContext(result)
+        : null
     };
 
     try {
@@ -896,9 +904,9 @@ const Questionnaire = (() => {
       const { insights: aiInsights } = await resp.json();
       if (!Array.isArray(aiInsights) || !aiInsights.length) return;
 
-      _swapInsightTexts(aiInsights);
+      _swapInsightTexts(aiInsights.insights || aiInsights);
+      if (aiInsights.synthese) _showSynthese(aiInsights.synthese);
       _markSkinAIUsed();
-      // Cache dans AppState pour ne pas rappeler si l'user revient à l'étape
       result.aiInsights = aiInsights;
 
     } catch (err) {
@@ -930,6 +938,19 @@ const Questionnaire = (() => {
         if (adviceEl   && conseil) { adviceEl.textContent   = conseil; adviceEl.style.opacity   = '1'; }
       }, 380);
     });
+  }
+
+  function _showSynthese(text) {
+    if (!text) return;
+    const el = document.querySelector('.q-insight-synthese');
+    if (!el) return;
+    el.style.opacity = '0';
+    el.style.display = 'block';
+    el.style.transition = 'opacity 0.5s';
+    setTimeout(() => {
+      el.textContent = text;
+      el.style.opacity = '1';
+    }, 600);
   }
 
   // ─── Navigation ───────────────────────────────────────────────

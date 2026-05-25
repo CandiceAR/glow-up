@@ -2540,9 +2540,91 @@ const SkinAnalysis = (() => {
   function avg(arr)              { return arr.length ? arr.reduce((s, v) => s + v, 0) / arr.length : 0; }
   function clamp(v, min, max)    { return Math.min(max, Math.max(min, v)); }
 
+  // ─── Dérivation de patterns précis depuis les scores bruts ───────
+
+  function buildPrecisionContext(result) {
+    const zones  = result.zones || {};
+    const zArr   = Object.entries(zones);
+    const mean   = (key) => zArr.length ? zArr.reduce((s, [, z]) => s + (z[key] || 0), 0) / zArr.length : 50;
+
+    // ── Redness pattern ───────────────────────────────────────────
+    const RED_T  = 55;
+    const redZ   = zArr
+      .filter(([, z]) => z.redness > RED_T)
+      .sort(([, a], [, b]) => b.redness - a.redness)
+      .map(([k, z]) => ({ zone: k, score: Math.round(z.redness) }));
+    const redKeys = redZ.map(r => r.zone);
+
+    let rednessPattern = 'none';
+    const rBothCheeks = redKeys.includes('leftCheek') && redKeys.includes('rightCheek');
+    const rNose       = redKeys.includes('nose');
+    const rForehead   = redKeys.includes('forehead');
+    if      (redKeys.length >= 3 || (rBothCheeks && rNose)) rednessPattern = 'diffuse';
+    else if (rBothCheeks && !rNose)                          rednessPattern = 'cheeks_bilateral';
+    else if (rNose && !rBothCheeks)                          rednessPattern = 'nose_wings';
+    else if ((redKeys.includes('leftCheek') || redKeys.includes('rightCheek')) && rNose)
+                                                              rednessPattern = 'cheeks_and_nose';
+    else if (rForehead)                                       rednessPattern = 'forehead';
+    else if (redKeys.length === 1)                            rednessPattern = 'localized';
+
+    // ── Sebum / pores dominant ────────────────────────────────────
+    const PORE_T = 42;
+    const sebZ   = zArr
+      .filter(([, z]) => z.pores < PORE_T)
+      .sort(([, a], [, b]) => a.pores - b.pores)
+      .map(([k, z]) => ({ zone: k, score: Math.round(100 - z.pores) }));
+    const sebKeys    = sebZ.map(s => s.zone);
+    const zoneTHits  = ['forehead', 'nose', 'chin'].filter(z => sebKeys.includes(z));
+
+    let sebumPattern  = 'none', sebumDominant = null;
+    if (zoneTHits.length >= 2) { sebumPattern = 'zone_t'; sebumDominant = zoneTHits[0]; }
+    else if (sebKeys.length)   { sebumPattern = 'localized'; sebumDominant = sebKeys[0]; }
+
+    // Peau grasse + terne simultanément → brillante mais déshydratée
+    const isOilyDehydrated = mean('pores') < 50 && mean('eclat') < 48;
+
+    // ── Texture worst zone ────────────────────────────────────────
+    let texWorst = null, texWorstScore = 100;
+    for (const [k, z] of zArr) {
+      if (z.texture < texWorstScore) { texWorstScore = z.texture; texWorst = k; }
+    }
+
+    // ── Éclat — zones les plus ternes ────────────────────────────
+    const ECLAT_T = 46;
+    const terneZ  = zArr
+      .filter(([, z]) => z.eclat < ECLAT_T)
+      .sort(([, a], [, b]) => a.eclat - b.eclat)
+      .map(([k, z]) => ({ zone: k, score: Math.round(z.eclat) }));
+
+    // ── Asymétrie joues (rougeur ou texture) ─────────────────────
+    const leftR  = zones.leftCheek?.redness  || 0;
+    const rightR = zones.rightCheek?.redness || 0;
+    let cheekAsymmetry = null;
+    if (Math.abs(leftR - rightR) > 12) {
+      cheekAsymmetry = leftR > rightR ? 'left_more_red' : 'right_more_red';
+    }
+
+    const ZONE_FR_SHORT = {
+      leftCheek: 'joue gauche', rightCheek: 'joue droite',
+      forehead: 'front', nose: 'nez / ailes du nez', chin: 'menton', eyes: 'contour des yeux'
+    };
+
+    return {
+      rednessPattern, redZones: redZ,
+      sebumPattern, sebumDominant, sebumZones: sebZ, isOilyDehydrated,
+      textureWorstZone: texWorstScore < 48 ? texWorst : null,
+      textureWorstScore: Math.round(texWorstScore),
+      terneZones: terneZ,
+      cheekAsymmetry,
+      ZONE_FR_SHORT,
+      avgEclat: Math.round(mean('eclat')),
+      avgRedness: Math.round(mean('redness')),
+    };
+  }
+
   // ─── API publique ─────────────────────────────────────────────
 
-  return { initScreen, startLiveAnalysis, stopLiveAnalysis, analyzeFromPhoto, renderFaceOverlay, getTopInsights };
+  return { initScreen, startLiveAnalysis, stopLiveAnalysis, analyzeFromPhoto, renderFaceOverlay, getTopInsights, buildPrecisionContext };
 
 })();
 
