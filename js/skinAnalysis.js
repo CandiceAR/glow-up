@@ -1870,25 +1870,39 @@ const SkinAnalysis = (() => {
     const insights = getTopInsights(result).slice(0, 3);
     if (!insights.length) return;
 
-    // Premium beauty-tech palette — softer, warmer
-    const BEAUTY_CFG = {
-      redness: { r:215, g:115, b:128, dot:'#D77380' },
-      cernes:  { r:152, g:108, b:214, dot:'#986CD6' },
-      sebum:   { r:214, g:188, b:95,  dot:'#D6BC5F' },
-      taches:  { r:185, g:140, b:100, dot:'#B98C64' },
-      terne:   { r:200, g:155, b:90,  dot:'#C89B5A' },
-      texture: { r:100, g:125, b:195, dot:'#647DC3' },
+    // Heatmap palette — issue-specific beauty colors
+    const HEATMAP_CFG = {
+      redness:  { r:215, g:120, b:130 },  // voile rosé translucide
+      cernes:   { r:148, g:105, b:212 },  // halo lavande froid
+      sebum:    { r:210, g:190, b:85  },  // glow champagne doré
+      taches:   { r:185, g:148, b:100 },  // terre chaude
+      terne:    { r:175, g:162, b:120 },  // lumière diffuse dorée
+      texture:  { r:110, g:125, b:195 },  // grain bleuté lumineux
     };
 
-    // Anatomically precise landmarks — eyes split L/R for cernes
-    const PRECISE_LM = {
-      leftCheek:  [116,117,118,50,101,205,36,31,228,229,230,231,232,233,244],
-      rightCheek: [345,346,347,280,352,425,266,261,448,449,450,451,452,453,464],
-      forehead:   [10,338,297,332,284,251,389,356,454,323,361,288,397,365,379,378,400,377,152,148],
-      nose:       [1,5,4,195,197,2,98,327,326,94,370,462,461,360,279,429,358,289,305],
-      chin:       [152,200,199,175,171,377,396,369,395,394,364,367],
-      eyesLeft:   [33,7,163,144,145,153,154,155,133,246,161,160,159,158,157,173],
-      eyesRight:  [263,249,390,373,374,380,381,382,362,398,384,385,386,387,388,466],
+    // Micro-zone anatomical landmark clusters (MediaPipe 478-point mesh)
+    const MICRO_LM = {
+      underEyeLeft:    [116,117,118,119,120,121,128,229,230,231,232],
+      underEyeRight:   [345,346,347,348,349,350,357,449,450,451,452],
+      noseWingLeft:    [49,64,102,129,203,48,115,220,45],
+      noseWingRight:   [279,294,331,358,423,278,344,440,275],
+      upperCheekLeft:  [116,123,147,213,192,214,210,204,50],
+      upperCheekRight: [345,352,376,433,411,434,430,424,280],
+      foreheadCenter:  [9,10,151,68,104,69,108,337,299,333],
+      templeLeft:      [234,93,132,58,172,136],
+      templeRight:     [454,323,361,288,397,365],
+      chin:            [152,200,199,175,171,377,396,369,395,394],
+      mouthContour:    [61,185,40,39,37,0,267,270,409,291,375,321,405,314,17,84,181,91,146],
+    };
+
+    // Analysis zone → micro-zone(s) for targeted heatmap rendering
+    const ZONE_TO_MICRO = {
+      leftCheek:  ['upperCheekLeft'],
+      rightCheek: ['upperCheekRight'],
+      forehead:   ['foreheadCenter'],
+      nose:       ['noseWingLeft', 'noseWingRight'],
+      eyes:       ['underEyeLeft', 'underEyeRight'],
+      chin:       ['chin'],
     };
 
     const wrap = document.createElement('div');
@@ -1916,8 +1930,8 @@ const SkinAnalysis = (() => {
         if (pts.length < 3) return null;
         const cx = pts.reduce((s, p) => s + p.x, 0) / pts.length;
         const cy = pts.reduce((s, p) => s + p.y, 0) / pts.length;
-        const rx = Math.min(pts.reduce((s, p) => s + Math.abs(p.x - cx), 0) / pts.length * 1.5, W * 0.14);
-        const ry = Math.min(pts.reduce((s, p) => s + Math.abs(p.y - cy), 0) / pts.length * 1.5, H * 0.11);
+        const rx = Math.min(pts.reduce((s, p) => s + Math.abs(p.x - cx), 0) / pts.length * 1.5, W * 0.13);
+        const ry = Math.min(pts.reduce((s, p) => s + Math.abs(p.y - cy), 0) / pts.length * 1.5, H * 0.10);
         return { cx, cy, rx, ry };
       };
 
@@ -1930,11 +1944,11 @@ const SkinAnalysis = (() => {
       const defs = document.createElementNS(NS, 'defs');
       svg.appendChild(defs);
 
-      // Staggered zone reveal + breathing animations
+      // Staggered reveal + multi-speed breathing
       const styleEl = document.createElementNS(NS, 'style');
       styleEl.textContent =
         '@keyframes fo-reveal{from{opacity:0}to{opacity:1}}' +
-        '@keyframes fo-breathe{0%,100%{opacity:1}50%{opacity:.28}}' +
+        '@keyframes fo-breathe{0%,100%{opacity:1}50%{opacity:.20}}' +
         '.fo-z0{animation:fo-reveal .9s ease-out forwards .6s;opacity:0}' +
         '.fo-z1{animation:fo-reveal .9s ease-out forwards 1.3s;opacity:0}' +
         '.fo-z2{animation:fo-reveal .9s ease-out forwards 2.0s;opacity:0}' +
@@ -1943,137 +1957,138 @@ const SkinAnalysis = (() => {
         '.fo-b2{animation:fo-breathe 5.2s ease-in-out infinite 2.1s}';
       defs.appendChild(styleEl);
 
-      // Luminous scan gradient — soft vertical band
+      // Luminous scan line
       const scanGradId = 'fo-scan-g';
-      const scanGrad = document.createElementNS(NS, 'linearGradient');
-      scanGrad.setAttribute('id', scanGradId);
-      scanGrad.setAttribute('x1', '0'); scanGrad.setAttribute('y1', '0');
-      scanGrad.setAttribute('x2', '0'); scanGrad.setAttribute('y2', '1');
-      [
-        ['0%',   'rgba(255,255,255,0)'],
-        ['40%',  'rgba(255,255,255,0)'],
-        ['50%',  'rgba(255,255,255,0.48)'],
-        ['60%',  'rgba(255,255,255,0)'],
-        ['100%', 'rgba(255,255,255,0)'],
-      ].forEach(([off, col]) => {
-        const s = document.createElementNS(NS, 'stop');
-        s.setAttribute('offset', off); s.setAttribute('stop-color', col);
-        scanGrad.appendChild(s);
+      const sg = document.createElementNS(NS, 'linearGradient');
+      sg.setAttribute('id', scanGradId);
+      sg.setAttribute('x1', '0'); sg.setAttribute('y1', '0');
+      sg.setAttribute('x2', '0'); sg.setAttribute('y2', '1');
+      [['0%','rgba(255,255,255,0)'],['42%','rgba(255,255,255,0)'],
+       ['50%','rgba(255,255,255,0.45)'],['58%','rgba(255,255,255,0)'],['100%','rgba(255,255,255,0)']
+      ].forEach(([off,col]) => {
+        const s = document.createElementNS(NS,'stop');
+        s.setAttribute('offset',off); s.setAttribute('stop-color',col);
+        sg.appendChild(s);
       });
-      defs.appendChild(scanGrad);
+      defs.appendChild(sg);
+      const scanRect = document.createElementNS(NS,'rect');
+      scanRect.setAttribute('x','0'); scanRect.setAttribute('y',(-H*0.12).toFixed(0));
+      scanRect.setAttribute('width',String(W)); scanRect.setAttribute('height',(H*1.24).toFixed(0));
+      scanRect.setAttribute('fill',`url(#${scanGradId})`); scanRect.setAttribute('opacity','0.65');
+      const sa = document.createElementNS(NS,'animate');
+      sa.setAttribute('attributeName','y');
+      sa.setAttribute('values',`${(-H*0.12).toFixed(0)};${(H*0.88).toFixed(0)}`);
+      sa.setAttribute('dur','2.2s'); sa.setAttribute('begin','0.05s');
+      sa.setAttribute('fill','freeze'); sa.setAttribute('calcMode','spline');
+      sa.setAttribute('keySplines','0.4 0 0.6 1');
+      scanRect.appendChild(sa); svg.appendChild(scanRect);
 
-      // Scan rect — single luminous sweep top→bottom
-      const scanRect = document.createElementNS(NS, 'rect');
-      scanRect.setAttribute('x', '0'); scanRect.setAttribute('y', (-H * 0.12).toFixed(0));
-      scanRect.setAttribute('width', String(W)); scanRect.setAttribute('height', (H * 1.24).toFixed(0));
-      scanRect.setAttribute('fill', `url(#${scanGradId})`);
-      scanRect.setAttribute('opacity', '0.7');
-      const scanAnim = document.createElementNS(NS, 'animate');
-      scanAnim.setAttribute('attributeName', 'y');
-      scanAnim.setAttribute('values', `${(-H * 0.12).toFixed(0)};${(H * 0.88).toFixed(0)}`);
-      scanAnim.setAttribute('dur', '2.2s');
-      scanAnim.setAttribute('begin', '0.05s');
-      scanAnim.setAttribute('fill', 'freeze');
-      scanAnim.setAttribute('calcMode', 'spline');
-      scanAnim.setAttribute('keySplines', '0.4 0 0.6 1');
-      scanRect.appendChild(scanAnim);
-      svg.appendChild(scanRect);
-
-      // Intensity → alpha: severity 0→0.10, severity 100→0.52
-      const iAlpha = (sev) => 0.10 + (Math.min(sev, 100) / 100) * 0.42;
+      // Severity → alpha: 0→0.08, 100→0.52
+      const iAlpha = (sev) => 0.08 + (Math.min(sev, 100) / 100) * 0.44;
 
       const faceCx = landmarks[1].x * W;
-      const LABEL_Y = [H * 0.18, H * 0.48, H * 0.74];
+      const LABEL_Y = [H * 0.17, H * 0.47, H * 0.73];
 
       insights.forEach(({ key, zones, rank, severity: groupSev, pillLabel }) => {
-        const cfg = BEAUTY_CFG[key] || BEAUTY_CFG.redness;
-        const { r, g, b } = cfg;
+        const { r, g, b } = HEATMAP_CFG[key] || HEATMAP_CFG.redness;
         const isPri = rank === 0;
         const alpha = iAlpha(groupSev);
 
-        // Outer ambient gradient — large soft halo
+        // 5-stop outer gradient — true progressive diffusion (cloud → transparent)
         const outerGradId = `fo-og-${rank}`;
-        const outerGrad   = document.createElementNS(NS, 'radialGradient');
-        outerGrad.setAttribute('id', outerGradId);
-        outerGrad.setAttribute('cx', '50%'); outerGrad.setAttribute('cy', '50%'); outerGrad.setAttribute('r', '50%');
+        const og = document.createElementNS(NS, 'radialGradient');
+        og.setAttribute('id', outerGradId);
+        og.setAttribute('cx','50%'); og.setAttribute('cy','50%'); og.setAttribute('r','50%');
         [
-          ['0%',   `rgb(${r},${g},${b})`, (alpha * 0.55).toFixed(3)],
-          ['55%',  `rgb(${r},${g},${b})`, (alpha * 0.12).toFixed(3)],
-          ['100%', `rgb(${r},${g},${b})`, '0'],
-        ].forEach(([off, col, op]) => {
-          const s = document.createElementNS(NS, 'stop');
-          s.setAttribute('offset', off); s.setAttribute('stop-color', col); s.setAttribute('stop-opacity', op);
-          outerGrad.appendChild(s);
+          ['0%',  (alpha * 0.42).toFixed(3)],
+          ['25%', (alpha * 0.24).toFixed(3)],
+          ['52%', (alpha * 0.09).toFixed(3)],
+          ['80%', (alpha * 0.02).toFixed(3)],
+          ['100%','0'],
+        ].forEach(([off, op]) => {
+          const s = document.createElementNS(NS,'stop');
+          s.setAttribute('offset',off);
+          s.setAttribute('stop-color',`rgb(${r},${g},${b})`);
+          s.setAttribute('stop-opacity',op);
+          og.appendChild(s);
         });
-        defs.appendChild(outerGrad);
+        defs.appendChild(og);
 
-        // Inner breathing gradient — tighter core
+        // 4-stop inner gradient — dense hot center + breathing
         const innerGradId = `fo-ig-${rank}`;
-        const innerGrad   = document.createElementNS(NS, 'radialGradient');
-        innerGrad.setAttribute('id', innerGradId);
-        innerGrad.setAttribute('cx', '50%'); innerGrad.setAttribute('cy', '50%'); innerGrad.setAttribute('r', '50%');
+        const ig = document.createElementNS(NS, 'radialGradient');
+        ig.setAttribute('id', innerGradId);
+        ig.setAttribute('cx','50%'); ig.setAttribute('cy','50%'); ig.setAttribute('r','50%');
         [
-          ['0%',   `rgb(${r},${g},${b})`, alpha.toFixed(3)],
-          ['55%',  `rgb(${r},${g},${b})`, (alpha * 0.28).toFixed(3)],
-          ['100%', `rgb(${r},${g},${b})`, '0'],
-        ].forEach(([off, col, op]) => {
-          const s = document.createElementNS(NS, 'stop');
-          s.setAttribute('offset', off); s.setAttribute('stop-color', col); s.setAttribute('stop-opacity', op);
-          innerGrad.appendChild(s);
+          ['0%',  alpha.toFixed(3)],
+          ['36%', (alpha * 0.60).toFixed(3)],
+          ['70%', (alpha * 0.18).toFixed(3)],
+          ['100%','0'],
+        ].forEach(([off, op]) => {
+          const s = document.createElementNS(NS,'stop');
+          s.setAttribute('offset',off);
+          s.setAttribute('stop-color',`rgb(${r},${g},${b})`);
+          s.setAttribute('stop-opacity',op);
+          ig.appendChild(s);
         });
-        defs.appendChild(innerGrad);
+        defs.appendChild(ig);
 
-        // Zone group — staggered reveal class
-        const zoneGroup = document.createElementNS(NS, 'g');
-        zoneGroup.setAttribute('class', `fo-z${rank}`);
+        const zoneGroup = document.createElementNS(NS,'g');
+        zoneGroup.setAttribute('class',`fo-z${rank}`);
         svg.appendChild(zoneGroup);
 
         let primaryEl = null;
 
-        // Split 'eyes' anatomically into left/right for cernes
-        const resolvedZones = zones.flatMap(({ zoneKey, severity }) =>
-          zoneKey === 'eyes'
-            ? [{ lmKey: 'eyesLeft', severity }, { lmKey: 'eyesRight', severity }]
-            : [{ lmKey: zoneKey, severity }]
+        // Map analysis zones → anatomical micro-zones
+        const microZones = zones.flatMap(({ zoneKey, severity }) =>
+          (ZONE_TO_MICRO[zoneKey] || [zoneKey]).map(mk => ({ mk, severity }))
         );
 
-        resolvedZones.forEach(({ lmKey, severity: zoneSev }) => {
-          const lmIdx = PRECISE_LM[lmKey] || PRECISE_LM.eyesLeft;
-          const el    = _ellipseFromLM(lmIdx);
+        microZones.forEach(({ mk, severity: zoneSev }) => {
+          const lmIdx = MICRO_LM[mk];
+          if (!lmIdx) return;
+          const el = _ellipseFromLM(lmIdx);
           if (!el) return;
           if (!primaryEl) primaryEl = el;
           const { cx, cy, rx, ry } = el;
           const zA = iAlpha(zoneSev);
 
-          // Outer ambient — large, static
-          const outerGlow = document.createElementNS(NS, 'ellipse');
-          outerGlow.setAttribute('cx', cx.toFixed(1)); outerGlow.setAttribute('cy', cy.toFixed(1));
-          outerGlow.setAttribute('rx', (rx * 3.0).toFixed(1)); outerGlow.setAttribute('ry', (ry * 2.8).toFixed(1));
-          outerGlow.setAttribute('fill', `url(#${outerGradId})`);
+          // Layer 1 — ambient cloud (5× — very wide, very faint)
+          const cloud = document.createElementNS(NS,'ellipse');
+          cloud.setAttribute('cx',cx.toFixed(1)); cloud.setAttribute('cy',cy.toFixed(1));
+          cloud.setAttribute('rx',(rx*5.0).toFixed(1)); cloud.setAttribute('ry',(ry*4.5).toFixed(1));
+          cloud.setAttribute('fill',`url(#${outerGradId})`); cloud.setAttribute('opacity','0.48');
+          zoneGroup.appendChild(cloud);
+
+          // Layer 2 — outer glow (3.2× — main diffusion)
+          const outerGlow = document.createElementNS(NS,'ellipse');
+          outerGlow.setAttribute('cx',cx.toFixed(1)); outerGlow.setAttribute('cy',cy.toFixed(1));
+          outerGlow.setAttribute('rx',(rx*3.2).toFixed(1)); outerGlow.setAttribute('ry',(ry*3.0).toFixed(1));
+          outerGlow.setAttribute('fill',`url(#${outerGradId})`);
           zoneGroup.appendChild(outerGlow);
 
-          // Mid halo — breathing
-          const midGlow = document.createElementNS(NS, 'ellipse');
-          midGlow.setAttribute('cx', cx.toFixed(1)); midGlow.setAttribute('cy', cy.toFixed(1));
-          midGlow.setAttribute('rx', (rx * 1.8).toFixed(1)); midGlow.setAttribute('ry', (ry * 1.8).toFixed(1));
-          midGlow.setAttribute('fill', `url(#${innerGradId})`);
-          midGlow.setAttribute('class', `fo-b${rank}`);
-          zoneGroup.appendChild(midGlow);
+          // Layer 3 — main halo, breathing (1.8× — hot zone)
+          const halo = document.createElementNS(NS,'ellipse');
+          halo.setAttribute('cx',cx.toFixed(1)); halo.setAttribute('cy',cy.toFixed(1));
+          halo.setAttribute('rx',(rx*1.8).toFixed(1)); halo.setAttribute('ry',(ry*1.8).toFixed(1));
+          halo.setAttribute('fill',`url(#${innerGradId})`);
+          halo.setAttribute('class',`fo-b${rank}`);
+          zoneGroup.appendChild(halo);
 
-          // Inner contour ring
-          const contour = document.createElementNS(NS, 'ellipse');
-          contour.setAttribute('cx', cx.toFixed(1)); contour.setAttribute('cy', cy.toFixed(1));
-          contour.setAttribute('rx', rx.toFixed(1)); contour.setAttribute('ry', ry.toFixed(1));
-          contour.setAttribute('fill', 'none');
-          contour.setAttribute('stroke', `rgba(${r},${g},${b},${(zA * 0.55).toFixed(2)})`);
-          contour.setAttribute('stroke-width', Math.max(0.5, W * 0.0012).toFixed(1));
-          zoneGroup.appendChild(contour);
+          // Layer 4 — contour ring (1× — anatomical boundary)
+          const ring = document.createElementNS(NS,'ellipse');
+          ring.setAttribute('cx',cx.toFixed(1)); ring.setAttribute('cy',cy.toFixed(1));
+          ring.setAttribute('rx',rx.toFixed(1)); ring.setAttribute('ry',ry.toFixed(1));
+          ring.setAttribute('fill','none');
+          ring.setAttribute('stroke',`rgba(${r},${g},${b},${(zA*0.50).toFixed(2)})`);
+          ring.setAttribute('stroke-width',Math.max(0.5,W*0.0012).toFixed(1));
+          zoneGroup.appendChild(ring);
 
-          // Center glow pin
-          const pin = document.createElementNS(NS, 'circle');
-          pin.setAttribute('cx', cx.toFixed(1)); pin.setAttribute('cy', cy.toFixed(1));
-          pin.setAttribute('r',  (W * 0.0035).toFixed(1));
-          pin.setAttribute('fill', `rgba(${r},${g},${b},${(zA * 0.88).toFixed(2)})`);
+          // Layer 5 — hot spot pin (precise center)
+          const pin = document.createElementNS(NS,'circle');
+          pin.setAttribute('cx',cx.toFixed(1)); pin.setAttribute('cy',cy.toFixed(1));
+          pin.setAttribute('r',(W*0.0028).toFixed(1));
+          pin.setAttribute('fill',`rgba(${r},${g},${b},${(zA*0.92).toFixed(2)})`);
           zoneGroup.appendChild(pin);
         });
 
@@ -2083,46 +2098,45 @@ const SkinAnalysis = (() => {
         const isCentral = Math.abs(zoneCx - faceCx) < W * 0.08;
         const onRight   = isCentral ? (rank % 2 === 0) : (zoneCx >= faceCx);
 
-        // Micro-annotation dimensions — much smaller than old pill labels
-        const tagW  = isPri ? W * 0.195 : W * 0.165;
-        const tagH  = W * 0.036;
+        const tagW  = isPri ? W * 0.190 : W * 0.160;
+        const tagH  = W * 0.034;
         const tagCx = onRight ? W * 0.835 : W * 0.165;
         const tagCy = LABEL_Y[rank];
-        const tagFs = isPri ? W * 0.020 : W * 0.017;
+        const tagFs = isPri ? W * 0.019 : W * 0.016;
 
-        // Dashed callout line — elegant, understated
+        // Dashed callout
         const lineEdgeX = onRight ? tagCx - tagW / 2 : tagCx + tagW / 2;
-        const callout = document.createElementNS(NS, 'line');
-        callout.setAttribute('x1', zoneCx.toFixed(1)); callout.setAttribute('y1', zoneCy.toFixed(1));
-        callout.setAttribute('x2', lineEdgeX.toFixed(1)); callout.setAttribute('y2', tagCy.toFixed(1));
-        callout.setAttribute('stroke', `rgba(${r},${g},${b},${isPri ? 0.28 : 0.18})`);
-        callout.setAttribute('stroke-width', Math.max(0.4, W * 0.0008).toFixed(1));
-        callout.setAttribute('stroke-linecap', 'round');
-        callout.setAttribute('stroke-dasharray', `${(W * 0.008).toFixed(1)} ${(W * 0.005).toFixed(1)}`);
+        const callout = document.createElementNS(NS,'line');
+        callout.setAttribute('x1',zoneCx.toFixed(1)); callout.setAttribute('y1',zoneCy.toFixed(1));
+        callout.setAttribute('x2',lineEdgeX.toFixed(1)); callout.setAttribute('y2',tagCy.toFixed(1));
+        callout.setAttribute('stroke',`rgba(${r},${g},${b},${isPri?0.30:0.18})`);
+        callout.setAttribute('stroke-width',Math.max(0.4,W*0.0008).toFixed(1));
+        callout.setAttribute('stroke-linecap','round');
+        callout.setAttribute('stroke-dasharray',`${(W*0.007).toFixed(1)} ${(W*0.004).toFixed(1)}`);
         zoneGroup.appendChild(callout);
 
-        // Frosted micro chip background
-        const chip = document.createElementNS(NS, 'rect');
-        chip.setAttribute('x',      (tagCx - tagW / 2).toFixed(1));
-        chip.setAttribute('y',      (tagCy - tagH / 2).toFixed(1));
-        chip.setAttribute('width',  tagW.toFixed(1));
-        chip.setAttribute('height', tagH.toFixed(1));
-        chip.setAttribute('rx',     (tagH / 2).toFixed(1));
-        chip.setAttribute('fill',   `rgba(255,255,255,${isPri ? 0.84 : 0.70})`);
-        chip.setAttribute('stroke', `rgba(${r},${g},${b},${isPri ? 0.18 : 0.10})`);
-        chip.setAttribute('stroke-width', '0.5');
+        // Frosted micro-chip
+        const chip = document.createElementNS(NS,'rect');
+        chip.setAttribute('x',(tagCx-tagW/2).toFixed(1));
+        chip.setAttribute('y',(tagCy-tagH/2).toFixed(1));
+        chip.setAttribute('width',tagW.toFixed(1));
+        chip.setAttribute('height',tagH.toFixed(1));
+        chip.setAttribute('rx',(tagH/2).toFixed(1));
+        chip.setAttribute('fill',`rgba(255,255,255,${isPri?0.86:0.72})`);
+        chip.setAttribute('stroke',`rgba(${r},${g},${b},${isPri?0.20:0.12})`);
+        chip.setAttribute('stroke-width','0.5');
         zoneGroup.appendChild(chip);
 
-        // Micro-annotation label — centered, slim
-        const txt = document.createElementNS(NS, 'text');
-        txt.setAttribute('x',            tagCx.toFixed(1));
-        txt.setAttribute('y',            (tagCy + tagFs * 0.38).toFixed(1));
-        txt.setAttribute('text-anchor',  'middle');
-        txt.setAttribute('fill',         `rgba(30,22,40,${isPri ? 0.82 : 0.65})`);
-        txt.setAttribute('font-size',    tagFs.toFixed(1));
-        txt.setAttribute('font-weight',  isPri ? '500' : '400');
-        txt.setAttribute('font-family',  'DM Sans, sans-serif');
-        txt.setAttribute('letter-spacing', '0.3');
+        // Micro-annotation label
+        const txt = document.createElementNS(NS,'text');
+        txt.setAttribute('x',tagCx.toFixed(1));
+        txt.setAttribute('y',(tagCy+tagFs*0.38).toFixed(1));
+        txt.setAttribute('text-anchor','middle');
+        txt.setAttribute('fill',`rgba(30,22,40,${isPri?0.82:0.65})`);
+        txt.setAttribute('font-size',tagFs.toFixed(1));
+        txt.setAttribute('font-weight',isPri?'500':'400');
+        txt.setAttribute('font-family','DM Sans, sans-serif');
+        txt.setAttribute('letter-spacing','0.3');
         txt.textContent = pillLabel || key;
         zoneGroup.appendChild(txt);
       });
