@@ -419,11 +419,18 @@ const TryOn = (() => {
   }
 
   // ─── Photo / Camera ───────────────────────────────────────────
+  let _activeStream  = null;
+  let _stableFrames  = 0;
+  let _autoCapturing = false;
+  const _AUTO_FRAMES = 18; // ~2.2s à 120ms/frame
+
   function setupCapture() {
     const uploadInput  = document.getElementById('photoUpload');
     const cameraBtn    = document.getElementById('cameraBtn');
     const cameraStream = document.getElementById('cameraStream');
     const captureBtn   = document.getElementById('captureBtn');
+    const cameraWrap   = document.getElementById('cameraWrap');
+    const cameraOverlay= document.getElementById('cameraOverlay');
 
     if (uploadInput) {
       uploadInput.addEventListener('change', e => {
@@ -432,10 +439,49 @@ const TryOn = (() => {
         const reader = new FileReader();
         reader.onload = ev => {
           AppState.face.photo = ev.target.result;
-          showCapturePreview(ev.target.result);
           if (typeof SkinJourney !== 'undefined') SkinJourney.onPhotoReady();
+          if (typeof handleCaptureNext === 'function') {
+            handleCaptureNext();
+          } else {
+            showCapturePreview(ev.target.result);
+          }
         };
         reader.readAsDataURL(file);
+      });
+    }
+
+    // Snap : listener attaché une seule fois au setup
+    if (captureBtn) {
+      captureBtn.addEventListener('click', () => {
+        if (!_activeStream) return;
+        if (typeof SkinAnalysis !== 'undefined') SkinAnalysis.stopLiveAnalysis();
+        _stableFrames  = 0;
+        _autoCapturing = false;
+
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width  = cameraStream.videoWidth  || 640;
+        tempCanvas.height = cameraStream.videoHeight || 480;
+        tempCanvas.getContext('2d').drawImage(cameraStream, 0, 0);
+        const dataUrl = tempCanvas.toDataURL('image/jpeg', 0.92);
+        AppState.face.photo = dataUrl;
+        if (typeof SkinJourney !== 'undefined') SkinJourney.onPhotoReady();
+
+        _activeStream.getTracks().forEach(t => t.stop());
+        _activeStream = null;
+
+        if (cameraWrap)  cameraWrap.style.display  = 'none';
+        if (captureBtn)  captureBtn.style.display  = 'none';
+        if (cameraBtn)   cameraBtn.style.display   = 'block';
+
+        // Réinitialiser l'anneau countdown
+        const ring = document.getElementById('captureCountdownRing');
+        if (ring) ring.setAttribute('stroke-dashoffset', '113.1');
+
+        if (typeof handleCaptureNext === 'function') {
+          handleCaptureNext();
+        } else {
+          showCapturePreview(dataUrl);
+        }
       });
     }
 
@@ -444,44 +490,75 @@ const TryOn = (() => {
         try {
           const constraints = { video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } } };
           const stream = await navigator.mediaDevices.getUserMedia(constraints);
+          _activeStream = stream;
           cameraStream.srcObject = stream;
 
-          const cameraWrap    = document.getElementById('cameraWrap');
-          const cameraOverlay = document.getElementById('cameraOverlay');
-
           if (cameraWrap) cameraWrap.style.display = 'block';
-          captureBtn.style.display = 'block';
-          cameraBtn.style.display  = 'none';
+          if (captureBtn) captureBtn.style.display = 'block';
+          cameraBtn.style.display = 'none';
 
-          // Lancer l'analyse zone en temps réel
-          cameraStream.onloadedmetadata = () => {
+          // Jouer explicitement (Firefox peut bloquer l'autoplay)
+          cameraStream.play().catch(() => {});
+
+          const _startLive = () => {
             if (typeof SkinAnalysis !== 'undefined' && cameraOverlay) {
-              SkinAnalysis.startLiveAnalysis(cameraStream, cameraOverlay);
+              SkinAnalysis.startLiveAnalysis(cameraStream, cameraOverlay, _updateCaptureQuality);
             }
           };
-
-          captureBtn.onclick = () => {
-            // Arrêter l'overlay
-            if (typeof SkinAnalysis !== 'undefined') SkinAnalysis.stopLiveAnalysis();
-
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width  = cameraStream.videoWidth;
-            tempCanvas.height = cameraStream.videoHeight;
-            tempCanvas.getContext('2d').drawImage(cameraStream, 0, 0);
-            const dataUrl = tempCanvas.toDataURL('image/jpeg', 0.92);
-            AppState.face.photo = dataUrl;
-            if (typeof SkinJourney !== 'undefined') SkinJourney.onPhotoReady();
-
-            stream.getTracks().forEach(t => t.stop());
-            if (cameraWrap) cameraWrap.style.display = 'none';
-            captureBtn.style.display = 'none';
-            cameraBtn.style.display  = 'block';
-            showCapturePreview(dataUrl);
-          };
+          // Si les métadonnées sont déjà prêtes (race condition), lancer directement
+          if (cameraStream.readyState >= 1) {
+            _startLive();
+          } else {
+            cameraStream.addEventListener('loadedmetadata', _startLive, { once: true });
+          }
         } catch (err) {
           showToast('Accès caméra refusé. Utilise l\'upload de photo.', 'error');
         }
       });
+    }
+  }
+
+  function _updateCaptureQuality(q) {
+    const bar   = document.getElementById('captureQualityBar');
+    const msg   = document.getElementById('captureQualityMsg');
+    const score = document.getElementById('captureQualityScore');
+    if (!bar || !msg) return;
+
+    bar.style.display = 'flex';
+    bar.className = 'capture-quality-bar ' +
+      (q.ok ? 'cq--ok' : q.score >= 50 ? 'cq--warn' : 'cq--bad');
+    msg.textContent = q.primaryMsg;
+
+    if (score) {
+      score.textContent = q.ok           ? 'Qualité excellente'
+        : q.score >= 60                  ? 'Qualité correcte'
+        : q.score >= 35                  ? 'Lumière moyenne'
+        : 'Photo à reprendre';
+    }
+
+    const btn  = document.getElementById('captureBtn');
+    const ring = document.getElementById('captureCountdownRing');
+    if (btn) btn.classList.toggle('cq-ready', q.ok);
+
+    if (q.ok && !_autoCapturing) {
+      _stableFrames++;
+      const pct  = Math.min(_stableFrames / _AUTO_FRAMES, 1);
+      const circ = 2 * Math.PI * 18; // 113.1
+      if (ring) ring.setAttribute('stroke-dashoffset', (circ * (1 - pct)).toFixed(1));
+
+      if (_stableFrames >= _AUTO_FRAMES) {
+        _autoCapturing = true;
+        _stableFrames  = 0;
+        if (btn && _activeStream) {
+          setTimeout(() => {
+            _autoCapturing = false;
+            btn.click();
+          }, 80);
+        }
+      }
+    } else {
+      _stableFrames = 0;
+      if (ring) ring.setAttribute('stroke-dashoffset', (2 * Math.PI * 18).toFixed(1));
     }
   }
 

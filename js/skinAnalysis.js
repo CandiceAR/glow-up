@@ -338,20 +338,62 @@ const SkinAnalysis = (() => {
   }
 
   function drawFaceGuide(ctx, w, h) {
-    const cx = w * 0.5, cy = h * 0.48;
-    const rx = w * 0.27, ry = h * 0.36;
+    const cx   = w * 0.50, cy = h * 0.47;
+    const rx   = w * 0.26, ry = h * 0.35;
+    const bLen = Math.min(w, h) * 0.06;
+
     ctx.save();
-    ctx.strokeStyle = 'rgba(201,169,138,0.55)';
-    ctx.lineWidth   = 2;
-    ctx.setLineDash([7, 5]);
+
+    // Corner brackets
+    const corners = [
+      [cx - rx, cy - ry,  1,  1],
+      [cx + rx, cy - ry, -1,  1],
+      [cx + rx, cy + ry, -1, -1],
+      [cx - rx, cy + ry,  1, -1],
+    ];
+    ctx.strokeStyle = 'rgba(201,169,138,0.88)';
+    ctx.lineWidth   = 2.5;
+    ctx.lineCap     = 'round';
+    corners.forEach(([bx, by, dx, dy]) => {
+      ctx.beginPath();
+      ctx.moveTo(bx + dx * bLen, by);
+      ctx.lineTo(bx, by);
+      ctx.lineTo(bx, by + dy * bLen);
+      ctx.stroke();
+    });
+
+    // Oval guide — soft dashed
+    ctx.strokeStyle = 'rgba(201,169,138,0.25)';
+    ctx.lineWidth   = 1.2;
+    ctx.setLineDash([5, 4]);
     ctx.beginPath();
     ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
     ctx.stroke();
     ctx.setLineDash([]);
-    ctx.fillStyle = 'rgba(201,169,138,0.75)';
+
+    // Eye-level horizontal guide
+    const eyeY = cy - ry * 0.22;
+    ctx.strokeStyle = 'rgba(201,169,138,0.18)';
+    ctx.lineWidth   = 0.8;
+    ctx.setLineDash([3, 4]);
+    ctx.beginPath();
+    ctx.moveTo(cx - rx * 0.65, eyeY);
+    ctx.lineTo(cx + rx * 0.65, eyeY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Nose center dot
+    ctx.fillStyle = 'rgba(201,169,138,0.38)';
+    ctx.beginPath();
+    ctx.arc(cx, cy + ry * 0.12, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Label
+    ctx.fillStyle = 'rgba(201,169,138,0.72)';
     ctx.font      = '13px DM Sans, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('Centre ton visage ici', cx, cy + ry + 22);
+    ctx.fillText('Centre ton visage', cx, cy + ry + 22);
+
     ctx.restore();
   }
 
