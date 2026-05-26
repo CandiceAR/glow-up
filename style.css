@@ -7370,21 +7370,24 @@ em { font-style: italic; color: var(--nude); }
    ════════════════════════════════════════════════════════════ */
 .fo-wrap {
   width: 100%;
-  max-width: 340px;
+  max-width: 360px;
   margin: 0 auto 24px;
-  border-radius: 16px;
+  border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  box-shadow: 0 6px 28px rgba(0,0,0,0.14), 0 1px 4px rgba(0,0,0,0.08);
+  border: 1px solid rgba(255,255,255,0.55);
 }
 /* Media wrapper: relative so SVG stacks exactly on top of the photo */
 .fo-media-wrap {
   position: relative;
-  line-height: 0; /* removes inline-block gap below img */
+  line-height: 0;
+  box-shadow: inset 0 0 40px rgba(0,0,0,0.06);
 }
-/* Photo fills the container — height auto preserves aspect ratio */
+/* Photo: subtle beauty-canvas treatment */
 .fo-photo {
   width: 100%;
   display: block;
+  filter: contrast(1.03) brightness(1.01) saturate(0.96);
 }
 /* SVG overlay: all 4 inset values so it stretches to cover the photo
    even when the parent's height is determined by content (not explicit).

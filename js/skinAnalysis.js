@@ -1870,23 +1870,25 @@ const SkinAnalysis = (() => {
     const insights = getTopInsights(result).slice(0, 3);
     if (!insights.length) return;
 
-    // Beauty palette — soft tones, not medical
+    // Premium beauty-tech palette — softer, warmer
     const BEAUTY_CFG = {
-      redness: { r:210, g:90,  b:80,  dot:'#D2584E' },
-      cernes:  { r:120, g:85,  b:195, dot:'#7855C4' },
-      sebum:   { r:195, g:148, b:28,  dot:'#C4941C' },
-      taches:  { r:150, g:95,  b:52,  dot:'#946034' },
-      terne:   { r:190, g:100, b:35,  dot:'#BE6423' },
-      texture: { r:80,  g:105, b:172, dot:'#5069AC' },
+      redness: { r:215, g:115, b:128, dot:'#D77380' },
+      cernes:  { r:152, g:108, b:214, dot:'#986CD6' },
+      sebum:   { r:214, g:188, b:95,  dot:'#D6BC5F' },
+      taches:  { r:185, g:140, b:100, dot:'#B98C64' },
+      terne:   { r:200, g:155, b:90,  dot:'#C89B5A' },
+      texture: { r:100, g:125, b:195, dot:'#647DC3' },
     };
 
+    // Anatomically precise landmarks — eyes split L/R for cernes
     const PRECISE_LM = {
-      leftCheek:  [116, 117, 118, 50, 101, 205, 36],
-      rightCheek: [345, 346, 347, 280, 352, 425, 266],
-      forehead:   [10, 338, 297, 109, 67, 103, 54, 21, 151],
-      nose:       [1, 5, 4, 195, 197, 2, 98, 327],
-      chin:       [152, 200, 199, 175, 171, 377],
-      eyes:       [33, 144, 145, 153, 362, 374, 373, 390],
+      leftCheek:  [116,117,118,50,101,205,36,31,228,229,230,231,232,233,244],
+      rightCheek: [345,346,347,280,352,425,266,261,448,449,450,451,452,453,464],
+      forehead:   [10,338,297,332,284,251,389,356,454,323,361,288,397,365,379,378,400,377,152,148],
+      nose:       [1,5,4,195,197,2,98,327,326,94,370,462,461,360,279,429,358,289,305],
+      chin:       [152,200,199,175,171,377,396,369,395,394,364,367],
+      eyesLeft:   [33,7,163,144,145,153,154,155,133,246,161,160,159,158,157,173],
+      eyesRight:  [263,249,390,373,374,380,381,382,362,398,384,385,386,387,388,466],
     };
 
     const wrap = document.createElement('div');
@@ -1928,31 +1930,75 @@ const SkinAnalysis = (() => {
       const defs = document.createElementNS(NS, 'defs');
       svg.appendChild(defs);
 
-      // Slow, subtle breathing — narrower opacity range for organic feel
+      // Staggered zone reveal + breathing animations
       const styleEl = document.createElementNS(NS, 'style');
       styleEl.textContent =
-        '@keyframes fo-breathe{0%,100%{opacity:1}50%{opacity:.32}}' +
+        '@keyframes fo-reveal{from{opacity:0}to{opacity:1}}' +
+        '@keyframes fo-breathe{0%,100%{opacity:1}50%{opacity:.28}}' +
+        '.fo-z0{animation:fo-reveal .9s ease-out forwards .6s;opacity:0}' +
+        '.fo-z1{animation:fo-reveal .9s ease-out forwards 1.3s;opacity:0}' +
+        '.fo-z2{animation:fo-reveal .9s ease-out forwards 2.0s;opacity:0}' +
         '.fo-b0{animation:fo-breathe 3.8s ease-in-out infinite}' +
         '.fo-b1{animation:fo-breathe 4.6s ease-in-out infinite 1.2s}' +
         '.fo-b2{animation:fo-breathe 5.2s ease-in-out infinite 2.1s}';
       defs.appendChild(styleEl);
 
-      const faceCx = landmarks[1].x * W;
-      const LABEL_Y = [H * 0.20, H * 0.50, H * 0.76];
+      // Luminous scan gradient — soft vertical band
+      const scanGradId = 'fo-scan-g';
+      const scanGrad = document.createElementNS(NS, 'linearGradient');
+      scanGrad.setAttribute('id', scanGradId);
+      scanGrad.setAttribute('x1', '0'); scanGrad.setAttribute('y1', '0');
+      scanGrad.setAttribute('x2', '0'); scanGrad.setAttribute('y2', '1');
+      [
+        ['0%',   'rgba(255,255,255,0)'],
+        ['40%',  'rgba(255,255,255,0)'],
+        ['50%',  'rgba(255,255,255,0.48)'],
+        ['60%',  'rgba(255,255,255,0)'],
+        ['100%', 'rgba(255,255,255,0)'],
+      ].forEach(([off, col]) => {
+        const s = document.createElementNS(NS, 'stop');
+        s.setAttribute('offset', off); s.setAttribute('stop-color', col);
+        scanGrad.appendChild(s);
+      });
+      defs.appendChild(scanGrad);
 
-      insights.forEach(({ key, zones, rank, pillLabel }) => {
-        const cfg   = BEAUTY_CFG[key] || BEAUTY_CFG.redness;
+      // Scan rect — single luminous sweep top→bottom
+      const scanRect = document.createElementNS(NS, 'rect');
+      scanRect.setAttribute('x', '0'); scanRect.setAttribute('y', (-H * 0.12).toFixed(0));
+      scanRect.setAttribute('width', String(W)); scanRect.setAttribute('height', (H * 1.24).toFixed(0));
+      scanRect.setAttribute('fill', `url(#${scanGradId})`);
+      scanRect.setAttribute('opacity', '0.7');
+      const scanAnim = document.createElementNS(NS, 'animate');
+      scanAnim.setAttribute('attributeName', 'y');
+      scanAnim.setAttribute('values', `${(-H * 0.12).toFixed(0)};${(H * 0.88).toFixed(0)}`);
+      scanAnim.setAttribute('dur', '2.2s');
+      scanAnim.setAttribute('begin', '0.05s');
+      scanAnim.setAttribute('fill', 'freeze');
+      scanAnim.setAttribute('calcMode', 'spline');
+      scanAnim.setAttribute('keySplines', '0.4 0 0.6 1');
+      scanRect.appendChild(scanAnim);
+      svg.appendChild(scanRect);
+
+      // Intensity → alpha: severity 0→0.10, severity 100→0.52
+      const iAlpha = (sev) => 0.10 + (Math.min(sev, 100) / 100) * 0.42;
+
+      const faceCx = landmarks[1].x * W;
+      const LABEL_Y = [H * 0.18, H * 0.48, H * 0.74];
+
+      insights.forEach(({ key, zones, rank, severity: groupSev, pillLabel }) => {
+        const cfg = BEAUTY_CFG[key] || BEAUTY_CFG.redness;
         const { r, g, b } = cfg;
         const isPri = rank === 0;
+        const alpha = iAlpha(groupSev);
 
-        // Outer ambient gradient — large, very faint, static organic glow
+        // Outer ambient gradient — large soft halo
         const outerGradId = `fo-og-${rank}`;
         const outerGrad   = document.createElementNS(NS, 'radialGradient');
         outerGrad.setAttribute('id', outerGradId);
         outerGrad.setAttribute('cx', '50%'); outerGrad.setAttribute('cy', '50%'); outerGrad.setAttribute('r', '50%');
         [
-          ['0%',   `rgb(${r},${g},${b})`, isPri ? '0.12' : '0.07'],
-          ['50%',  `rgb(${r},${g},${b})`, isPri ? '0.04' : '0.02'],
+          ['0%',   `rgb(${r},${g},${b})`, (alpha * 0.55).toFixed(3)],
+          ['55%',  `rgb(${r},${g},${b})`, (alpha * 0.12).toFixed(3)],
           ['100%', `rgb(${r},${g},${b})`, '0'],
         ].forEach(([off, col, op]) => {
           const s = document.createElementNS(NS, 'stop');
@@ -1961,14 +2007,14 @@ const SkinAnalysis = (() => {
         });
         defs.appendChild(outerGrad);
 
-        // Inner breathing gradient — 3-stop smooth fade
+        // Inner breathing gradient — tighter core
         const innerGradId = `fo-ig-${rank}`;
         const innerGrad   = document.createElementNS(NS, 'radialGradient');
         innerGrad.setAttribute('id', innerGradId);
         innerGrad.setAttribute('cx', '50%'); innerGrad.setAttribute('cy', '50%'); innerGrad.setAttribute('r', '50%');
         [
-          ['0%',   `rgb(${r},${g},${b})`, isPri ? '0.32' : '0.20'],
-          ['55%',  `rgb(${r},${g},${b})`, isPri ? '0.09' : '0.05'],
+          ['0%',   `rgb(${r},${g},${b})`, alpha.toFixed(3)],
+          ['55%',  `rgb(${r},${g},${b})`, (alpha * 0.28).toFixed(3)],
           ['100%', `rgb(${r},${g},${b})`, '0'],
         ].forEach(([off, col, op]) => {
           const s = document.createElementNS(NS, 'stop');
@@ -1977,45 +2023,58 @@ const SkinAnalysis = (() => {
         });
         defs.appendChild(innerGrad);
 
+        // Zone group — staggered reveal class
+        const zoneGroup = document.createElementNS(NS, 'g');
+        zoneGroup.setAttribute('class', `fo-z${rank}`);
+        svg.appendChild(zoneGroup);
+
         let primaryEl = null;
 
-        zones.forEach(({ zoneKey }) => {
-          const lmIdx = PRECISE_LM[zoneKey] || PRECISE_LM.eyes;
+        // Split 'eyes' anatomically into left/right for cernes
+        const resolvedZones = zones.flatMap(({ zoneKey, severity }) =>
+          zoneKey === 'eyes'
+            ? [{ lmKey: 'eyesLeft', severity }, { lmKey: 'eyesRight', severity }]
+            : [{ lmKey: zoneKey, severity }]
+        );
+
+        resolvedZones.forEach(({ lmKey, severity: zoneSev }) => {
+          const lmIdx = PRECISE_LM[lmKey] || PRECISE_LM.eyesLeft;
           const el    = _ellipseFromLM(lmIdx);
           if (!el) return;
           if (!primaryEl) primaryEl = el;
           const { cx, cy, rx, ry } = el;
+          const zA = iAlpha(zoneSev);
 
-          // Outer ambient glow — very large, static, purely organic feel
+          // Outer ambient — large, static
           const outerGlow = document.createElementNS(NS, 'ellipse');
-          outerGlow.setAttribute('cx', cx.toFixed(1));         outerGlow.setAttribute('cy', cy.toFixed(1));
-          outerGlow.setAttribute('rx', (rx * 2.8).toFixed(1)); outerGlow.setAttribute('ry', (ry * 2.6).toFixed(1));
+          outerGlow.setAttribute('cx', cx.toFixed(1)); outerGlow.setAttribute('cy', cy.toFixed(1));
+          outerGlow.setAttribute('rx', (rx * 3.0).toFixed(1)); outerGlow.setAttribute('ry', (ry * 2.8).toFixed(1));
           outerGlow.setAttribute('fill', `url(#${outerGradId})`);
-          svg.appendChild(outerGlow);
+          zoneGroup.appendChild(outerGlow);
 
-          // Inner zone halo — breathing, tighter
-          const innerGlow = document.createElementNS(NS, 'ellipse');
-          innerGlow.setAttribute('cx', cx.toFixed(1));         innerGlow.setAttribute('cy', cy.toFixed(1));
-          innerGlow.setAttribute('rx', (rx * 1.5).toFixed(1)); innerGlow.setAttribute('ry', (ry * 1.5).toFixed(1));
-          innerGlow.setAttribute('fill', `url(#${innerGradId})`);
-          innerGlow.setAttribute('class', `fo-b${rank}`);
-          svg.appendChild(innerGlow);
+          // Mid halo — breathing
+          const midGlow = document.createElementNS(NS, 'ellipse');
+          midGlow.setAttribute('cx', cx.toFixed(1)); midGlow.setAttribute('cy', cy.toFixed(1));
+          midGlow.setAttribute('rx', (rx * 1.8).toFixed(1)); midGlow.setAttribute('ry', (ry * 1.8).toFixed(1));
+          midGlow.setAttribute('fill', `url(#${innerGradId})`);
+          midGlow.setAttribute('class', `fo-b${rank}`);
+          zoneGroup.appendChild(midGlow);
 
-          // Ultra-light contour — barely visible, just a hint
+          // Inner contour ring
           const contour = document.createElementNS(NS, 'ellipse');
           contour.setAttribute('cx', cx.toFixed(1)); contour.setAttribute('cy', cy.toFixed(1));
           contour.setAttribute('rx', rx.toFixed(1)); contour.setAttribute('ry', ry.toFixed(1));
           contour.setAttribute('fill', 'none');
-          contour.setAttribute('stroke', `rgba(${r},${g},${b},${isPri ? 0.20 : 0.12})`);
-          contour.setAttribute('stroke-width', Math.max(0.5, W * 0.001).toFixed(1));
-          svg.appendChild(contour);
+          contour.setAttribute('stroke', `rgba(${r},${g},${b},${(zA * 0.55).toFixed(2)})`);
+          contour.setAttribute('stroke-width', Math.max(0.5, W * 0.0012).toFixed(1));
+          zoneGroup.appendChild(contour);
 
-          // Center pin — small, soft
+          // Center glow pin
           const pin = document.createElementNS(NS, 'circle');
           pin.setAttribute('cx', cx.toFixed(1)); pin.setAttribute('cy', cy.toFixed(1));
-          pin.setAttribute('r', (W * 0.0038).toFixed(1));
-          pin.setAttribute('fill', `rgba(${r},${g},${b},${isPri ? 0.65 : 0.42})`);
-          svg.appendChild(pin);
+          pin.setAttribute('r',  (W * 0.0035).toFixed(1));
+          pin.setAttribute('fill', `rgba(${r},${g},${b},${(zA * 0.88).toFixed(2)})`);
+          zoneGroup.appendChild(pin);
         });
 
         if (!primaryEl) return;
@@ -2024,53 +2083,48 @@ const SkinAnalysis = (() => {
         const isCentral = Math.abs(zoneCx - faceCx) < W * 0.08;
         const onRight   = isCentral ? (rank % 2 === 0) : (zoneCx >= faceCx);
 
-        const pillW  = isPri ? W * 0.245 : W * 0.205;
-        const pillH  = isPri ? W * 0.054 : W * 0.046;
-        const pillCx = onRight ? W * 0.840 : W * 0.160;
-        const pillCy = LABEL_Y[rank];
-        const fs     = isPri ? W * 0.025 : W * 0.021;
+        // Micro-annotation dimensions — much smaller than old pill labels
+        const tagW  = isPri ? W * 0.195 : W * 0.165;
+        const tagH  = W * 0.036;
+        const tagCx = onRight ? W * 0.835 : W * 0.165;
+        const tagCy = LABEL_Y[rank];
+        const tagFs = isPri ? W * 0.020 : W * 0.017;
 
-        // Callout line — ultra thin, colored
-        const pillEdgeX = onRight ? pillCx - pillW / 2 - W * 0.005 : pillCx + pillW / 2 + W * 0.005;
-        const line = document.createElementNS(NS, 'line');
-        line.setAttribute('x1', zoneCx.toFixed(1));    line.setAttribute('y1', zoneCy.toFixed(1));
-        line.setAttribute('x2', pillEdgeX.toFixed(1)); line.setAttribute('y2', pillCy.toFixed(1));
-        line.setAttribute('stroke', `rgba(${r},${g},${b},${isPri ? 0.38 : 0.25})`);
-        line.setAttribute('stroke-width', Math.max(0.4, W * 0.001).toFixed(1));
-        line.setAttribute('stroke-linecap', 'round');
-        svg.appendChild(line);
+        // Dashed callout line — elegant, understated
+        const lineEdgeX = onRight ? tagCx - tagW / 2 : tagCx + tagW / 2;
+        const callout = document.createElementNS(NS, 'line');
+        callout.setAttribute('x1', zoneCx.toFixed(1)); callout.setAttribute('y1', zoneCy.toFixed(1));
+        callout.setAttribute('x2', lineEdgeX.toFixed(1)); callout.setAttribute('y2', tagCy.toFixed(1));
+        callout.setAttribute('stroke', `rgba(${r},${g},${b},${isPri ? 0.28 : 0.18})`);
+        callout.setAttribute('stroke-width', Math.max(0.4, W * 0.0008).toFixed(1));
+        callout.setAttribute('stroke-linecap', 'round');
+        callout.setAttribute('stroke-dasharray', `${(W * 0.008).toFixed(1)} ${(W * 0.005).toFixed(1)}`);
+        zoneGroup.appendChild(callout);
 
-        // Glass pill — white, very slightly tinted border
-        const pill = document.createElementNS(NS, 'rect');
-        pill.setAttribute('x',      (pillCx - pillW / 2).toFixed(1));
-        pill.setAttribute('y',      (pillCy - pillH / 2).toFixed(1));
-        pill.setAttribute('width',  pillW.toFixed(1));
-        pill.setAttribute('height', pillH.toFixed(1));
-        pill.setAttribute('rx',     (pillH / 2).toFixed(1));
-        pill.setAttribute('fill',   `rgba(255,255,255,${isPri ? 0.90 : 0.80})`);
-        pill.setAttribute('stroke', `rgba(${r},${g},${b},${isPri ? 0.22 : 0.14})`);
-        pill.setAttribute('stroke-width', '0.7');
-        svg.appendChild(pill);
+        // Frosted micro chip background
+        const chip = document.createElementNS(NS, 'rect');
+        chip.setAttribute('x',      (tagCx - tagW / 2).toFixed(1));
+        chip.setAttribute('y',      (tagCy - tagH / 2).toFixed(1));
+        chip.setAttribute('width',  tagW.toFixed(1));
+        chip.setAttribute('height', tagH.toFixed(1));
+        chip.setAttribute('rx',     (tagH / 2).toFixed(1));
+        chip.setAttribute('fill',   `rgba(255,255,255,${isPri ? 0.84 : 0.70})`);
+        chip.setAttribute('stroke', `rgba(${r},${g},${b},${isPri ? 0.18 : 0.10})`);
+        chip.setAttribute('stroke-width', '0.5');
+        zoneGroup.appendChild(chip);
 
-        // Colored dot in pill
-        const dotR = pillH * 0.19;
-        const dotX = (pillCx - pillW / 2 + pillH * 0.54).toFixed(1);
-        const dot  = document.createElementNS(NS, 'circle');
-        dot.setAttribute('cx', dotX); dot.setAttribute('cy', pillCy.toFixed(1));
-        dot.setAttribute('r',  dotR.toFixed(1)); dot.setAttribute('fill', cfg.dot);
-        dot.setAttribute('opacity', isPri ? '0.88' : '0.68');
-        svg.appendChild(dot);
-
-        // Emotional phrase — dark text on white pill
+        // Micro-annotation label — centered, slim
         const txt = document.createElementNS(NS, 'text');
-        txt.setAttribute('x', (pillCx - pillW / 2 + pillH * 0.98).toFixed(1));
-        txt.setAttribute('y', (pillCy + fs * 0.38).toFixed(1));
-        txt.setAttribute('fill',        `rgba(22,18,30,${isPri ? 0.86 : 0.70})`);
-        txt.setAttribute('font-size',   fs.toFixed(1));
-        txt.setAttribute('font-weight', isPri ? '500' : '400');
-        txt.setAttribute('font-family', 'DM Sans, sans-serif');
+        txt.setAttribute('x',            tagCx.toFixed(1));
+        txt.setAttribute('y',            (tagCy + tagFs * 0.38).toFixed(1));
+        txt.setAttribute('text-anchor',  'middle');
+        txt.setAttribute('fill',         `rgba(30,22,40,${isPri ? 0.82 : 0.65})`);
+        txt.setAttribute('font-size',    tagFs.toFixed(1));
+        txt.setAttribute('font-weight',  isPri ? '500' : '400');
+        txt.setAttribute('font-family',  'DM Sans, sans-serif');
+        txt.setAttribute('letter-spacing', '0.3');
         txt.textContent = pillLabel || key;
-        svg.appendChild(txt);
+        zoneGroup.appendChild(txt);
       });
     };
 

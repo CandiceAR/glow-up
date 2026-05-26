@@ -1,12 +1,12 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-  <title>Glow Up — Skincare & Maquillage Virtuel</title>
+  <title>Glow Up â€” Skincare & Maquillage Virtuel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=87">
+  <link rel="stylesheet" href="style.css?v=88">
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#C9A98A">
@@ -40,7 +40,7 @@
         <a class="nav-link nav-link-disabled"                           href="#" onclick="return false;" aria-disabled="true" tabindex="-1">Skin Journey</a>
         <a class="nav-link nav-link-primary" data-screen="questionnaire" href="#" onclick="startGlowUp(); return false;">Skincare</a>
         <a class="nav-link nav-link-primary" data-screen="makeup"        href="#" onclick="goToMakeup(); return false;">Make-up</a>
-        <a class="nav-link nav-link-coach"   data-screen="coach"         href="#" onclick="showScreen('coach'); return false;">Coach ⭐</a>
+        <a class="nav-link nav-link-coach"   data-screen="coach"         href="#" onclick="showScreen('coach'); return false;">Coach â­</a>
         <a class="nav-link nav-link-secondary" data-screen="skinpedia"   href="#" onclick="showScreen('skinpedia'); return false;">Skinpedia</a>
         <a class="nav-link nav-link-primary" data-screen="plans"         href="#" onclick="showScreen('plans'); return false;">Offres</a>
       </nav>
@@ -56,15 +56,15 @@
       <section class="hero">
         <div class="hero-bg"></div>
         <div class="hero-content">
-          <span class="eyebrow">Skincare 100% Objectif · Maquillage Virtuel</span>
-          <h1 class="hero-title">Découvre ta routine,<br><em>essaie avant d'acheter.</em></h1>
-          <p class="hero-sub">Questionnaire personnalisé · Routine sur-mesure · Try-on virtuel MediaPipe<br>Liens Amazon affiliés — même commission, aucun favoritisme.</p>
+          <span class="eyebrow">Skincare 100% Objectif Â· Maquillage Virtuel</span>
+          <h1 class="hero-title">DÃ©couvre ta routine,<br><em>essaie avant d'acheter.</em></h1>
+          <p class="hero-sub">Questionnaire personnalisÃ© Â· Routine sur-mesure Â· Try-on virtuel MediaPipe<br>Liens Amazon affiliÃ©s â€” mÃªme commission, aucun favoritisme.</p>
           <div class="hero-actions">
-            <button class="btn btn-dark" onclick="startGlowUp()">Faire mon analyse ✦</button>
+            <button class="btn btn-dark" onclick="startGlowUp()">Faire mon analyse âœ¦</button>
             <button class="btn btn-outline" onclick="showScreen('shop')">Voir la boutique</button>
           </div>
           <p class="hero-login-hint" id="heroLoginHint">
-            Déjà un compte ? <a href="#" onclick="openAuthModal(); return false;">Connecte-toi</a> pour retrouver ton analyse et ta progression.
+            DÃ©jÃ  un compte ? <a href="#" onclick="openAuthModal(); return false;">Connecte-toi</a> pour retrouver ton analyse et ta progression.
           </p>
         </div>
       </section>
@@ -72,13 +72,13 @@
       <!-- Produits vedettes -->
       <section class="section">
         <div class="section-head">
-          <span class="section-tag">Sélection</span>
+          <span class="section-tag">SÃ©lection</span>
           <h2>Produits Vedettes</h2>
-          <p>Notés 4.5+ sur Amazon, sélectionnés sans favoritisme.</p>
+          <p>NotÃ©s 4.5+ sur Amazon, sÃ©lectionnÃ©s sans favoritisme.</p>
         </div>
         <div class="products-grid" id="featuredGrid"></div>
         <div class="section-cta">
-          <button class="btn btn-outline" onclick="showScreen('shop')">Voir toute la collection →</button>
+          <button class="btn btn-outline" onclick="showScreen('shop')">Voir toute la collection â†’</button>
         </div>
       </section>
 
@@ -86,24 +86,24 @@
       <section class="promise" id="promise">
         <div class="promise-grid">
           <div class="promise-item">
-            <span class="promise-icon">✦</span>
+            <span class="promise-icon">âœ¦</span>
             <h4>100% Objectif</h4>
-            <p>Même commission affiliée Amazon sur tous les produits — aucun sponsoring, aucun conflit d'intérêt</p>
+            <p>MÃªme commission affiliÃ©e Amazon sur tous les produits â€” aucun sponsoring, aucun conflit d'intÃ©rÃªt</p>
           </div>
           <div class="promise-item">
-            <span class="promise-icon">◇</span>
+            <span class="promise-icon">â—‡</span>
             <h4>Try-on Virtuel</h4>
-            <p>Essaie le maquillage sur ta photo avant d'acheter grâce à MediaPipe</p>
+            <p>Essaie le maquillage sur ta photo avant d'acheter grÃ¢ce Ã  MediaPipe</p>
           </div>
           <div class="promise-item">
-            <span class="promise-icon">○</span>
-            <h4>Routine Personnalisée</h4>
-            <p>10 questions, moteur de règles expert, résultats instantanés sans IA</p>
+            <span class="promise-icon">â—‹</span>
+            <h4>Routine PersonnalisÃ©e</h4>
+            <p>10 questions, moteur de rÃ¨gles expert, rÃ©sultats instantanÃ©s sans IA</p>
           </div>
           <div class="promise-item">
-            <span class="promise-icon">△</span>
-            <h4>Sélection Rigoureuse</h4>
-            <p>Seulement des produits notés 4.5+ avec des milliers d'avis vérifiés</p>
+            <span class="promise-icon">â–³</span>
+            <h4>SÃ©lection Rigoureuse</h4>
+            <p>Seulement des produits notÃ©s 4.5+ avec des milliers d'avis vÃ©rifiÃ©s</p>
           </div>
         </div>
       </section>
@@ -115,57 +115,57 @@
       <!-- Pre-photo overlay -->
       <div id="prephotoOverlay" class="prephoto-overlay" style="display:none;">
         <div class="prephoto-card">
-          <div class="prephoto-icon">🌿</div>
+          <div class="prephoto-icon">ðŸŒ¿</div>
           <h2>Pour une analyse parfaite</h2>
-          <p>Prends ta photo <strong>sans maquillage</strong><br>et à la <strong>lumière naturelle</strong>.</p>
-          <p class="prephoto-note">Le maquillage peut modifier la couleur de ta peau et fausser le résultat.</p>
-          <button class="btn btn-dark" onclick="dismissPrephoto(false)">Je suis prête →</button>
+          <p>Prends ta photo <strong>sans maquillage</strong><br>et Ã  la <strong>lumiÃ¨re naturelle</strong>.</p>
+          <p class="prephoto-note">Le maquillage peut modifier la couleur de ta peau et fausser le rÃ©sultat.</p>
+          <button class="btn btn-dark" onclick="dismissPrephoto(false)">Je suis prÃªte â†’</button>
           <button class="prephoto-skip" onclick="dismissPrephoto(true)">J'ai du maquillage</button>
         </div>
       </div>
 
       <div class="capture-container">
         <div class="section-head" style="margin-bottom:32px">
-          <span class="section-tag">Étape 1</span>
+          <span class="section-tag">Ã‰tape 1</span>
           <h1>Prends ta photo</h1>
-          <p>Ta photo permet d'analyser ta peau et ta morphologie pour une routine vraiment personnalisée. L'analyse se fait localement — aucune donnée envoyée.</p>
+          <p>Ta photo permet d'analyser ta peau et ta morphologie pour une routine vraiment personnalisÃ©e. L'analyse se fait localement â€” aucune donnÃ©e envoyÃ©e.</p>
         </div>
 
         <div class="capture-area">
-          <!-- Webcam + overlay temps réel -->
+          <!-- Webcam + overlay temps rÃ©el -->
           <div class="capture-camera-wrap" id="cameraWrap" style="display:none;">
             <video id="cameraStream" autoplay muted playsinline></video>
             <canvas id="cameraOverlay" aria-hidden="true"></canvas>
             <div class="capture-quality-bar" id="captureQualityBar" style="display:none;">
               <span class="cq-dot"></span>
-              <span id="captureQualityMsg">Positionnement en cours…</span>
+              <span id="captureQualityMsg">Positionnement en coursâ€¦</span>
             </div>
-            <button class="capture-snap-btn" id="captureBtn" style="display:none;" aria-label="Prendre la photo">📸</button>
+            <button class="capture-snap-btn" id="captureBtn" style="display:none;" aria-label="Prendre la photo">ðŸ“¸</button>
           </div>
 
           <div class="capture-options">
             <label class="btn btn-dark capture-upload-btn" for="photoUpload">
-              📁 Uploader une photo
+              ðŸ“ Uploader une photo
               <input type="file" id="photoUpload" accept="image/*" style="display:none">
             </label>
             <button class="btn btn-outline" id="cameraBtn">
-              📷 Utiliser la caméra
+              ðŸ“· Utiliser la camÃ©ra
             </button>
           </div>
 
           <div id="capturePreview" style="display:none; margin-top:24px; text-align:center;">
-            <img id="capturePreviewImg" alt="Aperçu" style="max-width:280px; border-radius:16px; border:2px solid var(--sand);">
-            <p style="margin-top:12px; color:var(--muted);">Photo prête !</p>
+            <img id="capturePreviewImg" alt="AperÃ§u" style="max-width:280px; border-radius:16px; border:2px solid var(--sand);">
+            <p style="margin-top:12px; color:var(--muted);">Photo prÃªte !</p>
             <button class="btn btn-dark capture-analyse-btn" id="captureAnalyseBtn" onclick="handleCaptureNext()">
-              Analyser mon visage ✦
+              Analyser mon visage âœ¦
             </button>
           </div>
         </div>
 
         <div class="capture-nav">
-          <button class="btn btn-outline" onclick="showScreen('home')">← Retour</button>
+          <button class="btn btn-outline" onclick="showScreen('home')">â† Retour</button>
           <button class="btn-ghost capture-skip" onclick="_captureSkip()" style="margin-top:12px; display:block; text-align:center; width:100%; color:var(--muted); font-size:0.9rem;">
-            Passer l'analyse photo →
+            Passer l'analyse photo â†’
           </button>
         </div>
       </div>
@@ -176,7 +176,7 @@
       <div class="skin-analysis-container">
         <div id="skinAnalysisContent">
           <!-- Rendu dynamique par skinAnalysis.js -->
-          <p class="loading-placeholder">Chargement de l'analyse…</p>
+          <p class="loading-placeholder">Chargement de l'analyseâ€¦</p>
         </div>
       </div>
     </div><!-- /screen-skin-analysis -->
@@ -186,62 +186,62 @@
       <div class="routine-choice-container">
 
         <div class="routine-choice-header">
-          <h1>Choisis ta routine offerte ✨</h1>
-          <p>Une routine gratuite, personnalisée pour toi.<br>Tu pourras débloquer l'autre ensuite si tu veux.</p>
+          <h1>Choisis ta routine offerte âœ¨</h1>
+          <p>Une routine gratuite, personnalisÃ©e pour toi.<br>Tu pourras dÃ©bloquer l'autre ensuite si tu veux.</p>
         </div>
 
         <div class="routine-choice-cards" id="routineChoiceCards">
 
           <!-- Skincare -->
           <div class="choice-card" id="choiceCardSkincare" onclick="pickRoutine('skincare')">
-            <div class="choice-card-badge">✦ Offert</div>
-            <div class="choice-card-icon">◇</div>
+            <div class="choice-card-badge">âœ¦ Offert</div>
+            <div class="choice-card-icon">â—‡</div>
             <div class="choice-card-body">
               <h2>Routine Skincare</h2>
-              <p>Analyse de peau · Routine personnalisée · Produits adaptés à ton profil</p>
+              <p>Analyse de peau Â· Routine personnalisÃ©e Â· Produits adaptÃ©s Ã  ton profil</p>
               <ul class="choice-card-perks">
-                <li>Diagnostic cutané par zones</li>
+                <li>Diagnostic cutanÃ© par zones</li>
                 <li>Routine matin &amp; soir sur-mesure</li>
-                <li>Produits recommandés sans favoritisme</li>
+                <li>Produits recommandÃ©s sans favoritisme</li>
               </ul>
             </div>
-            <div class="choice-card-cta">Choisir Skincare →</div>
+            <div class="choice-card-cta">Choisir Skincare â†’</div>
             <div class="choice-card-lock" id="lockSkincare">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              <span class="choice-card-lock-label">Premium ✨</span>
-              <span class="choice-card-lock-sub">Cette routine est réservée aux membres Glow Up</span>
-              <button class="choice-card-lock-btn" onclick="event.stopPropagation(); pickRoutine('skincare')">Débloquer ma routine →</button>
+              <span class="choice-card-lock-label">Premium âœ¨</span>
+              <span class="choice-card-lock-sub">Cette routine est rÃ©servÃ©e aux membres Glow Up</span>
+              <button class="choice-card-lock-btn" onclick="event.stopPropagation(); pickRoutine('skincare')">DÃ©bloquer ma routine â†’</button>
             </div>
           </div>
 
           <!-- Make-up -->
           <div class="choice-card" id="choiceCardMakeup" onclick="pickRoutine('makeup')">
-            <div class="choice-card-badge">✦ Offert</div>
-            <div class="choice-card-icon">✦</div>
+            <div class="choice-card-badge">âœ¦ Offert</div>
+            <div class="choice-card-icon">âœ¦</div>
             <div class="choice-card-body">
               <h2>Routine Make-up</h2>
-              <p>Coach beauté IA · Produits adaptés à ta morphologie · Dupes inclus</p>
+              <p>Coach beautÃ© IA Â· Produits adaptÃ©s Ã  ta morphologie Â· Dupes inclus</p>
               <ul class="choice-card-perks">
                 <li>Analyse de la forme du visage &amp; des yeux</li>
-                <li>5 produits sélectionnés par l'IA</li>
-                <li>Alternative moins chère (Dupe) pour chaque produit</li>
+                <li>5 produits sÃ©lectionnÃ©s par l'IA</li>
+                <li>Alternative moins chÃ¨re (Dupe) pour chaque produit</li>
               </ul>
             </div>
-            <div class="choice-card-cta">Choisir Make-up →</div>
+            <div class="choice-card-cta">Choisir Make-up â†’</div>
             <div class="choice-card-lock" id="lockMakeup">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              <span class="choice-card-lock-label">Premium ✨</span>
-              <span class="choice-card-lock-sub">Cette routine est réservée aux membres Glow Up</span>
-              <button class="choice-card-lock-btn" onclick="event.stopPropagation(); pickRoutine('makeup')">Débloquer ma routine →</button>
+              <span class="choice-card-lock-label">Premium âœ¨</span>
+              <span class="choice-card-lock-sub">Cette routine est rÃ©servÃ©e aux membres Glow Up</span>
+              <button class="choice-card-lock-btn" onclick="event.stopPropagation(); pickRoutine('makeup')">DÃ©bloquer ma routine â†’</button>
             </div>
           </div>
 
         </div>
 
         <p class="routine-choice-note" id="routineChoiceNote" style="display:none">
-          Tu as déjà découvert une routine. Débloque l'accès complet pour accéder aux deux.
+          Tu as dÃ©jÃ  dÃ©couvert une routine. DÃ©bloque l'accÃ¨s complet pour accÃ©der aux deux.
           <button class="btn-ghost" onclick="openPaywallModal()" style="margin-left:8px; text-decoration:underline; font-size:inherit;">
-            Voir les offres →
+            Voir les offres â†’
           </button>
         </p>
 
@@ -253,7 +253,7 @@
       <div class="questionnaire-container">
         <div id="questionnaireContent">
           <!-- Rendu dynamique par questionnaire.js -->
-          <p class="loading-placeholder">Chargement du questionnaire…</p>
+          <p class="loading-placeholder">Chargement du questionnaireâ€¦</p>
         </div>
       </div>
     </div><!-- /screen-questionnaire -->
@@ -271,17 +271,17 @@
     <div class="screen" id="screen-products">
       <div class="products-screen-container">
         <div class="section-head">
-          <span class="section-tag">Étape 3 / 3</span>
-          <h1>Produits Recommandés</h1>
-          <p>Sélectionnés selon ton profil et ta routine. Essaie-les virtuellement avant d'acheter.</p>
+          <span class="section-tag">Ã‰tape 3 / 3</span>
+          <h1>Produits RecommandÃ©s</h1>
+          <p>SÃ©lectionnÃ©s selon ton profil et ta routine. Essaie-les virtuellement avant d'acheter.</p>
         </div>
         <div class="products-grid" id="recommendedGrid"></div>
         <div class="section-cta" style="margin-top:32px;">
           <button class="btn btn-dark" onclick="showScreen('tryon')">
-            Essayer virtuellement ✦
+            Essayer virtuellement âœ¦
           </button>
           <button class="btn btn-outline" onclick="showScreen('results')" style="margin-top:12px">
-            ← Revoir ma routine
+            â† Revoir ma routine
           </button>
         </div>
       </div>
@@ -300,25 +300,25 @@
             <img id="tryOnSource" alt="Photo visage" style="display:none;">
             <canvas id="tryOnCanvas" aria-label="Essai maquillage virtuel"></canvas>
 
-            <!-- État chargement -->
+            <!-- Ã‰tat chargement -->
             <div id="tryOnLoading" style="display:none;" class="tryon-overlay-state">
               <div class="spinner"></div>
-              <p class="loading-msg">Initialisation…</p>
+              <p class="loading-msg">Initialisationâ€¦</p>
             </div>
 
-            <!-- État erreur -->
+            <!-- Ã‰tat erreur -->
             <p id="tryOnError" class="tryon-error" style="display:none;"></p>
 
-            <!-- État vide (pas de photo) -->
+            <!-- Ã‰tat vide (pas de photo) -->
             <div id="tryOnEmpty" class="tryon-empty-state">
-              <p>Aucune photo détectée.</p>
-              <button class="btn btn-outline" onclick="showScreen('capture')">Ajouter une photo →</button>
+              <p>Aucune photo dÃ©tectÃ©e.</p>
+              <button class="btn btn-outline" onclick="showScreen('capture')">Ajouter une photo â†’</button>
             </div>
           </div>
 
           <div class="tryon-canvas-actions">
-            <button class="btn btn-outline" onclick="showScreen('products')">← Produits</button>
-            <button class="btn btn-dark" onclick="TryOn.goToFinalResult()">Voir le résultat final →</button>
+            <button class="btn btn-outline" onclick="showScreen('products')">â† Produits</button>
+            <button class="btn btn-dark" onclick="TryOn.goToFinalResult()">Voir le rÃ©sultat final â†’</button>
           </div>
         </div>
 
@@ -335,7 +335,7 @@
           <!-- Rendu par tryOn.js renderFinalResult() -->
         </div>
         <div class="final-actions">
-          <button class="btn btn-outline" onclick="showScreen('tryon')">← Modifier le look</button>
+          <button class="btn btn-outline" onclick="showScreen('tryon')">â† Modifier le look</button>
           <button class="btn btn-outline" onclick="showScreen('home')">Recommencer</button>
         </div>
       </div>
@@ -344,44 +344,44 @@
     <!-- ======== SHOP ======== -->
     <div class="screen" id="screen-shop">
       <div class="shop-hero">
-        <span class="eyebrow">Collection complète</span>
+        <span class="eyebrow">Collection complÃ¨te</span>
         <h1>La Boutique</h1>
-        <p>Tous nos produits, sélectionnés sans favoritisme</p>
+        <p>Tous nos produits, sÃ©lectionnÃ©s sans favoritisme</p>
       </div>
 
       <div class="shop-layout">
 
-        <!-- ── Sidebar ── -->
+        <!-- â”€â”€ Sidebar â”€â”€ -->
         <aside class="shop-sidebar">
           <button class="shop-sidebar-toggle" onclick="toggleShopSidebar()">
-            <span>☰</span> Filtrer par catégorie
+            <span>â˜°</span> Filtrer par catÃ©gorie
           </button>
           <div class="shop-sidebar-body" id="shopSidebarBody">
 
-            <!-- Sélection -->
+            <!-- SÃ©lection -->
             <div class="sidebar-group" id="sg-selection">
               <button class="sidebar-group-title" onclick="toggleSidebarGroup('sg-selection')">
-                Sélection <span class="sidebar-arrow">▾</span>
+                SÃ©lection <span class="sidebar-arrow">â–¾</span>
               </button>
               <div class="sidebar-group-items">
                 <button class="sidebar-item active" data-cat="all"      onclick="filterShop('all')">Tout voir</button>
-                <button class="sidebar-item"        data-cat="featured" onclick="filterShop('featured')">★ Vedette</button>
-                <button class="sidebar-item"        data-cat="h2o"      onclick="filterShop('h2o')">💧 H₂O</button>
-                <button class="sidebar-item"        data-cat="vitc"     onclick="filterShop('vitc')">✨ Vit C</button>
+                <button class="sidebar-item"        data-cat="featured" onclick="filterShop('featured')">â˜… Vedette</button>
+                <button class="sidebar-item"        data-cat="h2o"      onclick="filterShop('h2o')">ðŸ’§ Hâ‚‚O</button>
+                <button class="sidebar-item"        data-cat="vitc"     onclick="filterShop('vitc')">âœ¨ Vit C</button>
               </div>
             </div>
 
             <!-- Soin visage -->
             <div class="sidebar-group" id="sg-soin">
               <button class="sidebar-group-title" onclick="toggleSidebarGroup('sg-soin')">
-                Soin Visage <span class="sidebar-arrow">▾</span>
+                Soin Visage <span class="sidebar-arrow">â–¾</span>
               </button>
               <div class="sidebar-group-items">
-                <button class="sidebar-item" data-cat="serum"       onclick="filterShop('serum')">Sérum</button>
-                <button class="sidebar-item" data-cat="moisturizer" onclick="filterShop('moisturizer')">Crème hydratante</button>
+                <button class="sidebar-item" data-cat="serum"       onclick="filterShop('serum')">SÃ©rum</button>
+                <button class="sidebar-item" data-cat="moisturizer" onclick="filterShop('moisturizer')">CrÃ¨me hydratante</button>
                 <button class="sidebar-item" data-cat="eye"         onclick="filterShop('eye')">Contour yeux</button>
                 <button class="sidebar-item" data-cat="cleanser"    onclick="filterShop('cleanser')">Nettoyant</button>
-                <button class="sidebar-item" data-cat="spf"         onclick="filterShop('spf')">SPF ☀️</button>
+                <button class="sidebar-item" data-cat="spf"         onclick="filterShop('spf')">SPF â˜€ï¸</button>
                 <button class="sidebar-item" data-cat="nightmask"   onclick="filterShop('nightmask')">Masque de nuit</button>
               </div>
             </div>
@@ -389,33 +389,33 @@
             <!-- Maquillage -->
             <div class="sidebar-group" id="sg-makeup">
               <button class="sidebar-group-title" onclick="toggleSidebarGroup('sg-makeup')">
-                Maquillage <span class="sidebar-arrow">▾</span>
+                Maquillage <span class="sidebar-arrow">â–¾</span>
               </button>
               <div class="sidebar-group-items">
                 <button class="sidebar-item" data-cat="foundation"  onclick="filterShop('foundation')">Fond de teint</button>
                 <button class="sidebar-item" data-cat="concealer"   onclick="filterShop('concealer')">Correcteur / Anti-cernes</button>
                 <button class="sidebar-item" data-cat="mascara"     onclick="filterShop('mascara')">Mascara</button>
-                <button class="sidebar-item" data-cat="lipstick"    onclick="filterShop('lipstick')">Rouge à lèvres</button>
+                <button class="sidebar-item" data-cat="lipstick"    onclick="filterShop('lipstick')">Rouge Ã  lÃ¨vres</button>
                 <button class="sidebar-item" data-cat="lipgloss"    onclick="filterShop('lipgloss')">Gloss</button>
                 <button class="sidebar-item" data-cat="eyeliner"    onclick="filterShop('eyeliner')">Eyeliner &amp; Kajal</button>
-                <button class="sidebar-item" data-cat="eyeshadow"   onclick="filterShop('eyeshadow')">Fards à paupières</button>
+                <button class="sidebar-item" data-cat="eyeshadow"   onclick="filterShop('eyeshadow')">Fards Ã  paupiÃ¨res</button>
                 <button class="sidebar-item" data-cat="blush"       onclick="filterShop('blush')">Blush</button>
                 <button class="sidebar-item" data-cat="bronzer"     onclick="filterShop('bronzer')">Bronzer &amp; Bonne mine</button>
                 <button class="sidebar-item" data-cat="highlighter" onclick="filterShop('highlighter')">Highlighter</button>
                 <button class="sidebar-item" data-cat="powder"      onclick="filterShop('powder')">Poudre</button>
                 <button class="sidebar-item" data-cat="primer"      onclick="filterShop('primer')">Primer</button>
-                <button class="sidebar-item" data-cat="lipbalm"     onclick="filterShop('lipbalm')">Baume à lèvres</button>
+                <button class="sidebar-item" data-cat="lipbalm"     onclick="filterShop('lipbalm')">Baume Ã  lÃ¨vres</button>
               </div>
             </div>
 
           </div><!-- /shop-sidebar-body -->
         </aside>
 
-        <!-- ── Contenu principal ── -->
+        <!-- â”€â”€ Contenu principal â”€â”€ -->
         <main class="shop-main">
           <div id="catExplainer"></div>
           <div class="shop-brand-bar" id="shopBrandBar">
-            <!-- pills marques générées dynamiquement -->
+            <!-- pills marques gÃ©nÃ©rÃ©es dynamiquement -->
           </div>
           <div class="products-grid" id="shopGrid"></div>
         </main>
@@ -427,7 +427,7 @@
     <div class="screen" id="screen-journey">
       <div class="journey-container">
         <div id="skinJourneyContent">
-          <p class="loading-placeholder">Chargement du programme…</p>
+          <p class="loading-placeholder">Chargement du programmeâ€¦</p>
         </div>
       </div>
     </div><!-- /screen-journey -->
@@ -440,11 +440,11 @@
             <div class="skin-scan-anim">
               <div class="skin-scan-face"><div class="skin-scan-line"></div></div>
             </div>
-            <p class="skin-loading-title">Préparation de ta routine make-up…</p>
+            <p class="skin-loading-title">PrÃ©paration de ta routine make-upâ€¦</p>
           </div>
         </div>
         <div style="text-align:center; margin-top:32px; padding-bottom:40px;">
-          <button class="btn btn-outline" onclick="showScreen('results')">← Retour à ma routine</button>
+          <button class="btn btn-outline" onclick="showScreen('results')">â† Retour Ã  ma routine</button>
         </div>
       </div>
     </div><!-- /screen-makeup -->
@@ -453,7 +453,7 @@
     <div class="screen" id="screen-skinpedia">
       <div class="skinpedia-container">
         <div id="skinpediaContent">
-          <p class="loading-placeholder">Chargement de la Skinpedia…</p>
+          <p class="loading-placeholder">Chargement de la Skinpediaâ€¦</p>
         </div>
       </div>
     </div><!-- /screen-skinpedia -->
@@ -462,7 +462,7 @@
     <div class="screen" id="screen-coach">
       <div class="coach-container">
         <div id="glowCoachContent">
-          <p class="loading-placeholder">Chargement de Glow Up Coach…</p>
+          <p class="loading-placeholder">Chargement de Glow Up Coachâ€¦</p>
         </div>
       </div>
     </div><!-- /screen-coach -->
@@ -470,7 +470,7 @@
     <div class="screen" id="screen-plans">
       <div class="screen-inner">
         <div id="plansContent">
-          <p class="loading-placeholder">Chargement des offres…</p>
+          <p class="loading-placeholder">Chargement des offresâ€¦</p>
         </div>
       </div>
     </div><!-- /screen-plans -->
@@ -521,10 +521,10 @@
     <div class="footer-inner">
       <div class="footer-brand">
         <div class="footer-logo">GLOW UP</div>
-        <p>Beauté éclairée,<br>sans compromis.</p>
+        <p>BeautÃ© Ã©clairÃ©e,<br>sans compromis.</p>
       </div>
       <div class="footer-col">
-        <h5>Découvrir</h5>
+        <h5>DÃ©couvrir</h5>
         <ul>
           <li><a href="#" onclick="showScreen('shop'); return false;">Boutique</a></li>
           <li><a href="#" onclick="startGlowUp(); return false;">Mon diagnostic</a></li>
@@ -541,11 +541,11 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <p>© 2026 Glow Up. Liens Amazon avec code affilié <strong>kan10ar-21</strong> — même commission sur tous les produits.</p>
+      <p>Â© 2026 Glow Up. Liens Amazon avec code affiliÃ© <strong>kan10ar-21</strong> â€” mÃªme commission sur tous les produits.</p>
     </div>
   </footer>
 
-  <!-- ===== MODAL GÉNÉRIQUE ===== -->
+  <!-- ===== MODAL GÃ‰NÃ‰RIQUE ===== -->
   <div class="overlay" id="modalOverlay"></div>
   <div class="modal-box" id="modalBox" role="dialog" aria-modal="true"></div>
 
@@ -555,34 +555,34 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
   <!-- ===== SCRIPTS ===== -->
-  <script src="js/lookGenerator.js?v=87"></script>
-  <script src="js/makeupAI.js?v=87"></script>
-  <script src="js/skinAnalysis.js?v=87"></script>
-  <script src="js/rulesEngine.js?v=87"></script>
-  <script src="js/catalogue.js?v=87"></script>
-  <script src="js/productCatalog.js?v=87"></script>
-  <script src="js/questionnaire.js?v=87"></script>
-  <script src="js/routineRenderer.js?v=87"></script>
-  <script src="js/tryOn.js?v=87"></script>
-  <script src="js/auth.js?v=87"></script>
-  <script src="js/skinJourney.js?v=87"></script>
-  <script src="js/makeupRoutine.js?v=87"></script>
-  <script src="js/tracker.js?v=87"></script>
-  <script src="js/skinpedia.js?v=87"></script>
-  <script src="js/glowCoach.js?v=87"></script>
-  <script src="js/firestoreProfile.js?v=87"></script>
-  <script src="js/firestoreProducts.js?v=87"></script>
-  <script src="js/subscription.js?v=87"></script>
-  <script src="js/routineSaver.js?v=87"></script>
-  <script src="js/app.js?v=87"></script>
+  <script src="js/lookGenerator.js?v=88"></script>
+  <script src="js/makeupAI.js?v=88"></script>
+  <script src="js/skinAnalysis.js?v=88"></script>
+  <script src="js/rulesEngine.js?v=88"></script>
+  <script src="js/catalogue.js?v=88"></script>
+  <script src="js/productCatalog.js?v=88"></script>
+  <script src="js/questionnaire.js?v=88"></script>
+  <script src="js/routineRenderer.js?v=88"></script>
+  <script src="js/tryOn.js?v=88"></script>
+  <script src="js/auth.js?v=88"></script>
+  <script src="js/skinJourney.js?v=88"></script>
+  <script src="js/makeupRoutine.js?v=88"></script>
+  <script src="js/tracker.js?v=88"></script>
+  <script src="js/skinpedia.js?v=88"></script>
+  <script src="js/glowCoach.js?v=88"></script>
+  <script src="js/firestoreProfile.js?v=88"></script>
+  <script src="js/firestoreProducts.js?v=88"></script>
+  <script src="js/subscription.js?v=88"></script>
+  <script src="js/routineSaver.js?v=88"></script>
+  <script src="js/app.js?v=88"></script>
 
   <!-- Enregistrement du Service Worker PWA -->
   <script>
     if ('serviceWorker' in navigator && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js')
-          .then(reg => console.log('Service Worker enregistré :', reg.scope))
-          .catch(err => console.warn('Service Worker échec :', err));
+          .then(reg => console.log('Service Worker enregistrÃ© :', reg.scope))
+          .catch(err => console.warn('Service Worker Ã©chec :', err));
       });
     }
   </script>
