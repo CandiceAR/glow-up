@@ -3,8 +3,8 @@
     "version": "1.0",
     "source": "admin",
     "tag": "kand10ar-21",
-    "lastUpdated": "2026-05-17",
-    "totalProducts": 222
+    "lastUpdated": "2026-05-19",
+    "totalProducts": 236
   },
   "products": [
     {
@@ -1745,7 +1745,7 @@
     {
       "id": "m104",
       "asin": "B0DZPFZZCK",
-      "name": "PINK",
+      "name": "Blush Mousse — Pink",
       "brand": "KIKO MILANO",
       "category": "blush",
       "imageUrl": "assets/KIKOMILANO-BLUSHMousse.jpg",
@@ -1768,7 +1768,7 @@
       "concernTags": [],
       "isFeatured": false,
       "active": true,
-      "description": "",
+      "description": "Blush mousse ultra-légère teinte rose fraîche pour les sous-tons froids. Texture fondante, fini naturel lumineux.",
       "curatedBy": "admin",
       "curatedAt": "2026-03-31",
       "notes": "",
@@ -1777,7 +1777,7 @@
     {
       "id": "m105",
       "asin": "B0DZPFFHRX",
-      "name": "CAFE LATTE",
+      "name": "Blush Mousse — Café Latte",
       "brand": "KIKO MILANO",
       "category": "blush",
       "imageUrl": "assets/KIKOMILANO-BLUSHMoussecafelatte.jpg",
@@ -1801,7 +1801,7 @@
       "concernTags": [],
       "isFeatured": false,
       "active": true,
-      "description": "",
+      "description": "Blush mousse ultra-légère teinte caramel doré chaud. Bonne mine naturelle pour les sous-tons chauds.",
       "curatedBy": "admin",
       "curatedAt": "2026-03-31",
       "notes": ""
@@ -1995,7 +1995,7 @@
     {
       "id": "m112",
       "asin": "B0CKK367DN",
-      "name": "Mauve",
+      "name": "Blush Illuminance — Mauve",
       "brand": "REVLON",
       "category": "blush",
       "undertone": "cool",
@@ -2019,7 +2019,7 @@
       "concernTags": [],
       "isFeatured": false,
       "active": true,
-      "description": "",
+      "description": "Blush poudre compacte teinte mauve cool enrichie en agents hydratants. Texture légère, fini lumineux et peau repulpée.",
       "curatedBy": "admin",
       "curatedAt": "2026-04-03",
       "notes": ""
@@ -4753,7 +4753,7 @@
       "name": "e.l.f. Halo Glow Liquid Filter",
       "brand": "e.l.f.",
       "category": "highlighter",
-      "imageUrl": null,
+      "imageUrl": "assets/ELF-HALOGLOWT1FAIR.jpg",
       "amazonUrl": "https://www.amazon.fr/s?k=elf+Halo+Glow+Liquid+Filter&tag=kan10ar-21",
       "price": 14,
       "rating": 4.6,
@@ -4828,7 +4828,7 @@
       "name": "Makeup Revolution Luminize Highlighter",
       "brand": "Makeup Revolution",
       "category": "highlighter",
-      "imageUrl": null,
+      "imageUrl": "assets/MAKEUPREVOLUTION-ENLUMINEUR.jpg",
       "amazonUrl": "https://www.amazon.fr/s?k=Makeup+Revolution+Luminize+Highlighter&tag=kan10ar-21",
       "price": 8,
       "rating": 4.2,
@@ -4905,7 +4905,7 @@
       "category": "foundation",
       "shadeName": "2 Fair",
       "colorHex": "#F0D5B8",
-      "imageUrl": null,
+      "imageUrl": "assets/CHARLOTTETILBURY-flawlessfilter.jpg",
       "amazonUrl": "https://www.amazon.fr/s?k=Charlotte+Tilbury+Flawless+Filter+2+Fair+30ml&tag=kan10ar-21",
       "price": 47,
       "rating": 4.8,
@@ -4932,7 +4932,7 @@
       "category": "foundation",
       "shadeName": "5 Medium",
       "colorHex": "#C8935A",
-      "imageUrl": null,
+      "imageUrl": "assets/CHARLOTTETILBURY-flawlessfilter.jpg",
       "amazonUrl": "https://www.amazon.fr/s?k=Charlotte+Tilbury+Flawless+Filter+5+Medium+30ml&tag=kan10ar-21",
       "price": 47,
       "rating": 4.8,
@@ -5121,7 +5121,7 @@
       "category": "eyebrow",
       "shadeName": "Medium Brown",
       "colorHex": "#7A5230",
-      "imageUrl": null,
+      "imageUrl": "assets/MAYBELLINE-sourcildeepbrown206.jpg",
       "amazonUrl": "https://www.amazon.fr/dp/B0CJ5FX1ML?tag=kan10ar-21",
       "price": 9,
       "rating": 4.3,
@@ -5165,7 +5165,7 @@
       "category": "eyebrow",
       "shadeName": "Brown",
       "colorHex": "#8B5E3C",
-      "imageUrl": null,
+      "imageUrl": "assets/GLOSSIER-BoyBrow.png",
       "amazonUrl": "https://www.amazon.fr/s?k=Glossier+Boy+Brow&tag=kan10ar-21",
       "price": 20,
       "rating": 4.5,
@@ -5186,7 +5186,7 @@
       "category": "eyebrow",
       "shadeName": "Chocolat",
       "colorHex": "#3D1F0D",
-      "imageUrl": null,
+      "imageUrl": "assets/ABH-CRAYONSOURICLMARRONMOYEN.jpg",
       "amazonUrl": "https://www.amazon.fr/dp/B0CV4KNGWC?tag=kan10ar-21",
       "asin": "B0CV4KNGWC",
       "price": 23,
@@ -5324,7 +5324,7 @@
       "category": "blush",
       "shadeName": "Petal",
       "colorHex": "#F2A5A5",
-      "imageUrl": null,
+      "imageUrl": "assets/WESTMANATELIER-BabyCheeksPetal.jpg",
       "shopUrl": "https://www.westman-atelier.com/products/baby-cheeks-blush-stick-petal",
       "amazonUrl": null,
       "price": 48,
@@ -5338,12 +5338,292 @@
       "description": "Blush stick clean beauty ultra-pigmenté. Teinte rose poudré froid pour les carnations claires avec sous-ton froid. Formule légère enrichie en ingrédients clean, fini naturel satiné.",
       "isFeatured": true,
       "active": true,
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
       "concernTags": [
         "eclat"
       ],
       "makeupCategory": "blush",
       "curatedBy": "admin",
       "curatedAt": "2026-05-18"
+    },
+    {
+      "id": "m227",
+      "name": "Blush Orgasm",
+      "brand": "NARS",
+      "category": "blush",
+      "description": "Blush poudre iconique teinte pêche dorée à reflets shimmer — universellement flatteur pour tous les sous-tons.",
+      "price": 37,
+      "rating": 4.7,
+      "reviews": 5200,
+      "imageUrl": "assets/NARS-BlushOrgasm.jpg",
+      "amazonUrl": null,
+      "undertone": "warm",
+      "carnation": [
+        "clair",
+        "medium",
+        "fonce"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "concernTags": [
+        "eclat"
+      ],
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m228",
+      "name": "Cheeks to Chic Blush — Pillow Talk",
+      "brand": "Charlotte Tilbury",
+      "category": "blush",
+      "description": "Blush duo rose poudré frais pour un teint romantique naturel. Teinte iconique Pillow Talk pour les sous-tons froids.",
+      "price": 38,
+      "rating": 4.6,
+      "reviews": 2800,
+      "imageUrl": "assets/CHARLOTTETILBURY-CheektochicPillowtalk.png",
+      "amazonUrl": null,
+      "undertone": "cool",
+      "carnation": [
+        "clair",
+        "medium"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "concernTags": [
+        "eclat"
+      ],
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m229",
+      "name": "Dandelion Blush",
+      "brand": "Benefit",
+      "category": "blush",
+      "description": "Blush poudre rose pâle lumineux, parfait pour illuminer les carnations claires",
+      "price": 32,
+      "rating": 4.3,
+      "imageUrl": null,
+      "undertone": "cool",
+      "carnation": [
+        "clair"
+      ],
+      "active": false
+    },
+    {
+      "id": "m230",
+      "name": "Butter Blush — Vanilla Cream",
+      "brand": "NYX Professional Makeup",
+      "category": "blush",
+      "description": "Blush crème texture beurre fondante, teinte nude universel bonne mine",
+      "price": 12,
+      "rating": 4.2,
+      "imageUrl": null,
+      "active": false
+    },
+    {
+      "id": "m231",
+      "name": "Cheek Lover Oil-Infused Blush",
+      "brand": "Catrice",
+      "category": "blush",
+      "description": "Blush infusé d huile pour un teint naturel et bonne mine accessible",
+      "price": 6,
+      "rating": 4.1,
+      "imageUrl": null,
+      "active": false
+    },
+    {
+      "id": "m232",
+      "name": "Silky Touch Blush — Natural Rose",
+      "brand": "Essence",
+      "category": "blush",
+      "description": "Blush poudre soyeux teinte rose naturelle, formule longue tenue",
+      "price": 4,
+      "rating": 4,
+      "imageUrl": null,
+      "active": false
+    },
+    {
+      "id": "m233",
+      "name": "Cheeks Out Cream Blush — Strawberry Drip",
+      "brand": "Fenty Beauty",
+      "category": "blush",
+      "description": "Blush crème buildable teinte corail pêche lumineux, bonne mine intense. Formule fondante à porter seule ou sur poudre.",
+      "price": 28,
+      "rating": 4.5,
+      "reviews": 3100,
+      "imageUrl": "assets/FENTYBEAUTY-CheeksOutStrawberryDrip.jpg",
+      "amazonUrl": null,
+      "undertone": "warm",
+      "carnation": [
+        "clair",
+        "medium"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "concernTags": [
+        "eclat"
+      ],
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m234",
+      "name": "Cheeks Out Cream Blush — Berry Provocative",
+      "brand": "Fenty Beauty",
+      "category": "blush",
+      "description": "Blush crème pigmenté teinte baie prune, flush intense pour carnations médium à foncées",
+      "price": 28,
+      "rating": 4.4,
+      "imageUrl": null,
+      "undertone": "cool",
+      "carnation": [
+        "medium",
+        "fonce"
+      ],
+      "active": false
+    },
+    {
+      "id": "m235",
+      "name": "Powder Blush — Blushbaby",
+      "brand": "MAC",
+      "category": "blush",
+      "description": "Blush poudre satiné teinte rose pâle lilas, éclat délicat pour sous-tons froids",
+      "price": 29,
+      "rating": 4.4,
+      "imageUrl": null,
+      "undertone": "cool",
+      "carnation": [
+        "clair",
+        "medium"
+      ],
+      "active": false
+    },
+    {
+      "id": "m236",
+      "name": "Powder Blush — Melba",
+      "brand": "MAC",
+      "category": "blush",
+      "description": "Blush poudre teinte saumon pêche chaud, classique indémodable pour sous-tons chauds",
+      "price": 29,
+      "rating": 4.3,
+      "imageUrl": null,
+      "undertone": "warm",
+      "carnation": [
+        "medium",
+        "fonce"
+      ],
+      "active": false
+    },
+    {
+      "id": "m237",
+      "name": "Butter Blush — Boho Chic",
+      "brand": "NYX Professional Makeup",
+      "category": "blush",
+      "description": "Blush crème fondant teinte prune rosée pour illuminer les carnations foncées",
+      "price": 12,
+      "rating": 4.1,
+      "imageUrl": null,
+      "undertone": "cool",
+      "carnation": [
+        "fonce"
+      ],
+      "active": false
+    },
+    {
+      "id": "m238",
+      "name": "Soft Pinch Liquid Blush — Hope",
+      "brand": "Rare Beauty",
+      "category": "blush",
+      "description": "Blush liquide buildable teinte terracotta pêche chaleureuse. Formule ultra-légère longue tenue.",
+      "price": 24,
+      "rating": 4.5,
+      "reviews": 2400,
+      "imageUrl": "assets/RAREBEAUTY-SoftPinchHope.jpg",
+      "amazonUrl": null,
+      "undertone": "warm",
+      "carnation": [
+        "medium",
+        "fonce"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "concernTags": [
+        "eclat"
+      ],
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m239",
+      "name": "Soft Pinch Liquid Blush — Joy",
+      "brand": "Rare Beauty",
+      "category": "blush",
+      "description": "Blush liquide buildable teinte rose vibrant naturel, longue tenue formule ultra-légère.",
+      "price": 24,
+      "rating": 4.6,
+      "reviews": 2400,
+      "imageUrl": "assets/RAREBEAUTY-SoftPinchJoy.jpg",
+      "amazonUrl": null,
+      "undertone": "cool",
+      "carnation": [
+        "clair",
+        "medium"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "concernTags": [
+        "eclat"
+      ],
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m240",
+      "name": "Cheek Pop — Peach Pop",
+      "brand": "Clinique",
+      "category": "blush",
+      "description": "Blush poudre compact teinte pêche lumineuse, fini naturel bonne mine",
+      "price": 30,
+      "rating": 4.4,
+      "imageUrl": null,
+      "undertone": "warm",
+      "carnation": [
+        "clair",
+        "medium"
+      ],
+      "active": false
     }
   ]
 }

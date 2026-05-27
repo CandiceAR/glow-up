@@ -23,7 +23,7 @@ const MakeupRoutine = (() => {
         allProducts = await FirestoreProducts.loadAll();
       }
       if (!allProducts) {
-        const res  = await fetch('data/products-manual.json?v=65');
+        const res  = await fetch('data/products-manual.json?v=72');
         const data = await res.json();
         allProducts = Array.isArray(data) ? data : (data.products || []);
       }
@@ -234,7 +234,7 @@ const MakeupRoutine = (() => {
     const all = filterByBudget(getByCategory('highlighter'), budget);
     if (!all.length) return [];
     const relevant = all.filter(p => {
-      const okUndertone = !p.undertone || !undertone || p.undertone === undertone;
+      const okUndertone = !p.undertone || !undertone || undertone === 'neutral' || p.undertone === undertone;
       const okCarnation = !Array.isArray(p.carnation) || !carnation || p.carnation.includes(carnation);
       return okUndertone && okCarnation;
     });
@@ -251,7 +251,7 @@ const MakeupRoutine = (() => {
       if (luxe.length) all = luxe;
     }
     const relevant = all.filter(p => {
-      const okUndertone = !p.undertone || !undertone || p.undertone === undertone;
+      const okUndertone = !p.undertone || !undertone || undertone === 'neutral' || p.undertone === undertone;
       const okCarnation = !Array.isArray(p.carnation) || !carnation || p.carnation.includes(carnation);
       return okUndertone && okCarnation;
     });
@@ -593,6 +593,7 @@ const MakeupRoutine = (() => {
         </footer>
 
       </div>`;
+
   }
 
   function _renderSaveBanner() {

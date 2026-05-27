@@ -13,6 +13,9 @@
     "api/skinInsights.js": {
       "maxDuration": 20
     },
+    "api/faceVision.js": {
+      "maxDuration": 30
+    },
     "api/uploadImage.js": {
       "maxDuration": 30
     },

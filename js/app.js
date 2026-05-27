@@ -190,6 +190,10 @@ async function initApp() {
   // Purge du cache localStorage produits (catalogue remis à zéro)
   localStorage.removeItem('glow_products_manual');
 
+  // 0. Listeners UI en premier — indépendants du chargement des données
+  setupGlobalListeners();
+  TryOn.setupCapture();
+
   // 1. Chargement du catalogue produits + règles (en parallèle)
   await Promise.all([
     ProductCatalog.load(),
@@ -210,9 +214,7 @@ async function initApp() {
     RoutineSaver.showResumeBanner(); // Visiteur connu : bannière de reprise
   }
 
-  // 4. Event listeners
-  setupGlobalListeners();
-  TryOn.setupCapture();
+  // 4. (listeners déjà attachés en step 0)
 
   // 5. Affichage écran home
   showScreen('home');

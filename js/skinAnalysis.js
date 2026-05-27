@@ -1225,12 +1225,15 @@ const SkinAnalysis = (() => {
         </div>
         <p class="skin-loading-title">Analyse de ta peau en cours…</p>
         <p class="skin-loading-sub">
-          Détection des zones · Analyse colorimétrique · Calcul des métriques
+          Détection des zones · Colorimétrie · Intelligence artificielle ✦
         </p>
       </div>`;
 
     try {
-      const result = await analyzeFromPhoto(AppState.face.photo);
+      const [result, vision] = await Promise.all([
+        analyzeFromPhoto(AppState.face.photo),
+        callFaceVision(AppState.face.photo)
+      ]);
 
       if (!result) {
         content.innerHTML = `
@@ -1246,6 +1249,7 @@ const SkinAnalysis = (() => {
         return;
       }
 
+      result.vision = vision || {};
       AppState.face.skinAnalysis = result;
       renderReport(result, content);
       console.log('[LookGen] LookGenerator défini?', typeof window.LookGenerator, '| sourceCanvas?', !!AppState.face.sourceCanvas, '| landmarks?', !!AppState.face.landmarks);
@@ -1678,6 +1682,334 @@ const SkinAnalysis = (() => {
           <div class="skin-needs-grid">${needsHTML}</div>
         </div>` : ''}
         <div class="skin-chars-list">${charsHTML}</div>
+      </div>`;
+  }
+
+  // ─── Analyse vision via Haiku ────────────────────────────────
+
+  async function callFaceVision(photoDataUrl) {
+    try {
+      const controller = new AbortController();
+      const tid = setTimeout(() => controller.abort(), 15000);
+      const resp = await fetch('/api/faceVision', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ photo: photoDataUrl }),
+        signal:  controller.signal
+      });
+      clearTimeout(tid);
+      if (!resp.ok) return {};
+      return await resp.json();
+    } catch(e) {
+      console.warn('[FaceVision] indisponible:', e.message);
+      return {};
+    }
+  }
+
+  // ─── Micro-signaux & observations macro ──────────────────────
+
+  function detectMicroSignals(result, answers = {}) {
+    const { skinType, cernes } = result;
+    const st  = skinType?.type || 'normale';
+
+    // Vision Haiku — source principale de détection photo
+    const vision = result.vision || {};
+    const vc = vision.cernes        || {};
+    const vr = vision.rougeurs      || {};
+    const vi = vision.imperfections || {};
+
+    const qConc = Array.isArray(answers.concerns) ? answers.concerns : [];
+    const qSkin = answers.skinType   || null;
+    const qObj  = answers.objectives || null;
+    const qAge  = answers.ageGroup   || null;
+    const isSkinSeche = st === 'seche' || qSkin === 'seche';
+
+    const signals = [];
+    const add = (id, label, macro, severity, detected) => {
+      if (detected) signals.push({ id, label, macro, severity: Math.min(1, Math.max(0, severity)) });
+    };
+
+    // ── Regard fatigué — cernes MediaPipe (fiable) + vision en renfort ──
+    const cernesDetected = cernes?.detected || vc.detected === true;
+    const cernesType     = cernes?.type || (vc.type !== 'aucun' ? vc.type : null);
+    const cernesInt      = cernes?.intensity || vc.intensite || null;
+
+    add('dark_circles',         'Ombre sous les yeux',        'regard_fatigue', 0.70, cernesDetected);
+    add('dark_circles_intense', 'Cernes prononcés',           'regard_fatigue', 0.92, cernesDetected && cernesInt === 'marqués');
+    add('dark_circles_blue',    'Cernes bleutés (vaisseaux)', 'regard_fatigue', 0.78, cernesDetected && cernesType === 'bleu');
+    add('dark_circles_brown',   'Cernes pigmentaires',        'regard_fatigue', 0.72, cernesDetected && (cernesType === 'marron' || cernesType === 'violet'));
+    add('cernes_quiz',          'Fatigue signalée',           'regard_fatigue', 0.62, !cernesDetected && qConc.includes('cernes'));
+
+    // ── Peau réactive — vision ──
+    const rougeursLeg  = vr.niveau === 'légères';
+    const rougeursPron = vr.niveau === 'prononcées';
+    const rougeursJoues = vr.zones === 'joues';
+    const hasVisionRoug = rougeursLeg || rougeursPron;
+
+    add('redness_visible', 'Rougeurs visibles',      'peau_reactive', 0.60, rougeursLeg);
+    add('redness_intense', 'Rougeurs prononcées',    'peau_reactive', 0.88, rougeursPron);
+    add('couperose_joues', 'Rougeurs sur les joues', 'peau_reactive', 0.72, rougeursJoues);
+    add('sensitive_quiz',  'Réactivité signalée',    'peau_reactive', 0.65, qConc.includes('rougeurs') && !hasVisionRoug);
+    add('sensitive_skin',  'Peau sensible',          'peau_reactive', 0.62, (st === 'sensible' || qSkin === 'sensible') && !hasVisionRoug);
+    add('barrier_damaged', 'Barrière fragilisée',    'peau_reactive', 0.70, isSkinSeche && (hasVisionRoug || qConc.includes('rougeurs')));
+
+    // ── Manque d'éclat — vision ──
+    const eclatTerne    = vision.eclat === 'terne';
+    const eclatTresTerne = vision.eclat === 'très_terne';
+    const hasVisionEcl  = eclatTerne || eclatTresTerne;
+
+    add('dull_photo',      'Teint voilé',         'manque_eclat', eclatTresTerne ? 0.85 : 0.62, hasVisionEcl);
+    add('dull_quiz',       'Éclat terne signalé', 'manque_eclat', 0.62, qConc.includes('eclat_terne') && !hasVisionEcl);
+    add('dry_skin',        'Peau sèche',          'manque_eclat', 0.60, isSkinSeche && !vi.presentes);
+    add('eclat_objective', 'Objectif éclat',      'manque_eclat', 0.55, qObj === 'eclat' && !hasVisionEcl);
+
+    // ── Texture irrégulière — vision ──
+    const texLeg   = vision.texture === 'légèrement_irrégulière';
+    const texIrreg = vision.texture === 'irrégulière';
+    const hasVisionTex = texLeg || texIrreg;
+
+    add('rough_texture', 'Grain de peau irrégulier', 'texture_irreguliere', texIrreg ? 0.85 : 0.62, hasVisionTex);
+    add('visible_pores', 'Pores visibles',            'texture_irreguliere', 0.70, qConc.includes('pores') && !hasVisionTex);
+    add('tzone_oily',    'Zone T brillante',           'texture_irreguliere', 0.72, (st === 'mixte' || qSkin === 'mixte') && !hasVisionTex);
+    add('global_oily',   'Excès de sébum',             'texture_irreguliere', 0.78, st === 'grasse' || qSkin === 'grasse');
+
+    // ── Irrégularités de teint — vision ──
+    const tachesLeg = vision.taches === 'légères';
+    const tachesVis = vision.taches === 'visibles';
+    const hasVisionTac = tachesLeg || tachesVis;
+
+    add('spots_photo',   'Irrégularités détectées', 'irregularites_teint', tachesVis ? 0.82 : 0.62, hasVisionTac && !vi.presentes);
+    add('spots_quiz',    'Taches signalées',         'irregularites_teint', 0.70, qConc.includes('taches'));
+    add('coverage_need', 'Couvrance nécessaire',     'irregularites_teint', 0.68, tachesVis && !vi.presentes);
+
+    // ── Imperfections acnéiques — vision + questionnaire ──
+    add('acne_quiz',  'Acné ou boutons signalés', 'imperfections_acne', 0.85, qConc.includes('acne'));
+    add('acne_photo', 'Imperfections visibles',   'imperfections_acne', 0.82, vi.presentes && vi.type !== 'post_acne');
+    add('acne_scars', 'Marques post-acné',        'imperfections_acne', 0.68, vi.type === 'post_acne');
+    add('sebum_acne', 'Excès de sébum',           'imperfections_acne', 0.72, (st === 'grasse' || qSkin === 'grasse') && (qConc.includes('acne') || vi.presentes));
+
+    // ── Peau mature — questionnaire uniquement ──
+    add('mature_age',    'Peau 35+',                  'peau_mature', 0.70, qAge === '40+' || qAge === '30-40');
+    add('rides_signes',  'Signes du temps visibles',  'peau_mature', 0.80, qConc.includes('rides'));
+    add('antiage_need',  'Objectif anti-âge',         'peau_mature', 0.68, qObj === 'anti-age');
+    add('perte_fermete', 'Perte de fermeté',          'peau_mature', 0.78, qAge === '40+' || (qAge === '30-40' && qConc.includes('rides')));
+    add('eclat_mature',  'Teint moins lumineux',      'peau_mature', 0.65, (qAge === '40+' || qAge === '30-40') && hasVisionEcl);
+
+    return signals;
+  }
+
+  function buildMacroObservations(result, answers = {}) {
+    const signals = detectMicroSignals(result, answers);
+
+    const MACRO_CONFIG = {
+      regard_fatigue: {
+        name: 'Regard fatigué',
+        icon: '◐',
+        getExplanation(r) {
+          const t = r.cernes?.type;
+          if (t === 'bleu')   return 'Les vaisseaux sanguins transparaissent sous la peau fine du contour des yeux.';
+          if (t === 'marron') return 'Une hyperpigmentation sous les yeux crée une zone plus foncée autour du regard.';
+          return 'Le contour des yeux manque de luminosité — le regard paraît moins frais et moins reposé.';
+        },
+        getSolution(r) {
+          const t = r.cernes?.type;
+          if (t === 'bleu')   return 'Correcteur teinte saumon ou pêche pour neutraliser l\'ombre bleutée.';
+          if (t === 'marron') return 'Correcteur teinte orangée pour contrer les zones pigmentées.';
+          return 'Anti-cernes lumineux 1 à 2 tons plus clair que le fond de teint pour ouvrir le regard.';
+        },
+        concernTags:       ['cernes', 'hydratation', 'ridules', 'anti_age'],
+        productCategories: ['concealer', 'eyeshadow'],
+      },
+      peau_reactive: {
+        name: 'Peau réactive',
+        icon: '◉',
+        getExplanation() { return 'Ta peau réagit facilement — rougeurs, sensations d\'inconfort ou réactivité aux textures.'; },
+        getSolution()    { return 'Fond de teint sans parfum avec pigments verts pour neutraliser les rougeurs.'; },
+        concernTags:       ['rougeurs', 'apaisement', 'barriere', 'sensibilite'],
+        productCategories: ['foundation', 'concealer', 'powder'],
+      },
+      manque_eclat: {
+        name: 'Manque d\'éclat',
+        icon: '✦',
+        getExplanation() { return 'Ton teint se voile et perd en fraîcheur — la peau ne reflète plus bien la lumière.'; },
+        getSolution()    { return 'Enlumineur et fond de teint lumineux pour réveiller l\'éclat instantanément.'; },
+        concernTags:       ['eclat', 'teint_terne', 'uniformite', 'deshydratation'],
+        productCategories: ['highlighter', 'blush', 'foundation'],
+      },
+      texture_irreguliere: {
+        name: 'Texture irrégulière',
+        icon: '◈',
+        getExplanation() { return 'Pores dilatés ou grain de peau irrégulier — le fond de teint a du mal à se poser uniformément.'; },
+        getSolution()    { return 'Fond de teint à texture lissante + poudre matifiante pour unifier le grain de peau.'; },
+        concernTags:       ['pores', 'texture', 'matifiant', 'purification'],
+        productCategories: ['foundation', 'powder'],
+      },
+      irregularites_teint: {
+        name: 'Irrégularités de teint',
+        icon: '◑',
+        getExplanation() { return 'Zones pigmentées ou rosées par endroits — le teint paraît inégal et manque d\'uniformité.'; },
+        getSolution()    { return 'Correcteur ciblé + fond de teint unificateur pour uniformiser le teint en douceur.'; },
+        concernTags:       ['taches', 'uniformite', 'couvrance', 'eclat'],
+        productCategories: ['concealer', 'foundation'],
+      },
+      imperfections_acne: {
+        name: 'Imperfections acnéiques',
+        icon: '●',
+        getExplanation() { return 'Ta peau est sujette aux boutons — excès de sébum, pores obstrués ou inflammation localisée.'; },
+        getSolution()    { return 'Fond de teint non-comédogène léger + correcteur précis pour couvrir sans aggraver la peau.'; },
+        concernTags:       ['imperfections', 'purification', 'pores', 'matifiant'],
+        productCategories: ['foundation', 'concealer', 'powder'],
+      },
+      peau_mature: {
+        name: 'Peau mature',
+        icon: '◇',
+        getExplanation(r, ans) {
+          if (ans?.ageGroup === '40+') return 'La peau perd en fermeté et en éclat avec le temps — les bonnes formules compensent visuellement.';
+          return 'La peau commence à montrer des premiers signes du temps — ridules et légère perte d\'éclat.';
+        },
+        getSolution()    { return 'Fond de teint hydratant lumineux + touche d\'enlumineur stratégique pour raviver le teint.'; },
+        concernTags:       ['anti_age', 'ridules', 'eclat', 'hydratation'],
+        productCategories: ['foundation', 'highlighter', 'blush'],
+      },
+    };
+
+    const byMacro = {};
+    for (const sig of signals) {
+      if (!byMacro[sig.macro]) byMacro[sig.macro] = { signals: [], maxSev: 0, totalSev: 0 };
+      byMacro[sig.macro].signals.push(sig);
+      byMacro[sig.macro].maxSev   = Math.max(byMacro[sig.macro].maxSev, sig.severity);
+      byMacro[sig.macro].totalSev += sig.severity;
+    }
+
+    const macros = [];
+    for (const [id, cfg] of Object.entries(MACRO_CONFIG)) {
+      const data = byMacro[id];
+      if (!data || !data.signals.length) continue;
+      const avgSev  = data.totalSev / data.signals.length;
+      macros.push({
+        id,
+        name:              cfg.name,
+        icon:              cfg.icon,
+        signals:           data.signals,
+        explanation:       cfg.getExplanation(result, answers),
+        solution:          cfg.getSolution(result, answers),
+        concernTags:       cfg.concernTags,
+        productCategories: cfg.productCategories,
+        severity:          data.maxSev * 0.6 + avgSev * 0.4,
+      });
+    }
+
+    return macros.sort((a, b) => b.severity - a.severity).slice(0, 3);
+  }
+
+  function getProductsForProblem(macro, result, answers, limit = 2) {
+    const catalog   = AppState?.products?.catalog || [];
+    const ut        = result.undertone?.type || 'neutral';
+    const ca        = result.carnation?.type || 'medium';
+    const BMAX      = { 'petits-prix': 20, 'bon-rapport': 50, 'premium': Infinity };
+    const budgetMax = BMAX[answers.budget] ?? Infinity;
+    const mp        = ProductCatalog.getMaturityPreference(answers);
+
+    function buildPool(filterUT, filterCA, filterBudget) {
+      return catalog.filter(p => {
+        if (p.active === false || !p.imageUrl) return false;
+        if (!macro.productCategories.includes(p.category)) return false;
+        if (filterUT && p.undertone && p.undertone !== 'neutral' && p.undertone !== filterUT) return false;
+        if (filterCA && Array.isArray(p.carnation) && p.carnation.length && !p.carnation.includes(filterCA)) return false;
+        if (filterBudget && p.price && p.price > budgetMax) return false;
+        return true;
+      });
+    }
+
+    let pool = buildPool(ut, ca, true);
+    if (pool.length < 2) pool = buildPool(ut, null, true);
+    if (pool.length < 2) pool = buildPool(null, null, true);
+    if (pool.length < 2) pool = buildPool(null, null, false);
+
+    if (mp && mp !== 'all') {
+      const mf = pool.filter(p => !p.maturity || p.maturity === 'all' || p.maturity === mp);
+      if (mf.length >= limit) pool = mf;
+    }
+
+    pool = pool.sort((a, b) => {
+      const aScore = (a.concernTags || []).filter(t => macro.concernTags.includes(t)).length;
+      const bScore = (b.concernTags || []).filter(t => macro.concernTags.includes(t)).length;
+      if (bScore !== aScore) return bScore - aScore;
+      if (b.isFeatured !== a.isFeatured) return b.isFeatured ? 1 : -1;
+      return (b.rating || 0) - (a.rating || 0);
+    });
+
+    const usedBrands = new Set();
+    const selected   = [];
+    for (const p of pool) {
+      const brand = p.brand.toLowerCase().trim();
+      if (usedBrands.has(brand)) continue;
+      usedBrands.add(brand);
+      selected.push(p);
+      if (selected.length >= limit) break;
+    }
+    return selected;
+  }
+
+  function renderProblemCardsHTML(macroObs, result, answers) {
+    if (!macroObs || !macroObs.length) {
+      return `
+        <div class="mkr-bloc prob-section">
+          <h2 class="mkr-bloc-title">🔎 Ce que ton visage montre</h2>
+          <div class="prob-healthy">
+            <span class="prob-healthy-icon">✦</span>
+            <p>Ta peau est en bonne forme — aucune irrégularité majeure détectée.</p>
+          </div>
+        </div>`;
+    }
+
+    const cards = macroObs.map(macro => {
+      const products = getProductsForProblem(macro, result, answers, 2);
+
+      const signalsHTML = macro.signals.slice(0, 4)
+        .map(s => `<span class="prob-signal">${s.label}</span>`).join('');
+
+      const productsHTML = products.length
+        ? products.map(p => `
+          <div class="prob-prod-card" onclick="ProductCatalog.openProductModal('${p.id}')">
+            <div class="prob-prod-img">
+              <img src="${p.imageUrl}" alt="${p.name}" onerror="this.onerror=null;this.style.opacity='0'">
+            </div>
+            <div class="prob-prod-info">
+              <span class="prob-prod-brand">${p.brand}</span>
+              <p class="prob-prod-name">${p.name}</p>
+              ${p.price ? `<span class="prob-prod-price">${p.price.toFixed(2)} €</span>` : ''}
+            </div>
+            <a class="btn btn-amazon prob-prod-buy"
+               href="${p.amazonUrl}" target="_blank" rel="noopener nofollow sponsored"
+               onclick="event.stopPropagation(); if(typeof Tracker!=='undefined') Tracker.trackBuyClick('${p.id}')">
+              Acheter →
+            </a>
+          </div>`).join('')
+        : '<p class="prob-no-prod">Produits bientôt disponibles.</p>';
+
+      return `
+        <div class="prob-card">
+          <div class="prob-card-header">
+            <span class="prob-icon">${macro.icon}</span>
+            <div class="prob-card-title-wrap">
+              <h3 class="prob-name">${macro.name}</h3>
+              <div class="prob-signals">${signalsHTML}</div>
+            </div>
+          </div>
+          <p class="prob-explanation">${macro.explanation}</p>
+          <div class="prob-solution">
+            <span class="prob-solution-label">Solution</span>
+            <p>${macro.solution}</p>
+          </div>
+          <div class="prob-products">${productsHTML}</div>
+        </div>`;
+    }).join('');
+
+    return `
+      <div class="mkr-bloc prob-section">
+        <h2 class="mkr-bloc-title">🔎 Ce que ton visage montre</h2>
+        ${cards}
       </div>`;
   }
 
@@ -2427,6 +2759,8 @@ const SkinAnalysis = (() => {
       ? '<div class="mkr-makeup-warn">⚠ Photo prise avec maquillage — le résultat peut être moins précis.</div>'
       : '';
 
+    const macroObs = buildMacroObservations(result, answers);
+
     content.innerHTML = `
       <div class="makeup-report">
 
@@ -2452,6 +2786,10 @@ const SkinAnalysis = (() => {
               <span class="mkr-chip-label">Sous-ton</span>
               <span class="mkr-chip-value" style="color:${undertone?.colorHex || '#C8A882'}">${undertone?.label?.split('·')[0]?.trim() || 'Neutre'}</span>
             </div>
+            <div class="mkr-chip">
+              <span class="mkr-chip-label">Peau</span>
+              <span class="mkr-chip-value">${skinType?.label || 'Normale'}</span>
+            </div>
             ${cernes?.detected ? `
             <div class="mkr-chip">
               <span class="mkr-chip-label">Cernes</span>
@@ -2464,11 +2802,8 @@ const SkinAnalysis = (() => {
           </div>
         </div>
 
-        <!-- BLOC PROFIL PEAU -->
-        ${renderSkinProfileHTML(buildSkinProfile(result, answers))}
-
-        <!-- BLOC ANALYSE VISAGE -->
-        ${renderFaceObsHTML(result)}
+        <!-- BLOC PROBLÈMES DÉTECTÉS -->
+        ${renderProblemCardsHTML(macroObs, result, answers)}
 
         <!-- BLOC 2 — EXPLICATION SIMPLE -->
         <div class="mkr-bloc mkr-bloc-explain">
@@ -2494,7 +2829,7 @@ const SkinAnalysis = (() => {
 
         <!-- BLOC 4 — ROUTINES PERSONNALISÉES -->
         <div class="mkr-bloc">
-          <h2 class="mkr-bloc-title">✨ Tes routines personnalisées</h2>
+          <h2 class="mkr-bloc-title">✨ Tes teintes selon ta colorimétrie</h2>
           <div class="mkr-tabs">
             <button class="mkr-tab active" onclick="switchMkrTab(this,'teint')">Teint</button>
             <button class="mkr-tab" onclick="switchMkrTab(this,'yeux')">Yeux</button>
