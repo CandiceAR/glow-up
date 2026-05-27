@@ -362,10 +362,11 @@ em { font-style: italic; color: var(--nude); }
   padding: 4px 10px;
   border-radius: 20px;
 }
-.badge-featured  { background: var(--nude); color: var(--white); }
-.badge-h2o       { background: #1a9dc0; color: #fff; letter-spacing: 0.02em; }
-.badge-vitc      { background: linear-gradient(90deg, #f9c74f, #f4a94e); color: #7a4a00; letter-spacing: 0.02em; }
-.badge-vitc-spf  { background: linear-gradient(90deg, #f4a94e, #e86c3a); color: #fff; letter-spacing: 0.02em; }
+.badge-featured   { background: var(--nude); color: var(--white); }
+.badge-h2o        { background: #1a9dc0; color: #fff; letter-spacing: 0.02em; }
+.badge-vitc       { background: linear-gradient(90deg, #f9c74f, #f4a94e); color: #7a4a00; letter-spacing: 0.02em; }
+.badge-vitc-spf   { background: linear-gradient(90deg, #f4a94e, #e86c3a); color: #fff; letter-spacing: 0.02em; }
+.badge-multiusage { background: linear-gradient(90deg, #a78bfa, #c084fc); color: #fff; letter-spacing: 0.02em; }
 
 .product-card-body { padding: 16px; }
 .product-card-meta {

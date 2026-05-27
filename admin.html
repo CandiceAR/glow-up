@@ -661,6 +661,20 @@
                   ★ Produit vedette
                 </label>
               </div>
+              <div class="form-group full">
+                <label class="form-label">🔄 Produit multi-usage</label>
+                <label class="check-row" style="margin-bottom:8px;">
+                  <input type="checkbox" id="fMultiUsage" onchange="Admin.toggleMultiUsageZones()">
+                  Ce produit s'utilise sur plusieurs zones
+                </label>
+                <div id="fMultiUsageZonesWrap" style="display:none;margin-left:16px;">
+                  <div style="font-size:0.8rem;color:var(--muted);margin-bottom:6px;">Zones d'application :</div>
+                  <label class="check-row"><input type="checkbox" name="fMultiZone" value="yeux"> Yeux</label>
+                  <label class="check-row"><input type="checkbox" name="fMultiZone" value="joue"> Joues</label>
+                  <label class="check-row"><input type="checkbox" name="fMultiZone" value="levre"> Lèvres</label>
+                  <label class="check-row"><input type="checkbox" name="fMultiZone" value="visage"> Visage entier</label>
+                </div>
+              </div>
 
               <!-- Champs internes (non affichés) -->
               <input type="hidden" id="fAsin">

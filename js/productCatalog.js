@@ -193,6 +193,7 @@ const ProductCatalog = (() => {
     if (product.badge === 'vitc')     badgeParts.push('<span class="badge badge-vitc">✨ Vit C</span>');
     if (product.badge === 'vitc-spf') badgeParts.push('<span class="badge badge-vitc-spf">☀️ Vit C + SPF</span>');
     if (product.isFeatured)           badgeParts.push('<span class="badge badge-featured">★ Vedette</span>');
+    if (product.multiUsage)           badgeParts.push(`<span class="badge badge-multiusage">🔄 ${product.multiUsageLabel || 'Multi-usage'}</span>`);
     const badgeHTML = badgeParts.length
       ? `<div class="badge-stack">${badgeParts.join('')}</div>`
       : '';

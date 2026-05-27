@@ -382,9 +382,23 @@ const Admin = (() => {
     Array.from(document.getElementById('fConcerns').options).forEach(o => {
       o.selected = concerns.includes(o.value);
     });
+    const fmu = document.getElementById('fMultiUsage');
+    if (fmu) {
+      fmu.checked = p.multiUsage === true;
+      document.querySelectorAll('[name="fMultiZone"]').forEach(cb => {
+        cb.checked = Array.isArray(p.multiUsageZones) && p.multiUsageZones.includes(cb.value);
+      });
+      toggleMultiUsageZones();
+    }
     previewImage(p.imageUrl || '');
     document.getElementById('productFormWrap').style.display = 'block';
     document.getElementById('productFormWrap').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function toggleMultiUsageZones() {
+    const checked = document.getElementById('fMultiUsage')?.checked;
+    const wrap = document.getElementById('fMultiUsageZonesWrap');
+    if (wrap) wrap.style.display = checked ? 'block' : 'none';
   }
 
   function cancelForm() {
@@ -421,6 +435,11 @@ const Admin = (() => {
     });
     Array.from(document.getElementById('fIngredients').options).forEach(o => { o.selected = false; });
     Array.from(document.getElementById('fConcerns').options).forEach(o => { o.selected = false; });
+    const fMultiUsage = document.getElementById('fMultiUsage');
+    if (fMultiUsage) fMultiUsage.checked = false;
+    document.querySelectorAll('[name="fMultiZone"]').forEach(cb => { cb.checked = false; });
+    const mwrap = document.getElementById('fMultiUsageZonesWrap');
+    if (mwrap) mwrap.style.display = 'none';
     previewImage('');
     const prog = document.getElementById('imageUploadProgress');
     if (prog) prog.textContent = '';
@@ -460,6 +479,10 @@ const Admin = (() => {
     const correctorType = category === 'corrector'  ? (document.getElementById('fCorrectorType').value || null) : null;
     const concernTags = Array.from(document.getElementById('fConcerns').selectedOptions).map(o => o.value);
     const ingredientTags = Array.from(document.getElementById('fIngredients').selectedOptions).map(o => o.value);
+    const multiUsage = document.getElementById('fMultiUsage')?.checked === true;
+    const multiUsageZones = multiUsage ? Array.from(document.querySelectorAll('[name="fMultiZone"]:checked')).map(el => el.value) : null;
+    const ZONE_LABELS = { yeux: 'Yeux', joue: 'Joues', levre: 'Lèvres', visage: 'Visage' };
+    const multiUsageLabel = (multiUsage && multiUsageZones?.length) ? multiUsageZones.map(z => ZONE_LABELS[z] || z).join(' + ') : null;
 
     const hasLink = amazonUrl || shopUrl;
     if (!hasLink || !name || !brand) {
@@ -528,6 +551,9 @@ const Admin = (() => {
         correctorType: correctorType || null,
         concernTags: concernTags,
         ingredientTags: ingredientTags,
+        multiUsage: multiUsage || false,
+        multiUsageZones: multiUsageZones || null,
+        multiUsageLabel: multiUsageLabel || null,
         description: description || existing.description || '',
         curatedAt:   new Date().toISOString().split('T')[0]
       };
@@ -557,6 +583,9 @@ const Admin = (() => {
         concernTags: concernTags,
         isFeatured,
         active: isActive,
+        multiUsage: multiUsage || false,
+        multiUsageZones: multiUsageZones || null,
+        multiUsageLabel: multiUsageLabel || null,
         description: description || '',
         curatedBy: 'admin',
         curatedAt: new Date().toISOString().split('T')[0],
@@ -1336,7 +1365,7 @@ const Admin = (() => {
 
   return {
     login, logout,
-    showAddForm, editProduct, duplicateProduct, cancelForm, saveProduct,
+    showAddForm, editProduct, duplicateProduct, cancelForm, saveProduct, toggleMultiUsageZones,
     onCategoryChange, autoTagAll,
     toggleActive, toggleFeatured, deleteProduct,
     search, filterCat, filterIngredient, filterConcern, patchSkincareTags, importNewFromJSON, forceSyncAllFromJSON, showTab, checkMissingPhotos,
