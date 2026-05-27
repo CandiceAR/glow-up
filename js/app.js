@@ -493,23 +493,12 @@ function handleCaptureNext() {
     showToast('Une photo est nécessaire pour personnaliser ta routine ✦', 'info', 3500);
     return;
   }
-  // Si on vient depuis le questionnaire (étape q-photo)
   if (sessionStorage.getItem('glow_resume_questionnaire') === '1') {
     sessionStorage.removeItem('glow_resume_questionnaire');
-    showScreen('questionnaire');
-    if (!AppState.face.skinAnalysis) {
-      SkinAnalysis.analyzeFromPhoto(AppState.face.photo)
-        .then(result => {
-          if (result) AppState.face.skinAnalysis = result;
-          Questionnaire.resumeFromPhoto();
-        })
-        .catch(() => Questionnaire.resumeFromPhoto());
-    } else {
-      Questionnaire.resumeFromPhoto();
-    }
-  } else {
-    showScreen('skin-analysis');
+    sessionStorage.setItem('glow_from_questionnaire', '1');
   }
+  AppState.face.skinAnalysis = null;
+  showScreen('skin-analysis');
 }
 
 // ─── Passer la photo depuis la capture (bouton skip) ──────────

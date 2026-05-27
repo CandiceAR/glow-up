@@ -2530,6 +2530,7 @@ const SkinAnalysis = (() => {
     const ec  = eyeContrast?.level || 'moyen';
     const answers = AppState?.questionnaire?.answers || {};
     const mp  = ProductCatalog.getMaturityPreference(answers);
+    const fromQuestionnaire = sessionStorage.getItem('glow_from_questionnaire') === '1';
 
     const skinTypeLbl = skinType?.type || 'normale';
     const cernesType  = cernes?.detected ? cernes.type : null;
@@ -2878,10 +2879,15 @@ const SkinAnalysis = (() => {
 
         <!-- CTA -->
         <div class="diag-cta">
-          <button class="btn btn-dark" onclick="Questionnaire.startSkincare()">
-            Créer ma routine soin ✦
-          </button>
-          <button class="btn btn-outline" onclick="showScreen('capture')" style="margin-top:10px">
+          ${fromQuestionnaire
+            ? `<button class="btn btn-dark" onclick="Questionnaire.continueFromAnalysis()">
+                 Continuer le questionnaire →
+               </button>`
+            : `<button class="btn btn-dark" onclick="Questionnaire.startSkincare()">
+                 Créer ma routine soin ✦
+               </button>`
+          }
+          <button class="btn btn-outline" onclick="AppState.face.skinAnalysis=null;showScreen('capture')" style="margin-top:10px">
             ← Refaire l'analyse
           </button>
         </div>

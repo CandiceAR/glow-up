@@ -770,21 +770,12 @@ const Questionnaire = (() => {
     const file = input.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = async (e) => {
-      const dataUrl = e.target.result;
+    reader.onload = (e) => {
       AppState.face = AppState.face || {};
-      AppState.face.photo = dataUrl;
-      _showPhotoAnalyzing();
-      try {
-        const result = await SkinAnalysis.analyzeFromPhoto(dataUrl);
-        if (result) {
-          AppState.face.skinAnalysis = result;
-          _prefillFromPhoto();
-        }
-      } catch (err) {
-        console.warn('[Questionnaire] analyzeFromPhoto error:', err);
-      }
-      _showPhotoResult();
+      AppState.face.photo = e.target.result;
+      AppState.face.skinAnalysis = null;
+      sessionStorage.setItem('glow_from_questionnaire', '1');
+      showScreen('skin-analysis');
     };
     reader.readAsDataURL(file);
   }
@@ -797,6 +788,17 @@ const Questionnaire = (() => {
     // Appelé depuis app.js quand la photo est capturée et l'analyse terminée
     _prefillFromPhoto();
     _showPhotoResult();
+  }
+
+  function continueFromAnalysis() {
+    sessionStorage.removeItem('glow_from_questionnaire');
+    _prefillFromPhoto();
+    const photoIdx = QUESTIONS.findIndex(q => q.type === 'photo-step');
+    const startIdx = photoIdx >= 0 ? photoIdx : 0;
+    currentIndex = _nextActive(startIdx);
+    if (currentIndex < 0) currentIndex = startIdx;
+    AppState.questionnaire.currentQ = currentIndex;
+    showScreen('questionnaire');
   }
 
   function _showPhotoAnalyzing() {
@@ -1393,6 +1395,7 @@ const Questionnaire = (() => {
     selectOption, selectMkOption, selectMkMulti,
     onSlider, toggleZone, onTextarea,
     takePhoto, retakePhoto, uploadPhoto, skipPhoto, resumeFromPhoto,
+    continueFromAnalysis,
     next, prev, submit,
     QUESTIONS, MAKEUP_QUESTIONS
   };
