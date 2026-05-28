@@ -47,6 +47,35 @@ const Subscription = (() => {
     }
   }
 
+  // ─── Compteur fondatrices (approximatif côté client) ──────────
+  // 50 spots max · deadline 30 juin 2026
+  const FOUNDERS_DEADLINE = new Date('2026-06-30T23:59:59');
+  const FOUNDERS_MAX      = 50;
+  let _foundersCount  = null;
+  let _foundersLoaded = false;
+
+  async function loadFoundersData() {
+    if (_foundersLoaded) return;
+    try {
+      if (typeof firebase === 'undefined' || !firebase.apps.length) return;
+      const db  = firebase.firestore();
+      const doc = await db.collection('config').doc('stats').get();
+      _foundersCount = doc.data()?.foundersCount ?? 0;
+    } catch { _foundersCount = 0; }
+    _foundersLoaded = true;
+  }
+
+  function _foundersEligible() {
+    const withinDate = Date.now() < FOUNDERS_DEADLINE.getTime();
+    const hasSpots   = _foundersCount === null || _foundersCount < FOUNDERS_MAX;
+    return withinDate && hasSpots;
+  }
+
+  function _spotsLeft() {
+    if (_foundersCount === null) return null;
+    return Math.max(0, FOUNDERS_MAX - _foundersCount);
+  }
+
   // ─── Vérifier accès à une fonctionnalité ─────────────────────
   function canAccess(feature) {
     const plan = getPlan();
@@ -89,45 +118,56 @@ const Subscription = (() => {
   }
 
   // ─── Modal paywall ────────────────────────────────────────────
-  function showPaywall(feature) {
-    const messages = {
-      'routine_second':      { title: 'Débloquer la 2ᵉ routine', desc: 'Accède à ta routine skincare ET make-up avec Glow.' },
-      'skinpedia_ai':        { title: 'Skinpedia IA', desc: 'Analyse personnalisée des ingrédients selon ta peau avec Glow.' },
-      'recommendations_adv': { title: 'Recommandations avancées', desc: 'Des produits encore plus ciblés selon ton profil avec Glow.' },
-      'coach':               { title: 'GlowUp Coach', desc: 'Ton assistante beauté IA ultra-personnalisée avec Glow+.' }
+  async function showPaywall(feature) {
+    await loadFoundersData();
+    const isF   = _foundersEligible();
+    const spots = _spotsLeft();
+
+    const CFG = {
+      routine_second:      { tag:'Offre complète',  title:'Ta deuxième routine<br>t\'attend.',       desc:'Skincare + Make-up · Profil cross-device · Historique de ta peau',             plan:'Glow',       price:'19,99', fPrice:'15,99', key:'glow_year',  fKey:'glow_found'  },
+      skinpedia_ai:        { tag:'Skinpedia IA',     title:'L\'analyse IA de tes<br>ingrédients.',    desc:'Comprends chaque actif selon ton profil peau unique.',                          plan:'Glow',       price:'19,99', fPrice:'15,99', key:'glow_year',  fKey:'glow_found'  },
+      recommendations_adv: { tag:'Recommandations',  title:'Des produits encore<br>plus ciblés.',     desc:'Sélection avancée selon ton analyse, ta carnation et tes préférences.',          plan:'Glow',       price:'19,99', fPrice:'15,99', key:'glow_year',  fKey:'glow_found'  },
+      coach:               { tag:'Glow Coach',       title:'Ton experte beauté<br>personnelle.',      desc:'Elle connaît ton profil, ta routine et ton budget. Disponible à tout moment.',   plan:'Glow Coach', price:'199,99',fPrice:'149,99',key:'coach_year', fKey:'coach_found' }
     };
-    const msg = messages[feature] || { title: 'Fonctionnalité Premium', desc: 'Passe à Glow pour débloquer cette fonctionnalité.' };
+    const cfg = CFG[feature] || CFG.routine_second;
+    const priceKey = isF ? cfg.fKey : cfg.key;
+
+    const foundersHtml = isF ? `
+      <div class="paywall-founders-strip">
+        <span class="paywall-founders-tag">✦ Offre Fondatrices</span>
+        ${spots !== null ? `<span class="paywall-founders-spots">${spots} place${spots !== 1 ? 's' : ''} restante${spots !== 1 ? 's' : ''}</span>` : ''}
+        <span class="paywall-founders-date">jusqu'au 30 juin</span>
+      </div>` : '';
+
+    const priceHtml = isF
+      ? `<div class="paywall-price-wrap">
+           <span class="paywall-price-old">${cfg.price}€</span>
+           <span class="paywall-price-new">${cfg.fPrice}€</span>
+           <span class="paywall-price-period">/an</span>
+         </div>
+         <p class="paywall-price-founders-note">Offre fondatrices · réservée aux 50 premières membres</p>`
+      : `<div class="paywall-price-wrap">
+           <span class="paywall-price-new">${cfg.price}€</span>
+           <span class="paywall-price-period">/an</span>
+         </div>`;
 
     const html = `
       <button class="modal-close" onclick="closeModal()">×</button>
-      <div class="paywall-modal">
-        <div class="paywall-badge">✦ Premium</div>
-        <h2>${msg.title}</h2>
-        <p>${msg.desc}</p>
-
-        <div class="paywall-plans">
-          <div class="paywall-plan">
-            <div class="paywall-plan-name">Glow</div>
-            <div class="paywall-plan-price">3,99€<span>/mois</span></div>
-            <button class="btn btn-dark full-width" onclick="Subscription.openCheckout('glow_monthly'); closeModal();">
-              Choisir Glow mensuel
-            </button>
-            <button class="btn btn-outline full-width" style="margin-top:8px" onclick="Subscription.openCheckout('glow_yearly'); closeModal();">
-              🌱 30€/an · 2,50€/mois — une peau ça prend du temps
-            </button>
-          </div>
-
-          ${feature === 'coach' ? `
-          <div class="paywall-plan paywall-plan-premium">
-            <div class="paywall-plan-name">Glow+ <span class="paywall-best">Meilleur choix</span></div>
-            <div class="paywall-plan-price">100€<span>/an</span></div>
-            <button class="btn btn-gold full-width" onclick="Subscription.openCheckout('glowplus'); closeModal();">
-              Choisir Glow+
-            </button>
-          </div>` : ''}
+      <div class="paywall-lux">
+        <div class="paywall-lux-icon">✦</div>
+        <div class="paywall-lux-tag">${cfg.tag}</div>
+        <h2 class="paywall-lux-title">${cfg.title}</h2>
+        <p class="paywall-lux-desc">${cfg.desc}</p>
+        ${foundersHtml}
+        <div class="paywall-lux-card">
+          <div class="paywall-lux-plan-name">${cfg.plan}</div>
+          ${priceHtml}
+          <button class="btn btn-dark full-width paywall-lux-btn" onclick="Subscription.openCheckout('${priceKey}'); closeModal();">
+            ${cfg.plan === 'Glow Coach' ? 'Accéder au Coach ✦' : 'Commencer Glow ✦'}
+          </button>
         </div>
-
-        <button class="btn-ghost" onclick="closeModal()">Continuer avec Free →</button>
+        <p class="paywall-lux-fine">Paiement annuel · Annulable à tout moment</p>
+        <button class="btn-ghost paywall-lux-skip" onclick="closeModal()">Continuer avec Free →</button>
       </div>`;
     openModal(html);
   }
@@ -158,66 +198,106 @@ const Subscription = (() => {
   }
 
   // ─── Page abonnements ─────────────────────────────────────────
-  function renderPlansPage() {
-    const plan = getPlan();
+  async function renderPlansPage() {
     const container = document.getElementById('plansContent');
     if (!container) return;
+    container.innerHTML = '<div style="text-align:center;padding:60px 0;color:var(--muted);font-size:0.9rem;">Chargement…</div>';
+
+    await loadFoundersData();
+
+    const plan   = getPlan();
+    const isF    = _foundersEligible();
+    const spots  = _spotsLeft();
+    const glowKey  = isF ? 'glow_found'  : 'glow_year';
+    const coachKey = isF ? 'coach_found' : 'coach_year';
+
+    const foundersStrip = isF ? `
+      <div class="founders-strip">
+        <span class="founders-strip-tag">✦ Offre Fondatrices</span>
+        <span class="founders-strip-text">
+          Réservée aux 50 premières membres
+          ${spots !== null ? `· <strong>${spots} place${spots !== 1 ? 's' : ''} restante${spots !== 1 ? 's' : ''}</strong>` : ''}
+          · Jusqu'au 30 juin
+        </span>
+      </div>` : '';
+
+    const glowPriceHtml = isF
+      ? `<div class="plan-lux-price"><span class="plan-lux-price-old">19,99€</span><span class="plan-lux-price-main">15,99€</span><span class="plan-lux-price-per">/an</span></div><p class="plan-lux-found-note">Offre fondatrices</p>`
+      : `<div class="plan-lux-price"><span class="plan-lux-price-main">19,99€</span><span class="plan-lux-price-per">/an</span></div>`;
+
+    const coachPriceHtml = isF
+      ? `<div class="plan-lux-price"><span class="plan-lux-price-old">199,99€</span><span class="plan-lux-price-main">149,99€</span><span class="plan-lux-price-per">/an</span></div><p class="plan-lux-found-note">Offre fondatrices</p>`
+      : `<div class="plan-lux-price"><span class="plan-lux-price-main">199,99€</span><span class="plan-lux-price-per">/an</span></div>`;
+
+    const glowCTA = plan === 'glow' || plan === 'glowplus'
+      ? (plan === 'glow' ? '<div class="plan-lux-active">Ton offre actuelle ✦</div>' : '')
+      : `<button class="btn btn-dark full-width" onclick="Subscription.openCheckout('${glowKey}')">Commencer Glow ✦</button>`;
+
+    const coachCTA = plan === 'glowplus'
+      ? '<div class="plan-lux-active">Ton offre actuelle ✦</div>'
+      : `<button class="btn btn-dark full-width" onclick="Subscription.openCheckout('${coachKey}')">Accéder au Coach ✦</button>`;
 
     container.innerHTML = `
-      <div class="plans-header">
-        <h2>Choisis ton offre</h2>
-        <p>Commence gratuitement, évolue quand tu veux.</p>
-      </div>
-      <div class="plans-grid">
+      <div class="plans-page-lux">
 
-        <div class="plan-card ${plan === 'free' ? 'plan-current' : ''}">
-          <div class="plan-name">Free</div>
-          <div class="plan-price">0€<span>/mois</span></div>
-          <ul class="plan-features">
-            <li>✓ 1 routine (skincare ou make-up)</li>
-            <li>✓ Skinpedia dictionnaire</li>
-            <li>✓ Découverte de l'app</li>
-          </ul>
-          ${plan === 'free' ? '<div class="plan-badge-current">Ton offre actuelle</div>' : ''}
+        <div class="plans-hero-lux">
+          <span class="plans-hero-tag">✦ Glow Up</span>
+          <h1 class="plans-hero-title">Tes routines,<br><em>au complet.</em></h1>
+          <p class="plans-hero-sub">Commence gratuitement. Développe ton expertise beauté à ton rythme.</p>
         </div>
 
-        <div class="plan-card plan-featured ${plan === 'glow' ? 'plan-current' : ''}">
-          <div class="plan-badge-top">✦ Recommandé</div>
-          <div class="plan-name">Glow</div>
-          <div class="plan-price">3,99€<span>/mois</span></div>
-          <div class="plan-price-alt">ou 30€/an · 2,50€/mois<br><em>365 jours pour transformer ta peau.</em></div>
-          <ul class="plan-features">
-            <li>✓ Tout ce qui est inclus dans Free</li>
-            <li>✓ Skincare + Make-up</li>
-            <li>✓ Routines personnalisées</li>
-            <li>✓ Recommandations avancées</li>
-            <li>✓ Skinpedia IA</li>
-          </ul>
-          ${plan === 'glow'
-            ? '<div class="plan-badge-current">Ton offre actuelle</div>'
-            : `<button class="btn btn-dark full-width" onclick="Subscription.openCheckout('glow_monthly')">Commencer — 3,99€/mois</button>
-               <button class="btn btn-outline full-width" style="margin-top:8px" onclick="Subscription.openCheckout('glow_yearly')">🌱 Rejoindre pour 30€/an — 365 jours ✦</button>`
-          }
+        ${foundersStrip}
+
+        <div class="plans-grid-lux">
+
+          <div class="plan-lux ${plan === 'free' ? 'plan-lux--active' : ''}">
+            <div class="plan-lux-name">Essentiel</div>
+            <div class="plan-lux-price"><span class="plan-lux-price-main">Gratuit</span></div>
+            <p class="plan-lux-tagline">Pour découvrir</p>
+            <ul class="plan-lux-features">
+              <li>1 routine sur-mesure</li>
+              <li>Analyse beauté IA offerte</li>
+              <li>Catalogue 300+ produits</li>
+              <li>Skinpedia dictionnaire</li>
+            </ul>
+            ${plan === 'free' ? '<div class="plan-lux-active">Ton offre actuelle</div>' : ''}
+          </div>
+
+          <div class="plan-lux plan-lux--featured ${plan === 'glow' ? 'plan-lux--active' : ''}">
+            ${plan !== 'glow' && plan !== 'glowplus' ? '<div class="plan-lux-badge">Le plus choisi</div>' : ''}
+            <div class="plan-lux-name">Glow</div>
+            ${glowPriceHtml}
+            <ul class="plan-lux-features">
+              <li>Skincare + Make-up complètes</li>
+              <li>Analyse IA + profil cross-device</li>
+              <li>Recommandations avancées</li>
+              <li>Skinpedia IA</li>
+              <li>Historique de ta peau</li>
+            </ul>
+            ${glowCTA}
+          </div>
+
+          <div class="plan-lux plan-lux--coach ${plan === 'glowplus' ? 'plan-lux--active' : ''}">
+            <div class="plan-lux-name">Glow Coach</div>
+            ${coachPriceHtml}
+            <p class="plan-lux-tagline">La concierge beauté IA</p>
+            <ul class="plan-lux-features">
+              <li>Tout Glow inclus</li>
+              <li>Coach beauté IA personnalisé</li>
+              <li>Suivi beauté & résumés de séances</li>
+              <li>Profil enrichi & mémoire long terme</li>
+              <li>Accès prioritaire aux nouveautés</li>
+            </ul>
+            ${coachCTA}
+          </div>
+
         </div>
 
-        <div class="plan-card ${plan === 'glowplus' ? 'plan-current' : ''}">
-          <div class="plan-name">Glow+</div>
-          <div class="plan-price">100€<span>/an</span></div>
-          <ul class="plan-features">
-            <li>✓ Tout ce qui est inclus dans Glow</li>
-            <li>✓ GlowUp Coach IA</li>
-            <li>✓ Accompagnement ultra-personnalisé</li>
-            <li>✓ Historique & évolution de ta peau</li>
-          </ul>
-          ${plan === 'glowplus'
-            ? '<div class="plan-badge-current">Ton offre actuelle</div>'
-            : `<button class="btn btn-dark full-width" onclick="Subscription.openCheckout('glowplus')">Choisir Glow+</button>`
-          }
-        </div>
+        <p class="plans-fine-print">Paiement annuel · Annulable à tout moment</p>
 
       </div>`;
   }
 
-  return { getPlan, isPlan, canAccess, loadPlan, openCheckout, showPaywall, updateGatingUI, handleCheckoutReturn, renderPlansPage };
+  return { getPlan, isPlan, canAccess, loadPlan, openCheckout, showPaywall, updateGatingUI, handleCheckoutReturn, renderPlansPage, loadFoundersData };
 
 })();

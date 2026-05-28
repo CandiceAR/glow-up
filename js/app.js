@@ -513,13 +513,25 @@ function _captureSkip() {
 }
 
 // ─── Lancer le flow principal ─────────────────────────────────
-// Toujours passer par l'écran de choix : Skincare ou Make-up
+// Gate auth : connexion requise avant d'accéder à l'analyse et aux routines
 function startGlowUp() {
+  if (AppState.user?.isGuest) {
+    Auth.openRequiredAuthModal(() => showScreen('routine-choice'));
+    return;
+  }
   showScreen('routine-choice');
 }
 
 // Accès direct "Make-up" depuis navbar — respecte le modèle 1 routine gratuite
 function goToMakeup() {
+  if (AppState.user?.isGuest) {
+    Auth.openRequiredAuthModal(() => _proceedToMakeup());
+    return;
+  }
+  _proceedToMakeup();
+}
+
+function _proceedToMakeup() {
   if (!AppState.routineChoice) {
     showScreen('routine-choice');
   } else if (AppState.routineChoice === 'makeup') {

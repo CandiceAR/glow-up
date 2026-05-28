@@ -23,7 +23,7 @@ const MakeupRoutine = (() => {
         allProducts = await FirestoreProducts.loadAll();
       }
       if (!allProducts) {
-        const res  = await fetch('data/products-manual.json?v=72');
+        const res  = await fetch('data/products-manual.json?v=96');
         const data = await res.json();
         allProducts = Array.isArray(data) ? data : (data.products || []);
       }
@@ -243,20 +243,27 @@ const MakeupRoutine = (() => {
   }
 
   // 3. BLUSH ────────────────────────────────────────────────────
-  function selectBlush({ undertone, carnation, budget, mkLuxe }) {
-    let all = filterByBudget(getByCategory('blush'), budget);
-    if (!all.length) return [];
-    if (mkLuxe) {
-      const luxe = all.filter(p => LUXURY_BRANDS.has(p.brand));
-      if (luxe.length) all = luxe;
-    }
-    const relevant = all.filter(p => {
-      const okUndertone = !p.undertone || !undertone || undertone === 'neutral' || p.undertone === undertone;
-      const okCarnation = !Array.isArray(p.carnation) || !carnation || p.carnation.includes(carnation);
-      return okUndertone && okCarnation;
-    });
-    const pool = relevant.length ? relevant : all;
-    return [pool[Math.floor(Math.random() * pool.length)]];
+  // Utilise pickFromCatalog (top-10 aléatoire pondéré) pour varier les propositions
+  function selectBlush({ budget, mkLuxe }) {
+    const p = pickFromCatalog('blush', budget, [], [], mkLuxe);
+    return p ? [p] : [];
+  }
+
+  // MULTI-USAGE — 1 produit imposé par routine ──────────────────
+  // Priorité : budget → hydratation → sous-ton froid → default
+  function selectMultiUsage(profile) {
+    const pool = catalogue.filter(p => p.multiUsage === true);
+    if (!pool.length) return null;
+    const { undertone, carnation, budget } = profile;
+    const budgetMax = BUDGET_MAX[budget] ?? Infinity;
+    const skinConcerns = AppState?.questionnaire?.answers?.complexes || [];
+    const hasHydration = skinConcerns.some(c => ['deshydratation','secheresse'].includes(c));
+
+    if (budgetMax <= 20)                                                    return getById('m344'); // e.l.f. 8 €
+    if (hasHydration && budgetMax >= 30)                                    return getById('m343'); // Jelly Tint 30 €
+    if (undertone === 'cool' && carnation !== 'fonce' && budgetMax >= 45)   return getById('m341'); // Rare Beauty 45 €
+    if (budgetMax >= 38)                                                    return getById('m342'); // Milk Stick 38 €
+    return getById('m344'); // fallback 8 €
   }
 
   // 4. POUDRE LIBRE ─────────────────────────────────────────────
@@ -485,6 +492,9 @@ const MakeupRoutine = (() => {
     const [mascara]     = selectMascara(profile)      || [null];
     const [lips]        = selectLips(profile)         || [null];
 
+    // ── Produit multi-usage (bonus séparé, pas dans les essentiels) ─
+    const multiUsage    = selectMultiUsage(profile);
+
     // ── 6ème produit intelligent ─────────────────────────────────
     const coreIds = [concealer, highlighter, blush, mascara, lips].filter(Boolean).map(p => p.id);
     const sixth   = selectSmartSixth(profile, coreIds);
@@ -519,7 +529,7 @@ const MakeupRoutine = (() => {
     const steps = [
       renderStep(stepNum++, 'Anti-cernes',   'Tapote avec le doigt sous les yeux et sur les petites imperfections. Effet seconde peau.',               concealer),
       renderStep(stepNum++, 'Enlumineur',    'Une touche sur les pommettes et l\'arc de Cupidon. Le doigt suffit — pas besoin de pinceau.',            highlighter),
-      renderStep(stepNum++, 'Blush',         'Souris et dépose sur les rondeurs des joues. Estompe vers les tempes pour un effet bonne mine naturel.', blush),
+      renderStep(stepNum++, 'Blush', 'Souris et dépose sur les rondeurs des joues. Estompe vers les tempes pour un effet bonne mine naturel.', blush),
       renderStep(stepNum++, 'Mascara',       'Zigzague la brosse de la racine vers les pointes. Une couche pour le naturel, deux pour l\'intensité.',  mascara),
       renderStep(stepNum++, 'Lèvres',        'Applique directement depuis l\'embout. Tamponne au doigt pour un rendu encore plus naturel.',            lips),
       sixth ? renderStep(stepNum++, sixth.label, sixth.tip, sixthProd) : ''
@@ -535,7 +545,7 @@ const MakeupRoutine = (() => {
         </div>`;
     };
 
-    const hasBonusContent = allBonus.length > 0;
+    const hasBonusContent = allBonus.length > 0 || !!multiUsage;
     const bonusHtml = hasBonusContent ? `
       <div class="cg-bonus">
         <div class="cg-bonus-header">
@@ -543,6 +553,12 @@ const MakeupRoutine = (() => {
           <h2 class="cg-bonus-title">Pour aller plus loin ✦</h2>
           <p class="cg-bonus-subtitle">Optionnel — pour intensifier ta routine selon tes envies.</p>
         </div>
+        ${multiUsage ? `
+        <div class="cg-bonus-section">
+          <h3 class="cg-bonus-section-title">🔄 Produit Multi-usage</h3>
+          <p class="cg-bonus-section-desc">Un seul produit pour ${multiUsage.multiUsageLabel || 'plusieurs zones'} — idéal pour une trousse minimaliste.</p>
+          <div class="cg-bonus-cards">${renderCard(multiUsage)}</div>
+        </div>` : ''}
         ${bonusSection('Bonus Regard', '👁', bonusRegard)}
         ${bonusSection('Bonus Teint',  '✨', bonusTeint)}
         ${bonusSection('Bonus Lèvres', '💋', bonusLevres)}

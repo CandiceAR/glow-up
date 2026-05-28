@@ -369,7 +369,8 @@ const ProductCatalog = (() => {
       // Autres
       tools:       'Accessoires',
       set:         'Coffret',
-      demaquillant:'Démaquillant'
+      demaquillant:'Démaquillant',
+      multi_usage: 'Multi-usage'
     };
     return map[cat] || cat;
   }

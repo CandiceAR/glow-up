@@ -7,13 +7,25 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const isTestMode = process.env.STRIPE_SECRET_KEY?.startsWith('sk_test_');
 
 const PRICE_IDS = isTestMode ? {
+  // Legacy (anciens abonnés)
   glow_monthly: 'price_1TMp8JJeKx7T3paERKVr8oFx',
   glow_yearly:  'price_1TMp8lJeKx7T3paEC2DxJx6j',
-  glowplus:     'price_1TMp9CJeKx7T3paE1o7Ml1rO'
+  glowplus:     'price_1TMp9CJeKx7T3paE1o7Ml1rO',
+  // Phase 2 — nouveaux tarifs (créer dans Stripe Dashboard test mode)
+  glow_year:    'price_1Tc0xDJeKx7T3paEf15SP5dB',   // Glow 19,99 €/an
+  coach_year:   'price_1Tc133JeKx7T3paET9l1IJHe',  // Glow Coach 199,99 €/an
+  glow_found:   'price_1Tc13bJeKx7T3paE9pnJtpP9',  // Glow fondatrices 15,99 €/an
+  coach_found:  'price_1Tc13yJeKx7T3paEDIpfmk2B'   // Coach fondatrices 149,99 €/an
 } : {
+  // Legacy (anciens abonnés)
   glow_monthly: 'price_1TM1rqJeKx7T3paEB3gqZnxF',
   glow_yearly:  'price_1TM1tTJeKx7T3paEmWdCIWXE',
-  glowplus:     'price_1TM1ttJeKx7T3paEN7e7CZDa'
+  glowplus:     'price_1TM1ttJeKx7T3paEN7e7CZDa',
+  // Phase 2 — nouveaux tarifs (créer dans Stripe Dashboard live mode)
+  glow_year:    'price_1Tc16MJeKx7T3paEKoE2tEj7',   // Glow 19,99 €/an
+  coach_year:   'price_1Tc17gJeKx7T3paEzIZBTNqK',  // Glow Coach 199,99 €/an
+  glow_found:   'price_1Tc198JeKx7T3paEzArs3QmO',  // Glow fondatrices 15,99 €/an
+  coach_found:  'price_1Tc19TJeKx7T3paEeePs49Ti'   // Coach fondatrices 149,99 €/an
 };
 
 exports.handler = async (event) => {
