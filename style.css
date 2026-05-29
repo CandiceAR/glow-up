@@ -1029,6 +1029,16 @@ em { font-style: italic; color: var(--nude); }
   box-shadow: 0 4px 16px rgba(255,153,0,0.45);
   transform: translateY(-1px);
 }
+.btn-compare-price {
+  display: block;
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-decoration: none;
+  margin-top: 6px;
+  transition: color 0.2s;
+}
+.btn-compare-price:hover { color: var(--charcoal); }
 
 /* Conseil d'application */
 .step-apply-tip {

@@ -208,6 +208,13 @@ const RoutineRenderer = (() => {
            onclick="event.stopPropagation(); trackAmazonClick('${product.id}')">
           🛒 Ajouter au panier
         </a>
+        <a class="btn-compare-price"
+           href="https://www.google.com/search?q=${encodeURIComponent((product.brand || '') + ' ' + (product.name || ''))}&tbm=shop"
+           target="_blank"
+           rel="noopener"
+           onclick="event.stopPropagation()">
+          Comparer les prix →
+        </a>
       </div>`;
   }
 

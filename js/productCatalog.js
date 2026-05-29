@@ -299,6 +299,7 @@ const ProductCatalog = (() => {
     const url = product.amazonUrl || product.shopUrl;
     if (!url) return '';
     const isAmazon = !!product.amazonUrl;
+    const compareUrl = `https://www.google.com/search?q=${encodeURIComponent((product.brand || '') + ' ' + (product.name || ''))}&tbm=shop`;
     return `
       <a class="btn btn-amazon btn-amazon-prominent"
          href="${url}"
@@ -306,6 +307,12 @@ const ProductCatalog = (() => {
          rel="noopener nofollow${isAmazon ? ' sponsored' : ''}"
          ${isAmazon ? `onclick="trackAmazonClick('${product.id}')"` : ''}>
         🛒 ${isAmazon ? 'Acheter sur Amazon →' : 'Voir le produit →'}
+      </a>
+      <a class="btn-compare-price"
+         href="${compareUrl}"
+         target="_blank"
+         rel="noopener">
+        Comparer les prix →
       </a>`;
   }
 
