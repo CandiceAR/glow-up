@@ -487,9 +487,19 @@ const TryOn = (() => {
 
     if (cameraBtn) {
       cameraBtn.addEventListener('click', async () => {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          showToast('La caméra n\'est pas disponible sur ce navigateur. Utilise l\'upload de photo.', 'error', 4000);
+          return;
+        }
         try {
           const constraints = { video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } } };
-          const stream = await navigator.mediaDevices.getUserMedia(constraints);
+          let stream;
+          try {
+            stream = await navigator.mediaDevices.getUserMedia(constraints);
+          } catch {
+            // Fallback sans contraintes de résolution (certains mobiles)
+            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+          }
           _activeStream = stream;
           cameraStream.srcObject = stream;
 
@@ -497,7 +507,6 @@ const TryOn = (() => {
           if (captureBtn) captureBtn.style.display = 'block';
           cameraBtn.style.display = 'none';
 
-          // Jouer explicitement (Firefox peut bloquer l'autoplay)
           cameraStream.play().catch(() => {});
 
           const _startLive = () => {
@@ -505,14 +514,22 @@ const TryOn = (() => {
               SkinAnalysis.startLiveAnalysis(cameraStream, cameraOverlay, _updateCaptureQuality);
             }
           };
-          // Si les métadonnées sont déjà prêtes (race condition), lancer directement
           if (cameraStream.readyState >= 1) {
             _startLive();
           } else {
             cameraStream.addEventListener('loadedmetadata', _startLive, { once: true });
           }
         } catch (err) {
-          showToast('Accès caméra refusé. Utilise l\'upload de photo.', 'error');
+          console.error('[Camera]', err.name, err.message);
+          if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+            showToast('Accès caméra refusé. Autorise la caméra dans les réglages de ton navigateur.', 'error', 5000);
+          } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+            showToast('Aucune caméra détectée sur cet appareil.', 'error', 4000);
+          } else if (err.name === 'NotReadableError') {
+            showToast('La caméra est utilisée par une autre application.', 'error', 4000);
+          } else {
+            showToast('La caméra ne fonctionne pas. Utilise l\'upload de photo.', 'error', 4000);
+          }
         }
       });
     }
