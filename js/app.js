@@ -513,7 +513,7 @@ function _captureSkip() {
 }
 
 // ─── Lancer le flow principal ─────────────────────────────────
-// Gate auth : connexion requise avant d'accéder à l'analyse et aux routines
+// Bouton home "Faire mon analyse" → écran de choix skincare/makeup
 function startGlowUp() {
   if (AppState.user?.isGuest) {
     Auth.openRequiredAuthModal(() => showScreen('routine-choice'));
@@ -522,7 +522,28 @@ function startGlowUp() {
   showScreen('routine-choice');
 }
 
-// Accès direct "Make-up" depuis navbar — respecte le modèle 1 routine gratuite
+// Navbar "Skincare" → questionnaire skincare directement
+function goToSkincare() {
+  if (AppState.user?.isGuest) {
+    Auth.openRequiredAuthModal(() => _proceedToSkincare());
+    return;
+  }
+  _proceedToSkincare();
+}
+
+function _proceedToSkincare() {
+  // Deuxième routine = payante si l'autre a déjà été faite
+  if (AppState.routineChoice === 'makeup') {
+    if (typeof Subscription !== 'undefined' && !Subscription.canAccess('routine_second')) {
+      Subscription.showPaywall('routine_second');
+      return;
+    }
+  }
+  AppState.routineChoice = 'skincare';
+  Questionnaire.startSkincare();
+}
+
+// Navbar "Make-up" → questionnaire makeup directement
 function goToMakeup() {
   if (AppState.user?.isGuest) {
     Auth.openRequiredAuthModal(() => _proceedToMakeup());
@@ -532,18 +553,15 @@ function goToMakeup() {
 }
 
 function _proceedToMakeup() {
-  if (!AppState.routineChoice) {
-    showScreen('routine-choice');
-  } else if (AppState.routineChoice === 'makeup') {
-    showScreen('makeup');
-  } else {
-    // choix=skincare → 2e routine = payante
+  // Deuxième routine = payante si l'autre a déjà été faite
+  if (AppState.routineChoice === 'skincare') {
     if (typeof Subscription !== 'undefined' && !Subscription.canAccess('routine_second')) {
       Subscription.showPaywall('routine_second');
-    } else {
-      showScreen('makeup');
+      return;
     }
   }
+  AppState.routineChoice = 'makeup';
+  Questionnaire.startMakeup();
 }
 
 // ─── Écran de choix de routine ────────────────────────────────

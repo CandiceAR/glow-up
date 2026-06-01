@@ -6,7 +6,7 @@
   <title>Glow Up — Skincare & Maquillage Virtuel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=100">
+  <link rel="stylesheet" href="style.css?v=101">
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#C9A98A">
@@ -38,7 +38,7 @@
         <a class="nav-link active"          data-screen="home"          href="#" onclick="showScreen('home'); return false;">Accueil</a>
         <a class="nav-link"                 data-screen="shop"          href="#" onclick="showScreen('shop'); return false;">Boutique</a>
         <a class="nav-link nav-link-disabled"                           href="#" onclick="return false;" aria-disabled="true" tabindex="-1">Skin Journey</a>
-        <a class="nav-link nav-link-primary" data-screen="questionnaire" href="#" onclick="startGlowUp(); return false;">Skincare</a>
+        <a class="nav-link nav-link-primary" data-screen="questionnaire" href="#" onclick="goToSkincare(); return false;">Skincare</a>
         <a class="nav-link nav-link-primary" data-screen="makeup"        href="#" onclick="goToMakeup(); return false;">Make-up</a>
         <a class="nav-link nav-link-coach"   data-screen="coach"         href="#" onclick="showScreen('coach'); return false;">Coach ⭐</a>
         <a class="nav-link nav-link-secondary" data-screen="skinpedia"   href="#" onclick="showScreen('skinpedia'); return false;">Skinpedia</a>
@@ -498,14 +498,14 @@
       </svg>
       <span>Accueil</span>
     </button>
-    <button class="mobile-nav-item mobile-nav-primary" data-screen="questionnaire" onclick="startGlowUp()">
+    <button class="mobile-nav-item mobile-nav-primary" data-screen="questionnaire" onclick="goToSkincare()">
       <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
         <path d="M12 22C12 22 3 17 3 10a9 9 0 0 1 18 0c0 7-9 12-9 12z"/>
         <circle cx="12" cy="10" r="3"/>
       </svg>
       <span>Skincare</span>
     </button>
-    <button class="mobile-nav-item mobile-nav-primary" data-screen="makeup" onclick="showScreen('makeup')">
+    <button class="mobile-nav-item mobile-nav-primary" data-screen="makeup" onclick="goToMakeup()">
       <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
         <path d="M12 2a4 4 0 0 1 4 4c0 2.5-4 8-4 8S8 8.5 8 6a4 4 0 0 1 4-4z"/>
         <path d="M12 14c0 4-2 6-2 6h4s-2-2-2-6z"/>
@@ -567,26 +567,26 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
   <!-- ===== SCRIPTS ===== -->
-  <script src="js/lookGenerator.js?v=100"></script>
-  <script src="js/makeupAI.js?v=100"></script>
-  <script src="js/skinAnalysis.js?v=100"></script>
-  <script src="js/rulesEngine.js?v=100"></script>
-  <script src="js/catalogue.js?v=100"></script>
-  <script src="js/productCatalog.js?v=100"></script>
-  <script src="js/questionnaire.js?v=100"></script>
-  <script src="js/routineRenderer.js?v=100"></script>
-  <script src="js/tryOn.js?v=100"></script>
-  <script src="js/auth.js?v=100"></script>
-  <script src="js/skinJourney.js?v=100"></script>
-  <script src="js/makeupRoutine.js?v=100"></script>
-  <script src="js/tracker.js?v=100"></script>
-  <script src="js/skinpedia.js?v=100"></script>
-  <script src="js/glowCoach.js?v=100"></script>
-  <script src="js/firestoreProfile.js?v=100"></script>
-  <script src="js/firestoreProducts.js?v=100"></script>
-  <script src="js/subscription.js?v=100"></script>
-  <script src="js/routineSaver.js?v=100"></script>
-  <script src="js/app.js?v=100"></script>
+  <script src="js/lookGenerator.js?v=101"></script>
+  <script src="js/makeupAI.js?v=101"></script>
+  <script src="js/skinAnalysis.js?v=101"></script>
+  <script src="js/rulesEngine.js?v=101"></script>
+  <script src="js/catalogue.js?v=101"></script>
+  <script src="js/productCatalog.js?v=101"></script>
+  <script src="js/questionnaire.js?v=101"></script>
+  <script src="js/routineRenderer.js?v=101"></script>
+  <script src="js/tryOn.js?v=101"></script>
+  <script src="js/auth.js?v=101"></script>
+  <script src="js/skinJourney.js?v=101"></script>
+  <script src="js/makeupRoutine.js?v=101"></script>
+  <script src="js/tracker.js?v=101"></script>
+  <script src="js/skinpedia.js?v=101"></script>
+  <script src="js/glowCoach.js?v=101"></script>
+  <script src="js/firestoreProfile.js?v=101"></script>
+  <script src="js/firestoreProducts.js?v=101"></script>
+  <script src="js/subscription.js?v=101"></script>
+  <script src="js/routineSaver.js?v=101"></script>
+  <script src="js/app.js?v=101"></script>
 
   <!-- Enregistrement du Service Worker PWA -->
   <script>
