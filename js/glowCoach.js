@@ -39,36 +39,143 @@ const GlowCoach = (() => {
   let _typing  = false;
 
   // ─── Données chargées depuis data/ ───────────────────────────
-  let _systemPromptBase = '';  // contenu de coachSystemPrompt.txt
-  let _knowledge        = null; // contenu de coachKnowledge.json
-  let _examples         = [];   // contenu de coachExamples.json
+  let _systemPromptBase = '';
+  let _knowledge        = null;
+  let _examples         = [];
   let _filesLoaded      = false;
+
+  // ─── Suggestions intelligentes ────────────────────────────────
+  let _questions        = [];  // coachQuestions.json
+  const ENGAGEMENT_KEY  = 'glow_coach_engagement';
+  const SHOWN_KEY       = 'glow_coach_shown_suggestions';
 
   // ─── Chargement unique des 3 fichiers ─────────────────────────
   async function _loadCoachFiles() {
     if (_filesLoaded) return;
     try {
-      const [promptRes, knowledgeRes, examplesRes] = await Promise.all([
+      const [promptRes, knowledgeRes, examplesRes, questionsRes] = await Promise.all([
         fetch('data/coachSystemPrompt.txt?v=' + Date.now()),
         fetch('data/coachKnowledge.json?v='   + Date.now()),
-        fetch('data/coachExamples.json?v='    + Date.now())
+        fetch('data/coachExamples.json?v='    + Date.now()),
+        fetch('data/coachQuestions.json?v='   + Date.now())
       ]);
       if (promptRes.ok)    _systemPromptBase = await promptRes.text();
       if (knowledgeRes.ok) _knowledge        = await knowledgeRes.json();
       if (examplesRes.ok)  _examples         = await examplesRes.json();
+      if (questionsRes.ok) _questions        = await questionsRes.json();
     } catch (e) {
       console.warn('[GlowCoach] Fichiers data/ non chargés, fallback prompt interne.', e);
     }
     _filesLoaded = true;
   }
 
-  // ─── Suggestions initiales ────────────────────────────────────
-  const SUGGESTIONS = [
-    'Ma routine est-elle adaptée à mon type de peau ?',
-    'Est-ce que mes produits se combinent bien ensemble ?',
-    'Que devrais-je changer ou ajouter dans ma routine ?',
-    'Ce produit est-il adapté à ma peau ?'
-  ];
+  // ─── Engagement : apprentissage par catégorie ─────────────────
+  function _loadEngagement() {
+    try { return JSON.parse(localStorage.getItem(ENGAGEMENT_KEY) || '{}'); } catch { return {}; }
+  }
+  function _trackEngagement(category) {
+    const eng = _loadEngagement();
+    eng[category] = (eng[category] || 0) + 1;
+    try { localStorage.setItem(ENGAGEMENT_KEY, JSON.stringify(eng)); } catch {}
+  }
+
+  // ─── Profil utilisatrice pour le scoring ─────────────────────
+  function _buildUserProfile() {
+    const answers = AppState.questionnaire?.answers || {};
+    const face    = AppState.face?.skinAnalysis || null;
+
+    const skinType = (face?.skinType?.type || answers.skinType || '').toLowerCase();
+    const concerns = (answers.concerns || []).map(c => c.toLowerCase());
+    const tags     = [...concerns];
+
+    if (['brillante','très brillante'].includes(answers.oiliness)) tags.push('sébum','brillance');
+    if (['sensible','très sensible'].includes(answers.sensitivity))  tags.push('sensibilité','réactivité');
+    if (face?.zones?.redness > 0.3)  tags.push('rougeurs');
+    if (face?.zones?.pores   > 0.3)  tags.push('pores');
+    if (answers.age && parseInt(answers.age) >= 35) tags.push('anti-âge','rides');
+    if (skinType === 'acnéique' || skinType === 'acne') tags.push('acné','boutons');
+    if (skinType === 'sèche')   tags.push('déshydratation','tiraillement');
+    if (skinType === 'grasse')  tags.push('sébum','brillance','pores');
+    if (skinType === 'sensible') tags.push('sensibilité','rougeurs');
+    if (answers.budget === 'petit' || answers.budget === 'moins de 30€') tags.push('budget');
+
+    return { skinType, concerns, tags };
+  }
+
+  // ─── Calcul des meilleures suggestions ───────────────────────
+  function _computeSuggestions() {
+    if (!_questions.length) return _getDefaultSuggestions();
+
+    const profile    = _buildUserProfile();
+    const engagement = _loadEngagement();
+    const askedSet   = new Set(_history.filter(m => m.role === 'user').map(m => m.content.trim()));
+
+    const scored = _questions.map(q => {
+      let score = 0;
+
+      // Correspondance type de peau (poids fort)
+      if (profile.skinType && q.skin_profiles.includes(profile.skinType)) score += 4;
+
+      // Correspondance concerns
+      q.concerns.forEach(c => {
+        if (profile.concerns.includes(c)) score += 3;
+        if (profile.tags.includes(c))     score += 1;
+      });
+
+      // Correspondance tags
+      q.tags.forEach(t => {
+        if (profile.tags.includes(t)) score += 1;
+      });
+
+      // Boost catégories déjà explorées (apprentissage)
+      score += (engagement[q.category] || 0) * 0.5;
+
+      // Légère variance pour la diversité
+      score += Math.random() * 0.4;
+
+      // Déjà posée → exclure
+      if (askedSet.has(q.question)) score = -999;
+
+      return { ...q, score };
+    });
+
+    const results = scored
+      .filter(q => q.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 4);
+
+    return results.length >= 2 ? results : _getDefaultSuggestions();
+  }
+
+  function _getDefaultSuggestions() {
+    return [
+      { id:'D1', question:'Ma routine est-elle adaptée à mon type de peau ?', category:'routine' },
+      { id:'D2', question:'Quels actifs sont les plus utiles pour ma peau ?',   category:'produits' },
+      { id:'D3', question:'Que devrais-je changer dans ma routine ?',           category:'coach' },
+      { id:'D4', question:'Est-ce que mes produits se combinent bien ?',        category:'produits' }
+    ];
+  }
+
+  // ─── Rendu des suggestions ────────────────────────────────────
+  function _renderSuggestions() {
+    const suggestions = _computeSuggestions();
+    if (!suggestions.length) return '';
+    return `
+      <div class="coach-suggestions-wrap">
+        <p class="coach-suggestions-label">Questions pour toi ✦</p>
+        <div class="coach-suggestions">
+          ${suggestions.map(s => `
+            <button class="coach-suggestion" onclick="GlowCoach.selectSuggestion('${s.question.replace(/'/g, "\\'")}', '${s.category}')">
+              ${s.question}
+            </button>`).join('')}
+        </div>
+      </div>`;
+  }
+
+  function selectSuggestion(question, category) {
+    _trackEngagement(category);
+    sendMessage(question);
+  }
 
   // ─── Construire le contexte utilisatrice ──────────────────────
   function _buildContext() {
@@ -341,14 +448,9 @@ Conseils Glow Up : ${(_knowledge.glowup_advice || []).join(' | ')}`;
         <div class="coach-welcome-bubble">
           <p>Bonjour ! Je suis <strong>Glow Up Coach</strong>, ton experte beauté personnalisée ✦</p>
           <p>${skinLine}</p>
-          <p>Pose-moi une question sur ta routine, tes produits ou tes actifs skincare.</p>
+          <p>Pose-moi une question ou choisis un sujet ci-dessous.</p>
         </div>
-        <div class="coach-suggestions">
-          ${SUGGESTIONS.map(s => `
-            <button class="coach-suggestion" onclick="GlowCoach.sendMessage('${s.replace(/'/g, "\\'")}')">
-              ${s}
-            </button>`).join('')}
-        </div>
+        ${_renderSuggestions()}
       </div>`;
   }
 
@@ -385,10 +487,12 @@ Conseils Glow Up : ${(_knowledge.glowup_advice || []).join(' | ')}`;
     const count = _getUserMessageCount();
     const limit = _getLimit();
 
+    const lastRole = _history.length ? _history[_history.length - 1].role : null;
     container.innerHTML =
       (_history.length === 0 ? _renderWelcome() : '') +
       _renderAllMessages() +
-      (_typing ? `<div class="coach-msg coach-msg--coach"><div class="coach-msg-avatar">✦</div><div class="coach-typing"><span></span><span></span><span></span></div></div>` : '');
+      (_typing ? `<div class="coach-msg coach-msg--coach"><div class="coach-msg-avatar">✦</div><div class="coach-typing"><span></span><span></span><span></span></div></div>` : '') +
+      (!_typing && lastRole === 'assistant' ? _renderSuggestions() : '');
 
     const inputArea = document.getElementById('coachInputArea');
     if (inputArea && count >= limit) {
@@ -446,6 +550,6 @@ Conseils Glow Up : ${(_knowledge.glowup_advice || []).join(' | ')}`;
     localStorage.removeItem(HISTORY_KEY);
   }
 
-  return { initScreen, sendMessage, submitInput, handleKey, autoResize, clearHistory };
+  return { initScreen, sendMessage, submitInput, handleKey, autoResize, clearHistory, selectSuggestion };
 
 })();
