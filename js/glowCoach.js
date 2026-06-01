@@ -11,7 +11,18 @@ const GlowCoach = (() => {
   const FREE_LIMIT    = 10;
   const HISTORY_KEY   = 'glow_coach_history';
   const API_KEY_STORE = 'glow_coach_key';
-  const MODEL         = 'claude-haiku-4-5-20251001';
+  const MODEL_HAIKU   = 'claude-haiku-4-5-20251001';
+  const MODEL_SONNET  = 'claude-sonnet-4-6';
+
+  function _getModel() {
+    return (typeof Subscription !== 'undefined' && Subscription.canAccess('coach'))
+      ? MODEL_SONNET
+      : MODEL_HAIKU;
+  }
+
+  function _canUseCoach() {
+    return typeof Subscription !== 'undefined' && Subscription.canAccess('coach');
+  }
 
   let _history = [];   // { role: 'user'|'assistant', content: string }
   let _typing  = false;
@@ -150,7 +161,7 @@ Conseils Glow Up : ${(_knowledge.glowup_advice || []).join(' | ')}`;
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: MODEL,
+          model: _getModel(),
           max_tokens: 512,
           system: _buildSystemPrompt(ctx),
           messages: messages.map(m => ({ role: m.role, content: m.content }))
@@ -228,11 +239,11 @@ Conseils Glow Up : ${(_knowledge.glowup_advice || []).join(' | ')}`;
     text = text?.trim();
     if (!text || _typing) return;
 
-    const isPremium = !AppState.premium?.isLocked;
-    const count     = _getUserMessageCount();
+    const hasCoach = _canUseCoach();
+    const count    = _getUserMessageCount();
 
     // Limite free
-    if (!isPremium && count >= FREE_LIMIT) {
+    if (!hasCoach && count >= FREE_LIMIT) {
       _showPaywall();
       return;
     }
@@ -257,7 +268,7 @@ Conseils Glow Up : ${(_knowledge.glowup_advice || []).join(' | ')}`;
     const container = document.getElementById('glowCoachContent');
     if (!container) return;
 
-    const isPremium = !AppState.premium?.isLocked;
+    const hasCoach  = _canUseCoach();
     const count     = _getUserMessageCount();
     const remaining = Math.max(0, FREE_LIMIT - count);
 
@@ -272,7 +283,7 @@ Conseils Glow Up : ${(_knowledge.glowup_advice || []).join(' | ')}`;
               <p class="coach-subtitle">Ton experte beauté personnalisée</p>
             </div>
           </div>
-          ${!isPremium ? `
+          ${!hasCoach ? `
           <div class="coach-counter">
             <span class="coach-counter-num">${remaining}</span>
             <span class="coach-counter-label">message${remaining > 1 ? 's' : ''} gratuit${remaining > 1 ? 's' : ''}</span>
@@ -361,8 +372,8 @@ Conseils Glow Up : ${(_knowledge.glowup_advice || []).join(' | ')}`;
   function _renderMessages() {
     const container = document.getElementById('coachMessages');
     if (!container) return;
-    const isPremium = !AppState.premium?.isLocked;
-    const count     = _getUserMessageCount();
+    const hasCoach = _canUseCoach();
+    const count    = _getUserMessageCount();
 
     container.innerHTML =
       (_history.length === 0 ? _renderWelcome() : '') +
@@ -371,7 +382,7 @@ Conseils Glow Up : ${(_knowledge.glowup_advice || []).join(' | ')}`;
 
     // Remplacer la zone input si limite atteinte
     const inputArea = document.getElementById('coachInputArea');
-    if (inputArea && !isPremium && count >= FREE_LIMIT) {
+    if (inputArea && !hasCoach && count >= FREE_LIMIT) {
       inputArea.innerHTML = _renderPaywallInline();
     }
 
