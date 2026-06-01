@@ -5068,6 +5068,13 @@ em { font-style: italic; color: var(--nude); }
   color: var(--charcoal);
   font-weight: 500;
 }
+.mobile-nav-coach {
+  color: var(--gold, #C9A98A);
+  font-weight: 600;
+}
+.mobile-nav-coach .mobile-nav-icon {
+  stroke: var(--gold, #C9A98A);
+}
 .mobile-nav-primary .mobile-nav-icon {
   stroke-width: 2;
 }
