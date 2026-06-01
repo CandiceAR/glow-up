@@ -8,7 +8,7 @@
       "maxDuration": 60
     },
     "api/coach.js": {
-      "maxDuration": 30
+      "maxDuration": 60
     },
     "api/skinInsights.js": {
       "maxDuration": 20

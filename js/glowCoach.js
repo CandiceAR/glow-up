@@ -173,7 +173,7 @@ Conseils Glow Up : ${(_knowledge.glowup_advice || []).join(' | ')}`;
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: _getModel(),
-          max_tokens: 512,
+          max_tokens: 350,
           system: _buildSystemPrompt(ctx),
           messages: messages.map(m => ({ role: m.role, content: m.content }))
         })
