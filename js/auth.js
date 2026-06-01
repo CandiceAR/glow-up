@@ -58,6 +58,18 @@ const Auth = (() => {
           };
           console.log('[Auth] Connecté:', user.email);
 
+          // Prénom : displayName ou première partie de l'email
+          const prenom = user.displayName
+            ? user.displayName.split(' ')[0]
+            : (user.email ? user.email.split('@')[0] : '');
+
+          // Toast de bienvenue — une seule fois par session
+          const sessionKey = `glow_greeted_${user.uid}`;
+          if (!sessionStorage.getItem(sessionKey)) {
+            sessionStorage.setItem(sessionKey, '1');
+            setTimeout(() => showToast(`Bonjour ${prenom} ✦`, 'success', 3000), 600);
+          }
+
           // Charger le plan d'abonnement
           if (typeof Subscription !== 'undefined') Subscription.loadPlan(user.uid);
 
@@ -65,19 +77,15 @@ const Auth = (() => {
           if (typeof FirestoreProfile !== 'undefined' && typeof RoutineSaver !== 'undefined') {
             FirestoreProfile.load(user.uid).then(cloudProfile => {
               if (cloudProfile) {
-                // Profil cloud trouvé → écrire en localStorage puis restaurer
                 localStorage.setItem(`glow_profile_${user.uid}`, JSON.stringify(cloudProfile));
               }
               const profileRestored = RoutineSaver.restoreProfile();
               if (profileRestored) {
                 RoutineSaver.showResumeBanner();
-                const prenom = user.displayName ? ` ${user.displayName.split(' ')[0]}` : '';
-                showToast(`Bon retour${prenom} ✦ Ton profil est prêt`, 'success', 3000);
               } else {
                 // Nouveau compte → lancer le questionnaire automatiquement
                 setTimeout(() => {
                   if (AppState.screen === 'home' || AppState.screen === 'intention') {
-                    showToast('Bienvenue ! Crée ton profil beauté personnalisé ✦', 'success', 4000);
                     setTimeout(() => {
                       if (typeof showScreen === 'function') showScreen('questionnaire');
                     }, 2000);
