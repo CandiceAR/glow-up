@@ -864,11 +864,7 @@ const LookGenerator = (() => {
       </div>`;
   }
 
-  // Sélection d'un look dans le carousel
-  window.LookGenerator = window.LookGenerator || {};
-  window.LookGenerator.generate = generate;
-  window.LookGenerator.generateLipCards = generateLipCards;
-  window.LookGenerator.selectLook = function(lookId) {
+  function selectLook(lookId) {
     document.querySelectorAll('.look-card').forEach(c => {
       c.classList.toggle('look-card--active', c.dataset.look === lookId);
     });
@@ -876,8 +872,8 @@ const LookGenerator = (() => {
     if (found) {
       document.getElementById('lookDetail').innerHTML = renderLookDetail(found);
     }
-  };
+  }
 
-  return { generate };
+  return { generate, generateLipCards, selectLook };
 
 })();
