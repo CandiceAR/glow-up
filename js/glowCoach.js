@@ -8,20 +8,31 @@
 
 const GlowCoach = (() => {
 
-  const FREE_LIMIT    = 10;
+  const LIMIT_FREE    = 10;   // Haiku
+  const LIMIT_GLOW    = 20;   // Sonnet
+  // glowplus = illimité, Sonnet
   const HISTORY_KEY   = 'glow_coach_history';
   const API_KEY_STORE = 'glow_coach_key';
   const MODEL_HAIKU   = 'claude-haiku-4-5-20251001';
   const MODEL_SONNET  = 'claude-sonnet-4-6';
 
+  function _getPlan() {
+    return typeof Subscription !== 'undefined' ? Subscription.getPlan() : 'free';
+  }
+
   function _getModel() {
-    return (typeof Subscription !== 'undefined' && Subscription.canAccess('coach'))
-      ? MODEL_SONNET
-      : MODEL_HAIKU;
+    return _getPlan() === 'free' ? MODEL_HAIKU : MODEL_SONNET;
+  }
+
+  function _getLimit() {
+    const plan = _getPlan();
+    if (plan === 'glowplus') return Infinity;
+    if (plan === 'glow')     return LIMIT_GLOW;
+    return LIMIT_FREE;
   }
 
   function _canUseCoach() {
-    return typeof Subscription !== 'undefined' && Subscription.canAccess('coach');
+    return _getPlan() !== 'free' || _getUserMessageCount() < LIMIT_FREE;
   }
 
   let _history = [];   // { role: 'user'|'assistant', content: string }
@@ -239,11 +250,10 @@ Conseils Glow Up : ${(_knowledge.glowup_advice || []).join(' | ')}`;
     text = text?.trim();
     if (!text || _typing) return;
 
-    const hasCoach = _canUseCoach();
-    const count    = _getUserMessageCount();
+    const count = _getUserMessageCount();
+    const limit = _getLimit();
 
-    // Limite free
-    if (!hasCoach && count >= FREE_LIMIT) {
+    if (count >= limit) {
       _showPaywall();
       return;
     }
@@ -268,9 +278,9 @@ Conseils Glow Up : ${(_knowledge.glowup_advice || []).join(' | ')}`;
     const container = document.getElementById('glowCoachContent');
     if (!container) return;
 
-    const hasCoach  = _canUseCoach();
     const count     = _getUserMessageCount();
-    const remaining = Math.max(0, FREE_LIMIT - count);
+    const limit     = _getLimit();
+    const remaining = limit === Infinity ? null : Math.max(0, limit - count);
 
     container.innerHTML = `
       <div class="coach-layout">
@@ -283,11 +293,11 @@ Conseils Glow Up : ${(_knowledge.glowup_advice || []).join(' | ')}`;
               <p class="coach-subtitle">Ton experte beauté personnalisée</p>
             </div>
           </div>
-          ${!hasCoach ? `
+          ${remaining !== null ? `
           <div class="coach-counter">
             <span class="coach-counter-num">${remaining}</span>
-            <span class="coach-counter-label">message${remaining > 1 ? 's' : ''} gratuit${remaining > 1 ? 's' : ''}</span>
-          </div>` : '<span class="coach-premium-badge">✦ Premium</span>'}
+            <span class="coach-counter-label">échange${remaining > 1 ? 's' : ''} restant${remaining > 1 ? 's' : ''}</span>
+          </div>` : '<span class="coach-premium-badge">✦ Illimité</span>'}
         </div>
 
         <div class="coach-messages" id="coachMessages">
@@ -296,7 +306,7 @@ Conseils Glow Up : ${(_knowledge.glowup_advice || []).join(' | ')}`;
         </div>
 
         <div class="coach-input-area" id="coachInputArea">
-          ${!isPremium && count >= FREE_LIMIT
+          ${count >= limit
             ? _renderPaywallInline()
             : `<div class="coach-input-wrap">
                 <textarea
@@ -372,17 +382,16 @@ Conseils Glow Up : ${(_knowledge.glowup_advice || []).join(' | ')}`;
   function _renderMessages() {
     const container = document.getElementById('coachMessages');
     if (!container) return;
-    const hasCoach = _canUseCoach();
-    const count    = _getUserMessageCount();
+    const count = _getUserMessageCount();
+    const limit = _getLimit();
 
     container.innerHTML =
       (_history.length === 0 ? _renderWelcome() : '') +
       _renderAllMessages() +
       (_typing ? `<div class="coach-msg coach-msg--coach"><div class="coach-msg-avatar">✦</div><div class="coach-typing"><span></span><span></span><span></span></div></div>` : '');
 
-    // Remplacer la zone input si limite atteinte
     const inputArea = document.getElementById('coachInputArea');
-    if (inputArea && !hasCoach && count >= FREE_LIMIT) {
+    if (inputArea && count >= limit) {
       inputArea.innerHTML = _renderPaywallInline();
     }
 
