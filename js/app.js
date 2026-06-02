@@ -488,15 +488,27 @@ function renderRecommendedProducts() {
 }
 
 // ─── Navigation capture → analyse ou questionnaire ────────────
-function handleCaptureNext() {
+async function handleCaptureNext() {
   if (!AppState.face.photo) {
     showToast('Une photo est nécessaire pour personnaliser ta routine ✦', 'info', 3500);
     return;
   }
+
   if (sessionStorage.getItem('glow_resume_questionnaire') === '1') {
     sessionStorage.removeItem('glow_resume_questionnaire');
-    sessionStorage.setItem('glow_from_questionnaire', '1');
+    // Mode questionnaire skincare → analyse silencieuse, pas d'écran intermédiaire
+    AppState.face.skinAnalysis = null;
+    try {
+      if (typeof SkinAnalysis !== 'undefined') {
+        const result = await SkinAnalysis.analyzeFromPhoto(AppState.face.photo);
+        if (result) AppState.face.skinAnalysis = result;
+      }
+    } catch {}
+    showScreen('questionnaire');
+    if (typeof Questionnaire !== 'undefined') Questionnaire.resumeFromPhoto();
+    return;
   }
+
   AppState.face.skinAnalysis = null;
   showScreen('skin-analysis');
 }

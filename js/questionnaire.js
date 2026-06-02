@@ -770,12 +770,25 @@ const Questionnaire = (() => {
     const file = input.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       AppState.face = AppState.face || {};
-      AppState.face.photo = e.target.result;
+      AppState.face.photo       = e.target.result;
       AppState.face.skinAnalysis = null;
-      sessionStorage.setItem('glow_from_questionnaire', '1');
-      showScreen('skin-analysis');
+
+      if (mode === 'skincare') {
+        // Analyse en arrière-plan — pas d'écran intermédiaire makeup
+        _showPhotoAnalyzing();
+        try {
+          if (typeof SkinAnalysis !== 'undefined') {
+            const result = await SkinAnalysis.analyzeFromPhoto(e.target.result);
+            if (result) AppState.face.skinAnalysis = result;
+          }
+        } catch {}
+        continueFromAnalysis();
+      } else {
+        sessionStorage.setItem('glow_from_questionnaire', '1');
+        showScreen('skin-analysis');
+      }
     };
     reader.readAsDataURL(file);
   }
