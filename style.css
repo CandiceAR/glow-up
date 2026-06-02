@@ -4782,6 +4782,88 @@ em { font-style: italic; color: var(--nude); }
   scroll-behavior: smooth;
 }
 
+/* Page d'accueil Coach */
+.coach-home {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 8px 0 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+.coach-home-greeting { margin-bottom: 4px; }
+.coach-home-title {
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  font-weight: 400;
+  color: var(--charcoal);
+  margin: 0 0 6px;
+}
+.coach-home-sub {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* Historique conversations */
+.coach-history { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.coach-history-label {
+  font-size: 0.72rem;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0 0 4px;
+}
+.coach-history-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--white);
+  border: 1px solid var(--sand);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  text-align: left;
+  width: 100%;
+}
+.coach-history-item:hover {
+  background: rgba(201,169,138,0.06);
+  border-color: var(--nude);
+}
+.coach-history-icon { color: var(--nude); font-size: 0.75rem; flex-shrink: 0; }
+.coach-history-info { flex: 1; min-width: 0; }
+.coach-history-title {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--charcoal);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.coach-history-date {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.coach-history-arrow { color: var(--muted); font-size: 1.1rem; flex-shrink: 0; }
+
+/* Bouton retour dans le chat */
+.coach-back-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px 4px 0;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+  flex-shrink: 0;
+}
+.coach-back-btn:hover { color: var(--charcoal); }
+
 /* Welcome */
 .coach-welcome { display: flex; flex-direction: column; gap: 12px; }
 
