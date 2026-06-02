@@ -37,6 +37,9 @@ const Auth = (() => {
       if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
       auth = firebase.auth();
 
+      // Maintenir la session active indéfiniment sur le même appareil
+      auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(() => {});
+
       // Initialiser Firestore pour la sauvegarde cross-device
       if (typeof firebase.firestore === 'function') {
         const db = firebase.firestore();
