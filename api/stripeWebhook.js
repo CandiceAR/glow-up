@@ -20,14 +20,19 @@ const PRICE_TO_PLAN = {
   'price_1Tc13bJeKx7T3paE9pnJtpP9': 'glow',
   'price_1Tc198JeKx7T3paEzArs3QmO': 'glow',
   'price_1Tc13yJeKx7T3paEDIpfmk2B': 'glowplus',
-  'price_1Tc19TJeKx7T3paEeePs49Ti': 'glowplus'
+  'price_1Tc19TJeKx7T3paEeePs49Ti': 'glowplus',
+  // Coach fondatrices 49,99€
+  'price_1TdmseJeKx7T3paEU6Ldaz0M': 'glowplus',
+  'price_1TdmqvJeKx7T3paEytDBrEUI': 'glowplus'
 };
 
 const FOUNDERS_PRICE_KEYS = new Set([
   'price_1Tc13bJeKx7T3paE9pnJtpP9',
   'price_1Tc198JeKx7T3paEzArs3QmO',
   'price_1Tc13yJeKx7T3paEDIpfmk2B',
-  'price_1Tc19TJeKx7T3paEeePs49Ti'
+  'price_1Tc19TJeKx7T3paEeePs49Ti',
+  'price_1TdmseJeKx7T3paEU6Ldaz0M',
+  'price_1TdmqvJeKx7T3paEytDBrEUI'
 ]);
 
 async function getRawBody(req) {

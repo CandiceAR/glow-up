@@ -15,7 +15,7 @@ const PRICE_IDS = isTestMode ? {
   glow_year:    'price_1Tc0xDJeKx7T3paEf15SP5dB',
   coach_year:   'price_1Tc133JeKx7T3paET9l1IJHe',
   glow_found:   'price_1Tc13bJeKx7T3paE9pnJtpP9',
-  coach_found:  'price_1Tc13yJeKx7T3paEDIpfmk2B'
+  coach_found:  'price_1TdmseJeKx7T3paEU6Ldaz0M'
 } : {
   // Legacy
   glow_monthly: 'price_1TM1rqJeKx7T3paEB3gqZnxF',
@@ -25,7 +25,7 @@ const PRICE_IDS = isTestMode ? {
   glow_year:    'price_1Tc16MJeKx7T3paEKoE2tEj7',
   coach_year:   'price_1Tc17gJeKx7T3paEzIZBTNqK',
   glow_found:   'price_1Tc198JeKx7T3paEzArs3QmO',
-  coach_found:  'price_1Tc19TJeKx7T3paEeePs49Ti'
+  coach_found:  'price_1TdmqvJeKx7T3paEytDBrEUI'
 };
 
 const CORS = {

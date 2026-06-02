@@ -8,13 +8,14 @@
 
 const GlowCoach = (() => {
 
-  const LIMIT_FREE    = 10;   // Haiku
-  const LIMIT_GLOW    = 20;   // Sonnet
-  // glowplus = illimité, Sonnet
-  const HISTORY_KEY   = 'glow_coach_history';
-  const API_KEY_STORE = 'glow_coach_key';
-  const MODEL_HAIKU   = 'claude-haiku-4-5-20251001';
-  const MODEL_SONNET  = 'claude-sonnet-4-6';
+  const LIMIT_FREE          = 10;   // Haiku, cumulatif
+  const LIMIT_GLOW          = 20;   // Sonnet, cumulatif
+  const LIMIT_COACH_MONTHLY = 30;   // Sonnet, réinitialisation mensuelle
+  const HISTORY_KEY         = 'glow_coach_history';
+  const API_KEY_STORE       = 'glow_coach_key';
+  const MONTHLY_KEY_PREFIX  = 'glow_coach_monthly_';
+  const MODEL_HAIKU         = 'claude-haiku-4-5-20251001';
+  const MODEL_SONNET        = 'claude-sonnet-4-6';
 
   function _getPlan() {
     return typeof Subscription !== 'undefined' ? Subscription.getPlan() : 'free';
@@ -24,15 +25,38 @@ const GlowCoach = (() => {
     return _getPlan() === 'free' ? MODEL_HAIKU : MODEL_SONNET;
   }
 
+  // ─── Compteur mensuel (glowplus) ─────────────────────────────
+  function _monthKey() {
+    return MONTHLY_KEY_PREFIX + new Date().toISOString().slice(0, 7); // YYYY-MM
+  }
+  function _getMonthlyCount() {
+    try { return parseInt(localStorage.getItem(_monthKey()) || '0'); } catch { return 0; }
+  }
+  function _incrementMonthlyCount() {
+    try { localStorage.setItem(_monthKey(), _getMonthlyCount() + 1); } catch {}
+  }
+  function _monthlyRemaining() {
+    return Math.max(0, LIMIT_COACH_MONTHLY - _getMonthlyCount());
+  }
+  function _nextMonthLabel() {
+    const d = new Date();
+    d.setMonth(d.getMonth() + 1, 1);
+    return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+  }
+
+  function _getCurrentCount() {
+    return _getPlan() === 'glowplus' ? _getMonthlyCount() : _getUserMessageCount();
+  }
+
   function _getLimit() {
     const plan = _getPlan();
-    if (plan === 'glowplus') return Infinity;
+    if (plan === 'glowplus') return LIMIT_COACH_MONTHLY;
     if (plan === 'glow')     return LIMIT_GLOW;
     return LIMIT_FREE;
   }
 
   function _canUseCoach() {
-    return _getPlan() !== 'free' || _getUserMessageCount() < LIMIT_FREE;
+    return _getCurrentCount() < _getLimit();
   }
 
   let _history = [];   // { role: 'user'|'assistant', content: string }
@@ -357,7 +381,7 @@ Conseils Glow Up : ${(_knowledge.glowup_advice || []).join(' | ')}`;
     text = text?.trim();
     if (!text || _typing) return;
 
-    const count = _getUserMessageCount();
+    const count = _getCurrentCount();
     const limit = _getLimit();
 
     if (count >= limit) {
@@ -370,12 +394,12 @@ Conseils Glow Up : ${(_knowledge.glowup_advice || []).join(' | ')}`;
     _renderMessages();
     _showTyping();
 
-    // Appel API ou fallback
     let reply = await _callClaude(_history);
     if (!reply) reply = _fallbackResponse(text);
 
     _history.push({ role: 'assistant', content: reply });
     _typing = false;
+    if (_getPlan() === 'glowplus') _incrementMonthlyCount();
     _saveHistory();
     _renderMessages();
   }
@@ -385,9 +409,9 @@ Conseils Glow Up : ${(_knowledge.glowup_advice || []).join(' | ')}`;
     const container = document.getElementById('glowCoachContent');
     if (!container) return;
 
-    const count     = _getUserMessageCount();
+    const count     = _getCurrentCount();
     const limit     = _getLimit();
-    const remaining = limit === Infinity ? null : Math.max(0, limit - count);
+    const remaining = _getPlan() === 'glowplus' ? _monthlyRemaining() : Math.max(0, limit - count);
 
     container.innerHTML = `
       <div class="coach-layout">
@@ -400,11 +424,15 @@ Conseils Glow Up : ${(_knowledge.glowup_advice || []).join(' | ')}`;
               <p class="coach-subtitle">Ton experte beauté personnalisée</p>
             </div>
           </div>
-          ${remaining !== null ? `
+          ${_getPlan() === 'glowplus' ? `
           <div class="coach-counter">
             <span class="coach-counter-num">${remaining}</span>
-            <span class="coach-counter-label">échange${remaining > 1 ? 's' : ''} restant${remaining > 1 ? 's' : ''}</span>
-          </div>` : '<span class="coach-premium-badge">✦ Illimité</span>'}
+            <span class="coach-counter-label">échange${remaining !== 1 ? 's' : ''} ce mois</span>
+          </div>` : remaining !== null ? `
+          <div class="coach-counter">
+            <span class="coach-counter-num">${remaining}</span>
+            <span class="coach-counter-label">échange${remaining !== 1 ? 's' : ''} restant${remaining !== 1 ? 's' : ''}</span>
+          </div>` : ''}
         </div>
 
         <div class="coach-messages" id="coachMessages">
@@ -472,11 +500,19 @@ Conseils Glow Up : ${(_knowledge.glowup_advice || []).join(' | ')}`;
   }
 
   function _renderPaywallInline() {
+    const plan = _getPlan();
+    if (plan === 'glowplus') {
+      return `
+        <div class="coach-paywall">
+          <p class="coach-paywall-title">Tu as utilisé tes 30 échanges ce mois-ci ✦</p>
+          <p class="coach-paywall-sub">Ton compteur se réinitialise le ${_nextMonthLabel()}. À très vite !</p>
+        </div>`;
+    }
     return `
       <div class="coach-paywall">
-        <p class="coach-paywall-title">Tu as utilisé tes ${FREE_LIMIT} messages gratuits avec Glow Up Coach.</p>
-        <p class="coach-paywall-sub">Passe à l'accès complet pour continuer la discussion sans limite.</p>
-        <button class="btn btn-dark" onclick="openPaywallModal()">Débloquer l'accès complet ✦</button>
+        <p class="coach-paywall-title">Tu as utilisé tes ${plan === 'glow' ? LIMIT_GLOW : LIMIT_FREE} échanges gratuits.</p>
+        <p class="coach-paywall-sub">Accède au Coach complet avec 30 échanges par mois.</p>
+        <button class="btn btn-dark" onclick="Subscription.showPaywall('coach')">Accéder au Coach ✦</button>
         <button class="btn-ghost" onclick="GlowCoach.clearHistory(); GlowCoach.initScreen();">Recommencer (efface l'historique)</button>
       </div>`;
   }
