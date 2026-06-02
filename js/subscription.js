@@ -48,9 +48,9 @@ const Subscription = (() => {
   }
 
   // ─── Compteur fondatrices (approximatif côté client) ──────────
-  // 50 spots max · deadline 30 juin 2026
+  // 100 spots max · deadline 30 juin 2026
   const FOUNDERS_DEADLINE = new Date('2026-06-30T23:59:59');
-  const FOUNDERS_MAX      = 50;
+  const FOUNDERS_MAX      = 100;
   let _foundersCount  = null;
   let _foundersLoaded = false;
 
@@ -127,7 +127,7 @@ const Subscription = (() => {
       routine_second:      { tag:'Offre complète',  title:'Ta deuxième routine<br>t\'attend.',       desc:'Skincare + Make-up · Profil cross-device · Historique de ta peau',             plan:'Glow',       price:'19,99', fPrice:'15,99', key:'glow_year',  fKey:'glow_found'  },
       skinpedia_ai:        { tag:'Skinpedia IA',     title:'L\'analyse IA de tes<br>ingrédients.',    desc:'Comprends chaque actif selon ton profil peau unique.',                          plan:'Glow',       price:'19,99', fPrice:'15,99', key:'glow_year',  fKey:'glow_found'  },
       recommendations_adv: { tag:'Recommandations',  title:'Des produits encore<br>plus ciblés.',     desc:'Sélection avancée selon ton analyse, ta carnation et tes préférences.',          plan:'Glow',       price:'19,99', fPrice:'15,99', key:'glow_year',  fKey:'glow_found'  },
-      coach:               { tag:'Glow Coach',       title:'Ton experte beauté<br>personnelle.',      desc:'Elle connaît ton profil, ta routine et ton budget. Disponible à tout moment.',   plan:'Glow Coach', price:'199,99',fPrice:'149,99',key:'coach_year', fKey:'coach_found' }
+      coach:               { tag:'Glow Coach',       title:'La seule vendeuse<br>beauté qui te connaît.', desc:'La seule vendeuse beauté qui te connaît déjà. Elle connaît ton profil, ta routine et ton budget. Disponible à tout moment.', plan:'Glow Coach', price:'199,99',fPrice:'49,99',key:'coach_year', fKey:'coach_found' }
     };
     const cfg = CFG[feature] || CFG.routine_second;
     const priceKey = isF ? cfg.fKey : cfg.key;
@@ -226,7 +226,7 @@ const Subscription = (() => {
       : `<div class="plan-lux-price"><span class="plan-lux-price-main">19,99€</span><span class="plan-lux-price-per">/an</span></div>`;
 
     const coachPriceHtml = isF
-      ? `<div class="plan-lux-price"><span class="plan-lux-price-old">199,99€</span><span class="plan-lux-price-main">149,99€</span><span class="plan-lux-price-per">/an</span></div><p class="plan-lux-found-note">Offre fondatrices</p>`
+      ? `<div class="plan-lux-price"><span class="plan-lux-price-old">199,99€</span><span class="plan-lux-price-main">49,99€</span><span class="plan-lux-price-per">/an</span></div><p class="plan-lux-found-note">Offre fondatrices · 100 premières</p>`
       : `<div class="plan-lux-price"><span class="plan-lux-price-main">199,99€</span><span class="plan-lux-price-per">/an</span></div>`;
 
     const glowCTA = plan === 'glow' || plan === 'glowplus'
@@ -280,7 +280,7 @@ const Subscription = (() => {
           <div class="plan-lux plan-lux--coach ${plan === 'glowplus' ? 'plan-lux--active' : ''}">
             <div class="plan-lux-name">Glow Coach</div>
             ${coachPriceHtml}
-            <p class="plan-lux-tagline">La concierge beauté IA</p>
+            <p class="plan-lux-tagline">La seule vendeuse beauté qui te connaît déjà.</p>
             <ul class="plan-lux-features">
               <li>Tout Glow inclus</li>
               <li>Coach beauté IA personnalisé</li>
