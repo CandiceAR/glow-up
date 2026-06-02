@@ -262,17 +262,30 @@ const GlowCoach = (() => {
       if (jd?.startDate) journeyDay = Math.min(30, Math.floor((Date.now() - new Date(jd.startDate)) / 86400000) + 1);
     } catch {}
     const fmt = (steps) => (steps || []).map(s => s.label || s.step).join(', ') || 'Non renseignée';
+
+    // Scores analyse photo
+    const zones = face?.zones || null;
+    const photoScores = zones
+      ? `Pores: ${Math.round((zones.pores||0)*100)}% · Rougeurs: ${Math.round((zones.redness||0)*100)}% · Éclat: ${Math.round((zones.glow||0)*100)}%`
+      : 'Non analysée';
+
     return {
-      skinType:   face?.skinType?.type || answers.skinType || 'Non analysée',
-      concerns:   (answers.concerns || []).join(', ') || 'Non renseignés',
-      morning:    fmt(routine.matin),
-      evening:    fmt(routine.soir),
-      ruleName:   routine.ruleName || 'Non générée',
-      products:   products.slice(0, 6).map(p => `${p.brand} ${p.name}`).join(', ') || 'Aucun',
-      journeyDay: journeyDay ? `Jour ${journeyDay}/30` : 'Non démarré',
-      premium:    premium ? 'Abonnée Premium' : 'Version gratuite',
-      makeupUsed: (answers.makeupUsed || []).join(', ') || 'Non renseigné',
-      makeupFreq: answers.makeupFrequency || 'Non renseignée'
+      skinType:    face?.skinType?.type || answers.skinType || 'Non analysée',
+      concerns:    (answers.concerns || []).join(', ') || 'Non renseignés',
+      oiliness:    answers.oiliness     || 'Non renseignée',
+      sensitivity: answers.sensitivity  || 'Non renseignée',
+      age:         answers.age          || 'Non renseigné',
+      undertone:   answers.undertone    || answers.carnation || 'Non renseigné',
+      budget:      answers.budget       || 'Non renseigné',
+      morning:     fmt(routine.matin),
+      evening:     fmt(routine.soir),
+      ruleName:    routine.ruleName || 'Non générée',
+      products:    products.slice(0, 8).map(p => `${p.brand} ${p.name}`).join(', ') || 'Aucun',
+      photoScores,
+      journeyDay:  journeyDay ? `Jour ${journeyDay}/30` : 'Non démarré',
+      premium:     premium ? 'Abonnée Premium' : 'Version gratuite',
+      makeupUsed:  (answers.makeupUsed || []).join(', ') || 'Non renseigné',
+      makeupFreq:  answers.makeupFrequency || 'Non renseignée'
     };
   }
 
@@ -296,12 +309,18 @@ Conseils Glow Up : ${(_knowledge.glowup_advice || []).join(' | ')}`;
     }
     const profileBlock = `\n---\nPROFIL DE L'UTILISATRICE :
 • Type de peau : ${ctx.skinType}
+• Sébum / brillance : ${ctx.oiliness}
+• Sensibilité : ${ctx.sensitivity}
+• Âge : ${ctx.age}
+• Sous-ton / carnation : ${ctx.undertone}
+• Budget : ${ctx.budget}
 • Préoccupations : ${ctx.concerns}
+• Analyse photo (zones) : ${ctx.photoScores}
 • Routine matin : ${ctx.morning}
 • Routine soir : ${ctx.evening}
-• Diagnostic : ${ctx.ruleName}
+• Diagnostic appliqué : ${ctx.ruleName}
 • Produits recommandés : ${ctx.products}
-• Maquillage : ${ctx.makeupUsed} (fréquence : ${ctx.makeupFreq})
+• Maquillage utilisé : ${ctx.makeupUsed} (fréquence : ${ctx.makeupFreq})
 • Skin Journey : ${ctx.journeyDay}
 • Statut : ${ctx.premium}`;
     const rulesBlock = `\n---\nRÈGLES ABSOLUES :

@@ -24,11 +24,13 @@ const RoutineSaver = (() => {
 
   // ─── Sauvegarder la routine courante ─────────────────────────
   function save() {
-    if (!AppState.routine?.ruleApplied) return; // rien à sauvegarder
+    if (!AppState.routine?.ruleApplied) return;
     const data = {
       answers:       AppState.questionnaire.answers  || {},
       routine:       AppState.routine,
       routineChoice: AppState.routineChoice || 'skincare',
+      skinAnalysis:  AppState.face?.skinAnalysis || null,
+      completed:     true,
       savedAt:       new Date().toISOString()
     };
     try {
@@ -36,6 +38,11 @@ const RoutineSaver = (() => {
       console.log('[RoutineSaver] Routine sauvegardée →', _getKey());
     } catch (e) {
       console.warn('[RoutineSaver] Erreur sauvegarde:', e);
+    }
+    // Sync Firestore (profil complet)
+    const uid = AppState?.user?.uid;
+    if (uid && typeof FirestoreProfile !== 'undefined') {
+      FirestoreProfile.save(uid, data);
     }
   }
 
@@ -57,8 +64,11 @@ const RoutineSaver = (() => {
     AppState.questionnaire.completed = true;
     AppState.routine = { ...AppState.routine, ...data.routine };
     AppState.routineChoice = data.routineChoice || 'skincare';
+    if (data.skinAnalysis) {
+      AppState.face = AppState.face || {};
+      AppState.face.skinAnalysis = data.skinAnalysis;
+    }
 
-    // Recalculer les recommandations produits selon le type de peau
     if (data.answers?.skinType && typeof ProductCatalog !== 'undefined') {
       ProductCatalog.getRecommended(data.answers);
     }
