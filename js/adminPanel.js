@@ -346,6 +346,7 @@ const Admin = (() => {
     document.getElementById('fReviews').value     = p.reviews != null ? p.reviews : '';
     document.getElementById('fActive').checked    = p.active !== false;
     document.getElementById('fFeatured').checked  = p.isFeatured === true;
+    document.getElementById('fKorean').checked    = p.isKorean === true;
     document.getElementById('fColorHex').value     = p.colorHex || '#ffffff';
     document.getElementById('fColorHexText').value = p.colorHex || '';
     document.getElementById('fShadeName').value    = p.shadeName || '';
@@ -416,6 +417,7 @@ const Admin = (() => {
     document.getElementById('fColorHex').value   = '#ffffff';
     document.getElementById('fActive').checked   = true;
     document.getElementById('fFeatured').checked = false;
+    document.getElementById('fKorean').checked   = false;
     document.getElementById('fUndertone').value    = '';
     document.getElementById('fCarnClair').checked  = true;
     document.getElementById('fCarnMedium').checked = true;
@@ -462,6 +464,7 @@ const Admin = (() => {
     const reviews    = reviewsRaw ? parseInt(reviewsRaw, 10) : null;
     const isActive   = document.getElementById('fActive').checked;
     const isFeatured = document.getElementById('fFeatured').checked;
+    const isKorean   = document.getElementById('fKorean').checked;
     const colorHexText = document.getElementById('fColorHexText').value.trim();
     const colorHex   = colorHexText || document.getElementById('fColorHex').value;
     const shadeName  = document.getElementById('fShadeName').value.trim();
@@ -540,6 +543,7 @@ const Admin = (() => {
         reviews,
         active: isActive,
         isFeatured,
+        isKorean: isKorean || false,
         colorHex:  colorHex  || null,
         shadeName: shadeName || null,
         undertone: undertone || null,
@@ -582,6 +586,7 @@ const Admin = (() => {
         correctorType: correctorType || null,
         concernTags: concernTags,
         isFeatured,
+        isKorean: isKorean || false,
         active: isActive,
         multiUsage: multiUsage || false,
         multiUsageZones: multiUsageZones || null,

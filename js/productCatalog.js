@@ -79,10 +79,20 @@ const ProductCatalog = (() => {
         console.log('[Catalog] Erreur chargement produits:', err.message);
       }
 
-      // 3. Filtrer les actifs et ajouter tag affilié
+      // 3. Filtrer les actifs, tag affilié, et tag isKorean automatique
+      const KOREAN_BRANDS = new Set([
+        'anua','beauty of joseon','medicube','cosrx','innisfree','some by mi',
+        'skin1004','axis-y','purito','klairs','isntree','torriden','round lab',
+        'laneige','etude','missha','dr.jart+','the ordinary korea','neogen',
+        'dear klairs','numbuzin','abib','ma:nyo','benton','rovectin'
+      ]);
       products = products
         .filter(p => p.active !== false)
-        .map(p => ({ ...p, amazonUrl: ensureTag(p.amazonUrl) }));
+        .map(p => ({
+          ...p,
+          amazonUrl: ensureTag(p.amazonUrl),
+          isKorean:  p.isKorean === true || KOREAN_BRANDS.has((p.brand || '').toLowerCase())
+        }));
 
       AppState.products.catalog = products;
       console.log('[Catalog] Chargé:', AppState.products.catalog.length, 'produits actifs');
@@ -122,7 +132,8 @@ const ProductCatalog = (() => {
   }
 
   function getRecommended(answers, skincareOnly = true) {
-    const { skinType, makeupUsed = [], makeupFrequency, budget } = answers;
+    const { skinType, makeupUsed = [], makeupFrequency, budget, skincareStyle } = answers;
+    const preferKorean = skincareStyle === 'korean';
 
     const skincareCategories = ['cleanser', 'serum', 'moisturizer', 'eye', 'spf', 'lipbalm', 'nightmask'];
     const makeupCategories   = (!skincareOnly && makeupFrequency !== 'jamais') ? (makeupUsed || []) : [];
@@ -158,8 +169,20 @@ const ProductCatalog = (() => {
       if (matFiltered.length >= 4) pool = matFiltered;
     }
 
-    // Trier : teen en tête si profil ado, puis par budget (premium → cher en premier, petits-prix → pas cher en premier), puis featured, puis rating
+    // Si style coréen : filtrer en priorité les produits isKorean, avec fallback
+    if (preferKorean) {
+      const korean = pool.filter(p => p.isKorean === true);
+      if (korean.length >= 4) pool = korean;
+    }
+
+    // Trier : K-Beauty en tête si préférence coréenne, teen si profil ado, budget, featured, rating
     pool.sort((a, b) => {
+      // Boost K-Beauty
+      if (preferKorean) {
+        const aK = a.isKorean ? 1 : 0;
+        const bK = b.isKorean ? 1 : 0;
+        if (bK !== aK) return bK - aK;
+      }
       const matPref = getMaturityPreference(answers);
       if (matPref === 'teen') {
         const aT = a.maturity === 'teen' ? 1 : 0;

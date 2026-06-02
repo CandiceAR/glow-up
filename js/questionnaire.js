@@ -229,9 +229,24 @@ const Questionnaire = (() => {
       ]
     },
 
-    // Q14 — Champ libre
+    // Q14 — Style skincare préféré
     {
-      id: 'q14', key: 'freeText', type: 'textarea',
+      id: 'q14', key: 'skincareStyle', type: 'single',
+      question: 'Quel est ton style de skincare préféré ?',
+      subtitle: 'Pour des recommandations encore plus ciblées',
+      required: false, skipIf: null,
+      options: [
+        { value: 'minimaliste',  emoji: '◇',  label: 'Minimaliste',        desc: 'Le moins de produits possible, maxi efficacité' },
+        { value: 'dermo',        emoji: '🏥', label: 'Dermocosmétique',    desc: 'Formules cliniques, validées dermato' },
+        { value: 'naturel',      emoji: '🌿', label: 'Naturel',            desc: 'Ingrédients d\'origine naturelle, clean' },
+        { value: 'luxe',         emoji: '✦',  label: 'Luxe',               desc: 'Textures premium, expérience sensorielle' },
+        { value: 'korean',       emoji: '🇰🇷', label: 'Produits coréens',   desc: 'K-Beauty, rituel multi-étapes, innovations' }
+      ]
+    },
+
+    // Q15 — Champ libre
+    {
+      id: 'q15', key: 'freeText', type: 'textarea',
       question: 'Autre chose à me dire sur ta peau ?',
       subtitle: 'Optionnel — allergies spécifiques, contexte particulier…',
       required: false, skipIf: null,
