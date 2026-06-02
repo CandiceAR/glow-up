@@ -345,8 +345,6 @@ const RoutineRenderer = (() => {
           ? renderLockedSection('Routine du soir', routine.soir, '🌙')
           : renderRoutineSection('Routine du soir', routine.soir, '🌙', hasRetinol)}
 
-      <!-- CTA vers Make-up -->
-      ${renderMakeupBridge()}
 
       <!-- ✦ SKIN JOURNEY — 100% gratuit, toujours visible -->
       ${renderSkinJourneyTeaser()}
@@ -554,7 +552,7 @@ const RoutineRenderer = (() => {
         <button class="btn btn-dark paywall-main-btn" onclick="openPaywallModal()">
           Débloquer mon Beauty Plan
         </button>
-        <p class="paywall-inline-note">7 jours gratuits · Annulable à tout moment</p>
+        <p class="paywall-inline-note">Paiement annuel · Annulable à tout moment</p>
       </div>`;
   }
 

@@ -121,11 +121,11 @@ const ProductCatalog = (() => {
     return 'all';
   }
 
-  function getRecommended(answers) {
+  function getRecommended(answers, skincareOnly = true) {
     const { skinType, makeupUsed = [], makeupFrequency, budget } = answers;
 
     const skincareCategories = ['cleanser', 'serum', 'moisturizer', 'eye', 'spf', 'lipbalm', 'nightmask'];
-    const makeupCategories   = makeupFrequency !== 'jamais' ? (makeupUsed || []) : [];
+    const makeupCategories   = (!skincareOnly && makeupFrequency !== 'jamais') ? (makeupUsed || []) : [];
     const allowed = [...skincareCategories, ...makeupCategories];
 
     let pool = AppState.products.catalog.filter(p => allowed.includes(p.category));
