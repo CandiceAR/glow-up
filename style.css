@@ -862,6 +862,23 @@ em { font-style: italic; color: var(--nude); }
 }
 .results-header { text-align: center; margin-bottom: 48px; }
 .results-header h1 { margin: 12px 0; }
+.results-ready-tag {
+  display: inline-block;
+  background: var(--orange);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 6px 16px;
+  border-radius: 50px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 16px rgba(212,133,42,0.3);
+  animation: fadeInDown 0.5s ease;
+}
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
 /* Routine section */
 .routine-section {

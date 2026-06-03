@@ -319,6 +319,7 @@ const RoutineRenderer = (() => {
 
     container.innerHTML = `
       <div class="results-header">
+        <span class="results-ready-tag">✦ Ta routine personnalisée est prête</span>
         <span class="section-tag">Diagnostic personnalisé</span>
         <h1>${routine.ruleName || 'Ta Routine'}</h1>
         <p>Basée sur tes réponses et ton analyse de peau — routine adaptée à ton profil unique.</p>
@@ -890,6 +891,15 @@ const RoutineRenderer = (() => {
     return labels[step] || step;
   }
 
-  return { renderResults };
+  function renderConversionBlocksMakeup(isLocked) {
+    // Même blocs mais routineChoice = 'makeup' (montre le teaser skincare)
+    const saved = AppState.routineChoice;
+    AppState.routineChoice = 'makeup';
+    const html = renderConversionBlocks(isLocked);
+    AppState.routineChoice = saved;
+    return html;
+  }
+
+  return { renderResults, renderConversionBlocksMakeup };
 
 })();

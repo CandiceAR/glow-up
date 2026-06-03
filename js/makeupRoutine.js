@@ -571,14 +571,21 @@ const MakeupRoutine = (() => {
       </div>` : '';
 
     const productCount = coreProducts.length;
+    const isLocked = typeof Subscription !== 'undefined' ? !Subscription.canAccess('routine_second') : true;
+    const conversionBlocks = typeof RoutineRenderer !== 'undefined' && RoutineRenderer.renderConversionBlocksMakeup
+      ? RoutineRenderer.renderConversionBlocksMakeup(isLocked)
+      : '';
+
     container.innerHTML = `
       <div class="makeup-routine">
 
         <header class="premium-header">
-          <span class="premium-tag">Ta sélection personnalisée</span>
-          <h1 class="premium-title">Clean Girl Routine ✦</h1>
-          <p class="premium-subtitle">L'essentiel, pensé pour toi. Pas un produit de trop.</p>
+          <span class="premium-tag">Diagnostic personnalisé ✦</span>
+          <h1 class="premium-title">Ta routine Make-up</h1>
+          <p class="premium-subtitle">Sélection personnalisée selon ton profil beauté.</p>
         </header>
+
+        ${conversionBlocks}
 
         ${renderProfile(profile)}
 
