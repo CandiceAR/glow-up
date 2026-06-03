@@ -331,6 +331,9 @@ const RoutineRenderer = (() => {
       <!-- Total global -->
       ${renderGlobalTotal({ ...routine, matin: matnSteps }, isLocked)}
 
+      <!-- Blocs conversion (avant la routine gratuite) -->
+      ${renderConversionBlocks(isLocked)}
+
       <!-- ✅ GRATUIT : Routine du matin complète -->
       <div class="free-section-label">
         <span class="free-badge">✦ Inclus gratuitement</span>
@@ -344,12 +347,11 @@ const RoutineRenderer = (() => {
           ? renderLockedSection('Routine du soir', routine.soir, '🌙')
           : renderRoutineSection('Routine du soir', routine.soir, '🌙', hasRetinol)}
 
-
       <!-- ✦ SKIN JOURNEY — 100% gratuit, toujours visible -->
       ${renderSkinJourneyTeaser()}
 
-      <!-- Blocs conversion + produits -->
-      ${renderConversionBlocks(isLocked)}
+      <!-- Produits recommandés -->
+      ${renderProductsCTA()}
 
       ${renderDebugLog(routine.log)}
 
@@ -582,9 +584,6 @@ const RoutineRenderer = (() => {
     if (!isCoach) {
       parts.push(renderComparisonTable(plan));
     }
-
-    // Produits recommandés (toujours)
-    parts.push(renderProductsCTA());
 
     return parts.join('');
   }
