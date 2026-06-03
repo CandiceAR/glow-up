@@ -88,7 +88,6 @@ em { font-style: italic; color: var(--nude); }
   height: 54px;
   width: auto;
   object-fit: contain;
-  mix-blend-mode: multiply;
 }
 .nav-logo-text {
   font-family: var(--font-serif);
