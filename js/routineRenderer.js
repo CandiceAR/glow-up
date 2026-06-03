@@ -348,8 +348,8 @@ const RoutineRenderer = (() => {
       <!-- ✦ SKIN JOURNEY — 100% gratuit, toujours visible -->
       ${renderSkinJourneyTeaser()}
 
-      <!-- CTA paywall ou produits -->
-      ${isLocked ? renderPaywallCTA() : renderProductsCTA()}
+      <!-- Blocs conversion + produits -->
+      ${renderConversionBlocks(isLocked)}
 
       ${renderDebugLog(routine.log)}
 
@@ -552,6 +552,156 @@ const RoutineRenderer = (() => {
           Débloquer mon Beauty Plan
         </button>
         <p class="paywall-inline-note">Paiement annuel · Annulable à tout moment</p>
+      </div>`;
+  }
+
+  // ─── Bloc conversion complet (remplace l'ancien paywall) ────────
+  function renderConversionBlocks(isLocked) {
+    const plan          = typeof Subscription !== 'undefined' ? Subscription.getPlan() : 'free';
+    const routineChoice = AppState.routineChoice || 'skincare';
+    const isCoach       = plan === 'glowplus';
+
+    const parts = [];
+
+    // ÉTAPE 1 — Routine complémentaire verrouillée
+    if (isLocked) {
+      parts.push(renderLockedRoutineTeaser(routineChoice));
+    }
+
+    // ÉTAPE 2 — Offre Glow Up (pour free seulement)
+    if (isLocked) {
+      parts.push(renderGlowUpOffer());
+    }
+
+    // ÉTAPE 3 — Coach (pour free ET glow — pas pour glowplus)
+    if (!isCoach) {
+      parts.push(renderCoachOffer());
+    }
+
+    // ÉTAPE 4 — Tableau comparatif (pour free et glow)
+    if (!isCoach) {
+      parts.push(renderComparisonTable(plan));
+    }
+
+    // Produits recommandés (toujours)
+    parts.push(renderProductsCTA());
+
+    return parts.join('');
+  }
+
+  // ─── Étape 1 : Routine complémentaire verrouillée ────────────
+  function renderLockedRoutineTeaser(routineChoice) {
+    const isSkincare = routineChoice === 'skincare';
+    const title   = isSkincare
+      ? '🔒 Débloque aussi ta routine Make-up personnalisée'
+      : '🔒 Débloque aussi ta routine Skincare personnalisée';
+    const items = isSkincare
+      ? ['Ta carnation & ton sous-ton', 'La forme de ton visage', 'Tes objectifs beauté', 'Produits maquillage adaptés']
+      : ['Ton type de peau', 'Tes problématiques détectées', 'Ton budget', 'Tes objectifs beauté'];
+    return `
+      <div class="conversion-block conversion-block--lock">
+        <div class="cb-header">
+          <span class="cb-lock-icon">🔒</span>
+          <h3 class="cb-title">${isSkincare ? 'Débloque aussi ta routine Make-up personnalisée' : 'Débloque aussi ta routine Skincare personnalisée'}</h3>
+        </div>
+        <p class="cb-desc">${isSkincare ? 'Découvre les produits adaptés à :' : 'Découvre la routine idéale adaptée à :'}</p>
+        <ul class="cb-list">
+          ${items.map(i => `<li>✓ ${i}</li>`).join('')}
+        </ul>
+        <button class="btn-orange-cta" onclick="Subscription.showPaywall('routine_second')">
+          Débloquer ma routine complète
+        </button>
+      </div>`;
+  }
+
+  // ─── Étape 2 : Offre Glow Up ─────────────────────────────────
+  function renderGlowUpOffer() {
+    return `
+      <div class="conversion-block conversion-block--glow">
+        <div class="cb-badge">✨ Offre Glow Up</div>
+        <h3 class="cb-title">Débloque tout l'univers Glow Up</h3>
+        <ul class="cb-list">
+          <li>✓ Routine skincare complète</li>
+          <li>✓ Routine make-up complète</li>
+          <li>✓ Analyses photo IA</li>
+          <li>✓ Recommandations produits personnalisées</li>
+          <li>✓ Nouveaux conseils adaptés à ton profil</li>
+        </ul>
+        <div class="cb-price">
+          <span class="cb-price-main">15,99 €</span>
+          <span class="cb-price-period">/ an</span>
+        </div>
+        <p class="cb-price-sub">Soit seulement 1,33 € par mois</p>
+        <button class="btn-orange-cta" onclick="Subscription.openCheckout('glow_year')">
+          Débloquer Glow Up
+        </button>
+        <p class="cb-note">Paiement annuel · Annulable à tout moment</p>
+      </div>`;
+  }
+
+  // ─── Étape 3 : Glow Up Coach ─────────────────────────────────
+  function renderCoachOffer() {
+    return `
+      <div class="conversion-block conversion-block--coach">
+        <div class="cb-badge cb-badge--coach">⭐ Glow Up Coach</div>
+        <h3 class="cb-title">Teste Glow Up Coach gratuitement</h3>
+        <p class="cb-desc">Glow Up Coach va plus loin que les recommandations classiques. Il prend en compte :</p>
+        <ul class="cb-list">
+          <li>✓ Tes habitudes beauté & ton budget</li>
+          <li>✓ Tes objectifs & ton style de vie</li>
+          <li>✓ Tes préférences & contraintes personnelles</li>
+          <li>✓ La seule vendeuse beauté qui te connaît déjà</li>
+        </ul>
+        <div class="cb-price">
+          <span class="cb-price-main">49,99 €</span>
+          <span class="cb-price-period">/ an</span>
+        </div>
+        <p class="cb-price-sub">Soit seulement 4,17 € par mois</p>
+        <button class="btn-orange-cta btn-orange-cta--coach" onclick="Subscription.showPaywall('coach')">
+          Tester Glow Up Coach gratuitement
+        </button>
+        <p class="cb-note">Paiement annuel · Annulable à tout moment</p>
+      </div>`;
+  }
+
+  // ─── Étape 4 : Tableau comparatif ────────────────────────────
+  function renderComparisonTable(plan) {
+    const rows = [
+      ['Prix',                                     '15,99 €/an', '49,99 €/an'],
+      ['Routine skincare personnalisée',            '✅', '✅'],
+      ['Routine make-up personnalisée',             '✅', '✅'],
+      ['Analyses photo IA',                         '✅', '✅'],
+      ['Recommandations produits personnalisées',   '✅', '✅'],
+      ['Conseils avancés et approfondis',           '❌', '✅'],
+      ['Accompagnement beauté renforcé',            '❌', '✅'],
+      ['Priorité sur les nouveautés',               '❌', '✅'],
+      ['Parrainage (bons dès 5 filleuls)',          '❌', '✅'],
+    ];
+    return `
+      <div class="conversion-block conversion-block--table">
+        <div class="cb-badge">Comparer les offres</div>
+        <h3 class="cb-title">Ce qui est inclus</h3>
+        <div class="cb-table-wrap">
+          <table class="cb-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th class="${plan === 'glow' ? 'cb-th--active' : ''}">Glow Up</th>
+                <th class="${plan === 'glowplus' ? 'cb-th--active' : ''}">Glow Up Coach</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows.map(([feat, glow, coach]) => `
+                <tr>
+                  <td>${feat}</td>
+                  <td class="cb-td-center">${glow}</td>
+                  <td class="cb-td-center">${coach}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+        <p class="cb-table-note">✨ <strong>Glow Up</strong> : l'essentiel pour trouver tes routines idéales grâce à l'IA.</p>
+        <p class="cb-table-note">⭐ <strong>Glow Up Coach</strong> : l'expérience beauté la plus complète avec accompagnement renforcé et programme de parrainage.</p>
       </div>`;
   }
 
