@@ -135,24 +135,23 @@ const RoutineRenderer = (() => {
       if (filtered.length > 0) pool = filtered;
     }
 
-    // Scorer : isFeatured +30, skinType match +20, rating ×10
-    // Petit budget : bonus +50 pour les produits les moins chers
+    // Scorer : skinType match +20, rating ×10, isFeatured +10 (réduit pour ne pas dominer)
     pool = pool.map(p => {
       let score = (p.rating || 0) * 10;
-      if (p.isFeatured) score += 30;
+      if (p.isFeatured) score += 10;
       if (p.skinTypeTags && skinType && p.skinTypeTags.includes(skinType)) score += 20;
       if (_isLowBudget() && p.price > 0) score += (20 - Math.min(20, p.price)) * 2;
-      // Bonus fort pour crème avec SPF intégré si budget ≤ 40€ (évite d'acheter 2 produits)
       if (_isBudgetUnder40() && stepType === 'moisturizer' && p.includesSPF) score += 60;
+      // Variance aléatoire pour la diversité entre sessions
+      score += Math.random() * 15;
       return { ...p, _score: score };
     });
 
     pool.sort((a, b) => b._score - a._score);
 
-    // Diversité : choisir aléatoirement parmi les top-15 produits éligibles
-    const topN = pool.slice(0, Math.min(15, pool.length));
-    const idx  = Math.floor(_seededRandom(stepType) * topN.length);
-    return topN[idx] || null;
+    // Choisir aléatoirement parmi les top-10 produits éligibles
+    const topN = pool.slice(0, Math.min(10, pool.length));
+    return topN[Math.floor(Math.random() * topN.length)] || null;
   }
 
   // ─── Routine matin réduite pour petit budget (dynamique) ────────

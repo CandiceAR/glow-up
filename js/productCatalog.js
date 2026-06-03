@@ -195,8 +195,19 @@ const ProductCatalog = (() => {
       return (b.rating || 0) - (a.rating || 0);
     });
 
-    AppState.products.recommended = pool;
-    return pool;
+    // Sélection aléatoire parmi les top-20 pour varier les recommandations
+    const TOP_N   = Math.min(20, pool.length);
+    const topPool = pool.slice(0, TOP_N);
+    // Fisher-Yates shuffle sur le top pool, garder les 8 premiers
+    for (let i = topPool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [topPool[i], topPool[j]] = [topPool[j], topPool[i]];
+    }
+    // Re-trier légèrement pour ne pas être 100% aléatoire (garder la pertinence)
+    const finalPool = topPool.slice(0, 8).sort((a, b) => (b.rating || 0) - (a.rating || 0));
+
+    AppState.products.recommended = finalPool;
+    return finalPool;
   }
 
   // ─── Filtrer par catégorie pour le try-on ─────────────────────
