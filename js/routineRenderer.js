@@ -347,8 +347,8 @@ const RoutineRenderer = (() => {
           ? renderLockedSection('Routine du soir', routine.soir, '🌙')
           : renderRoutineSection('Routine du soir', routine.soir, '🌙', hasRetinol)}
 
-      <!-- ✦ SKIN JOURNEY — 100% gratuit, toujours visible -->
-      ${renderSkinJourneyTeaser()}
+      <!-- ✦ SKIN JOURNEY — skincare uniquement -->
+      ${AppState.routineChoice !== 'makeup' ? renderSkinJourneyTeaser() : ''}
 
       <!-- Produits recommandés -->
       ${renderProductsCTA()}
