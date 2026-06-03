@@ -631,7 +631,7 @@ const RoutineRenderer = (() => {
           <span class="cb-price-period">/ an</span>
         </div>
         <p class="cb-price-sub">Soit seulement 1,33 € par mois</p>
-        <button class="btn-orange-cta" onclick="Subscription.openCheckout('glow_year')">
+        <button class="btn-orange-cta" onclick="Subscription.showPaywall('routine_second')">
           Débloquer Glow Up
         </button>
         <p class="cb-note">Paiement annuel · Annulable à tout moment</p>
