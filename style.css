@@ -84,8 +84,9 @@ em { font-style: italic; color: var(--nude); }
   align-items: center;
 }
 .nav-logo img {
-  height: 36px;
+  height: 52px;
   width: auto;
+  max-width: 110px;
   object-fit: contain;
 }
 .nav-logo-text {
