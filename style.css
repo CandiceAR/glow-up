@@ -84,10 +84,12 @@ em { font-style: italic; color: var(--nude); }
   align-items: center;
 }
 .nav-logo img {
-  height: 52px;
-  width: auto;
-  max-width: 110px;
-  object-fit: contain;
+  height: 56px;
+  width: 56px;
+  object-fit: cover;
+  object-position: center 15%;
+  border-radius: 8px;
+  mix-blend-mode: multiply;
 }
 .nav-logo-text {
   font-family: var(--font-serif);
