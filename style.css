@@ -87,9 +87,9 @@ em { font-style: italic; color: var(--nude); }
   justify-content: center;
 }
 .nav-logo img {
-  height: 46px;
+  height: 56px;
   width: auto;
-  max-width: 180px;
+  max-width: 220px;
   object-fit: contain;
 }
 .nav-logo-text {
