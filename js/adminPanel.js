@@ -15,6 +15,7 @@ const Admin = (() => {
   let catFilter        = 'all';
   let ingredientFilter = 'all';
   let concernFilter    = 'all';
+  let noPhotoFilter    = false;
 
   // ─── Toast notifications ──────────────────────────────────────
   function toast(msg, type = 'success') {
@@ -243,6 +244,7 @@ const Admin = (() => {
     if (catFilter !== 'all') list = list.filter(p => p.category === catFilter);
     if (ingredientFilter !== 'all') list = list.filter(p => Array.isArray(p.ingredientTags) && p.ingredientTags.includes(ingredientFilter));
     if (concernFilter    !== 'all') list = list.filter(p => Array.isArray(p.concernTags)    && p.concernTags.includes(concernFilter));
+    if (noPhotoFilter)               list = list.filter(p => !p.imageUrl || p.imageUrl.trim() === '');
 
     const tbody = document.getElementById('productsTableBody');
     if (!tbody) return;
@@ -878,6 +880,17 @@ const Admin = (() => {
     renderTable();
   }
 
+  function toggleNoPhotoFilter() {
+    noPhotoFilter = !noPhotoFilter;
+    const btn = document.getElementById('btnFilterNoPhoto');
+    if (btn) {
+      btn.style.background    = noPhotoFilter ? 'var(--charcoal)' : '';
+      btn.style.color         = noPhotoFilter ? 'white' : '';
+      btn.style.borderColor   = noPhotoFilter ? 'var(--charcoal)' : '';
+    }
+    renderTable();
+  }
+
   // ─── Onglets ──────────────────────────────────────────────────
   let currentTab = 'products';
   const TAB_IDS  = ['products', 'analytics', 'asin', 'coach', 'catalogue'];
@@ -1373,7 +1386,7 @@ const Admin = (() => {
     showAddForm, editProduct, duplicateProduct, cancelForm, saveProduct, toggleMultiUsageZones,
     onCategoryChange, autoTagAll,
     toggleActive, toggleFeatured, deleteProduct,
-    search, filterCat, filterIngredient, filterConcern, patchSkincareTags, importNewFromJSON, forceSyncAllFromJSON, showTab, checkMissingPhotos,
+    search, filterCat, filterIngredient, filterConcern, toggleNoPhotoFilter, patchSkincareTags, importNewFromJSON, forceSyncAllFromJSON, showTab, checkMissingPhotos,
     extractASIN, extractASINFromUrl, checkTag, autoFillAmazonUrl, exportJSON,
     setPeriod, exportStatsCSV, clearStats,
     saveCoachKey, deleteCoachKey, testCoachKey,
