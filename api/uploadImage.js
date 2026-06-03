@@ -11,7 +11,7 @@ const CORS = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS'
 };
 
-module.exports = async (req, res) => {
+async function handler(req, res) {
   Object.entries(CORS).forEach(([k, v]) => res.setHeader(k, v));
 
   if (req.method === 'OPTIONS') return res.status(200).end();
@@ -57,8 +57,16 @@ module.exports = async (req, res) => {
 
   if (!putRes.ok) {
     const err = await putRes.json().catch(() => ({}));
-    return res.status(putRes.status).json({ error: err.message || 'Erreur upload' });
+    console.error('[uploadImage] GitHub API error:', putRes.status, err);
+    return res.status(putRes.status).json({
+      error: err.message || 'Erreur upload',
+      github_status: putRes.status
+    });
   }
 
   return res.status(200).json({ ok: true, path: filePath, filename: safeName });
-};
+}
+
+handler.config = { api: { bodyParser: { sizeLimit: '10mb' } } };
+
+module.exports = handler;
