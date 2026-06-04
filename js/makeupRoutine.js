@@ -585,8 +585,6 @@ const MakeupRoutine = (() => {
           <p class="premium-subtitle">Sélection personnalisée selon ton profil beauté.</p>
         </header>
 
-        ${conversionBlocks}
-
         ${renderProfile(profile)}
 
         <section class="cg-indispensables">
@@ -609,6 +607,9 @@ const MakeupRoutine = (() => {
           <span class="cg-total-label">Total avec bonus</span>
           <strong class="cg-total-amount">${totalWithBonus.toFixed(2)} €</strong>
         </div>` : ''}
+
+        <!-- Blocs conversion après le contenu -->
+        ${conversionBlocks}
 
         <footer class="premium-footer">
           <p>Liens affiliés Amazon · Même commission sur tous les produits</p>

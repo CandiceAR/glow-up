@@ -332,9 +332,6 @@ const RoutineRenderer = (() => {
       <!-- Total global -->
       ${renderGlobalTotal({ ...routine, matin: matnSteps }, isLocked)}
 
-      <!-- Blocs conversion (avant la routine gratuite) -->
-      ${renderConversionBlocks(isLocked)}
-
       <!-- ✅ GRATUIT : Routine du matin complète -->
       <div class="free-section-label">
         <span class="free-badge">✦ Inclus gratuitement</span>
@@ -350,6 +347,9 @@ const RoutineRenderer = (() => {
 
       <!-- ✦ SKIN JOURNEY — skincare uniquement -->
       ${AppState.routineChoice !== 'makeup' ? renderSkinJourneyTeaser() : ''}
+
+      <!-- Blocs conversion — après la routine, au pic d'engagement -->
+      ${renderConversionBlocks(isLocked)}
 
       <!-- Produits recommandés -->
       ${renderProductsCTA()}
