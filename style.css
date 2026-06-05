@@ -8567,3 +8567,24 @@ em { font-style: italic; color: var(--nude); }
   display: block;
   margin: 0 auto;
 }
+
+/* ─── Parrainage — Dashboard modal ──────────────────────────── */
+.ref-modal { padding: 4px 0; }
+.ref-modal-icon { font-size: 2rem; text-align: center; margin-bottom: 8px; }
+.ref-modal-title { font-family: var(--font-serif); font-size: 1.6rem; font-weight: 400; text-align: center; margin: 0 0 4px; }
+.ref-modal-sub { font-size: 0.85rem; color: var(--muted); text-align: center; margin: 0 0 20px; }
+.ref-code-block { background: var(--cream); border: 1px solid var(--sand); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 20px; text-align: center; }
+.ref-code-label { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; margin: 0 0 8px; }
+.ref-code { font-family: monospace; font-size: 1.4rem; font-weight: 700; color: var(--orange); letter-spacing: 0.15em; margin-bottom: 6px; }
+.ref-link { font-size: 0.72rem; color: var(--muted); margin: 0 0 12px; word-break: break-all; }
+.ref-progress { margin-bottom: 20px; }
+.ref-progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.ref-progress-count { font-weight: 600; font-size: 0.9rem; color: var(--charcoal); }
+.ref-progress-next { font-size: 0.78rem; color: var(--orange); }
+.ref-bars { display: flex; gap: 6px; margin-bottom: 6px; }
+.ref-bar { flex: 1; height: 8px; background: var(--sand); border-radius: 4px; transition: background 0.3s; }
+.ref-bar--filled { background: var(--orange); }
+.ref-progress-note { font-size: 0.72rem; color: var(--muted); }
+.ref-coupons { background: rgba(212,133,42,0.08); border: 1px solid rgba(212,133,42,0.3); border-radius: var(--radius-sm); padding: 14px; }
+.ref-coupons-label { font-size: 0.82rem; font-weight: 600; color: var(--charcoal); margin: 0 0 8px; }
+.ref-coupon-code { font-family: monospace; font-size: 0.9rem; background: white; border: 1px dashed var(--orange); padding: 6px 12px; border-radius: 4px; color: var(--orange); font-weight: 700; margin-top: 4px; }

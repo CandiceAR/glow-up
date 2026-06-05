@@ -184,7 +184,22 @@ function toggleMobileMenu() {
 }
 
 // ─── Initialisation principale ────────────────────────────────
+// ─── Capture du code parrainage dans l'URL (?ref=GU-XXXXX) ───
+function _captureReferralCode() {
+  const params = new URLSearchParams(window.location.search);
+  const ref    = params.get('ref');
+  if (ref && /^GU-[A-Z0-9]{5}$/.test(ref)) {
+    sessionStorage.setItem('glow_pending_ref', ref);
+    // Nettoyer l'URL sans recharger la page
+    const clean = new URL(window.location.href);
+    clean.searchParams.delete('ref');
+    window.history.replaceState({}, '', clean.toString());
+    console.log('[Referral] Code capturé:', ref);
+  }
+}
+
 async function initApp() {
+  _captureReferralCode();
   console.log('[GLOW UP] Initialisation Phase 0…');
 
   // Purge du cache localStorage produits (catalogue remis à zéro)

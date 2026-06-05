@@ -86,7 +86,9 @@ const Auth = (() => {
               if (profileRestored) {
                 RoutineSaver.showResumeBanner();
               } else {
-                // Nouveau compte → lancer le questionnaire automatiquement
+                // Nouveau compte → associer le parrain si présent
+                _associateReferral(user.uid);
+                // Lancer le questionnaire automatiquement
                 setTimeout(() => {
                   if (AppState.screen === 'home' || AppState.screen === 'intention') {
                     setTimeout(() => {
@@ -240,6 +242,51 @@ const Auth = (() => {
     } catch (err) {
       const msgs = { 'auth/user-not-found': 'Aucun compte avec cet email', 'auth/invalid-email': 'Email invalide' };
       showToast(msgs[err.code] || 'Erreur lors de l\'envoi', 'error');
+    }
+  }
+
+  // ─── Associer un parrain au nouveau compte ───────────────────
+  async function _associateReferral(uid) {
+    const refCode = sessionStorage.getItem('glow_pending_ref');
+    if (!refCode || !uid) return;
+    if (typeof firebase === 'undefined' || !firebase.apps.length) return;
+
+    try {
+      const db      = firebase.firestore();
+      const userRef = db.collection('users').doc(uid);
+      const userDoc = await userRef.get();
+
+      // Ne pas écraser si déjà un parrain ou si c'est son propre code
+      if (userDoc.data()?.referral?.referredBy) return;
+
+      // Trouver le parrain via son code
+      const q = await db.collection('users')
+        .where('referral.code', '==', refCode)
+        .limit(1)
+        .get();
+      if (q.empty) return;
+
+      const referrerUid = q.docs[0].id;
+      if (referrerUid === uid) return; // auto-parrainage interdit
+
+      // Sauvegarder le lien parrain → filleule
+      await userRef.set({ referral: { referredBy: refCode } }, { merge: true });
+
+      // Créer le document de parrainage en attente
+      await db.collection('referrals').add({
+        referrerCode:  refCode,
+        referrerUid,
+        refereeUid:    uid,
+        refereeEmail:  AppState.user?.email || '',
+        status:        'pending',
+        createdAt:     new Date().toISOString(),
+        validatedAt:   null
+      });
+
+      sessionStorage.removeItem('glow_pending_ref');
+      console.log('[Referral] Lien créé: filleule', uid, '← parrain', referrerUid);
+    } catch (e) {
+      console.warn('[Referral] Erreur association:', e.message);
     }
   }
 

@@ -893,7 +893,7 @@ const Admin = (() => {
 
   // ─── Onglets ──────────────────────────────────────────────────
   let currentTab = 'products';
-  const TAB_IDS  = ['products', 'analytics', 'asin', 'coach', 'catalogue'];
+  const TAB_IDS  = ['products', 'analytics', 'asin', 'coach', 'catalogue', 'referrals'];
 
   function showTab(tab) {
     currentTab = tab;
@@ -904,8 +904,9 @@ const Admin = (() => {
       const el = document.getElementById(`tab${t.charAt(0).toUpperCase() + t.slice(1)}`);
       if (el) el.style.display = t === tab ? 'block' : 'none';
     });
-    if (tab === 'analytics') renderAnalytics();
-    if (tab === 'coach')     renderCoachKeyStatus();
+    if (tab === 'analytics')  renderAnalytics();
+    if (tab === 'coach')      renderCoachKeyStatus();
+    if (tab === 'referrals')  loadReferrals();
     if (tab === 'catalogue') renderCatalogueTab();
   }
 
@@ -1387,6 +1388,7 @@ const Admin = (() => {
     onCategoryChange, autoTagAll,
     toggleActive, toggleFeatured, deleteProduct,
     search, filterCat, filterIngredient, filterConcern, toggleNoPhotoFilter, patchSkincareTags, importNewFromJSON, forceSyncAllFromJSON, showTab, checkMissingPhotos,
+    loadReferrals,
     extractASIN, extractASINFromUrl, checkTag, autoFillAmazonUrl, exportJSON,
     setPeriod, exportStatsCSV, clearStats,
     saveCoachKey, deleteCoachKey, testCoachKey,
@@ -1394,5 +1396,58 @@ const Admin = (() => {
     openImagePicker, closeImagePicker, selectImage, renderImagePicker,
     uploadImageFile
   };
+
+  // ─── Parrainage ───────────────────────────────────────────────
+  async function loadReferrals() {
+    const statsEl = document.getElementById('referralsStats');
+    const tableEl = document.getElementById('referralsTable');
+    if (!statsEl || !tableEl) return;
+    tableEl.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;">Chargement…</p>';
+
+    try {
+      const db  = firebase.firestore();
+      const snap = await db.collection('referrals').orderBy('createdAt', 'desc').limit(200).get();
+      const rows = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+      const total     = rows.length;
+      const validated = rows.filter(r => r.status === 'validated').length;
+      const pending   = rows.filter(r => r.status === 'pending').length;
+
+      statsEl.innerHTML = `
+        <div class="stat-card"><div class="stat-number">${total}</div><div class="stat-label">Parrainages total</div></div>
+        <div class="stat-card"><div class="stat-number" style="color:#27ae60">${validated}</div><div class="stat-label">Validés (abonnés)</div></div>
+        <div class="stat-card"><div class="stat-number" style="color:var(--orange)">${pending}</div><div class="stat-label">En attente</div></div>`;
+
+      if (!rows.length) {
+        tableEl.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;margin-top:12px;">Aucun parrainage enregistré.</p>';
+        return;
+      }
+
+      tableEl.innerHTML = `
+        <table class="products-table" style="margin-top:12px;">
+          <thead><tr>
+            <th>Date</th>
+            <th>Code parrain</th>
+            <th>Email filleule</th>
+            <th>Statut</th>
+            <th>Validé le</th>
+          </tr></thead>
+          <tbody>
+            ${rows.map(r => `
+              <tr>
+                <td style="font-size:0.78rem;color:var(--muted)">${r.createdAt?.slice(0,10) || '—'}</td>
+                <td><code style="font-size:0.82rem;color:var(--orange)">${r.referrerCode || '—'}</code></td>
+                <td style="font-size:0.82rem">${r.refereeEmail || '—'}</td>
+                <td><span style="font-size:0.75rem;font-weight:600;color:${r.status === 'validated' ? '#27ae60' : 'var(--orange)'}">
+                  ${r.status === 'validated' ? '✅ Validé' : '⏳ En attente'}
+                </span></td>
+                <td style="font-size:0.78rem;color:var(--muted)">${r.validatedAt?.slice(0,10) || '—'}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>`;
+    } catch (e) {
+      tableEl.innerHTML = `<p style="color:var(--error);font-size:0.85rem;">Erreur: ${e.message}</p>`;
+    }
+  }
 
 })();

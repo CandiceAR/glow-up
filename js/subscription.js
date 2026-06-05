@@ -349,6 +349,67 @@ const Subscription = (() => {
     openModal(html);
   }
 
-  return { getPlan, isPlan, canAccess, loadPlan, openCheckout, showPaywall, updateGatingUI, handleCheckoutReturn, renderPlansPage, loadFoundersData, showSkinJourneyDetail };
+  // ─── Parrainage — afficher le dashboard ──────────────────────
+  async function showReferralDashboard() {
+    const uid  = AppState?.user?.uid;
+    const plan = getPlan();
+    if (!uid || (plan !== 'glowplus')) {
+      showPaywall('coach');
+      return;
+    }
+    if (typeof firebase === 'undefined' || !firebase.apps.length) return;
+
+    try {
+      const db      = firebase.firestore();
+      const userDoc = await db.collection('users').doc(uid).get();
+      const ref     = userDoc.data()?.referral || {};
+      const code    = ref.code || '—';
+      const count   = ref.count || 0;
+      const coupons = ref.coupons || [];
+      const link    = `https://glowupskin.app?ref=${code}`;
+      const progress = Math.min(count % 5, 5);
+      const nextMilestone = 5 - progress;
+      const bars = Array.from({length: 5}, (_, i) =>
+        `<div class="ref-bar ${i < progress ? 'ref-bar--filled' : ''}"></div>`
+      ).join('');
+
+      const couponsHtml = coupons.length
+        ? `<div class="ref-coupons"><p class="ref-coupons-label">🎁 Bons d'achat disponibles</p>${coupons.map(c => `<div class="ref-coupon-code">${c}</div>`).join('')}</div>`
+        : '';
+
+      const html = `
+        <button class="modal-close" onclick="closeModal()">×</button>
+        <div class="ref-modal">
+          <div class="ref-modal-icon">🤝</div>
+          <h2 class="ref-modal-title">Mon Parrainage</h2>
+          <p class="ref-modal-sub">Partage Glow Up Coach et gagne des bons d'achat</p>
+
+          <div class="ref-code-block">
+            <p class="ref-code-label">Ton code personnel</p>
+            <div class="ref-code">${code}</div>
+            <p class="ref-link">${link}</p>
+            <button class="btn-orange-cta" onclick="navigator.clipboard.writeText('${link}').then(()=>showToast('Lien copié !','success',2000))">
+              Copier mon lien de parrainage
+            </button>
+          </div>
+
+          <div class="ref-progress">
+            <div class="ref-progress-header">
+              <span class="ref-progress-count">${count} filleul${count > 1 ? 's' : ''} validé${count > 1 ? 's' : ''}</span>
+              <span class="ref-progress-next">${nextMilestone > 0 ? `encore ${nextMilestone} pour un bon` : '🎉 Bon débloqué !'}</span>
+            </div>
+            <div class="ref-bars">${bars}</div>
+            <p class="ref-progress-note">1 bon d'achat offert tous les 5 filleuls abonnés</p>
+          </div>
+
+          ${couponsHtml}
+        </div>`;
+      openModal(html);
+    } catch (e) {
+      console.warn('[Referral] Dashboard:', e.message);
+    }
+  }
+
+  return { getPlan, isPlan, canAccess, loadPlan, openCheckout, showPaywall, updateGatingUI, handleCheckoutReturn, renderPlansPage, loadFoundersData, showSkinJourneyDetail, showReferralDashboard };
 
 })();
