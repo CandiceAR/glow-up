@@ -8348,6 +8348,113 @@ em { font-style: italic; color: var(--nude); }
   letter-spacing: 0.04em;
 }
 
+/* ─── Skin Journey — Feature card dans plans page ───────────── */
+.sj-feature-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 20px;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, #fdf5ee 0%, #fff9f4 100%);
+  border: 1px solid rgba(212,133,42,0.25);
+  border-left: 3px solid var(--orange);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.15s;
+}
+.sj-feature-card:hover {
+  box-shadow: 0 4px 16px rgba(212,133,42,0.15);
+  transform: translateY(-1px);
+}
+.sj-feature-icon { font-size: 1.4rem; flex-shrink: 0; }
+.sj-feature-body { flex: 1; }
+.sj-feature-tag {
+  font-size: 0.7rem;
+  color: var(--orange);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.sj-feature-title {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--charcoal);
+  margin: 0 0 2px;
+}
+.sj-feature-desc { font-size: 0.8rem; color: var(--muted); margin: 0; }
+.sj-feature-arrow { font-size: 1.3rem; color: var(--orange); flex-shrink: 0; }
+
+/* Modal Skin Journey */
+.sj-modal { padding: 8px 0; }
+.sj-modal-icon { font-size: 2rem; text-align: center; margin-bottom: 8px; }
+.sj-modal-tag {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--orange);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.sj-modal-title {
+  font-family: var(--font-serif);
+  font-size: 1.7rem;
+  font-weight: 400;
+  text-align: center;
+  margin: 0 0 14px;
+}
+.sj-modal-intro {
+  font-size: 0.9rem;
+  color: var(--charcoal);
+  margin: 0 0 10px;
+  line-height: 1.6;
+}
+.sj-modal-desc {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0 0 16px;
+  line-height: 1.6;
+}
+.sj-modal-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sj-modal-list li {
+  font-size: 0.88rem;
+  color: var(--charcoal);
+  padding-left: 4px;
+}
+.sj-modal-quote {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--muted);
+  border-left: 2px solid var(--orange);
+  padding-left: 12px;
+  margin: 0 0 20px;
+  line-height: 1.6;
+}
+.sj-modal-note {
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-align: center;
+  margin: 10px 0 0;
+}
+
+/* Teaser résultats — non-abonnés */
+.journey-teaser-desc-free {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0 0 16px;
+}
+
 /* ─── PAYWALL LUXURY ────────────────────────────────────────── */
 .paywall-lux {
   text-align: center;

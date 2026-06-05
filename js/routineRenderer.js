@@ -799,9 +799,11 @@ const RoutineRenderer = (() => {
   function renderMakeupTips()    { return ''; }
   function renderLockedMakeup()  { return ''; }
 
-  // ─── Skin Journey teaser (toujours visible, 100% gratuit) ────
+  // ─── Skin Journey teaser (abonnés : actif / non-abonnés : découverte) ──
   function renderSkinJourneyTeaser() {
-    const journeyActive = typeof SkinJourney !== 'undefined' && SkinJourney.isActive();
+    const plan         = typeof Subscription !== 'undefined' ? Subscription.getPlan() : 'free';
+    const isSubscriber = plan === 'glow' || plan === 'glowplus';
+    const journeyActive = isSubscriber && typeof SkinJourney !== 'undefined' && SkinJourney.isActive();
     const currentDay    = journeyActive
       ? (() => {
           try {
@@ -817,26 +819,28 @@ const RoutineRenderer = (() => {
       <div class="journey-teaser">
         <div class="journey-teaser-left">
           <div class="journey-teaser-tag">
-            <span class="journey-free-pill">✦ 100% Gratuit</span>
+            <span class="journey-free-pill">${isSubscriber ? '✦ Inclus dans ton abonnement' : '✨ Fonctionnalité Glow'}</span>
           </div>
           <h2 class="journey-teaser-title">SKIN JOURNEY</h2>
-          <p class="journey-teaser-sub">Suis la transformation de ta peau</p>
+          <p class="journey-teaser-sub">Suis la transformation de ta peau dans le temps</p>
 
+          ${isSubscriber ? `
           <div class="journey-teaser-day">
             <span class="journey-teaser-day-num">Jour ${currentDay}</span>
             <span class="journey-teaser-day-total">/ 30</span>
           </div>
-
           <div class="journey-teaser-bar-track">
             <div class="journey-teaser-bar-fill" style="width:${progress}%"></div>
           </div>
           <p class="journey-teaser-progress-label">${journeyActive ? `${progress}% du programme complété` : 'Programme non démarré'}</p>
-
-          <button class="btn btn-dark journey-teaser-btn"
-                  onclick="${journeyActive ? "showScreen('journey')" : 'SkinJourney.start()'}">
+          <button class="btn btn-dark journey-teaser-btn" onclick="goToSkinJourney()">
             ${journeyActive ? '▶ Reprendre mon suivi' : 'Commencer mon suivi ✦'}
-          </button>
-          <p class="journey-teaser-note">Suivi de peau 100% gratuit · Aucun compte requis</p>
+          </button>` : `
+          <p class="journey-teaser-desc-free">Historique de vos analyses · Évolution de vos indicateurs peau · Comparaison avant/après</p>
+          <button class="btn-orange-cta journey-teaser-btn" onclick="Subscription.showSkinJourneyDetail()">
+            Découvrir Skin Journey →
+          </button>`}
+          <p class="journey-teaser-note">${isSubscriber ? 'Inclus dans Glow Up · 15,99 €/an' : 'Inclus dans l\'abonnement Glow Up · 15,99 €/an'}</p>
         </div>
 
         <div class="journey-teaser-right" aria-hidden="true">

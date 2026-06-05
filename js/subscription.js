@@ -174,11 +174,16 @@ const Subscription = (() => {
 
   // ─── Gating UI (verrouiller visuellement les éléments) ────────
   function updateGatingUI() {
+    const plan = getPlan();
+    const isSubscriber = plan === 'glow' || plan === 'glowplus';
+
     // Bouton Coach
     const coachBtn = document.querySelector('[data-feature="coach"]');
-    if (coachBtn) {
-      coachBtn.classList.toggle('locked', !canAccess('coach'));
-    }
+    if (coachBtn) coachBtn.classList.toggle('locked', !canAccess('coach'));
+
+    // Skin Journey — visible dans la nav uniquement pour les abonnés
+    const sjNav = document.getElementById('navSkinJourney');
+    if (sjNav) sjNav.style.display = isSubscriber ? '' : 'none';
   }
 
   // ─── Gérer le retour de Stripe Checkout ──────────────────────
@@ -295,9 +300,50 @@ const Subscription = (() => {
 
         <p class="plans-fine-print">Paiement annuel · Annulable à tout moment</p>
 
+        <!-- Skin Journey feature card -->
+        <div class="sj-feature-card" onclick="Subscription.showSkinJourneyDetail()">
+          <div class="sj-feature-icon">✨</div>
+          <div class="sj-feature-body">
+            <div class="sj-feature-tag">Inclus dans Glow · 15,99 €/an</div>
+            <h3 class="sj-feature-title">Skin Journey</h3>
+            <p class="sj-feature-desc">Suivez l'évolution de votre peau dans le temps.</p>
+          </div>
+          <span class="sj-feature-arrow">›</span>
+        </div>
+
       </div>`;
   }
 
-  return { getPlan, isPlan, canAccess, loadPlan, openCheckout, showPaywall, updateGatingUI, handleCheckoutReturn, renderPlansPage, loadFoundersData };
+  // ─── Skin Journey — modal de détail ─────────────────────────
+  function showSkinJourneyDetail() {
+    const plan = getPlan();
+    const isSubscriber = plan === 'glow' || plan === 'glowplus';
+    const cta = isSubscriber
+      ? `<button class="btn-orange-cta" onclick="showScreen('journey'); closeModal()">Ouvrir mon Skin Journey →</button>`
+      : `<button class="btn-orange-cta" onclick="Subscription.showPaywall('routine_second'); closeModal()">Débloquer Glow Up · 15,99 €/an</button>`;
+
+    const html = `
+      <button class="modal-close" onclick="closeModal()">×</button>
+      <div class="sj-modal">
+        <div class="sj-modal-icon">✨</div>
+        <div class="sj-modal-tag">Inclus dans l'abonnement Glow · 15,99 €/an</div>
+        <h2 class="sj-modal-title">Skin Journey</h2>
+        <p class="sj-modal-intro">Suivez l'évolution de votre peau au fil du temps grâce à des analyses régulières et comparez vos résultats mois après mois.</p>
+        <p class="sj-modal-desc">Skin Journey vous aide à comprendre ce qui fonctionne réellement sur votre peau et à mesurer l'impact de votre routine beauté.</p>
+        <ul class="sj-modal-list">
+          <li>✔ Historique de vos analyses photo</li>
+          <li>✔ Évolution de vos indicateurs peau</li>
+          <li>✔ Suivi des résultats de votre routine</li>
+          <li>✔ Identification des produits les plus efficaces</li>
+          <li>✔ Visualisation de vos progrès dans le temps</li>
+        </ul>
+        <p class="sj-modal-quote">Parce qu'une belle peau ne se construit pas en un jour, Skin Journey vous permet de suivre votre transformation et d'adapter votre routine en fonction de résultats concrets.</p>
+        ${cta}
+        ${!isSubscriber ? '<p class="sj-modal-note">Paiement annuel · Annulable à tout moment</p>' : ''}
+      </div>`;
+    openModal(html);
+  }
+
+  return { getPlan, isPlan, canAccess, loadPlan, openCheckout, showPaywall, updateGatingUI, handleCheckoutReturn, renderPlansPage, loadFoundersData, showSkinJourneyDetail };
 
 })();

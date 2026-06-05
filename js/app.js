@@ -621,8 +621,35 @@ function pickRoutine(type) {
   }
 }
 
+// ─── Skin Journey — accès abonnés ─────────────────────────────
+function goToSkinJourney() {
+  if (!AppState.user || AppState.user.isGuest) {
+    Auth.openRequiredAuthModal(() => goToSkinJourney());
+    return;
+  }
+  const plan = typeof Subscription !== 'undefined' ? Subscription.getPlan() : 'free';
+  if (plan !== 'glow' && plan !== 'glowplus') {
+    Subscription.showPaywall('routine_second');
+    return;
+  }
+  // Vérifier si au moins 2 analyses disponibles
+  try {
+    const data = JSON.parse(localStorage.getItem('glowup_journey_v1') || 'null');
+    const analyses = data?.analyses || [];
+    if (analyses.length < 2 && !data) {
+      // Pas encore de Journey démarré → lancer normalement
+      showScreen('journey');
+      return;
+    }
+    if (analyses.length < 2) {
+      showToast('Votre Skin Journey commencera après votre prochaine analyse.', 'info', 4000);
+      return;
+    }
+  } catch {}
+  showScreen('journey');
+}
+
 // ─── Paywall ──────────────────────────────────────────────────
-// Redirige vers le vrai système Stripe (subscription.js)
 function openPaywallModal() {
   if (typeof Subscription !== 'undefined') Subscription.showPaywall('routine_second');
 }
