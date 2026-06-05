@@ -544,12 +544,18 @@ function goToSkincare() {
 }
 
 function _proceedToSkincare() {
-  // Deuxième routine = payante si l'autre a déjà été faite
-  if (AppState.routineChoice === 'makeup') {
-    if (typeof Subscription !== 'undefined' && !Subscription.canAccess('routine_second')) {
-      Subscription.showPaywall('routine_second');
-      return;
-    }
+  const plan        = typeof Subscription !== 'undefined' ? Subscription.getPlan() : 'free';
+  const freeChoice  = AppState.user?.freeRoutineChoice;
+
+  // Choix gratuit persisté = makeup → skincare verrouillée
+  if (plan === 'free' && freeChoice === 'makeup') {
+    Subscription.showPaywall('routine_second');
+    return;
+  }
+  // Compat ancien comportement (session courante sans Firestore)
+  if (plan === 'free' && !freeChoice && AppState.routineChoice === 'makeup') {
+    Subscription.showPaywall('routine_second');
+    return;
   }
   AppState.routineChoice = 'skincare';
   Questionnaire.startSkincare();
@@ -565,12 +571,17 @@ function goToMakeup() {
 }
 
 function _proceedToMakeup() {
-  // Deuxième routine = payante si l'autre a déjà été faite
-  if (AppState.routineChoice === 'skincare') {
-    if (typeof Subscription !== 'undefined' && !Subscription.canAccess('routine_second')) {
-      Subscription.showPaywall('routine_second');
-      return;
-    }
+  const plan        = typeof Subscription !== 'undefined' ? Subscription.getPlan() : 'free';
+  const freeChoice  = AppState.user?.freeRoutineChoice;
+
+  // Choix gratuit persisté = skincare → makeup verrouillée
+  if (plan === 'free' && freeChoice === 'skincare') {
+    Subscription.showPaywall('routine_second');
+    return;
+  }
+  if (plan === 'free' && !freeChoice && AppState.routineChoice === 'skincare') {
+    Subscription.showPaywall('routine_second');
+    return;
   }
   AppState.routineChoice = 'makeup';
   Questionnaire.startMakeup();
@@ -606,14 +617,44 @@ function initRoutineChoiceScreen() {
   }
 }
 
+async function _saveFreeRoutineChoice(choice) {
+  if (!AppState.user?.uid || typeof firebase === 'undefined') return;
+  try {
+    AppState.user.freeRoutineChoice = choice;
+    const db = firebase.firestore();
+    await db.collection('users').doc(AppState.user.uid).set(
+      { subscription: { freeRoutineChoice: choice } },
+      { merge: true }
+    );
+    console.log('[RoutineChoice] Choix sauvegardé:', choice);
+  } catch (e) {
+    console.warn('[RoutineChoice] Erreur save:', e.message);
+  }
+}
+
 function pickRoutine(type) {
-  // Si l'autre routine a déjà été choisie et que l'utilisatrice n'a pas Glow → paywall
-  const isLocked = typeof Subscription !== 'undefined' ? !Subscription.isPlan('glow') : true;
+  const plan     = typeof Subscription !== 'undefined' ? Subscription.getPlan() : 'free';
+  const isLocked = !Subscription.isPlan('glow');
+  const freeChoice = AppState.user?.freeRoutineChoice;
+
+  // Choix persisté différent → paywall
+  if (plan === 'free' && freeChoice && freeChoice !== type) {
+    Subscription.showPaywall('routine_second');
+    return;
+  }
+  // Session courante — autre choix déjà fait
   if (AppState.routineChoice && AppState.routineChoice !== type && isLocked) {
     Subscription.showPaywall('routine_second');
     return;
   }
+
   AppState.routineChoice = type;
+
+  // Sauvegarder le choix gratuit dans Firestore (une seule fois)
+  if (plan === 'free' && !freeChoice && AppState.user?.uid) {
+    _saveFreeRoutineChoice(type);
+  }
+
   if (type === 'skincare') {
     Questionnaire.startSkincare();
   } else {

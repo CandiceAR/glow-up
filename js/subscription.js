@@ -36,11 +36,16 @@ const Subscription = (() => {
 
     try {
       if (!firebase.apps.length) return;
-      const db  = firebase.firestore();
-      const doc = await db.collection('users').doc(uid).get();
-      const plan = doc.data()?.subscription?.plan || 'free';
+      const db   = firebase.firestore();
+      const doc  = await db.collection('users').doc(uid).get();
+      const sub  = doc.data()?.subscription || {};
+      const plan = sub.plan || 'free';
       AppState.user.plan = plan;
-      console.log('[Subscription] Plan chargé:', plan);
+
+      // Charger le choix de routine gratuite — effacé si abonné
+      AppState.user.freeRoutineChoice = (plan === 'free') ? (sub.freeRoutineChoice || null) : null;
+
+      console.log('[Subscription] Plan chargé:', plan, '| freeRoutineChoice:', AppState.user.freeRoutineChoice);
       updateGatingUI();
     } catch (e) {
       console.warn('[Subscription] loadPlan:', e.message);
