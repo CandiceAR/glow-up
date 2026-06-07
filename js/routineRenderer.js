@@ -652,6 +652,19 @@ const RoutineRenderer = (() => {
           <li>✓ Tes préférences & contraintes personnelles</li>
           <li>✓ La seule vendeuse beauté qui te connaît déjà</li>
         </ul>
+
+        <div class="cb-ambassador">
+          <div class="cb-ambassador-head">✨ Deviens Ambassadrice Glow Up</div>
+          <p class="cb-ambassador-text">Partage Glow Up avec tes amies et débloque des récompenses beauté exclusives.</p>
+          <div class="cb-ambassador-reward">
+            <span class="cb-ambassador-gift">🎁</span>
+            <div>
+              <strong>Carte Cadeau Beauté de 15 €</strong>
+              <span>à chaque 5 filleuls validés · pour t'offrir tes futurs produits beauté</span>
+            </div>
+          </div>
+        </div>
+
         <div class="cb-price">
           <span class="cb-price-main">49,99 €</span>
           <span class="cb-price-period">/ an</span>
@@ -670,12 +683,12 @@ const RoutineRenderer = (() => {
       ['Prix',                                     '15,99 €/an', '49,99 €/an'],
       ['Routine skincare personnalisée',            '✅', '✅'],
       ['Routine make-up personnalisée',             '✅', '✅'],
+      ['Skin Journey',                              '✅', '✅'],
       ['Recommandations produits personnalisées',   '✅', '✅'],
-      ['Skin Journey · suivi de ta peau',           '✅', '✅'],
-      ['Conseils avancés et approfondis',           '❌', '✅'],
-      ['Accompagnement beauté renforcé',            '❌', '✅'],
-      ['Priorité sur les nouveautés',               '❌', '✅'],
-      ['Parrainage (bons dès 5 filleuls)',          '❌', '✅'],
+      ['Conseils avancés beauté',                   '❌', '✅'],
+      ['Accompagnement beauté intelligent',         '❌', '✅'],
+      ['Suivi prioritaire de tes objectifs',        '❌', '✅'],
+      ['✨ Programme Ambassadrice Glow Up',          '❌', '✅'],
     ];
     return `
       <div class="conversion-block conversion-block--table">

@@ -369,37 +369,50 @@ const Subscription = (() => {
       const link    = `https://glowupskin.app?ref=${code}`;
       const progress = Math.min(count % 5, 5);
       const nextMilestone = 5 - progress;
-      const bars = Array.from({length: 5}, (_, i) =>
-        `<div class="ref-bar ${i < progress ? 'ref-bar--filled' : ''}"></div>`
+      const cardsEarned = Math.floor(count / 5);
+
+      // Étoiles de progression ⭐⭐⭐☆☆
+      const stars = Array.from({length: 5}, (_, i) =>
+        i < progress ? '⭐' : '☆'
       ).join('');
 
+      const shareText = encodeURIComponent(`Je te recommande Glow Up ✨ ma routine beauté personnalisée. Rejoins-moi : ${link}`);
+
       const couponsHtml = coupons.length
-        ? `<div class="ref-coupons"><p class="ref-coupons-label">🎁 Bons d'achat disponibles</p>${coupons.map(c => `<div class="ref-coupon-code">${c}</div>`).join('')}</div>`
+        ? `<div class="ref-coupons">
+             <p class="ref-coupons-label">🎁 Tes Cartes Cadeaux Beauté</p>
+             ${coupons.map(c => `<div class="ref-coupon-code">${c} · 15 €</div>`).join('')}
+           </div>`
         : '';
 
       const html = `
         <button class="modal-close" onclick="closeModal()">×</button>
         <div class="ref-modal">
-          <div class="ref-modal-icon">🤝</div>
-          <h2 class="ref-modal-title">Mon Parrainage</h2>
-          <p class="ref-modal-sub">Partage Glow Up Coach et gagne des bons d'achat</p>
+          <div class="ref-modal-icon">🎁</div>
+          <h2 class="ref-modal-title">Programme Ambassadrice<br>Glow Up</h2>
+          <p class="ref-modal-sub">Recommande Glow Up à tes amies et offre-toi ton prochain produit beauté ✨</p>
+
+          <div class="ref-progress">
+            <div class="ref-stars">${stars}</div>
+            <div class="ref-progress-header">
+              <span class="ref-progress-count">${count} / ${(cardsEarned + 1) * 5} filleule${count > 1 ? 's' : ''} validée${count > 1 ? 's' : ''}</span>
+            </div>
+            <div class="ref-bars">${Array.from({length: 5}, (_, i) => `<div class="ref-bar ${i < progress ? 'ref-bar--filled' : ''}"></div>`).join('')}</div>
+            <p class="ref-progress-note">${nextMilestone > 0
+              ? `Plus que <strong>${nextMilestone} filleule${nextMilestone > 1 ? 's' : ''}</strong> pour débloquer ta prochaine Carte Cadeau Beauté de 15 €`
+              : '🎉 Carte Cadeau débloquée !'}</p>
+          </div>
+
+          ${cardsEarned > 0 ? `<div class="ref-earned">🎉 ${cardsEarned} Carte${cardsEarned > 1 ? 's' : ''} Cadeau Beauté gagnée${cardsEarned > 1 ? 's' : ''} · ${cardsEarned * 15} €</div>` : ''}
 
           <div class="ref-code-block">
-            <p class="ref-code-label">Ton code personnel</p>
+            <p class="ref-code-label">Ton lien Ambassadrice</p>
             <div class="ref-code">${code}</div>
             <p class="ref-link">${link}</p>
             <button class="btn-orange-cta" onclick="navigator.clipboard.writeText('${link}').then(()=>showToast('Lien copié !','success',2000))">
-              Copier mon lien de parrainage
+              Inviter mes amies
             </button>
-          </div>
-
-          <div class="ref-progress">
-            <div class="ref-progress-header">
-              <span class="ref-progress-count">${count} filleul${count > 1 ? 's' : ''} validé${count > 1 ? 's' : ''}</span>
-              <span class="ref-progress-next">${nextMilestone > 0 ? `encore ${nextMilestone} pour un bon` : '🎉 Bon débloqué !'}</span>
-            </div>
-            <div class="ref-bars">${bars}</div>
-            <p class="ref-progress-note">1 bon d'achat offert tous les 5 filleuls abonnés</p>
+            <a class="ref-share-wa" href="https://wa.me/?text=${shareText}" target="_blank" rel="noopener">Partager sur WhatsApp</a>
           </div>
 
           ${couponsHtml}

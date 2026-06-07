@@ -317,12 +317,19 @@ const Auth = (() => {
         <button class="btn btn-outline" onclick="closeModal(); startGlowUp();">Commencer mon analyse ✦</button>
       </div>`;
 
+    const isCoach = typeof Subscription !== 'undefined' && Subscription.getPlan() === 'glowplus';
+    const ambassadorHtml = isCoach ? `
+      <button class="btn-orange-cta full-width" style="margin-top:16px" onclick="closeModal(); Subscription.showReferralDashboard();">
+        🎁 Programme Ambassadrice Glow Up
+      </button>` : '';
+
     const html = `
       <button class="modal-close" onclick="closeModal()">×</button>
       <div class="auth-modal">
         <h2>Mon profil</h2>
         <p class="profile-email">${displayName || email}</p>
         ${recapHtml}
+        ${ambassadorHtml}
         <button class="btn btn-outline full-width" style="margin-top:16px" onclick="Auth.signOut(); closeModal();">
           Se déconnecter
         </button>
