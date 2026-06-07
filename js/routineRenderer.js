@@ -624,6 +624,7 @@ const RoutineRenderer = (() => {
           <li>✓ Routine skincare complète</li>
           <li>✓ Routine make-up complète</li>
           <li>✓ Recommandations produits personnalisées</li>
+          <li>✓ Skin Journey · suivi de ta peau</li>
           <li>✓ Nouveaux conseils adaptés à ton profil</li>
         </ul>
         <div class="cb-price">
@@ -670,6 +671,7 @@ const RoutineRenderer = (() => {
       ['Routine skincare personnalisée',            '✅', '✅'],
       ['Routine make-up personnalisée',             '✅', '✅'],
       ['Recommandations produits personnalisées',   '✅', '✅'],
+      ['Skin Journey · suivi de ta peau',           '✅', '✅'],
       ['Conseils avancés et approfondis',           '❌', '✅'],
       ['Accompagnement beauté renforcé',            '❌', '✅'],
       ['Priorité sur les nouveautés',               '❌', '✅'],
