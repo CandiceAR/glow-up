@@ -18,8 +18,9 @@
   --success:  #27AE60;
   --warning:  #E67E22;
   --amazon:   #FF9900;
-  --orange:   #D4852A;
-  --orange-light: rgba(212,133,42,0.12);
+  --orange:   #F0913F;
+  --orange-light: rgba(240,145,63,0.12);
+  --orange-deep: #E07A2A;
 
   --font-serif: 'Cormorant Garamond', Georgia, serif;
   --font-sans:  'DM Sans', -apple-system, sans-serif;
@@ -206,12 +207,12 @@ em { font-style: italic; color: var(--nude); }
 .btn-dark {
   background: var(--charcoal);
   color: var(--white);
-  box-shadow: 0 2px 12px rgba(212,133,42,0.15);
+  box-shadow: 0 2px 12px rgba(240,145,63,0.15);
 }
 .btn-dark:hover:not(:disabled) {
   background: #1a1917;
   transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(212,133,42,0.28);
+  box-shadow: 0 4px 20px rgba(240,145,63,0.28);
 }
 
 .btn-outline {
@@ -872,7 +873,7 @@ em { font-style: italic; color: var(--nude); }
   padding: 6px 16px;
   border-radius: 50px;
   margin-bottom: 14px;
-  box-shadow: 0 4px 16px rgba(212,133,42,0.3);
+  box-shadow: 0 4px 16px rgba(240,145,63,0.3);
   animation: fadeInDown 0.5s ease;
 }
 @keyframes fadeInDown {
@@ -1166,7 +1167,7 @@ em { font-style: italic; color: var(--nude); }
 .conversion-block--glow,
 .conversion-block--coach {
   background: linear-gradient(135deg, #fdf5ee 0%, #fff9f4 100%);
-  border: 1.5px solid rgba(212,133,42,0.3);
+  border: 1.5px solid rgba(240,145,63,0.3);
   border-top: 3px solid var(--orange);
 }
 
@@ -1189,7 +1190,7 @@ em { font-style: italic; color: var(--nude); }
   margin-bottom: 12px;
 }
 .cb-badge--coach {
-  background: linear-gradient(135deg, var(--orange), #b86e1f);
+  background: linear-gradient(135deg, var(--orange), var(--orange-deep));
 }
 
 .cb-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
@@ -1265,15 +1266,15 @@ em { font-style: italic; color: var(--nude); }
   cursor: pointer;
   text-align: center;
   transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-  box-shadow: 0 4px 16px rgba(212,133,42,0.3);
+  box-shadow: 0 4px 16px rgba(240,145,63,0.3);
 }
 .btn-orange-cta:hover {
-  background: #b86e1f;
+  background: var(--orange-deep);
   transform: translateY(-1px);
-  box-shadow: 0 6px 24px rgba(212,133,42,0.4);
+  box-shadow: 0 6px 24px rgba(240,145,63,0.4);
 }
 .btn-orange-cta--coach {
-  background: linear-gradient(135deg, var(--orange), #b86e1f);
+  background: linear-gradient(135deg, var(--orange), var(--orange-deep));
 }
 
 .cb-note {
@@ -4904,7 +4905,7 @@ em { font-style: italic; color: var(--nude); }
 
 /* ─── GLOW UP COACH ──────────────────────────────────────────── */
 .nav-link-coach { color: var(--orange); font-weight: 500; }
-.nav-link-coach:hover { color: #b86e1f; }
+.nav-link-coach:hover { color: var(--orange-deep); }
 
 .coach-container {
   height: calc(100vh - 60px);
@@ -8356,14 +8357,14 @@ em { font-style: italic; color: var(--nude); }
   margin-top: 20px;
   padding: 16px 18px;
   background: linear-gradient(135deg, #fdf5ee 0%, #fff9f4 100%);
-  border: 1px solid rgba(212,133,42,0.25);
+  border: 1px solid rgba(240,145,63,0.25);
   border-left: 3px solid var(--orange);
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: box-shadow 0.2s, transform 0.15s;
 }
 .sj-feature-card:hover {
-  box-shadow: 0 4px 16px rgba(212,133,42,0.15);
+  box-shadow: 0 4px 16px rgba(240,145,63,0.15);
   transform: translateY(-1px);
 }
 .sj-feature-icon { font-size: 1.4rem; flex-shrink: 0; }
@@ -8585,14 +8586,14 @@ em { font-style: italic; color: var(--nude); }
 .ref-bar { flex: 1; height: 8px; background: var(--sand); border-radius: 4px; transition: background 0.3s; }
 .ref-bar--filled { background: var(--orange); }
 .ref-progress-note { font-size: 0.72rem; color: var(--muted); }
-.ref-coupons { background: rgba(212,133,42,0.08); border: 1px solid rgba(212,133,42,0.3); border-radius: var(--radius-sm); padding: 14px; }
+.ref-coupons { background: rgba(240,145,63,0.08); border: 1px solid rgba(240,145,63,0.3); border-radius: var(--radius-sm); padding: 14px; }
 .ref-coupons-label { font-size: 0.82rem; font-weight: 600; color: var(--charcoal); margin: 0 0 8px; }
 .ref-coupon-code { font-family: monospace; font-size: 0.9rem; background: white; border: 1px dashed var(--orange); padding: 6px 12px; border-radius: 4px; color: var(--orange); font-weight: 700; margin-top: 4px; }
 
 /* ─── Programme Ambassadrice ────────────────────────────────── */
 .cb-ambassador {
-  background: linear-gradient(135deg, rgba(212,133,42,0.10), rgba(212,133,42,0.04));
-  border: 1px solid rgba(212,133,42,0.3);
+  background: linear-gradient(135deg, rgba(240,145,63,0.10), rgba(240,145,63,0.04));
+  border: 1px solid rgba(240,145,63,0.3);
   border-radius: var(--radius-sm);
   padding: 14px 16px;
   margin: 16px 0;
@@ -8607,7 +8608,7 @@ em { font-style: italic; color: var(--nude); }
 /* Dashboard ambassadrice — étoiles & récompenses */
 .ref-stars { font-size: 1.5rem; letter-spacing: 4px; text-align: center; margin-bottom: 10px; }
 .ref-earned {
-  background: linear-gradient(135deg, var(--orange), #b86e1f);
+  background: linear-gradient(135deg, var(--orange), var(--orange-deep));
   color: white;
   font-weight: 600;
   font-size: 0.88rem;
