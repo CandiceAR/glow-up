@@ -137,7 +137,7 @@
     },
     {
       "id": "R_SENSIBLE_PHOTO",
-      "name": "Peau très réactive (analyse photo)",
+      "name": "Peau très réactive",
       "priority": 10,
       "conditions": {
         "sensitivity": { "gte": 7 }
@@ -159,7 +159,7 @@
         "Aucun actif fort avant stabilisation de la peau (pas d'AHA, BHA, rétinol)",
         "Patch test 48h obligatoire avant chaque nouveau produit",
         "Parfums, alcool dénat et huiles essentielles = irritants fréquents",
-        "L'analyse photo montre une réactivité cutanée élevée — sois très prudente"
+        "Ta peau présente une réactivité cutanée élevée — sois très prudente"
       ],
       "makeupTips": [
         "Maquillage minéral en poudre libre = moins d'irritants",

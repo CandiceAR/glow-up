@@ -14,7 +14,7 @@ const RulesEngine = (() => {
   async function loadRules() {
     if (rules) return rules;
     try {
-      const res  = await fetch('data/rules.json?v=51');
+      const res  = await fetch('data/rules.json?v=136');
       const data = await res.json();
       rules = data.rules;
       console.log('[RulesEngine] Règles chargées:', rules.length);
