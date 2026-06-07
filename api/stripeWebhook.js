@@ -32,7 +32,11 @@ const FOUNDERS_PRICE_KEYS = new Set([
   'price_1TdmqvJeKx7T3paEytDBrEUI'
 ]);
 
-const REFERRALS_PER_COUPON = 5;
+// ─── Programme Ambassadrice ──────────────────────────────────
+const GLOW_CREDIT        = 1;   // 1€ de crédit par filleule Glow
+const COACH_CREDIT       = 3;   // 3€ de crédit par filleule Coach
+const GIFTCARD_THRESHOLD = 10;  // palier de crédit pour débloquer une carte
+const GIFTCARD_VALUE     = 10;  // valeur de la carte cadeau (€)
 
 function generateReferralCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -117,44 +121,52 @@ async function processReferral(uid, plan) {
   });
   console.log(`[Referral] Validé → filleule ${uid} parrainée par ${referrerUid}`);
 
-  // 5. Incrémenter le compteur du parrain
-  const referrerRef = db.collection('users').doc(referrerUid);
+  // 5. Calculer le crédit selon le plan du filleul
+  //    Glow = 1€ · Glow Coach = 3€
+  const creditEarned = plan === 'glowplus' ? COACH_CREDIT : GLOW_CREDIT;
+
+  const referrerRef  = db.collection('users').doc(referrerUid);
+  const beforeDoc    = await referrerRef.get();
+  const oldCredit    = beforeDoc.data()?.referral?.credit || 0;
+  const newCredit    = oldCredit + creditEarned;
+
   await referrerRef.set(
-    { referral: { count: FieldValue.increment(1) } },
+    { referral: {
+        count:  FieldValue.increment(1),
+        credit: FieldValue.increment(creditEarned)
+    } },
     { merge: true }
   );
+  console.log(`[Referral] +${creditEarned}€ crédit → ${referrerUid} (total ${newCredit}€)`);
 
-  // 6. Générer un bon d'achat tous les 5 filleuls validés
-  const referrerDoc  = await referrerRef.get();
-  const newCount     = referrerDoc.data()?.referral?.count || 0;
+  // 6. Débloquer une carte cadeau à chaque palier de 10€ franchi
+  const oldCards = Math.floor(oldCredit / GIFTCARD_THRESHOLD);
+  const newCards = Math.floor(newCredit / GIFTCARD_THRESHOLD);
+  const cardsToUnlock = newCards - oldCards;
 
-  if (newCount > 0 && newCount % REFERRALS_PER_COUPON === 0) {
-    try {
-      const milestone     = newCount;
-      const referrerEmail = referrerDoc.data()?.email
-        || referrerDoc.data()?.subscription?.email
-        || '';
-      // Enregistrer une récompense à envoyer manuellement (carte cadeau Amazon 15€)
-      await db.collection('rewards').add({
-        referrerUid,
-        referrerEmail,
-        milestone,                    // ex: 5, 10, 15...
-        amount:      15,
-        currency:    'EUR',
-        type:        'amazon_giftcard',
-        status:      'pending',       // pending → sent
-        createdAt:   new Date().toISOString(),
-        sentAt:      null
-      });
-      // Marquer côté utilisateur (pour affichage dashboard)
-      await referrerRef.set(
-        { referral: { pendingRewards: FieldValue.increment(1) } },
-        { merge: true }
-      );
-      console.log(`[Referral] 🎁 Récompense 15€ à envoyer → ${referrerUid} (${milestone} filleuls)`);
-    } catch (e) {
-      console.error('[Referral] Erreur enregistrement récompense:', e.message);
+  if (cardsToUnlock > 0) {
+    const referrerEmail = beforeDoc.data()?.email || '';
+    for (let i = 0; i < cardsToUnlock; i++) {
+      try {
+        await db.collection('rewards').add({
+          referrerUid,
+          referrerEmail,
+          amount:    GIFTCARD_VALUE,
+          currency:  'EUR',
+          type:      'amazon_giftcard',
+          status:    'pending',
+          createdAt: new Date().toISOString(),
+          sentAt:    null
+        });
+      } catch (e) {
+        console.error('[Referral] Erreur enregistrement récompense:', e.message);
+      }
     }
+    await referrerRef.set(
+      { referral: { pendingRewards: FieldValue.increment(cardsToUnlock) } },
+      { merge: true }
+    );
+    console.log(`[Referral] 🎁 ${cardsToUnlock} carte(s) ${GIFTCARD_VALUE}€ à envoyer → ${referrerUid}`);
   }
 }
 

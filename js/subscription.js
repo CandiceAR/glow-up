@@ -315,7 +315,7 @@ const Subscription = (() => {
             </ul>
             <div class="plan-coach-ambassador">
               <span class="plan-coach-ambassador-gift">🎁</span>
-              <span>Recommande Glow Up à tes amies et reçois une <strong>Carte Cadeau Beauté de 15 €</strong> tous les 5 filleuls.</span>
+              <span>Recommande Glow Up à tes amies et reçois des <strong>Cartes Cadeaux Beauté de 10 €</strong> à chaque palier atteint.</span>
             </div>
             ${coachCTA}
           </div>
@@ -384,23 +384,21 @@ const Subscription = (() => {
       const ref     = userDoc.data()?.referral || {};
       const code    = ref.code || '—';
       const count   = ref.count || 0;
+      const credit  = ref.credit || 0;
       const pendingRewards = ref.pendingRewards || 0;
       const link    = `https://glowupskin.app?ref=${code}`;
-      const progress = Math.min(count % 5, 5);
-      const nextMilestone = 5 - progress;
-      const cardsEarned = Math.floor(count / 5);
-
-      // Étoiles de progression ⭐⭐⭐☆☆
-      const stars = Array.from({length: 5}, (_, i) =>
-        i < progress ? '⭐' : '☆'
-      ).join('');
+      const THRESHOLD = 10;
+      const inCycle    = credit % THRESHOLD;            // crédit dans le palier courant
+      const remaining  = THRESHOLD - inCycle;           // € restants avant la carte
+      const cardsEarned = Math.floor(credit / THRESHOLD);
+      const progress    = Math.round((inCycle / THRESHOLD) * 100);
 
       const shareText = encodeURIComponent(`Je te recommande Glow Up ✨ ma routine beauté personnalisée. Rejoins-moi : ${link}`);
 
       const couponsHtml = pendingRewards > 0
         ? `<div class="ref-coupons">
              <p class="ref-coupons-label">🎁 Carte${pendingRewards > 1 ? 's' : ''} Cadeau en cours d'envoi</p>
-             <p style="font-size:0.82rem;color:var(--muted);margin:0;">Ta carte cadeau Amazon de 15 € arrive très bientôt par email ✨</p>
+             <p style="font-size:0.82rem;color:var(--muted);margin:0;">Ta carte cadeau Amazon de 10 € arrive très bientôt par email ✨</p>
            </div>`
         : '';
 
@@ -412,17 +410,17 @@ const Subscription = (() => {
           <p class="ref-modal-sub">Recommande Glow Up à tes amies et offre-toi ton prochain produit beauté ✨</p>
 
           <div class="ref-progress">
-            <div class="ref-stars">${stars}</div>
             <div class="ref-progress-header">
-              <span class="ref-progress-count">${count} / ${(cardsEarned + 1) * 5} filleule${count > 1 ? 's' : ''} validée${count > 1 ? 's' : ''}</span>
+              <span class="ref-progress-count">${count} amie${count > 1 ? 's' : ''} ont rejoint Glow Up</span>
             </div>
-            <div class="ref-bars">${Array.from({length: 5}, (_, i) => `<div class="ref-bar ${i < progress ? 'ref-bar--filled' : ''}"></div>`).join('')}</div>
-            <p class="ref-progress-note">${nextMilestone > 0
-              ? `Plus que <strong>${nextMilestone} filleule${nextMilestone > 1 ? 's' : ''}</strong> pour débloquer ta prochaine Carte Cadeau Beauté de 15 €`
-              : '🎉 Carte Cadeau débloquée !'}</p>
+            <div class="ref-bars-track"><div class="ref-bars-fill" style="width:${progress}%"></div></div>
+            <p class="ref-progress-note">${remaining > 0 && remaining < THRESHOLD
+              ? `Plus que <strong>${remaining} €</strong> pour débloquer ta prochaine Carte Cadeau Beauté de 10 €`
+              : `Invite tes amies pour débloquer ta Carte Cadeau Beauté de 10 €`}</p>
+            <p class="ref-progress-hint">Chaque amie Glow = +1 € · chaque amie Glow Coach = +3 €</p>
           </div>
 
-          ${cardsEarned > 0 ? `<div class="ref-earned">🎉 ${cardsEarned} Carte${cardsEarned > 1 ? 's' : ''} Cadeau Beauté gagnée${cardsEarned > 1 ? 's' : ''} · ${cardsEarned * 15} €</div>` : ''}
+          ${cardsEarned > 0 ? `<div class="ref-earned">🎉 ${cardsEarned} Carte${cardsEarned > 1 ? 's' : ''} Cadeau Beauté gagnée${cardsEarned > 1 ? 's' : ''} · ${cardsEarned * 10} €</div>` : ''}
 
           <div class="ref-code-block">
             <p class="ref-code-label">Ton lien Ambassadrice</p>

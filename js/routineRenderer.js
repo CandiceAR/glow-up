@@ -659,8 +659,8 @@ const RoutineRenderer = (() => {
           <div class="cb-ambassador-reward">
             <span class="cb-ambassador-gift">🎁</span>
             <div>
-              <strong>Carte Cadeau Beauté de 15 €</strong>
-              <span>à chaque 5 filleuls validés · pour t'offrir tes futurs produits beauté</span>
+              <strong>Carte Cadeau Beauté de 10 €</strong>
+              <span>quand tes amies rejoignent Glow Up · pour t'offrir tes futurs produits beauté</span>
             </div>
           </div>
         </div>
