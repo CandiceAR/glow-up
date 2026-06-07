@@ -8627,3 +8627,23 @@ em { font-style: italic; color: var(--nude); }
   text-decoration: none;
 }
 .ref-share-wa:hover { text-decoration: underline; }
+
+/* ─── Programme Ambassadrice dans carte plan Coach ──────────── */
+.plan-lux-feat-highlight {
+  color: var(--orange);
+  font-weight: 600;
+}
+.plan-coach-ambassador {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: linear-gradient(135deg, rgba(240,145,63,0.12), rgba(240,145,63,0.04));
+  border: 1px solid rgba(240,145,63,0.3);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin: 4px 0 16px;
+  font-size: 0.8rem;
+  color: var(--charcoal);
+  line-height: 1.45;
+}
+.plan-coach-ambassador-gift { font-size: 1.3rem; flex-shrink: 0; }

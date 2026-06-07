@@ -239,7 +239,7 @@ const Subscription = (() => {
       <div class="founders-strip">
         <span class="founders-strip-tag">✦ Offre Fondatrices</span>
         <span class="founders-strip-text">
-          Réservée aux 50 premières membres
+          Réservée aux 100 premières membres
           ${spots !== null ? `· <strong>${spots} place${spots !== 1 ? 's' : ''} restante${spots !== 1 ? 's' : ''}</strong>` : ''}
           · Jusqu'au 30 juin
         </span>
@@ -311,7 +311,12 @@ const Subscription = (() => {
               <li>Suivi beauté & résumés de séances</li>
               <li>Profil enrichi & mémoire long terme</li>
               <li>Accès prioritaire aux nouveautés</li>
+              <li class="plan-lux-feat-highlight">✨ Programme Ambassadrice Glow Up</li>
             </ul>
+            <div class="plan-coach-ambassador">
+              <span class="plan-coach-ambassador-gift">🎁</span>
+              <span>Recommande Glow Up à tes amies et reçois une <strong>Carte Cadeau Beauté de 15 €</strong> tous les 5 filleuls.</span>
+            </div>
             ${coachCTA}
           </div>
 
