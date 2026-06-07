@@ -73,6 +73,16 @@ const Auth = (() => {
             setTimeout(() => showToast(`Bonjour ${prenom} ✦`, 'success', 3000), 600);
           }
 
+          // Sauvegarder email + nom dans le doc Firestore (pour le webhook récompenses)
+          if (typeof firebase !== 'undefined' && firebase.apps.length) {
+            try {
+              firebase.firestore().collection('users').doc(user.uid).set(
+                { email: user.email || '', displayName: user.displayName || '' },
+                { merge: true }
+              );
+            } catch {}
+          }
+
           // Charger le plan d'abonnement
           if (typeof Subscription !== 'undefined') Subscription.loadPlan(user.uid);
 

@@ -384,7 +384,7 @@ const Subscription = (() => {
       const ref     = userDoc.data()?.referral || {};
       const code    = ref.code || '—';
       const count   = ref.count || 0;
-      const coupons = ref.coupons || [];
+      const pendingRewards = ref.pendingRewards || 0;
       const link    = `https://glowupskin.app?ref=${code}`;
       const progress = Math.min(count % 5, 5);
       const nextMilestone = 5 - progress;
@@ -397,10 +397,10 @@ const Subscription = (() => {
 
       const shareText = encodeURIComponent(`Je te recommande Glow Up ✨ ma routine beauté personnalisée. Rejoins-moi : ${link}`);
 
-      const couponsHtml = coupons.length
+      const couponsHtml = pendingRewards > 0
         ? `<div class="ref-coupons">
-             <p class="ref-coupons-label">🎁 Tes Cartes Cadeaux Beauté</p>
-             ${coupons.map(c => `<div class="ref-coupon-code">${c} · 15 €</div>`).join('')}
+             <p class="ref-coupons-label">🎁 Carte${pendingRewards > 1 ? 's' : ''} Cadeau en cours d'envoi</p>
+             <p style="font-size:0.82rem;color:var(--muted);margin:0;">Ta carte cadeau Amazon de 15 € arrive très bientôt par email ✨</p>
            </div>`
         : '';
 

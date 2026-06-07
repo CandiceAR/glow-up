@@ -130,20 +130,30 @@ async function processReferral(uid, plan) {
 
   if (newCount > 0 && newCount % REFERRALS_PER_COUPON === 0) {
     try {
-      const coupon = await stripe.coupons.create({
-        percent_off:      100,
-        duration:         'once',
-        name:             `Parrainage Glow Up (${newCount} filleuls)`,
-        max_redemptions:  1,
-        metadata:         { referrerUid, milestone: String(newCount) }
+      const milestone     = newCount;
+      const referrerEmail = referrerDoc.data()?.email
+        || referrerDoc.data()?.subscription?.email
+        || '';
+      // Enregistrer une récompense à envoyer manuellement (carte cadeau Amazon 15€)
+      await db.collection('rewards').add({
+        referrerUid,
+        referrerEmail,
+        milestone,                    // ex: 5, 10, 15...
+        amount:      15,
+        currency:    'EUR',
+        type:        'amazon_giftcard',
+        status:      'pending',       // pending → sent
+        createdAt:   new Date().toISOString(),
+        sentAt:      null
       });
+      // Marquer côté utilisateur (pour affichage dashboard)
       await referrerRef.set(
-        { referral: { coupons: FieldValue.arrayUnion(coupon.id) } },
+        { referral: { pendingRewards: FieldValue.increment(1) } },
         { merge: true }
       );
-      console.log(`[Referral] 🎉 Bon d'achat généré pour ${referrerUid}: ${coupon.id}`);
+      console.log(`[Referral] 🎁 Récompense 15€ à envoyer → ${referrerUid} (${milestone} filleuls)`);
     } catch (e) {
-      console.error('[Referral] Erreur création coupon:', e.message);
+      console.error('[Referral] Erreur enregistrement récompense:', e.message);
     }
   }
 }

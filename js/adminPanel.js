@@ -906,7 +906,7 @@ const Admin = (() => {
     });
     if (tab === 'analytics')  renderAnalytics();
     if (tab === 'coach')      renderCoachKeyStatus();
-    if (tab === 'referrals')  loadReferrals();
+    if (tab === 'referrals')  { loadRewards(); loadReferrals(); }
     if (tab === 'catalogue') renderCatalogueTab();
   }
 
@@ -1394,8 +1394,69 @@ const Admin = (() => {
     saveCoachKey, deleteCoachKey, testCoachKey,
     previewImage, onImageUrlChange,
     openImagePicker, closeImagePicker, selectImage, renderImagePicker,
-    uploadImageFile
+    uploadImageFile,
+    loadRewards, markRewardSent
   };
+
+  // ─── Récompenses (cartes cadeaux à envoyer) ──────────────────
+  async function loadRewards() {
+    const el = document.getElementById('rewardsTable');
+    if (!el) return;
+    el.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;">Chargement…</p>';
+    try {
+      const db   = firebase.firestore();
+      const snap = await db.collection('rewards').orderBy('createdAt', 'desc').limit(200).get();
+      const rows = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const pending = rows.filter(r => r.status === 'pending');
+
+      if (!rows.length) {
+        el.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;">Aucune carte cadeau à envoyer pour le moment.</p>';
+        return;
+      }
+
+      el.innerHTML = `
+        <p style="font-size:0.82rem;color:var(--muted);margin-bottom:10px;">
+          <strong style="color:#e07a2a;">${pending.length}</strong> carte(s) à envoyer · ${rows.length} au total
+        </p>
+        <table class="products-table">
+          <thead><tr>
+            <th>Date</th><th>Email à créditer</th><th>Montant</th><th>Palier</th><th>Statut</th><th>Action</th>
+          </tr></thead>
+          <tbody>
+            ${rows.map(r => `
+              <tr>
+                <td style="font-size:0.78rem;color:var(--muted)">${(r.createdAt||'').slice(0,10)}</td>
+                <td style="font-size:0.82rem;font-weight:600">${r.referrerEmail || '⚠️ email manquant'}</td>
+                <td style="font-size:0.82rem">${r.amount || 15} €</td>
+                <td style="font-size:0.78rem;color:var(--muted)">${r.milestone || '—'} filleuls</td>
+                <td><span style="font-size:0.75rem;font-weight:600;color:${r.status === 'sent' ? '#27ae60' : '#e07a2a'}">
+                  ${r.status === 'sent' ? '✅ Envoyée' : '⏳ À envoyer'}
+                </span></td>
+                <td>${r.status === 'pending'
+                  ? `<button class="btn btn-outline" style="font-size:0.72rem;padding:4px 10px;" onclick="Admin.markRewardSent('${r.id}')">Marquer envoyée</button>`
+                  : `<span style="font-size:0.72rem;color:var(--muted)">${(r.sentAt||'').slice(0,10)}</span>`}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>`;
+    } catch (e) {
+      el.innerHTML = `<p style="color:var(--error);font-size:0.85rem;">Erreur: ${e.message}</p>`;
+    }
+  }
+
+  async function markRewardSent(rewardId) {
+    if (!confirm('Confirmer que la carte cadeau a bien été envoyée par email ?')) return;
+    try {
+      const db = firebase.firestore();
+      await db.collection('rewards').doc(rewardId).update({
+        status: 'sent',
+        sentAt: new Date().toISOString()
+      });
+      toast('Carte marquée comme envoyée ✓');
+      loadRewards();
+    } catch (e) {
+      toast('Erreur: ' + e.message, 'error');
+    }
+  }
 
   // ─── Parrainage ───────────────────────────────────────────────
   async function loadReferrals() {
