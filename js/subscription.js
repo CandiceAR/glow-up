@@ -31,6 +31,7 @@ const Subscription = (() => {
       AppState.user.plan = 'glowplus';
       console.log('[Subscription] Admin override → glowplus');
       updateGatingUI();
+      _refreshCurrentScreen();
       return;
     }
 
@@ -47,6 +48,7 @@ const Subscription = (() => {
 
       console.log('[Subscription] Plan chargé:', plan, '| freeRoutineChoice:', AppState.user.freeRoutineChoice);
       updateGatingUI();
+      _refreshCurrentScreen();
     } catch (e) {
       console.warn('[Subscription] loadPlan:', e.message);
     }
@@ -175,6 +177,18 @@ const Subscription = (() => {
         <button class="btn-ghost paywall-lux-skip" onclick="closeModal()">Continuer avec Free →</button>
       </div>`;
     openModal(html);
+  }
+
+  // ─── Re-render l'écran courant après chargement du plan ──────
+  // Évite que la page résultats/makeup affiche des offres si le plan
+  // arrive après le premier rendu (timing async)
+  function _refreshCurrentScreen() {
+    const screen = AppState?.screen;
+    if (screen === 'results' && typeof RoutineRenderer !== 'undefined') {
+      RoutineRenderer.renderResults();
+    } else if (screen === 'makeup' && typeof MakeupRoutine !== 'undefined') {
+      MakeupRoutine.initScreen();
+    }
   }
 
   // ─── Gating UI (verrouiller visuellement les éléments) ────────
