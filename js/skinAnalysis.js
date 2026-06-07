@@ -2074,6 +2074,83 @@ const SkinAnalysis = (() => {
     return 'ok';
   }
 
+  // ─── Personnalisation analyse : baseline visage + scoring relatif ──
+  // Réglages faciles à ajuster après tests
+  const INSIGHT_TUNING = {
+    W_ABS:       0.6,   // poids sévérité absolue
+    W_REL:       0.4,   // poids écart relatif au visage
+    REL_SCALE:   2.0,   // amplification de l'écart relatif
+    THRESHOLD:   50,    // sévérité finale minimale pour afficher un signal
+    MIN:         2,     // nb min d'observations
+    MAX:         3,     // nb max d'observations
+    REDUNDANCY:  8,     // écart sous lequel 2 signaux même zone = doublon
+  };
+
+  // Moyennes des 5 métriques sur toutes les zones de CE visage
+  function _computeFaceBaseline(zones) {
+    const list = Object.values(zones || {});
+    if (!list.length) return null;
+    const mean = (sel) => list.reduce((s, z) => s + (sel(z) || 0), 0) / list.length;
+    return {
+      redness: mean(z => z.redness),
+      pores:   mean(z => z.pores),
+      eclat:   mean(z => z.eclat),
+      texture: mean(z => z.texture),
+      taches:  mean(z => z.taches),
+    };
+  }
+
+  // Sévérité d'un signal pour une zone = absolu pondéré + écart relatif au visage
+  // Retourne 0-100 (plus haut = plus marqué pour CETTE personne)
+  // v = abs + W_REL × (écart relatif amplifié)
+  function _signalSeverity(absSeverity, relDeviation) {
+    const rel = clamp(relDeviation * INSIGHT_TUNING.REL_SCALE, -100, 100);
+    const v = (INSIGHT_TUNING.W_ABS + INSIGHT_TUNING.W_REL) * absSeverity
+            + INSIGHT_TUNING.W_REL * rel;
+    return Math.round(clamp(v, 0, 100));
+  }
+
+  // Score TOUS les signaux d'une zone (pas de cascade) → tableau {key, severity}
+  function _scoreZoneSignals(z, baseline) {
+    const out = [];
+    // direction : redness haut=pire ; pores/eclat/texture/taches bas=pire
+    const defs = [
+      { key: 'redness', abs: z.redness,        rel: z.redness - baseline.redness },
+      { key: 'sebum',   abs: 100 - z.pores,    rel: baseline.pores   - z.pores   },
+      { key: 'taches',  abs: 100 - z.taches,   rel: baseline.taches  - z.taches  },
+      { key: 'terne',   abs: 100 - z.eclat,    rel: baseline.eclat   - z.eclat   },
+      { key: 'texture', abs: 100 - z.texture,  rel: baseline.texture - z.texture },
+    ];
+    for (const d of defs) {
+      out.push({ key: d.key, severity: _signalSeverity(d.abs, d.rel) });
+    }
+    return out;
+  }
+
+  // Point positif : zone la plus stable/lumineuse → message bienveillant
+  function _buildPositiveNote(zones, baseline) {
+    if (!baseline) return null;
+    // Choisir le meilleur axe : éclat élevé OU texture homogène OU peu de rougeur
+    const candidates = [
+      { test: baseline.eclat   >= 60, key: 'positive', pillLabel: 'Éclat',
+        sentence: 'Ton teint paraît globalement lumineux et équilibré — la peau reflète bien la lumière.',
+        advice:   'Continue ta routine actuelle : elle préserve bien l\'éclat naturel de ta peau.' },
+      { test: baseline.texture >= 60, key: 'positive', pillLabel: 'Grain de peau',
+        sentence: 'Ta texture de peau paraît plutôt homogène — le grain est régulier et lisse.',
+        advice:   'Un soin hydratant doux suffit à entretenir cette belle régularité.' },
+      { test: baseline.redness <= 35, key: 'positive', pillLabel: 'Confort',
+        sentence: 'Ta peau paraît calme et confortable — peu de rougeurs ou de réactivité visibles.',
+        advice:   'Garde des formules douces pour préserver cet équilibre.' },
+    ];
+    const chosen = candidates.find(c => c.test);
+    return chosen ? {
+      key: 'positive', severity: 0, zones: [], rank: 99,
+      zoneKey: null, zoneLabel: '', zoneSummary: '',
+      pillLabel: chosen.pillLabel, sentence: chosen.sentence, advice: chosen.advice,
+      positive: true,
+    } : null;
+  }
+
   // Generate precise, location-aware phrases for each insight type (template fallback)
   function _generateInsightText(key, result, g) {
     const st    = result.skinType?.type  || 'normale';
@@ -2191,57 +2268,85 @@ const SkinAnalysis = (() => {
   function getTopInsights(result) {
     if (!result?.zones) return [];
 
+    const baseline = _computeFaceBaseline(result.zones);
+    if (!baseline) return [];
+
+    // 1. Scorer TOUS les signaux de TOUTES les zones (pas de cascade)
     const groups = {};
     for (const [zoneKey, z] of Object.entries(result.zones)) {
-      const key = _zoneOverlayKey(z);
-      if (key === 'ok') continue;
-      let severity;
-      if      (key === 'redness') severity = z.redness;
-      else if (key === 'sebum')   severity = 100 - z.pores;
-      else if (key === 'taches')  severity = 100 - z.taches;
-      else if (key === 'terne')   severity = 100 - z.eclat;
-      else if (key === 'texture') severity = 100 - z.texture;
-      else severity = 50;
-      if (!groups[key]) groups[key] = { key, zones: [], severity: 0 };
-      groups[key].zones.push({ zoneKey, severity });
-      groups[key].severity = Math.max(groups[key].severity, severity);
+      const signals = _scoreZoneSignals(z, baseline);
+      for (const { key, severity } of signals) {
+        if (severity < INSIGHT_TUNING.THRESHOLD) continue; // pertinence
+        if (!groups[key]) groups[key] = { key, zones: [], severity: 0 };
+        groups[key].zones.push({ zoneKey, severity });
+        groups[key].severity = Math.max(groups[key].severity, severity);
+      }
     }
+    // Trier les zones de chaque groupe par sévérité décroissante
+    for (const g of Object.values(groups)) {
+      g.zones.sort((a, b) => b.severity - a.severity);
+    }
+
+    // 2. Cernes (signal indépendant des zones cutanées)
     if (result.cernes?.detected) {
       const cerSev = result.cernes.intensity === 'marqués' ? 72 : 58;
       groups.cernes = { key: 'cernes', zones: [{ zoneKey: 'eyes', severity: cerSev }], severity: cerSev };
     }
 
-    return Object.values(groups)
-      .sort((a, b) => b.severity - a.severity)
-      .slice(0, 3)
-      .map((g, rank) => {
-        const primaryZone = g.zones[0]?.zoneKey;
-        const bothCheeks  = g.zones.length >= 2
-          && g.zones.every(z => z.zoneKey === 'leftCheek' || z.zoneKey === 'rightCheek');
-        const FIXED_SUMMARY = { sebum: 'Zone T', cernes: 'Yeux', terne: 'Joues & front' };
-        const zoneSummary   = FIXED_SUMMARY[g.key]
-          || (bothCheeks ? 'Joues' : (ZONE_REGIONS[primaryZone]?.label || ''));
+    // 3. Trier par sévérité finale décroissante
+    let ranked = Object.values(groups).sort((a, b) => b.severity - a.severity);
 
-        const { pillLabel, sentence, advice } = _generateInsightText(g.key, result, g);
+    // 4. Anti-doublon : 2 signaux sur la même zone unique + sévérités proches → garder le + fort
+    const kept = [];
+    for (const g of ranked) {
+      const gZone = g.zones[0]?.zoneKey;
+      const dup = kept.find(k =>
+        k.zones[0]?.zoneKey === gZone &&
+        Math.abs(k.severity - g.severity) <= INSIGHT_TUNING.REDUNDANCY
+      );
+      if (!dup) kept.push(g);
+    }
 
-        return {
-          ...g,
-          rank,
-          zoneKey:   primaryZone,
-          zoneLabel: ZONE_REGIONS[primaryZone]?.label || '',
-          zoneSummary,
-          pillLabel,
-          sentence,
-          advice,
-        };
-      });
+    // 5. Garder entre MIN et MAX observations
+    let selected = kept.slice(0, INSIGHT_TUNING.MAX);
+
+    const mapped = selected.map((g, rank) => {
+      const primaryZone = g.zones[0]?.zoneKey;
+      const bothCheeks  = g.zones.length >= 2
+        && g.zones.every(z => z.zoneKey === 'leftCheek' || z.zoneKey === 'rightCheek');
+      const FIXED_SUMMARY = { sebum: 'Zone T', cernes: 'Yeux', terne: 'Joues & front' };
+      const zoneSummary   = FIXED_SUMMARY[g.key]
+        || (bothCheeks ? 'Joues' : (ZONE_REGIONS[primaryZone]?.label || ''));
+
+      const { pillLabel, sentence, advice } = _generateInsightText(g.key, result, g);
+
+      return {
+        ...g,
+        rank,
+        zoneKey:   primaryZone,
+        zoneLabel: ZONE_REGIONS[primaryZone]?.label || '',
+        zoneSummary,
+        pillLabel,
+        sentence,
+        advice,
+      };
+    });
+
+    // 6. Garde-fou bienveillant : si < MIN observations, ajouter un point positif
+    if (mapped.length < INSIGHT_TUNING.MIN) {
+      const positive = _buildPositiveNote(result.zones, baseline);
+      if (positive) { positive.rank = mapped.length; mapped.push(positive); }
+    }
+
+    return mapped;
   }
 
   function renderFaceOverlay(target, photo, landmarks, result) {
     if (!photo || !landmarks?.length || !result?.zones) return;
 
     const NS = 'http://www.w3.org/2000/svg';
-    const insights = getTopInsights(result).slice(0, 3);
+    // Exclure le point positif de l'overlay (pas de zone "problème" à dessiner)
+    const insights = getTopInsights(result).filter(i => !i.positive && i.key !== 'positive').slice(0, 3);
     if (!insights.length) return;
 
     // Heatmap palette — issue-specific beauty colors

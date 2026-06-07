@@ -625,7 +625,7 @@ const Questionnaire = (() => {
     }
 
     const INSIGHT_EMOJI = {
-      redness: '🌿', sebum: '✨', taches: '☀️', terne: '💫', texture: '🫧', cernes: '🌙'
+      redness: '🌿', sebum: '✨', taches: '☀️', terne: '💫', texture: '🫧', cernes: '🌙', positive: '🌸'
     };
 
     const insights = (typeof SkinAnalysis !== 'undefined' && SkinAnalysis.getTopInsights)
