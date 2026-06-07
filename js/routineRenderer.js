@@ -623,7 +623,6 @@ const RoutineRenderer = (() => {
         <ul class="cb-list">
           <li>✓ Routine skincare complète</li>
           <li>✓ Routine make-up complète</li>
-          <li>✓ Analyses photo IA</li>
           <li>✓ Recommandations produits personnalisées</li>
           <li>✓ Nouveaux conseils adaptés à ton profil</li>
         </ul>
@@ -670,7 +669,6 @@ const RoutineRenderer = (() => {
       ['Prix',                                     '15,99 €/an', '49,99 €/an'],
       ['Routine skincare personnalisée',            '✅', '✅'],
       ['Routine make-up personnalisée',             '✅', '✅'],
-      ['Analyses photo IA',                         '✅', '✅'],
       ['Recommandations produits personnalisées',   '✅', '✅'],
       ['Conseils avancés et approfondis',           '❌', '✅'],
       ['Accompagnement beauté renforcé',            '❌', '✅'],
