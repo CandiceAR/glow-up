@@ -790,22 +790,28 @@ const Questionnaire = (() => {
       AppState.face.photo       = e.target.result;
       AppState.face.skinAnalysis = null;
 
-      if (mode === 'skincare') {
-        // Analyse en arrière-plan — pas d'écran intermédiaire makeup
-        _showPhotoAnalyzing();
-        try {
-          if (typeof SkinAnalysis !== 'undefined') {
-            const result = await SkinAnalysis.analyzeFromPhoto(e.target.result);
-            if (result) AppState.face.skinAnalysis = result;
-          }
-        } catch {}
-        // Afficher d'abord l'analyse (avec sympathie), puis continuer le questionnaire
-        _prefillFromPhoto();
-        _showPhotoResult();
+      // Analyse en arrière-plan (skincare ET makeup) — pas d'écran intermédiaire lourd
+      _showPhotoAnalyzing();
+      try {
+        if (typeof SkinAnalysis !== 'undefined') {
+          const result = await SkinAnalysis.analyzeFromPhoto(e.target.result);
+          if (result) AppState.face.skinAnalysis = result;
+        }
+      } catch {}
+
+      if (mode === 'makeup') {
+        // Pré-remplir carnation / sous-ton du quiz makeup depuis la photo
+        const an = AppState.face.skinAnalysis;
+        AppState.makeupQuiz = AppState.makeupQuiz || {};
+        AppState.makeupQuiz.mkCarnation = CARN_PHOTO_MAP[an?.carnation?.type] || AppState.makeupQuiz.mkCarnation || null;
+        AppState.makeupQuiz.mkUndertone = an?.undertone?.type || AppState.makeupQuiz.mkUndertone || null;
+        makeupIndex = 0; // rester sur l'étape photo pour afficher l'analyse
       } else {
-        sessionStorage.setItem('glow_from_questionnaire', '1');
-        showScreen('skin-analysis');
+        _prefillFromPhoto();
       }
+
+      // Afficher d'abord l'analyse (avec sympathie), puis continuer le questionnaire
+      _showPhotoResult();
     };
     reader.readAsDataURL(file);
   }
