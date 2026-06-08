@@ -631,6 +631,17 @@ const Questionnaire = (() => {
     const insights = (typeof SkinAnalysis !== 'undefined' && SkinAnalysis.getTopInsights)
       ? SkinAnalysis.getTopInsights(photo) : [];
 
+    // Portrait beauté — valoriser d'abord (comme une conseillère qui complimente)
+    const portrait = (typeof SkinAnalysis !== 'undefined' && SkinAnalysis.buildBeautyPortrait)
+      ? SkinAnalysis.buildBeautyPortrait(photo) : [];
+    const portraitHtml = portrait.length ? `
+      <div class="q-portrait">
+        <div class="q-portrait-title">✦ Tes atouts</div>
+        <ul class="q-portrait-list">
+          ${portrait.map(l => `<li>${l}</li>`).join('')}
+        </ul>
+      </div>` : '';
+
     const insightsHtml = insights.length ? `
       <div class="q-insights">
         <div class="q-insights-title">Ce que Glow Up a détecté</div>
@@ -665,6 +676,7 @@ const Questionnaire = (() => {
         <span class="q-skin-score-denom">/100</span>
         <span class="q-skin-score-mood">${scoreMood}</span>
       </div>` : ''}
+      ${portraitHtml}
       ${insightsHtml}
       ${chipsHtml}
       <div class="q-photo-buttons" style="margin-top:16px;">

@@ -2265,6 +2265,163 @@ const SkinAnalysis = (() => {
     return { pillLabel: d.pillLabel, sentence: d.sentence(), advice: d.advice() };
   }
 
+  // ══════════════════════════════════════════════════════════════
+  // PORTRAIT BEAUTÉ — bibliothèque d'observations valorisantes
+  // Sélection combinatoire → 2 visages = 2 portraits différents
+  // ══════════════════════════════════════════════════════════════
+
+  const PORTRAIT_LIB = {
+    carnation: {
+      clair: [
+        'Ta carnation claire capte délicatement la lumière.',
+        'Ton teint clair a une jolie luminosité naturelle.',
+        'Ta peau claire offre un fini lumineux très frais.',
+        'Les nuances de ta peau claire apportent beaucoup de fraîcheur.',
+        'Ta carnation claire dégage une vraie délicatesse.',
+        'Ton teint clair laisse une belle place aux teintes douces.',
+        'Ta peau claire a une jolie transparence naturelle.',
+        'Ton teint clair reflète joliment la lumière.',
+      ],
+      medium: [
+        'Ta carnation medium a une belle chaleur naturelle.',
+        'Ton teint medium dégage beaucoup d\'éclat.',
+        'Ta peau medium a une jolie profondeur lumineuse.',
+        'Ta carnation medium t\'offre une belle polyvalence de couleurs.',
+        'Ton teint medium capte magnifiquement la lumière.',
+        'Ta peau medium a une chaleur très flatteuse.',
+        'Ton teint medium a un joli fini doré.',
+        'Ta carnation medium apporte beaucoup d\'harmonie au visage.',
+      ],
+      fonce: [
+        'Ta carnation foncée a une superbe profondeur.',
+        'Ton teint foncé dégage beaucoup d\'intensité lumineuse.',
+        'Ta peau foncée a un éclat naturel magnifique.',
+        'Ta carnation foncée sublime les teintes riches et chaudes.',
+        'Ton teint foncé a une belle luminosité naturelle.',
+        'Ta peau foncée offre une intensité très élégante.',
+        'Ta carnation foncée capte la lumière avec beaucoup d\'éclat.',
+        'Ton teint foncé dégage force et harmonie.',
+      ],
+    },
+    undertone: {
+      warm: [
+        'Ton sous-ton chaud illumine naturellement ton visage.',
+        'Les reflets dorés de ta peau apportent beaucoup de chaleur.',
+        'Ton sous-ton doré réchauffe joliment le teint.',
+        'Les nuances pêchées de ta peau ressortent harmonieusement.',
+        'Ton sous-ton chaud sublime les teintes corail, pêche et or.',
+        'La chaleur de ton teint apporte un bel éclat.',
+      ],
+      cool: [
+        'Ton sous-ton froid apporte beaucoup d\'élégance au visage.',
+        'Les reflets rosés de ta peau sont très lumineux.',
+        'Ton sous-ton frais sublime les teintes rosées et prunées.',
+        'Les nuances délicates de ta peau apportent de la fraîcheur.',
+        'Ton sous-ton froid donne un joli éclat lumineux au teint.',
+      ],
+      neutral: [
+        'Ton sous-ton neutre t\'offre une grande polyvalence en maquillage.',
+        'Ton teint équilibré te permet de porter presque toutes les teintes.',
+        'Ton sous-ton neutre apporte beaucoup d\'harmonie au visage.',
+        'Ta peau équilibrée s\'accorde avec une large palette de couleurs.',
+        'Ton sous-ton neutre est un vrai atout polyvalence.',
+      ],
+    },
+    faceShape: {
+      oval: [
+        'Les proportions de ton visage sont particulièrement harmonieuses.',
+        'Ton visage s\'adapte facilement à tous les styles de maquillage.',
+        'Tes traits sont naturellement équilibrés.',
+      ],
+      round: [
+        'Ton visage dégage beaucoup de douceur.',
+        'Tes traits apportent de la jeunesse et de la fraîcheur.',
+        'Ton visage a une jolie douceur naturelle.',
+      ],
+      square: [
+        'Les contours de ton visage apportent beaucoup de caractère.',
+        'Tes traits sont bien définis et structurés.',
+        'Ton visage dégage de l\'élégance et du caractère.',
+      ],
+      heart: [
+        'Le haut de ton visage met naturellement ton regard en valeur.',
+        'Tes proportions attirent joliment l\'attention vers les yeux.',
+        'Ton visage en cœur a beaucoup de charme.',
+      ],
+      long: [
+        'Les lignes de ton visage apportent beaucoup d\'élégance.',
+        'Tes traits paraissent naturellement raffinés.',
+        'Ton visage dégage de la finesse.',
+      ],
+    },
+    regard: [
+      'Ton regard attire naturellement l\'attention.',
+      'Tes yeux dégagent beaucoup d\'expression.',
+      'Ton regard a une jolie douceur naturelle.',
+      'Ton regard paraît frais et lumineux.',
+      'Tes yeux sont naturellement bien mis en valeur.',
+      'Ton regard dégage beaucoup d\'harmonie.',
+    ],
+    teint: [
+      'Ton teint reflète joliment la lumière.',
+      'Ta peau a un bel éclat naturel.',
+      'Ton teint paraît frais et lumineux.',
+      'Ta peau capte joliment la lumière.',
+      'Ton teint dégage une belle vitalité.',
+    ],
+    texture: [
+      'Ton grain de peau est joliment régulier.',
+      'Ta peau paraît lisse et homogène.',
+      'Ton grain de peau est doux et uniforme.',
+    ],
+    pointsForts: [
+      'Tu as déjà une belle base de peau.',
+      'L\'ensemble de ton visage paraît harmonieux.',
+      'Ta peau semble bien entretenue.',
+      'Le potentiel beauté de ton visage est déjà très présent.',
+      'Ton visage dégage beaucoup de douceur.',
+    ],
+  };
+
+  function _pick(arr) {
+    return arr && arr.length ? arr[Math.floor(Math.random() * arr.length)] : null;
+  }
+
+  // Construit 3 lignes valorisantes variées selon le vrai visage
+  function buildBeautyPortrait(result) {
+    if (!result) return [];
+    const ca = result.carnation?.type || 'medium';
+    const ut = result.undertone?.type || 'neutral';
+    const fs = result.faceShape?.shape || 'oval';
+    const zones = result.zones || {};
+    const vals = Object.values(zones);
+    const avgEclat   = vals.length ? avg(vals.map(z => z.eclat))   : 50;
+    const avgTexture = vals.length ? avg(vals.map(z => z.texture)) : 50;
+    const cernesMarques = result.cernes?.detected && result.cernes?.intensity === 'marqués';
+
+    const lines = [];
+
+    // 1. Teint : alterne carnation / sous-ton (hasard) → varie d'une personne à l'autre
+    const toneSource = Math.random() < 0.5
+      ? (PORTRAIT_LIB.carnation[ca] || PORTRAIT_LIB.carnation.medium)
+      : (PORTRAIT_LIB.undertone[ut] || PORTRAIT_LIB.undertone.neutral);
+    lines.push(_pick(toneSource));
+
+    // 2. Forme du visage
+    lines.push(_pick(PORTRAIT_LIB.faceShape[fs] || PORTRAIT_LIB.faceShape.oval));
+
+    // 3. Un atout réel : regard (si pas de cernes marqués) / éclat / grain / sinon point fort
+    const strengthPools = [];
+    if (!cernesMarques)      strengthPools.push(PORTRAIT_LIB.regard);
+    if (avgEclat   >= 58)    strengthPools.push(PORTRAIT_LIB.teint);
+    if (avgTexture >= 60)    strengthPools.push(PORTRAIT_LIB.texture);
+    strengthPools.push(PORTRAIT_LIB.pointsForts); // toujours un filet de sécurité
+    lines.push(_pick(strengthPools[Math.floor(Math.random() * strengthPools.length)]));
+
+    // Dédoublonner et nettoyer
+    return [...new Set(lines.filter(Boolean))];
+  }
+
   function getTopInsights(result) {
     if (!result?.zones) return [];
 
@@ -3176,7 +3333,7 @@ const SkinAnalysis = (() => {
 
   // ─── API publique ─────────────────────────────────────────────
 
-  return { initScreen, startLiveAnalysis, stopLiveAnalysis, analyzeFromPhoto, renderFaceOverlay, getTopInsights, buildPrecisionContext };
+  return { initScreen, startLiveAnalysis, stopLiveAnalysis, analyzeFromPhoto, renderFaceOverlay, getTopInsights, buildPrecisionContext, buildBeautyPortrait };
 
 })();
 
