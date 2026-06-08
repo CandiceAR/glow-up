@@ -468,23 +468,17 @@ const RoutineRenderer = (() => {
         stepNote = stepNote.replace(/^[,·\s]+|[,·\s]+$/g, '').trim();
       }
 
+      const tip = applyTip || stepNote || '';
       blocks.push(`
-        <div class="routine-step-block">
-          <div class="routine-step">
-            <div class="step-number">${stepIndex}</div>
-            <div class="step-icon">${STEP_ICONS[step.step] || STEP_ICONS.default}</div>
-            <div class="step-info">
-              <div class="step-label">${step.label}</div>
-              ${stepNote ? `<div class="step-note">${stepNote}</div>` : ''}
+        <div class="cg-step">
+          <div class="cg-step-meta">
+            <span class="cg-step-num">${String(stepIndex).padStart(2, '0')}</span>
+            <div class="cg-step-info">
+              <h2 class="cg-step-title">${step.label}</h2>
+              ${tip ? `<p class="cg-step-tip">${tip}</p>` : ''}
             </div>
-            <div class="step-type">${formatStepType(step.step)}</div>
           </div>
-          ${renderStepProduct(product)}
-          ${applyTip ? `
-          <details class="step-tip-details">
-            <summary class="step-tip-toggle">💡 Comment appliquer</summary>
-            <div class="step-apply-tip">${applyTip}</div>
-          </details>` : ''}
+          ${product ? `<div class="cg-step-card">${_renderPremiumProductCard(product)}</div>` : ''}
         </div>`);
 
       // Injecter les patchs yeux juste après l'étape contour des yeux
@@ -493,21 +487,15 @@ const RoutineRenderer = (() => {
         stepIndex++;
         if (patchProduct?.price) products.push(patchProduct);
         blocks.push(`
-          <div class="routine-step-block eyepatch-block">
-            <div class="routine-step">
-              <div class="step-number">${stepIndex}</div>
-              <div class="step-icon">${STEP_ICONS.eyepatch}</div>
-              <div class="step-info">
-                <div class="step-label">Patchs yeux</div>
-                <div class="step-note">${isMatin ? '10-15 min · Anti-poches · Regard frais' : '15-20 min · Hydratation · Anti-rides'}</div>
+          <div class="cg-step">
+            <div class="cg-step-meta">
+              <span class="cg-step-num">${String(stepIndex).padStart(2, '0')}</span>
+              <div class="cg-step-info">
+                <h2 class="cg-step-title">Patchs yeux</h2>
+                <p class="cg-step-tip">${STEP_APPLY_TIPS[patchTipKey] || (isMatin ? '10-15 min · Anti-poches · Regard frais' : '15-20 min · Hydratation · Anti-rides')}</p>
               </div>
-              <div class="step-type">Patchs yeux</div>
             </div>
-            ${renderStepProduct(patchProduct)}
-            <details class="step-tip-details">
-              <summary class="step-tip-toggle">💡 Quand et comment les poser</summary>
-              <div class="step-apply-tip">${STEP_APPLY_TIPS[patchTipKey]}</div>
-            </details>
+            <div class="cg-step-card">${_renderPremiumProductCard(patchProduct)}</div>
           </div>`);
       }
     }
@@ -515,9 +503,9 @@ const RoutineRenderer = (() => {
     // Calcul total section
     const total = products.reduce((s, p) => s + (p.price || 0), 0);
     const totalHtml = total > 0 ? `
-      <div class="routine-section-total">
-        <span class="routine-section-total-label">${stepIndex} produit${stepIndex > 1 ? 's' : ''} · Budget estimé</span>
-        <span class="routine-section-total-price">${total.toFixed(2)} €</span>
+      <div class="cg-total">
+        <span class="cg-total-label">Total routine (${stepIndex} produit${stepIndex > 1 ? 's' : ''})</span>
+        <strong class="cg-total-amount">${total.toFixed(2)} €</strong>
       </div>` : '';
 
     return `
@@ -526,9 +514,39 @@ const RoutineRenderer = (() => {
           <span class="routine-emoji">${emoji}</span>
           <h2>${title}</h2>
         </div>
-        <div class="routine-steps">${blocks.join('')}</div>
+        <div class="cg-steps">${blocks.join('')}</div>
         ${totalHtml}
       </div>`;
+  }
+
+  // ─── Carte produit premium (même rendu que la routine make-up) ──
+  function _renderPremiumProductCard(product) {
+    if (!product) return '';
+    const { id, name, brand, imageUrl, amazonUrl, shopUrl, price, description, rating } = product;
+    const url = amazonUrl || shopUrl || '#';
+    const isAffiliate = !!amazonUrl;
+    const compareUrl = `https://www.google.com/search?q=${encodeURIComponent((brand || '') + ' ' + (name || ''))}&tbm=shop`;
+    return `
+      <article class="premium-card" data-product-id="${id}">
+        <a href="${url}" target="_blank" rel="noopener nofollow${isAffiliate ? ' sponsored' : ''}" class="premium-card-link"
+           ${isAffiliate ? `onclick="trackAmazonClick('${id}')"` : ''}>
+          <div class="premium-card-image-wrap">
+            <div class="premium-card-glow"></div>
+            ${imageUrl ? `<img src="${imageUrl}" alt="${name}" class="premium-card-image" loading="lazy" onerror="this.onerror=null;this.style.display='none'">` : ''}
+          </div>
+          <div class="premium-card-content">
+            <span class="premium-card-brand">${brand || ''}</span>
+            <h3 class="premium-card-name">${name || ''}</h3>
+            ${description ? `<p class="premium-card-desc">${description}</p>` : ''}
+            ${rating ? `<div class="premium-card-rating">★ ${rating}</div>` : ''}
+            <div class="premium-card-footer">
+              <span class="premium-card-price">${price != null ? price.toFixed(2) + ' €' : '—'}</span>
+              <span class="premium-card-cta">Acheter →</span>
+            </div>
+          </div>
+        </a>
+        <a class="btn-compare-price" href="${compareUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Comparer les prix →</a>
+      </article>`;
   }
 
   // ─── Section verrouillée (soir) ───────────────────────────────
