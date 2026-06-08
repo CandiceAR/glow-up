@@ -2873,8 +2873,6 @@ const SkinAnalysis = (() => {
       ? '<div class="mkr-makeup-warn">⚠ Photo prise avec maquillage — le résultat peut être moins précis.</div>'
       : '';
 
-    const macroObs = buildMacroObservations(result, answers);
-
     content.innerHTML = `
       <div class="makeup-report">
 
@@ -2915,9 +2913,6 @@ const SkinAnalysis = (() => {
             </div>
           </div>
         </div>
-
-        <!-- BLOC PROBLÈMES DÉTECTÉS -->
-        ${renderProblemCardsHTML(macroObs, result, answers)}
 
         <!-- BLOC 2 — EXPLICATION SIMPLE -->
         <div class="mkr-bloc mkr-bloc-explain">
