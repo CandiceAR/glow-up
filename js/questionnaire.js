@@ -618,10 +618,10 @@ const Questionnaire = (() => {
     const score = photo.globalScore ?? null;
     let scoreMood = '';
     if (score !== null) {
-      if (score >= 80)      scoreMood = 'Ta peau rayonne';
+      if (score >= 80)      scoreMood = 'Ta peau rayonne ✨';
       else if (score >= 65) scoreMood = 'Belle condition générale';
       else if (score >= 50) scoreMood = 'Quelques zones à chouchouter';
-      else                  scoreMood = 'Ta peau a besoin de toi';
+      else                  scoreMood = 'On va prendre soin de ta peau ensemble';
     }
 
     const INSIGHT_EMOJI = {
@@ -799,7 +799,9 @@ const Questionnaire = (() => {
             if (result) AppState.face.skinAnalysis = result;
           }
         } catch {}
-        continueFromAnalysis();
+        // Afficher d'abord l'analyse (avec sympathie), puis continuer le questionnaire
+        _prefillFromPhoto();
+        _showPhotoResult();
       } else {
         sessionStorage.setItem('glow_from_questionnaire', '1');
         showScreen('skin-analysis');
