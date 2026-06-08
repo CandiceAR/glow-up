@@ -2077,13 +2077,13 @@ const SkinAnalysis = (() => {
   // ─── Personnalisation analyse : baseline visage + scoring relatif ──
   // Réglages faciles à ajuster après tests
   const INSIGHT_TUNING = {
-    W_ABS:       0.3,   // poids sévérité absolue (réduit : évite que redness domine)
-    W_REL:       0.7,   // poids écart relatif au visage (renforcé : personnalisation)
-    REL_SCALE:   3.0,   // amplification de l'écart relatif
-    THRESHOLD:   45,    // sévérité finale minimale pour afficher un signal
-    MIN:         2,     // nb min d'observations
-    MAX:         3,     // nb max d'observations
-    REDUNDANCY:  8,     // écart sous lequel 2 signaux même zone = doublon
+    W_ABS:        0.3,  // poids sévérité absolue (réduit : évite que redness domine)
+    W_REL:        0.7,  // poids écart relatif au visage (renforcé : personnalisation)
+    REL_SCALE:    3.0,  // amplification de l'écart relatif
+    THRESHOLD:    58,   // sévérité minimale pour afficher un signal (élevé = sélectif)
+    MAX_ISSUES:   2,    // max d'observations "à chouchouter" (premium, non alarmiste)
+    ALWAYS_POSITIVE: true, // toujours afficher un point positif
+    REDUNDANCY:   8,    // écart sous lequel 2 signaux même zone = doublon
   };
 
   // Moyennes des 5 métriques sur toutes les zones de CE visage
@@ -2127,28 +2127,35 @@ const SkinAnalysis = (() => {
     return out;
   }
 
-  // Point positif : zone la plus stable/lumineuse → message bienveillant
-  function _buildPositiveNote(zones, baseline) {
+  // Point positif : l'atout le plus fort du visage → message valorisant qui VARIE
+  // exclkeys = types déjà affichés en "à chouchouter" (pour ne pas se contredire)
+  function _buildPositiveNote(zones, baseline, exclTypes = []) {
     if (!baseline) return null;
-    // Choisir le meilleur axe : éclat élevé OU texture homogène OU peu de rougeur
-    const candidates = [
-      { test: baseline.eclat   >= 60, key: 'positive', pillLabel: 'Éclat',
-        sentence: 'Ton teint paraît globalement lumineux et équilibré — la peau reflète bien la lumière.',
-        advice:   'Continue ta routine actuelle : elle préserve bien l\'éclat naturel de ta peau.' },
-      { test: baseline.texture >= 60, key: 'positive', pillLabel: 'Grain de peau',
-        sentence: 'Ta texture de peau paraît plutôt homogène — le grain est régulier et lisse.',
-        advice:   'Un soin hydratant doux suffit à entretenir cette belle régularité.' },
-      { test: baseline.redness <= 35, key: 'positive', pillLabel: 'Confort',
-        sentence: 'Ta peau paraît calme et confortable — peu de rougeurs ou de réactivité visibles.',
-        advice:   'Garde des formules douces pour préserver cet équilibre.' },
+    // Classer les axes positifs par force, exclure ceux déjà signalés comme problème
+    const axes = [
+      { metric: 'eclat',   val: baseline.eclat,        excl: 'terne',   pillLabel: 'Éclat naturel',
+        sentence: 'Ton teint capte joliment la lumière — il dégage un éclat naturel et une belle vitalité.',
+        advice:   'Préserve-le avec une vitamine C douce le matin et un SPF au quotidien.' },
+      { metric: 'texture', val: baseline.texture,      excl: 'texture', pillLabel: 'Grain de peau lisse',
+        sentence: 'Ton grain de peau paraît régulier et homogène — la peau est lisse et bien entretenue.',
+        advice:   'Un soin hydratant doux suffit à conserver cette belle régularité.' },
+      { metric: 'taches',  val: baseline.taches,       excl: 'taches',  pillLabel: 'Teint uniforme',
+        sentence: 'Ton teint est plutôt uniforme — peu d\'irrégularités pigmentaires visibles, c\'est un vrai atout.',
+        advice:   'Continue à protéger ta peau du soleil pour préserver cette uniformité.' },
+      { metric: 'calme',   val: 100 - baseline.redness, excl: 'redness', pillLabel: 'Peau apaisée',
+        sentence: 'Ta peau paraît calme et confortable — peu de réactivité ou de rougeurs visibles.',
+        advice:   'Garde des formules douces et apaisantes pour entretenir cet équilibre.' },
     ];
-    const chosen = candidates.find(c => c.test);
-    return chosen ? {
+    const chosen = axes
+      .filter(a => !exclTypes.includes(a.excl))
+      .sort((a, b) => b.val - a.val)[0];
+    if (!chosen) return null;
+    return {
       key: 'positive', severity: 0, zones: [], rank: 99,
       zoneKey: null, zoneLabel: '', zoneSummary: '',
       pillLabel: chosen.pillLabel, sentence: chosen.sentence, advice: chosen.advice,
       positive: true,
-    } : null;
+    };
   }
 
   // Generate precise, location-aware phrases for each insight type (template fallback)
@@ -2307,8 +2314,8 @@ const SkinAnalysis = (() => {
       if (!dup) kept.push(g);
     }
 
-    // 5. Garder entre MIN et MAX observations
-    let selected = kept.slice(0, INSIGHT_TUNING.MAX);
+    // 5. Garder au plus MAX_ISSUES observations "à chouchouter"
+    let selected = kept.slice(0, INSIGHT_TUNING.MAX_ISSUES);
 
     const mapped = selected.map((g, rank) => {
       const primaryZone = g.zones[0]?.zoneKey;
@@ -2332,9 +2339,10 @@ const SkinAnalysis = (() => {
       };
     });
 
-    // 6. Garde-fou bienveillant : si < MIN observations, ajouter un point positif
-    if (mapped.length < INSIGHT_TUNING.MIN) {
-      const positive = _buildPositiveNote(result.zones, baseline);
+    // 6. Toujours ajouter un point positif valorisant (jamais 100% négatif)
+    if (INSIGHT_TUNING.ALWAYS_POSITIVE || mapped.length === 0) {
+      const exclTypes = mapped.map(m => m.key);
+      const positive = _buildPositiveNote(result.zones, baseline, exclTypes);
       if (positive) { positive.rank = mapped.length; mapped.push(positive); }
     }
 
