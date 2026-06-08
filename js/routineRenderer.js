@@ -299,6 +299,63 @@ const RoutineRenderer = (() => {
       </div>`;
   }
 
+  // ─── Résumé diagnostic 2 lignes : analyse photo + réponses ────
+  function _buildDiagnosisSummary() {
+    const a  = AppState.questionnaire?.answers || {};
+    const sa = AppState.face?.skinAnalysis || null;
+
+    const SKIN_LBL = { normale:'normale', grasse:'grasse', seche:'sèche', mixte:'mixte', sensible:'sensible' };
+    const skinType = sa?.skinType?.type || a.skinType;
+    const skinLbl  = SKIN_LBL[skinType] || null;
+
+    // Observation visuelle principale (hors point positif)
+    let visualObs = '';
+    if (sa && typeof SkinAnalysis !== 'undefined' && SkinAnalysis.getTopInsights) {
+      try {
+        const ins = SkinAnalysis.getTopInsights(sa).filter(i => !i.positive);
+        if (ins.length) {
+          const OBS = {
+            redness: 'une légère rougeur localisée',
+            sebum:   'une zone T plus brillante',
+            taches:  'quelques irrégularités de teint',
+            terne:   'un teint à raviver',
+            texture: 'un grain de peau à lisser',
+            cernes:  'un regard à défatiguer',
+          };
+          visualObs = OBS[ins[0].key] || '';
+        }
+      } catch {}
+    }
+
+    const undertoneLbl = sa?.undertone?.label
+      ? sa.undertone.label.split('·')[0].trim().toLowerCase()
+      : null;
+
+    // Ligne 1 — analyse visuelle
+    let l1;
+    if (sa && skinLbl) {
+      l1 = `Ton analyse photo révèle une peau <strong>${skinLbl}</strong>`
+         + (undertoneLbl ? `, sous-ton ${undertoneLbl}` : '')
+         + (visualObs ? ` — ${visualObs} a été repérée` : '') + '.';
+    } else if (skinLbl) {
+      l1 = `D'après tes réponses, ta peau est <strong>${skinLbl}</strong>.`;
+    } else {
+      l1 = `Voici ton profil beauté personnalisé.`;
+    }
+
+    // Ligne 2 — réponses au questionnaire
+    const CONCERN_LBL = {
+      acne:'imperfections', taches:'taches', rides:'rides', cernes:'cernes',
+      pores:'pores', eclat:'éclat', secheresse:'sécheresse', rougeurs:'rougeurs',
+    };
+    const concerns = (a.complexes || []).map(c => CONCERN_LBL[c]).filter(Boolean);
+    const l2 = concerns.length
+      ? `Couplée à tes priorités (${concerns.slice(0, 2).join(', ')}), voici ta routine pensée sur-mesure.`
+      : `Voici ta routine pensée pour ton profil unique.`;
+
+    return `${l1}<br>${l2}`;
+  }
+
   function renderResults() {
     _refreshSeed(); // nouveau tirage produit à chaque génération
     const container = document.getElementById('resultsContent');
@@ -322,7 +379,7 @@ const RoutineRenderer = (() => {
         <span class="results-ready-tag">✦ Ta routine personnalisée est prête</span>
         <span class="section-tag">Diagnostic personnalisé</span>
         <h1>${routine.ruleName || 'Ta Routine'}</h1>
-        <p>Basée sur tes réponses et ton analyse de peau — routine adaptée à ton profil unique.</p>
+        <p class="results-diagnosis-summary">${_buildDiagnosisSummary()}</p>
       </div>
 
       ${lowBudget ? `<div class="routine-budget-notice">🌱 Routine essentielle · Budget serré · Max ~40 € pour les 3 produits</div>` : ''}
