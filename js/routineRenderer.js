@@ -474,7 +474,7 @@ const RoutineRenderer = (() => {
           <div class="cg-step-meta">
             <span class="cg-step-num">${String(stepIndex).padStart(2, '0')}</span>
             <div class="cg-step-info">
-              <h2 class="cg-step-title">${step.label}</h2>
+              <h2 class="cg-step-title">${step.step === 'serum' ? 'Sérum' : step.label}</h2>
               ${tip ? `<p class="cg-step-tip">${tip}</p>` : ''}
             </div>
           </div>
@@ -578,9 +578,23 @@ const RoutineRenderer = (() => {
                 <rect x="3" y="11" width="18" height="11" rx="2"/>
                 <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
               </svg>
-              <button class="btn btn-dark locked-unlock-btn" onclick="openPaywallModal()">
-                Débloquer la routine du soir
+              <h3 class="locked-title">Débloque ta routine complète avec Glow Up</h3>
+              <ul class="locked-benefits">
+                <li>🌙 Routine du soir complète</li>
+                <li>💄 Routine make-up personnalisée</li>
+                <li>✦ Recommandations produits ciblées</li>
+                <li>📈 Skin Journey · suivi de ta peau</li>
+                <li>🔄 Profil sauvegardé sur tous tes appareils</li>
+              </ul>
+              <div class="locked-price">
+                <span class="locked-price-main">15,99 €</span>
+                <span class="locked-price-per">/ an</span>
+                <span class="locked-price-sub">soit 1,33 € / mois</span>
+              </div>
+              <button class="btn-orange-cta locked-unlock-btn" onclick="Subscription.showPaywall('routine_second')">
+                Débloquer Glow Up ✦
               </button>
+              <p class="locked-note">Paiement annuel · Annulable à tout moment</p>
             </div>
           </div>
         </div>

@@ -8700,3 +8700,44 @@ em { font-style: italic; color: var(--nude); }
   font-size: 0.7rem;
   top: 3px;
 }
+
+/* ─── Overlay routine du soir verrouillée — avantages ───────── */
+.locked-title {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 400;
+  color: var(--charcoal);
+  margin: 10px 0 12px;
+  text-align: center;
+}
+.locked-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.locked-benefits li {
+  font-size: 0.85rem;
+  color: var(--charcoal);
+  text-align: left;
+}
+.locked-price {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+.locked-price-main {
+  font-family: var(--font-serif);
+  font-size: 1.7rem;
+  font-weight: 600;
+  color: var(--orange);
+}
+.locked-price-per { font-size: 0.85rem; color: var(--muted); }
+.locked-price-sub { font-size: 0.75rem; color: var(--muted); width: 100%; text-align: center; }
+.locked-unlock-btn { width: 100%; }
+.locked-note { font-size: 0.7rem; color: var(--muted); text-align: center; margin-top: 8px; }
