@@ -580,11 +580,11 @@ const RoutineRenderer = (() => {
               </svg>
               <h3 class="locked-title">Débloque ta routine complète avec Glow Up</h3>
               <ul class="locked-benefits">
-                <li>🌙 Routine du soir complète</li>
-                <li>💄 Routine make-up personnalisée</li>
-                <li>✦ Recommandations produits ciblées</li>
-                <li>📈 Skin Journey · suivi de ta peau</li>
-                <li>🔄 Profil sauvegardé sur tous tes appareils</li>
+                <li>✨ Une routine pensée pour TOI</li>
+                <li>✨ Des produits adaptés à TON budget</li>
+                <li>✨ Les meilleurs prix du marché</li>
+                <li>✨ Un coach beauté qui te connaît déjà</li>
+                <li>✨ Le suivi de l'évolution de ta peau</li>
               </ul>
               <div class="locked-price">
                 <span class="locked-price-main">15,99 €</span>
