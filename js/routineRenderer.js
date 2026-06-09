@@ -480,24 +480,6 @@ const RoutineRenderer = (() => {
           </div>
           ${product ? `<div class="cg-step-card">${_renderPremiumProductCard(product)}</div>` : ''}
         </div>`);
-
-      // Injecter les patchs yeux juste après l'étape contour des yeux
-      if (step.step === 'eye' && patchProduct && !usedProductIds.has(patchProduct.id)) {
-        usedProductIds.add(patchProduct.id);
-        stepIndex++;
-        if (patchProduct?.price) products.push(patchProduct);
-        blocks.push(`
-          <div class="cg-step">
-            <div class="cg-step-meta">
-              <span class="cg-step-num">${String(stepIndex).padStart(2, '0')}</span>
-              <div class="cg-step-info">
-                <h2 class="cg-step-title">Patchs yeux</h2>
-                <p class="cg-step-tip">${STEP_APPLY_TIPS[patchTipKey] || (isMatin ? '10-15 min · Anti-poches · Regard frais' : '15-20 min · Hydratation · Anti-rides')}</p>
-              </div>
-            </div>
-            <div class="cg-step-card">${_renderPremiumProductCard(patchProduct)}</div>
-          </div>`);
-      }
     }
 
     // Calcul total section
