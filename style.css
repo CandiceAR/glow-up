@@ -8841,3 +8841,137 @@ em { font-style: italic; color: var(--nude); }
 }
 .q-priority-emoji { font-size: 1.2rem; flex-shrink: 0; }
 .q-priority-label { font-size: 0.95rem; font-weight: 500; color: var(--charcoal); }
+
+/* ════════════════════════════════════════════════════════════
+   ANALYSE PHOTO — refonte premium éditoriale (Violette / Rhode)
+   ════════════════════════════════════════════════════════════ */
+.analysis-premium {
+  max-width: 540px;
+  margin: 0 auto;
+  padding: 8px 0 0;
+}
+
+/* Header éditorial */
+.analysis-premium .ap-header { text-align: center; margin-bottom: 22px; }
+.analysis-premium .ap-eyebrow {
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--nude);
+  font-weight: 500;
+}
+
+/* Photo mise en valeur — coins arrondis, halo doux nude/orange */
+.analysis-premium .ap-photo {
+  position: relative;
+  border-radius: 28px;
+  overflow: hidden;
+  margin: 0 auto 18px;
+  max-width: 420px;
+  box-shadow:
+    0 18px 50px rgba(201,169,138,0.28),
+    0 4px 16px rgba(240,145,63,0.10);
+}
+.analysis-premium .ap-photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  pointer-events: none;
+  box-shadow: inset 0 0 60px rgba(255,245,235,0.35);
+}
+.analysis-premium .ap-photo img,
+.analysis-premium .ap-photo canvas,
+.analysis-premium .ap-photo svg { border-radius: 28px; display: block; width: 100%; }
+
+/* Chips profil — discrets, sans bordure lourde */
+.analysis-premium .ap-chips {
+  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+  margin-bottom: 32px;
+}
+.analysis-premium .ap-chip {
+  font-size: 0.78rem;
+  color: var(--charcoal);
+  background: rgba(201,169,138,0.12);
+  padding: 6px 14px;
+  border-radius: 50px;
+}
+
+/* Sections — beaucoup d'air, pas de bordures lourdes */
+.analysis-premium .ap-section { margin: 0 0 34px; }
+.analysis-premium .ap-section-title {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--charcoal);
+  text-align: center;
+  margin: 0 0 4px;
+  line-height: 1.25;
+}
+.analysis-premium .ap-section-sub {
+  font-size: 0.86rem;
+  color: var(--muted);
+  text-align: center;
+  margin: 0 0 18px;
+}
+
+/* Cartes priorités — premium, douces */
+.analysis-premium .ap-priority-cards {
+  display: flex; flex-direction: column; gap: 12px;
+}
+.analysis-premium .ap-priority-card {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--white);
+  border-radius: 20px;
+  padding: 16px 20px;
+  box-shadow: 0 6px 22px rgba(44,42,39,0.05);
+}
+.analysis-premium .ap-priority-emoji {
+  font-size: 1.4rem; flex-shrink: 0;
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, rgba(240,145,63,0.12), rgba(201,169,138,0.08));
+  border-radius: 50%;
+}
+.analysis-premium .ap-priority-text { display: flex; flex-direction: column; gap: 3px; }
+.analysis-premium .ap-priority-label { font-size: 0.98rem; font-weight: 600; color: var(--charcoal); }
+.analysis-premium .ap-priority-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.45; }
+
+/* Points forts — bloc doux valorisant */
+.analysis-premium .ap-strengths {
+  background: linear-gradient(135deg, rgba(232,197,191,0.14), rgba(255,245,235,0.4));
+  border-radius: 24px;
+  padding: 26px 24px;
+}
+.analysis-premium .ap-strengths-list {
+  list-style: none; margin: 14px 0 0; padding: 0;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.analysis-premium .ap-strengths-list li {
+  font-size: 0.92rem; color: var(--charcoal); line-height: 1.5;
+  padding-left: 22px; position: relative; text-align: center;
+}
+.analysis-premium .ap-strengths-list li::before {
+  content: '✦'; position: absolute; left: 50%; top: -16px;
+  transform: translateX(-50%); display: none;
+}
+.analysis-premium .ap-strengths-list li { padding-left: 0; }
+
+/* Détail (observations) — léger, sans cadre lourd */
+.analysis-premium .q-insights { background: transparent; }
+.analysis-premium .q-insight-item {
+  background: var(--white);
+  border-radius: 18px;
+  box-shadow: 0 4px 18px rgba(44,42,39,0.04);
+  border: none;
+  margin-bottom: 12px;
+}
+
+/* Actions — CTA orange + lien discret */
+.analysis-premium .ap-actions { text-align: center; margin-top: 8px; }
+.analysis-premium .ap-continue { width: 100%; max-width: 360px; }
+.analysis-premium .ap-retake {
+  display: block; margin: 14px auto 0;
+  background: none; border: none; cursor: pointer;
+  font-size: 0.82rem; color: var(--muted); text-decoration: underline;
+}

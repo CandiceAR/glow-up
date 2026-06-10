@@ -2523,7 +2523,20 @@ const SkinAnalysis = (() => {
     };
   }
 
-  // Retourne 3 priorités { emoji, label, family } sélectionnées dynamiquement
+  const PRIORITY_DESC = {
+    hydration:     'Ta peau a besoin d\'un peu plus de confort et d\'hydratation.',
+    redness:       'Quelques zones réagissent — on va les apaiser en douceur.',
+    imperfections: 'On cible les imperfections pour une peau plus nette.',
+    pores_texture: 'On affine le grain pour une peau plus lisse.',
+    eclat:         'On réveille la lumière naturelle de ton teint.',
+    zoneT:         'On équilibre les brillances de la zone T.',
+    regard:        'On illumine et défatigue le contour des yeux.',
+    lips:          'On apporte douceur et confort à tes lèvres.',
+    antiage:       'On préserve la fermeté et la qualité de ta peau.',
+    protection:    'On protège ta peau pour préserver son éclat.',
+  };
+
+  // Retourne 3 priorités { emoji, label, desc, family } sélectionnées dynamiquement
   function buildPriorities(result, answers = {}) {
     if (!result) return [];
     const scores = _priorityScores(result, answers);
@@ -2532,6 +2545,7 @@ const SkinAnalysis = (() => {
     return top.map(([family]) => ({
       emoji: PRIORITY_LIB[family].emoji,
       label: _pick(PRIORITY_LIB[family].pool),
+      desc:  PRIORITY_DESC[family] || '',
       family,
     }));
   }

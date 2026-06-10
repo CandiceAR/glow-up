@@ -615,20 +615,24 @@ const Questionnaire = (() => {
       ? `<div id="q-face-overlay-target"></div>`
       : `<div style="font-size:3rem;margin-bottom:12px;">📸</div>`;
 
-    // Priorités dynamiques (remplace le score)
+    // Priorités dynamiques (remplace le score) — cartes premium
     const priorities = (typeof SkinAnalysis !== 'undefined' && SkinAnalysis.buildPriorities)
       ? SkinAnalysis.buildPriorities(photo, AppState.questionnaire?.answers || {}) : [];
     const prioritiesHtml = priorities.length ? `
-      <div class="q-priorities">
-        <div class="q-priorities-title">✨ ${priorities.length} priorités identifiées pour ta peau</div>
-        <div class="q-priorities-list">
+      <section class="ap-section">
+        <h2 class="ap-section-title">${priorities.length} priorités identifiées pour ta peau</h2>
+        <p class="ap-section-sub">Ce sur quoi Glow Up va concentrer ta routine.</p>
+        <div class="ap-priority-cards">
           ${priorities.map(p => `
-            <div class="q-priority">
-              <span class="q-priority-emoji">${p.emoji}</span>
-              <span class="q-priority-label">${p.label}</span>
+            <div class="ap-priority-card">
+              <span class="ap-priority-emoji">${p.emoji}</span>
+              <div class="ap-priority-text">
+                <span class="ap-priority-label">${p.label}</span>
+                ${p.desc ? `<span class="ap-priority-desc">${p.desc}</span>` : ''}
+              </div>
             </div>`).join('')}
         </div>
-      </div>` : '';
+      </section>` : '';
 
     const INSIGHT_EMOJI = {
       redness: '🌿', sebum: '✨', taches: '☀️', terne: '💫', texture: '🫧', cernes: '🌙', positive: '🌸'
@@ -637,20 +641,20 @@ const Questionnaire = (() => {
     const insights = (typeof SkinAnalysis !== 'undefined' && SkinAnalysis.getTopInsights)
       ? SkinAnalysis.getTopInsights(photo) : [];
 
-    // Portrait beauté — valoriser d'abord (comme une conseillère qui complimente)
+    // Points forts — valorisation élégante
     const portrait = (typeof SkinAnalysis !== 'undefined' && SkinAnalysis.buildBeautyPortrait)
       ? SkinAnalysis.buildBeautyPortrait(photo) : [];
     const portraitHtml = portrait.length ? `
-      <div class="q-portrait">
-        <div class="q-portrait-title">✦ Tes atouts</div>
-        <ul class="q-portrait-list">
+      <section class="ap-section ap-strengths">
+        <h2 class="ap-section-title">Ce qui te met déjà en valeur</h2>
+        <ul class="ap-strengths-list">
           ${portrait.map(l => `<li>${l}</li>`).join('')}
         </ul>
-      </div>` : '';
+      </section>` : '';
 
     const insightsHtml = insights.length ? `
-      <div class="q-insights">
-        <div class="q-insights-title">Ce que Glow Up a détecté</div>
+      <section class="ap-section q-insights">
+        <h2 class="ap-section-title">En détail</h2>
         ${insights.map(({ key, pillLabel, sentence, advice, rank }) => {
           const emoji = INSIGHT_EMOJI[key] || '◆';
           const isPri = rank === 0;
@@ -664,31 +668,34 @@ const Questionnaire = (() => {
           </div>`;
         }).join('')}
         <div class="q-insight-synthese" style="display:none"></div>
-      </div>` : '';
+      </section>` : '';
 
     const skinLabel = { normale:'Normale', grasse:'Grasse', seche:'Sèche', mixte:'Mixte', sensible:'Sensible' };
     const chips = [];
-    if (photo.skinType?.type)   chips.push(`🧬 ${skinLabel[photo.skinType.type] || photo.skinType.type}`);
-    if (photo.undertone?.label) chips.push(`🎨 ${photo.undertone.label}`);
-    if (photo.carnation?.label) chips.push(`✨ ${photo.carnation.label}`);
+    if (photo.skinType?.type)   chips.push(`${skinLabel[photo.skinType.type] || photo.skinType.type}`);
+    if (photo.undertone?.label) chips.push(`${photo.undertone.label}`);
+    if (photo.carnation?.label) chips.push(`${photo.carnation.label}`);
     const chipsHtml = chips.length
-      ? `<div class="q-photo-base-chips">${chips.map(c => `<span class="q-photo-chip">${c}</span>`).join('')}</div>`
+      ? `<div class="ap-chips">${chips.map(c => `<span class="ap-chip">${c}</span>`).join('')}</div>`
       : '';
 
-    return `<div class="q-photo-step">
-      ${overlayDiv}
+    return `<div class="q-photo-step analysis-premium">
+      <div class="ap-header">
+        <span class="ap-eyebrow">Étape 2 · Analyse de ta peau ✨</span>
+      </div>
+      <div class="ap-photo">${overlayDiv}</div>
+      ${chipsHtml}
       ${prioritiesHtml}
       ${portraitHtml}
       ${insightsHtml}
-      ${chipsHtml}
-      <div class="q-photo-buttons" style="margin-top:16px;">
-        <button class="btn btn-outline" onclick="Questionnaire.retakePhoto()" style="font-size:0.85rem;">
-          🔄 Refaire l'analyse photo
+      <div class="ap-actions">
+        <button class="btn-orange-cta ap-continue" onclick="Questionnaire.next()">
+          Continuer vers ma routine →
+        </button>
+        <button class="ap-retake" onclick="Questionnaire.retakePhoto()">
+          Refaire l'analyse photo
         </button>
       </div>
-      <button class="q-textarea-skip" onclick="Questionnaire.next()">
-        Continuer avec ces données →
-      </button>
     </div>`;
   }
 
