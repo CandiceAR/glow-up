@@ -587,19 +587,40 @@ function _proceedToSkincare() {
 // Modal : reprendre la routine enregistrée ou en générer une nouvelle
 function _routineResumeModal(type) {
   const label = type === 'skincare' ? 'skincare' : 'make-up';
-  const startFn = type === 'skincare' ? 'Questionnaire.startSkincare()' : 'Questionnaire.startMakeup()';
   openModal(`
     <button class="modal-close" onclick="closeModal()">×</button>
     <div class="routine-resume-modal">
-      <div class="rr-icon">✦</div>
-      <h2 class="rr-title">Tu as une routine ${label}<br>enregistrée</h2>
-      <p class="rr-sub">Souhaites-tu la retrouver, ou en générer une nouvelle ?</p>
+      <div class="rr-icon">✨</div>
+      <h2 class="rr-title">Votre routine ${label}<br>est déjà enregistrée</h2>
+      <p class="rr-sub">Que souhaitez-vous faire ?</p>
       <button class="btn-orange-cta rr-btn" onclick="closeModal(); RoutineSaver.resumeSaved('${type}')">
-        Reprendre ma routine ${label}
+        🧡 Reprendre ma routine actuelle
       </button>
-      <button class="btn btn-outline rr-btn" onclick="closeModal(); AppState.routineChoice='${type}'; ${startFn}">
-        Générer une nouvelle routine
+      <button class="btn btn-outline rr-btn" onclick="_newRoutineModal('${type}')">
+        ✨ Générer une nouvelle routine
       </button>
+    </div>`);
+}
+
+// Modal : nouvelle routine → refaire l'analyse ou mettre à jour les besoins
+function _newRoutineModal(type) {
+  AppState.routineChoice = type;
+  const redoFn   = type === 'skincare' ? 'Questionnaire.startSkincare(false)' : 'Questionnaire.startMakeup(false)';
+  const updateFn = type === 'skincare' ? 'Questionnaire.startSkincare(true)'  : 'Questionnaire.startMakeup(true)';
+  const hasAnalysis = !!AppState?.face?.skinAnalysis;
+  openModal(`
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="routine-resume-modal">
+      <div class="rr-icon">✨</div>
+      <h2 class="rr-title">Générer une nouvelle<br>routine ${type === 'skincare' ? 'skincare' : 'make-up'}</h2>
+      <p class="rr-sub">Comment veux-tu repartir ?</p>
+      <button class="btn-orange-cta rr-btn" onclick="closeModal(); ${redoFn}">
+        📸 Refaire mon analyse photo
+      </button>
+      ${hasAnalysis ? `
+      <button class="btn btn-outline rr-btn" onclick="closeModal(); ${updateFn}">
+        ✏️ Mettre à jour mes besoins
+      </button>` : ''}
     </div>`);
 }
 

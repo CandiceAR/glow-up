@@ -333,25 +333,37 @@ const Questionnaire = (() => {
     currentIndex = 0;
   }
 
-  function startSkincare() {
+  function startSkincare(keepAnalysis = false) {
     mode = 'skincare';
-    // Effacer la routine sauvegardée pour repartir de zéro
-    if (typeof RoutineSaver !== 'undefined') RoutineSaver.clear();
-    // Effacer l'analyse photo précédente pour que q-photo s'affiche
-    if (AppState.face) {
+    // Effacer l'analyse photo précédente — sauf si on met juste à jour les besoins
+    if (!keepAnalysis && AppState.face) {
       AppState.face.skinAnalysis = null;
       AppState.face.photo        = null;
     }
     reset();
-    currentIndex = 0; // Q0 toujours en premier
+    if (keepAnalysis && AppState.face?.skinAnalysis) {
+      // Garder l'analyse → commencer après l'étape photo
+      _prefillFromPhoto();
+      const photoIdx = QUESTIONS.findIndex(q => q.type === 'photo-step');
+      currentIndex = _nextActive(photoIdx >= 0 ? photoIdx : 0);
+      if (currentIndex < 0) currentIndex = 0;
+    } else {
+      currentIndex = 0; // Q0 toujours en premier
+    }
+    AppState.questionnaire.currentQ = currentIndex;
     showScreen('questionnaire');
   }
 
   // Photo renvoie 'light'/'dark', les options MQ utilisent 'clair'/'fonce'
   const CARN_PHOTO_MAP = { light: 'clair', medium: 'medium', dark: 'fonce', clair: 'clair', fonce: 'fonce' };
 
-  function startMakeup() {
+  function startMakeup(keepAnalysis = true) {
     mode = 'makeup';
+    // Refaire l'analyse → on efface la photo pour réafficher l'étape photo
+    if (!keepAnalysis && AppState.face) {
+      AppState.face.skinAnalysis = null;
+      AppState.face.photo        = null;
+    }
     const analysis = AppState?.face?.skinAnalysis;
     makeupIndex = analysis ? 1 : 0;
     AppState.makeupQuiz = {
