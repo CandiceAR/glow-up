@@ -342,6 +342,31 @@ const MakeupRoutine = (() => {
   }
 
   // 6ÈME PRODUIT INTELLIGENT ────────────────────────────────────
+  // Sélection du fond de teint adaptée à la carnation + sous-ton
+  function selectFoundation(profile) {
+    const { carnation: ca, undertone: ut, budget, mkLook } = profile;
+    let pool = getByCategory('foundation').filter(p => p.active !== false && p.imageUrl);
+    if (!pool.length) return null;
+    // 1. Carnation
+    const byCarn = pool.filter(p => !Array.isArray(p.carnation) || !p.carnation.length || p.carnation.includes(ca));
+    if (byCarn.length) pool = byCarn;
+    // 2. Sous-ton (garder neutre + correspondance)
+    const byUt = pool.filter(p => !p.undertone || p.undertone === 'neutral' || p.undertone === ut);
+    if (byUt.length) pool = byUt;
+    // 3. Maquillage léger → privilégier la couvrance légère
+    if (mkLook === 'naturel') {
+      const light = pool.filter(p => p.coverage === 'legere');
+      if (light.length) pool = light;
+    }
+    const byBudget = filterByBudget(pool, budget);
+    if (byBudget.length) pool = byBudget;
+    pool.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    const topN = pool.slice(0, Math.min(8, pool.length));
+    return topN[Math.floor(Math.random() * topN.length)] || pool[0];
+  }
+
+  const FOUNDATION_TIP = 'Teinte choisie selon ta carnation. Chauffe entre les doigts, applique en tapotant du centre vers l\'extérieur — laisse ta peau respirer.';
+
   function selectSmartSixth(profile, excludeIds) {
     const { cernesColor, skinType, mkFocus, mkLook, budget, mkLuxe } = profile;
     const excl = new Set(excludeIds || []);
@@ -354,9 +379,10 @@ const MakeupRoutine = (() => {
       const [p] = selectPowder(profile);
       if (p && !excl.has(p.id)) return { product: p, label: 'Poudre matifiante', tip: 'Concentre sur la zone T pour fixer le teint et réduire les brillances. Une légère couche suffit.' };
     }
-    if (mkFocus === 'teint') {
-      const p = pickFromCatalog('foundation', budget, [], [...excl], mkLuxe);
-      if (p) return { product: p, label: 'Fond de teint', tip: 'Chauffe entre les doigts, applique en tapotant du centre vers l\'extérieur. Laisse ta peau respirer.' };
+    // Fond de teint : pour le teint ciblé OU un maquillage léger/naturel
+    if (mkFocus === 'teint' || mkLook === 'naturel' || mkLook === 'soigne') {
+      const p = selectFoundation(profile);
+      if (p && !excl.has(p.id)) return { product: p, label: 'Fond de teint', tip: FOUNDATION_TIP };
     }
     if (mkFocus === 'yeux') {
       const p = pickFromCatalog('eyebrow', budget, [], [...excl], mkLuxe);
