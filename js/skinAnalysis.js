@@ -2422,6 +2422,120 @@ const SkinAnalysis = (() => {
     return [...new Set(lines.filter(Boolean))];
   }
 
+  // ══════════════════════════════════════════════════════════════
+  // PRIORITÉS — bibliothèque ~200 + sélection dynamique
+  // Remplace le score. "On ne note pas ta peau, on t'aide à la comprendre."
+  // ══════════════════════════════════════════════════════════════
+
+  const PRIORITY_LIB = {
+    hydration: { emoji: '💧', pool: [
+      'Hydratation des joues', 'Hydratation globale', 'Déshydratation localisée',
+      'Maintenir l\'hydratation', 'Souplesse de la peau', 'Prévenir les tiraillements',
+      'Équilibre hydrique', 'Confort cutané', 'Repulper la peau', 'Nourrir la peau en douceur',
+      'Hydratation du contour des lèvres', 'Renforcer la barrière cutanée', 'Apporter du confort',
+      'Peau plus souple', 'Hydratation en profondeur', 'Réconforter les zones sèches',
+      'Maintenir la souplesse', 'Hydratation quotidienne',
+    ]},
+    redness: { emoji: '🌿', pool: [
+      'Apaiser les rougeurs', 'Rougeurs diffuses', 'Rougeurs du nez', 'Sensibilité des joues',
+      'Zones à apaiser', 'Réactivité localisée', 'Uniformiser les rougeurs', 'Calmer la peau',
+      'Réduire les sensations d\'inconfort', 'Apaisement localisé', 'Renforcer la tolérance cutanée',
+      'Atténuer les rougeurs visibles', 'Confort des peaux sensibles', 'Apaiser la zone des joues',
+      'Réduire la réactivité', 'Douceur et apaisement',
+    ]},
+    imperfections: { emoji: '🌿', pool: [
+      'Réduire les boutons visibles', 'Prévenir les imperfections', 'Marques résiduelles',
+      'Réduire les imperfections', 'Équilibre cutané', 'Affiner le grain de peau',
+      'Limiter les brillances et boutons', 'Purifier la peau', 'Atténuer les marques',
+      'Prévenir les nouvelles imperfections', 'Réguler les zones à imperfections',
+      'Peau plus nette', 'Désincruster les pores', 'Réduire les rougeurs post-bouton',
+      'Assainir les zones concernées', 'Clarté de la peau',
+    ]},
+    pores_texture: { emoji: '🧴', pool: [
+      'Pores visibles', 'Texture irrégulière', 'Affiner l\'apparence des pores',
+      'Lisser la peau', 'Aspect plus uniforme', 'Grain de peau plus régulier',
+      'Resserrer les pores', 'Adoucir la texture', 'Peau plus lisse au toucher',
+      'Uniformiser le grain', 'Réduire les pores dilatés', 'Affiner le relief de la peau',
+      'Texture plus homogène', 'Lissage du grain de peau',
+    ]},
+    eclat: { emoji: '✨', pool: [
+      'Révéler l\'éclat du teint', 'Teint terne', 'Manque d\'éclat', 'Luminosité générale',
+      'Glow naturel', 'Fraîcheur du teint', 'Uniformité du teint', 'Raviver le teint',
+      'Teint plus lumineux', 'Coup d\'éclat', 'Réveiller la peau', 'Teint plus frais',
+      'Éclat du visage', 'Lumière du teint', 'Redonner de la vitalité', 'Teint éclatant',
+    ]},
+    zoneT: { emoji: '✨', pool: [
+      'Réduire les brillances', 'Brillance du front', 'Brillance du nez', 'Contrôle des brillances',
+      'Équilibre de la zone T', 'Réguler l\'excès de sébum', 'Matifier la zone T',
+      'Réguler le sébum', 'Zone T plus équilibrée', 'Limiter les brillances',
+      'Fini plus mat', 'Équilibrer le centre du visage', 'Maîtriser les brillances',
+    ]},
+    regard: { emoji: '👁️', pool: [
+      'Éclat du regard', 'Regard fatigué', 'Cernes visibles', 'Uniformité du contour des yeux',
+      'Hydratation du contour des yeux', 'Réveiller le regard', 'Défatiguer le regard',
+      'Illuminer le contour des yeux', 'Atténuer les cernes', 'Regard plus reposé',
+      'Lisser le contour des yeux', 'Ouvrir le regard',
+    ]},
+    lips: { emoji: '💋', pool: [
+      'Hydratation des lèvres', 'Confort des lèvres', 'Souplesse des lèvres', 'Lèvres plus douces',
+      'Nourrir les lèvres', 'Réconforter les lèvres',
+    ]},
+    antiage: { emoji: '🌸', pool: [
+      'Préserver la fermeté', 'Élasticité de la peau', 'Prévenir les ridules', 'Rebond cutané',
+      'Qualité de peau', 'Préserver l\'éclat', 'Améliorer la fermeté', 'Lisser les ridules',
+      'Tonus de la peau', 'Densité de la peau', 'Prévention du temps qui passe',
+      'Raffermir les contours', 'Préserver la jeunesse de la peau',
+    ]},
+    protection: { emoji: '☀️', pool: [
+      'Protection quotidienne', 'Protection UV', 'Prévenir les taches', 'Défense cutanée',
+      'Préserver l\'éclat', 'Protéger du soleil', 'Prévention des taches solaires',
+      'Bouclier anti-pollution', 'Protéger la peau au quotidien',
+    ]},
+  };
+
+  function _priorityScores(result, answers = {}) {
+    const zones = result.zones || {};
+    const vals  = Object.values(zones);
+    const a = (sel) => vals.length ? avg(vals.map(sel)) : 50;
+    const gRed = a(z => z.redness), gEclat = a(z => z.eclat), gPores = a(z => z.pores), gTex = a(z => z.texture);
+    const st   = result.skinType?.type || answers.skinType || 'normale';
+    const conc = Array.isArray(answers.complexes) ? answers.complexes : (Array.isArray(answers.concerns) ? answers.concerns : []);
+    const vision = result.vision || {};
+    const age  = answers.ageGroup || answers.age || null;
+    const is35 = age === '40+' || age === '30-40' || (parseInt(age) >= 35);
+    const jit  = () => (Math.random() * 16 - 4); // -4 à +12 (favorise un peu la variété)
+
+    // T-zone sébum
+    const tz = [zones.forehead, zones.nose].filter(Boolean);
+    const tPores = tz.length ? avg(tz.map(z => z.pores)) : gPores;
+
+    return {
+      hydration:    (st === 'seche' ? 55 : 20) + (conc.includes('secheresse') ? 35 : 0) + Math.max(0, 60 - gEclat) * 0.4 + (vision.eclat === 'terne' || vision.eclat === 'très_terne' ? 15 : 0) + jit(),
+      redness:      gRed * 0.7 + (st === 'sensible' ? 25 : 0) + (conc.includes('rougeurs') ? 35 : 0) + (vision.rougeurs?.niveau === 'prononcées' ? 30 : vision.rougeurs?.niveau === 'légères' ? 15 : 0) + jit(),
+      imperfections:(conc.includes('acne') ? 50 : 0) + (vision.imperfections?.presentes ? 40 : 0) + (st === 'grasse' ? 15 : 0) + jit(),
+      pores_texture:Math.max(0, 60 - gPores) * 0.5 + Math.max(0, 60 - gTex) * 0.4 + (conc.includes('pores') ? 35 : 0) + jit(),
+      eclat:        Math.max(0, 62 - gEclat) * 0.6 + (conc.includes('eclat') ? 35 : 0) + (vision.eclat === 'terne' ? 25 : vision.eclat === 'très_terne' ? 40 : 0) + jit(),
+      zoneT:        Math.max(0, 55 - tPores) * 0.6 + (st === 'grasse' ? 35 : st === 'mixte' ? 28 : 0) + jit(),
+      regard:       (result.cernes?.detected ? (result.cernes.intensity === 'marqués' ? 55 : 38) : 0) + (conc.includes('cernes') ? 35 : 0) + jit(),
+      lips:         8 + (st === 'seche' ? 10 : 0) + jit(),
+      antiage:      (is35 ? 45 : 0) + (conc.includes('rides') ? 45 : 0) + (answers.objectives === 'anti-age' ? 30 : 0) + jit(),
+      protection:   28 + (conc.includes('taches') ? 30 : 0) + (is35 ? 10 : 0) + jit(),
+    };
+  }
+
+  // Retourne 3 priorités { emoji, label, family } sélectionnées dynamiquement
+  function buildPriorities(result, answers = {}) {
+    if (!result) return [];
+    const scores = _priorityScores(result, answers);
+    const ranked = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+    const top = ranked.slice(0, 3);
+    return top.map(([family]) => ({
+      emoji: PRIORITY_LIB[family].emoji,
+      label: _pick(PRIORITY_LIB[family].pool),
+      family,
+    }));
+  }
+
   function getTopInsights(result) {
     if (!result?.zones) return [];
 
@@ -3333,7 +3447,7 @@ const SkinAnalysis = (() => {
 
   // ─── API publique ─────────────────────────────────────────────
 
-  return { initScreen, startLiveAnalysis, stopLiveAnalysis, analyzeFromPhoto, renderFaceOverlay, getTopInsights, buildPrecisionContext, buildBeautyPortrait };
+  return { initScreen, startLiveAnalysis, stopLiveAnalysis, analyzeFromPhoto, renderFaceOverlay, getTopInsights, buildPrecisionContext, buildBeautyPortrait, buildPriorities };
 
 })();
 

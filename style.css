@@ -8810,3 +8810,34 @@ em { font-style: italic; color: var(--nude); }
   font-size: 0.9rem; color: var(--muted); margin: 0 0 20px;
 }
 .routine-resume-modal .rr-btn { width: 100%; margin-bottom: 10px; }
+
+/* ─── Priorités peau (remplace le score) ────────────────────── */
+.q-priorities {
+  text-align: center;
+  margin: 18px 0;
+}
+.q-priorities-title {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  color: var(--charcoal);
+  margin-bottom: 16px;
+}
+.q-priorities-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 380px;
+  margin: 0 auto;
+}
+.q-priority {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--white);
+  border: 1px solid var(--sand);
+  border-radius: 50px;
+  padding: 12px 20px;
+  text-align: left;
+}
+.q-priority-emoji { font-size: 1.2rem; flex-shrink: 0; }
+.q-priority-label { font-size: 0.95rem; font-weight: 500; color: var(--charcoal); }

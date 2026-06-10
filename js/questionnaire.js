@@ -615,14 +615,20 @@ const Questionnaire = (() => {
       ? `<div id="q-face-overlay-target"></div>`
       : `<div style="font-size:3rem;margin-bottom:12px;">📸</div>`;
 
-    const score = photo.globalScore ?? null;
-    let scoreMood = '';
-    if (score !== null) {
-      if (score >= 80)      scoreMood = 'Ta peau rayonne ✨';
-      else if (score >= 65) scoreMood = 'Belle condition générale';
-      else if (score >= 50) scoreMood = 'Quelques zones à chouchouter';
-      else                  scoreMood = 'On va prendre soin de ta peau ensemble';
-    }
+    // Priorités dynamiques (remplace le score)
+    const priorities = (typeof SkinAnalysis !== 'undefined' && SkinAnalysis.buildPriorities)
+      ? SkinAnalysis.buildPriorities(photo, AppState.questionnaire?.answers || {}) : [];
+    const prioritiesHtml = priorities.length ? `
+      <div class="q-priorities">
+        <div class="q-priorities-title">✨ ${priorities.length} priorités identifiées pour ta peau</div>
+        <div class="q-priorities-list">
+          ${priorities.map(p => `
+            <div class="q-priority">
+              <span class="q-priority-emoji">${p.emoji}</span>
+              <span class="q-priority-label">${p.label}</span>
+            </div>`).join('')}
+        </div>
+      </div>` : '';
 
     const INSIGHT_EMOJI = {
       redness: '🌿', sebum: '✨', taches: '☀️', terne: '💫', texture: '🫧', cernes: '🌙', positive: '🌸'
@@ -671,11 +677,7 @@ const Questionnaire = (() => {
 
     return `<div class="q-photo-step">
       ${overlayDiv}
-      ${score !== null ? `<div class="q-skin-score">
-        <span class="q-skin-score-num">${Math.round(score)}</span>
-        <span class="q-skin-score-denom">/100</span>
-        <span class="q-skin-score-mood">${scoreMood}</span>
-      </div>` : ''}
+      ${prioritiesHtml}
       ${portraitHtml}
       ${insightsHtml}
       ${chipsHtml}
