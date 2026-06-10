@@ -419,11 +419,9 @@ const RoutineRenderer = (() => {
   }
 
   function renderSaveBanner() {
-    const isGuest      = AppState?.user?.isGuest !== false;
-    const plan         = typeof Subscription !== 'undefined' ? Subscription.getPlan() : 'free';
-    const isSubscriber = plan === 'glow' || plan === 'glowplus';
+    const isGuest = AppState?.user?.isGuest !== false;
 
-    // Invitée non connectée → créer un compte
+    // Invitée non connectée → créer un compte (et garder la routine)
     if (isGuest) {
       return `
         <div class="save-banner">
@@ -436,30 +434,17 @@ const RoutineRenderer = (() => {
         </div>`;
     }
 
-    // Abonnée Glow / Coach → choix explicite d'enregistrer
-    if (isSubscriber) {
-      return `
-        <div class="save-banner save-banner--save" id="saveRoutineBanner">
-          <span class="save-banner-icon">💾</span>
-          <div class="save-banner-text">
-            <strong>Enregistrer cette routine ?</strong>
-            <span>Retrouve-la automatiquement à chaque connexion, sur tous tes appareils.</span>
-          </div>
-          <button class="btn-orange-cta save-banner-btn" onclick="RoutineRenderer.saveRoutineNow()">
-            Enregistrer ma routine ✦
-          </button>
-        </div>`;
-    }
-
-    // Connectée sans abonnement
+    // Connectée (tout plan) → bouton "Enregistrer ma routine" PERMANENT
     return `
-      <div class="save-banner">
-        <span class="save-banner-icon">✓</span>
+      <div class="save-banner save-banner--save" id="saveRoutineBanner">
+        <span class="save-banner-icon">💾</span>
         <div class="save-banner-text">
-          <strong>Routine enregistrée sur cet appareil</strong>
-          <span>Passe à Glow Up pour la retrouver partout, sur tous tes appareils.</span>
+          <strong>Enregistrer cette routine ?</strong>
+          <span>Retrouve-la automatiquement à chaque connexion, sur tous tes appareils.</span>
         </div>
-        <button class="btn btn-outline save-banner-btn" onclick="Subscription.showPaywall('routine_second')">Découvrir Glow Up →</button>
+        <button class="btn-orange-cta save-banner-btn" onclick="RoutineRenderer.saveRoutineNow()">
+          Enregistrer ma routine ✦
+        </button>
       </div>`;
   }
 

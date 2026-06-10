@@ -630,20 +630,49 @@ const MakeupRoutine = (() => {
   }
 
   function _renderSaveBanner() {
-    const hasPhoto = !!AppState?.face?.skinAnalysis;
-    const parts    = [];
-    if (hasPhoto) parts.push('Analyse photo');
-    parts.push('Questionnaire · Routine make-up');
     const isGuest = AppState?.user?.isGuest !== false;
+
+    if (isGuest) {
+      return `
+        <div class="save-banner">
+          <span class="save-banner-icon">✦</span>
+          <div class="save-banner-text">
+            <strong>Garde ta routine make-up</strong>
+            <span>Crée un compte pour la retrouver à chaque connexion, sur tous tes appareils.</span>
+          </div>
+          <button class="btn btn-outline save-banner-btn" onclick="openAuthModal()">Créer mon compte →</button>
+        </div>`;
+    }
+
+    // Connectée → bouton "Enregistrer ma routine" permanent
     return `
-      <div class="save-banner">
+      <div class="save-banner save-banner--save" id="saveRoutineBanner">
+        <span class="save-banner-icon">💾</span>
+        <div class="save-banner-text">
+          <strong>Enregistrer cette routine ?</strong>
+          <span>Retrouve-la automatiquement à chaque connexion, sur tous tes appareils.</span>
+        </div>
+        <button class="btn-orange-cta save-banner-btn" onclick="MakeupRoutine.saveRoutineNow()">
+          Enregistrer ma routine ✦
+        </button>
+      </div>`;
+  }
+
+  // Sauvegarde explicite de la routine make-up + confirmation
+  function saveRoutineNow() {
+    AppState.routineChoice = 'makeup';
+    if (typeof RoutineSaver !== 'undefined') RoutineSaver.save();
+    const banner = document.getElementById('saveRoutineBanner');
+    if (banner) {
+      banner.classList.add('save-banner--done');
+      banner.innerHTML = `
         <span class="save-banner-icon">✓</span>
         <div class="save-banner-text">
-          <strong>${parts.join(' · ')} enregistrés</strong>
-          <span>${isGuest ? 'Crée un compte pour retrouver ton profil partout.' : 'Retrouve ton profil dans <strong>Mon compte</strong>.'}</span>
-        </div>
-        ${isGuest ? `<button class="btn btn-outline save-banner-btn" onclick="openAuthModal()">Créer mon compte →</button>` : ''}
-      </div>`;
+          <strong>Routine make-up enregistrée ✦</strong>
+          <span>Tu la retrouveras automatiquement à chaque connexion.</span>
+        </div>`;
+    }
+    if (typeof showToast === 'function') showToast('Routine make-up enregistrée ✦', 'success', 2500);
   }
 
   // ══════════════════════════════════════════════════════════════
@@ -723,6 +752,6 @@ const MakeupRoutine = (() => {
     render(container, profile);
   }
 
-  return { initScreen, loadCatalogue, getByCategory, getById };
+  return { initScreen, loadCatalogue, getByCategory, getById, saveRoutineNow };
 
 })();
