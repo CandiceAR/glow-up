@@ -22,28 +22,83 @@ const RoutineSaver = (() => {
     return uid ? `glow_profile_${uid}` : KEY_PROFILE_GUEST;
   }
 
-  // ─── Sauvegarder la routine courante ─────────────────────────
+  // ─── Sauvegarder la routine courante (skincare OU makeup) ────
+  // Fusionne avec l'existant : conserve les deux types séparément
   function save() {
-    if (!AppState.routine?.ruleApplied) return;
+    const choice = AppState.routineChoice || 'skincare';
+    const isMakeup = choice === 'makeup';
+    if (!isMakeup && !AppState.routine?.ruleApplied) return;
+
+    const existing = load() || {};
     const data = {
-      answers:       AppState.questionnaire.answers  || {},
-      routine:       AppState.routine,
-      routineChoice: AppState.routineChoice || 'skincare',
-      skinAnalysis:  AppState.face?.skinAnalysis || null,
+      ...existing,
+      answers:       AppState.questionnaire.answers || existing.answers || {},
+      skinAnalysis:  AppState.face?.skinAnalysis    || existing.skinAnalysis || null,
+      routineChoice: choice,
       completed:     true,
-      savedAt:       new Date().toISOString()
+      savedAt:       new Date().toISOString(),
     };
+
+    if (isMakeup) {
+      data.makeup = { makeupQuiz: AppState.makeupQuiz || {} };
+    } else {
+      data.routine   = AppState.routine; // compat
+      data.skincare  = { routine: AppState.routine, answers: AppState.questionnaire.answers || {} };
+    }
+
     try {
       localStorage.setItem(_getKey(), JSON.stringify(data));
-      console.log('[RoutineSaver] Routine sauvegardée →', _getKey());
+      console.log('[RoutineSaver] Routine sauvegardée →', _getKey(), `(${choice})`);
     } catch (e) {
       console.warn('[RoutineSaver] Erreur sauvegarde:', e);
     }
-    // Sync Firestore (profil complet)
     const uid = AppState?.user?.uid;
     if (uid && typeof FirestoreProfile !== 'undefined') {
       FirestoreProfile.save(uid, data);
     }
+  }
+
+  // ─── Y a-t-il une routine enregistrée d'un type donné ? ──────
+  function hasSavedRoutine(type) {
+    const d = load();
+    if (!d) return false;
+    if (type === 'skincare') return !!(d.skincare?.routine?.ruleApplied || d.routine?.ruleApplied);
+    if (type === 'makeup')   return !!(d.makeup?.makeupQuiz);
+    return false;
+  }
+
+  // ─── Reprendre une routine enregistrée → affiche l'écran ─────
+  function resumeSaved(type) {
+    const d = load();
+    if (!d) return false;
+
+    if (d.skinAnalysis) {
+      AppState.face = AppState.face || {};
+      AppState.face.skinAnalysis = d.skinAnalysis;
+    }
+
+    if (type === 'skincare') {
+      const r = d.skincare?.routine || d.routine;
+      if (!r?.ruleApplied) return false;
+      AppState.questionnaire.answers   = d.skincare?.answers || d.answers || {};
+      AppState.questionnaire.completed = true;
+      AppState.routine = { ...AppState.routine, ...r };
+      AppState.routineChoice = 'skincare';
+      if (AppState.questionnaire.answers?.skinType && typeof ProductCatalog !== 'undefined') {
+        ProductCatalog.getRecommended(AppState.questionnaire.answers);
+      }
+      if (typeof showScreen === 'function') showScreen('results');
+      return true;
+    }
+
+    if (type === 'makeup') {
+      if (!d.makeup?.makeupQuiz) return false;
+      AppState.makeupQuiz    = d.makeup.makeupQuiz;
+      AppState.routineChoice = 'makeup';
+      if (typeof showScreen === 'function') showScreen('makeup');
+      return true;
+    }
+    return false;
   }
 
   // ─── Charger la routine sauvegardée ──────────────────────────
@@ -135,15 +190,21 @@ const RoutineSaver = (() => {
       AppState.face.skinAnalysis = profile.skinAnalysis;
     }
 
-    // Restaurer la routine directement depuis le profil cloud (fiable cross-device)
-    if (profile.routine?.ruleApplied) {
-      AppState.routine = { ...AppState.routine, ...profile.routine };
+    // Restaurer le quiz makeup s'il existe
+    if (profile.makeup?.makeupQuiz) {
+      AppState.makeupQuiz = profile.makeup.makeupQuiz;
+    }
+
+    // Restaurer la routine skincare depuis le profil cloud (fiable cross-device)
+    const skincareRoutine = profile.skincare?.routine || profile.routine;
+    if (skincareRoutine?.ruleApplied) {
+      AppState.routine = { ...AppState.routine, ...skincareRoutine };
       AppState.routineChoice = profile.routineChoice || 'skincare';
-      if (profile.answers?.skinType && typeof ProductCatalog !== 'undefined') {
-        ProductCatalog.getRecommended(profile.answers);
+      const ans = profile.skincare?.answers || profile.answers;
+      if (ans?.skinType && typeof ProductCatalog !== 'undefined') {
+        ProductCatalog.getRecommended(ans);
       }
     } else {
-      // Fallback : clé routine localStorage (même appareil)
       restore();
     }
 
@@ -218,6 +279,7 @@ const RoutineSaver = (() => {
 
   return { save, load, restore, clear, migrateGuestToUser,
            saveProfile, loadProfile, hasCompletedProfile, restoreProfile,
-           showResumeBanner, resumeNow, dismissBanner };
+           showResumeBanner, resumeNow, dismissBanner,
+           hasSavedRoutine, resumeSaved };
 
 })();

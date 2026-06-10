@@ -106,6 +106,9 @@ function showScreen(name) {
       return;
     }
     MakeupRoutine.initScreen();
+    // Sauvegarder la routine make-up (quiz) pour pouvoir la retrouver
+    AppState.routineChoice = 'makeup';
+    if (typeof RoutineSaver !== 'undefined') RoutineSaver.save();
   }
 
   if (name === 'coach') {
@@ -573,7 +576,31 @@ function _proceedToSkincare() {
     return;
   }
   AppState.routineChoice = 'skincare';
+  // Routine déjà enregistrée → proposer de la reprendre ou d'en générer une nouvelle
+  if (typeof RoutineSaver !== 'undefined' && RoutineSaver.hasSavedRoutine('skincare')) {
+    _routineResumeModal('skincare');
+    return;
+  }
   Questionnaire.startSkincare();
+}
+
+// Modal : reprendre la routine enregistrée ou en générer une nouvelle
+function _routineResumeModal(type) {
+  const label = type === 'skincare' ? 'skincare' : 'make-up';
+  const startFn = type === 'skincare' ? 'Questionnaire.startSkincare()' : 'Questionnaire.startMakeup()';
+  openModal(`
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="routine-resume-modal">
+      <div class="rr-icon">✦</div>
+      <h2 class="rr-title">Tu as une routine ${label}<br>enregistrée</h2>
+      <p class="rr-sub">Souhaites-tu la retrouver, ou en générer une nouvelle ?</p>
+      <button class="btn-orange-cta rr-btn" onclick="closeModal(); RoutineSaver.resumeSaved('${type}')">
+        Reprendre ma routine ${label}
+      </button>
+      <button class="btn btn-outline rr-btn" onclick="closeModal(); AppState.routineChoice='${type}'; ${startFn}">
+        Générer une nouvelle routine
+      </button>
+    </div>`);
 }
 
 // Navbar "Make-up" → questionnaire makeup directement
@@ -599,6 +626,11 @@ function _proceedToMakeup() {
     return;
   }
   AppState.routineChoice = 'makeup';
+  // Routine make-up déjà enregistrée → proposer reprise ou nouvelle
+  if (typeof RoutineSaver !== 'undefined' && RoutineSaver.hasSavedRoutine('makeup')) {
+    _routineResumeModal('makeup');
+    return;
+  }
   Questionnaire.startMakeup();
 }
 

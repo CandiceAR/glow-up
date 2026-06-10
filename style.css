@@ -8796,3 +8796,17 @@ em { font-style: italic; color: var(--nude); }
   border-color: rgba(39,174,96,0.3);
   background: rgba(39,174,96,0.06);
 }
+
+/* ─── Modal reprise de routine ──────────────────────────────── */
+.routine-resume-modal { text-align: center; padding: 8px 4px; }
+.routine-resume-modal .rr-icon {
+  font-size: 2rem; color: var(--orange); margin-bottom: 10px;
+}
+.routine-resume-modal .rr-title {
+  font-family: var(--font-serif);
+  font-size: 1.5rem; font-weight: 400; margin: 0 0 8px; line-height: 1.25;
+}
+.routine-resume-modal .rr-sub {
+  font-size: 0.9rem; color: var(--muted); margin: 0 0 20px;
+}
+.routine-resume-modal .rr-btn { width: 100%; margin-bottom: 10px; }
