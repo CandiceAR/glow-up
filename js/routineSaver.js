@@ -135,8 +135,17 @@ const RoutineSaver = (() => {
       AppState.face.skinAnalysis = profile.skinAnalysis;
     }
 
-    // Restaurer aussi la routine si elle existe
-    restore();
+    // Restaurer la routine directement depuis le profil cloud (fiable cross-device)
+    if (profile.routine?.ruleApplied) {
+      AppState.routine = { ...AppState.routine, ...profile.routine };
+      AppState.routineChoice = profile.routineChoice || 'skincare';
+      if (profile.answers?.skinType && typeof ProductCatalog !== 'undefined') {
+        ProductCatalog.getRecommended(profile.answers);
+      }
+    } else {
+      // Fallback : clé routine localStorage (même appareil)
+      restore();
+    }
 
     console.log('[RoutineSaver] Profil restauré ✓');
     return true;

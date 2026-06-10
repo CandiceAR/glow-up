@@ -8785,3 +8785,14 @@ em { font-style: italic; color: var(--nude); }
   border: 1.5px solid var(--sand);
 }
 .pc-cta--buy:hover { border-color: var(--charcoal); }
+
+/* ─── Bannière enregistrer routine (abonnées) ───────────────── */
+.save-banner--save {
+  border: 1.5px solid rgba(240,145,63,0.35);
+  background: linear-gradient(135deg, rgba(240,145,63,0.08), rgba(240,145,63,0.03));
+}
+.save-banner--save .save-banner-btn { white-space: nowrap; }
+.save-banner--done {
+  border-color: rgba(39,174,96,0.3);
+  background: rgba(39,174,96,0.06);
+}

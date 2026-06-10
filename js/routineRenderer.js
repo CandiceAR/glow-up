@@ -419,21 +419,64 @@ const RoutineRenderer = (() => {
   }
 
   function renderSaveBanner() {
-    const hasSave  = typeof RoutineSaver !== 'undefined' && RoutineSaver.hasCompletedProfile();
-    const hasPhoto = !!AppState?.face?.skinAnalysis;
-    const parts    = [];
-    if (hasPhoto) parts.push('Analyse photo');
-    parts.push('Questionnaire');
-    parts.push('Routine');
+    const isGuest      = AppState?.user?.isGuest !== false;
+    const plan         = typeof Subscription !== 'undefined' ? Subscription.getPlan() : 'free';
+    const isSubscriber = plan === 'glow' || plan === 'glowplus';
+
+    // Invitée non connectée → créer un compte
+    if (isGuest) {
+      return `
+        <div class="save-banner">
+          <span class="save-banner-icon">✦</span>
+          <div class="save-banner-text">
+            <strong>Garde ta routine</strong>
+            <span>Crée un compte pour la retrouver à chaque connexion, sur tous tes appareils.</span>
+          </div>
+          <button class="btn btn-outline save-banner-btn" onclick="openAuthModal()">Créer mon compte →</button>
+        </div>`;
+    }
+
+    // Abonnée Glow / Coach → choix explicite d'enregistrer
+    if (isSubscriber) {
+      return `
+        <div class="save-banner save-banner--save" id="saveRoutineBanner">
+          <span class="save-banner-icon">💾</span>
+          <div class="save-banner-text">
+            <strong>Enregistrer cette routine ?</strong>
+            <span>Retrouve-la automatiquement à chaque connexion, sur tous tes appareils.</span>
+          </div>
+          <button class="btn-orange-cta save-banner-btn" onclick="RoutineRenderer.saveRoutineNow()">
+            Enregistrer ma routine ✦
+          </button>
+        </div>`;
+    }
+
+    // Connectée sans abonnement
     return `
       <div class="save-banner">
         <span class="save-banner-icon">✓</span>
         <div class="save-banner-text">
-          <strong>${parts.join(' · ')} enregistrés</strong>
-          <span>${AppState.user.isGuest ? 'Crée un compte pour retrouver ton profil sur tous tes appareils.' : 'Retrouve ton profil dans <strong>Mon compte</strong>.'}</span>
+          <strong>Routine enregistrée sur cet appareil</strong>
+          <span>Passe à Glow Up pour la retrouver partout, sur tous tes appareils.</span>
         </div>
-        ${AppState.user.isGuest ? `<button class="btn btn-outline save-banner-btn" onclick="openAuthModal()">Créer mon compte →</button>` : ''}
+        <button class="btn btn-outline save-banner-btn" onclick="Subscription.showPaywall('routine_second')">Découvrir Glow Up →</button>
       </div>`;
+  }
+
+  // Sauvegarde explicite (abonnées) + confirmation
+  function saveRoutineNow() {
+    if (typeof RoutineSaver !== 'undefined') RoutineSaver.save();
+    const banner = document.getElementById('saveRoutineBanner');
+    if (banner) {
+      banner.classList.add('save-banner--done');
+      banner.innerHTML = `
+        <span class="save-banner-icon">✓</span>
+        <div class="save-banner-text">
+          <strong>Routine enregistrée ✦</strong>
+          <span>Tu la retrouveras automatiquement à chaque connexion.</span>
+        </div>`;
+    }
+    if (typeof showToast === 'function') showToast('Routine enregistrée ✦', 'success', 2500);
   }
 
   // ─── Section libre ────────────────────────────────────────────
@@ -1002,6 +1045,6 @@ const RoutineRenderer = (() => {
     return html;
   }
 
-  return { renderResults, renderConversionBlocksMakeup };
+  return { renderResults, renderConversionBlocksMakeup, saveRoutineNow };
 
 })();
