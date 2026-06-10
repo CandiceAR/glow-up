@@ -419,6 +419,7 @@ const MakeupRoutine = (() => {
     const { id, name, brand, imageUrl, amazonUrl, shopUrl, price, description, rating } = product;
     const safeUrl = amazonUrl || shopUrl || '#';
     const isAffiliate = !!amazonUrl;
+    const compareUrl = `https://www.google.com/search?q=${encodeURIComponent((brand || '') + ' ' + (name || ''))}&tbm=shop`;
     return `
       <article class="premium-card" data-product-id="${id}">
         <a href="${safeUrl}" target="_blank" rel="noopener nofollow${isAffiliate ? ' sponsored' : ''}" class="premium-card-link">
@@ -437,6 +438,7 @@ const MakeupRoutine = (() => {
             </div>
           </div>
         </a>
+        <a class="btn-compare-price" href="${compareUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Comparer les prix →</a>
       </article>`;
   }
 
