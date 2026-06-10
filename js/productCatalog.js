@@ -335,19 +335,20 @@ const ProductCatalog = (() => {
     const isAmazon = !!product.amazonUrl;
     const compareUrl = `https://www.google.com/search?q=${encodeURIComponent((product.brand || '') + ' ' + (product.name || ''))}&tbm=shop`;
     return `
-      <a class="btn btn-amazon btn-amazon-prominent"
-         href="${url}"
-         target="_blank"
-         rel="noopener nofollow${isAmazon ? ' sponsored' : ''}"
-         ${isAmazon ? `onclick="trackAmazonClick('${product.id}')"` : ''}>
-        🛒 ${isAmazon ? 'Acheter sur Amazon →' : 'Voir le produit →'}
-      </a>
-      <a class="btn-compare-price"
-         href="${compareUrl}"
-         target="_blank"
-         rel="noopener">
-        Comparer les prix →
-      </a>`;
+      <p class="pc-value">✨ Glow Up compare les prix pour toi</p>
+      <div class="premium-card-ctas">
+        <a class="pc-cta pc-cta--compare"
+           href="${compareUrl}" target="_blank" rel="noopener"
+           onclick="event.stopPropagation()">
+          💰 Comparer les prix et économiser
+        </a>
+        <a class="pc-cta pc-cta--buy"
+           href="${url}" target="_blank"
+           rel="noopener nofollow${isAmazon ? ' sponsored' : ''}"
+           onclick="event.stopPropagation();${isAmazon ? ` trackAmazonClick('${product.id}')` : ''}">
+          ${isAmazon ? 'Acheter maintenant →' : 'Voir le produit →'}
+        </a>
+      </div>`;
   }
 
   // ─── Prévisualisations carnation ──────────────────────────────

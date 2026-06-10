@@ -521,14 +521,28 @@ const RoutineRenderer = (() => {
             <h3 class="premium-card-name">${name || ''}</h3>
             ${description ? `<p class="premium-card-desc">${description}</p>` : ''}
             ${rating ? `<div class="premium-card-rating">★ ${rating}</div>` : ''}
-            <div class="premium-card-footer">
+            <div class="premium-card-price-row">
               <span class="premium-card-price">${price != null ? price.toFixed(2) + ' €' : '—'}</span>
-              <span class="premium-card-cta">Acheter →</span>
             </div>
+            <p class="pc-value">✨ Glow Up compare les prix pour toi</p>
           </div>
         </a>
-        <a class="btn-compare-price" href="${compareUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Comparer les prix →</a>
+        ${_renderCardCtas(url, compareUrl, isAffiliate, id)}
       </article>`;
+  }
+
+  // ─── CTA partagés : Comparer (principal) + Acheter (secondaire) ─
+  function _renderCardCtas(buyUrl, compareUrl, isAffiliate, id) {
+    return `
+      <div class="premium-card-ctas">
+        <a class="pc-cta pc-cta--compare" href="${compareUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+          💰 Comparer les prix et économiser
+        </a>
+        <a class="pc-cta pc-cta--buy" href="${buyUrl}" target="_blank" rel="noopener nofollow${isAffiliate ? ' sponsored' : ''}"
+           ${isAffiliate ? `onclick="event.stopPropagation(); trackAmazonClick('${id}')"` : 'onclick="event.stopPropagation()"'}>
+          Acheter maintenant →
+        </a>
+      </div>`;
   }
 
   // ─── Section verrouillée (soir) ───────────────────────────────
