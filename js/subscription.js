@@ -173,6 +173,12 @@ const Subscription = (() => {
             ${cfg.plan === 'Glow Coach' ? 'Accéder au Coach ✦' : 'Commencer Glow ✦'}
           </button>
         </div>
+        ${feature === 'coach' ? `
+        <div class="paywall-coach-perks">
+          <span>✨ Échanges illimités</span>
+          <span>✨ Glow Up connaît déjà ta peau, tes habitudes, ton budget</span>
+          <span>🎁 Programme Ambassadrice · gagne 3 € par filleul validé</span>
+        </div>` : ''}
         <p class="paywall-lux-fine">Paiement annuel · Annulable à tout moment</p>
         <button class="btn-ghost paywall-lux-skip" onclick="closeModal()">Continuer avec Free →</button>
       </div>`;

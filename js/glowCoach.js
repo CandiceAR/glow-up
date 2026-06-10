@@ -373,7 +373,11 @@ Conseils Glow Up : ${(_knowledge.glowup_advice || []).join(' | ')}`;
   // ══════════════════════════════════════════════════════════════
 
   function _renderCounter() {
-    const plan      = _getPlan();
+    const plan = _getPlan();
+    // Non-abonnée → CTA d'incitation (pas de compteur)
+    if (plan === 'free') {
+      return `<button class="coach-unlock-cta" onclick="Subscription.showPaywall('coach')">🧡 Débloquer l'accès illimité</button>`;
+    }
     const remaining = plan === 'glowplus' ? _monthlyRemaining() : Math.max(0, _getLimit() - _getCurrentCount());
     if (plan === 'glowplus') {
       return `<div class="coach-counter"><span class="coach-counter-num">${remaining}</span><span class="coach-counter-label">échange${remaining !== 1 ? 's' : ''} ce mois</span></div>`;
