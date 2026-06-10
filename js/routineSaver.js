@@ -231,6 +231,8 @@ const RoutineSaver = (() => {
 
   // ─── Bannière de reprise (affichée sur l'écran home) ─────────
   function showResumeBanner() {
+    // Désactivée : remplacée par le modal "Reprendre / Nouvelle" au clic sur l'onglet
+    return;
     const data = load();
     if (!data || !data.routine?.ruleApplied) return;
 
