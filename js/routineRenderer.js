@@ -402,6 +402,9 @@ const RoutineRenderer = (() => {
           ? renderLockedSection('Routine du soir', routine.soir, '🌙')
           : renderRoutineSection('Routine du soir', routine.soir, '🌙', hasRetinol)}
 
+      <!-- Bannière sauvegarde — juste après la routine -->
+      ${renderSaveBanner()}
+
       <!-- ✦ SKIN JOURNEY — skincare uniquement -->
       ${AppState.routineChoice !== 'makeup' ? renderSkinJourneyTeaser() : ''}
 
@@ -412,9 +415,6 @@ const RoutineRenderer = (() => {
       ${renderProductsCTA()}
 
       ${renderDebugLog(routine.log)}
-
-      <!-- Bannière sauvegarde -->
-      ${renderSaveBanner()}
     `;
   }
 
