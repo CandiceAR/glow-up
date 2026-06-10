@@ -6,7 +6,7 @@
   <title>Glow Up — Skincare & Maquillage Virtuel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=170">
+  <link rel="stylesheet" href="style.css?v=171">
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#C9A98A">
@@ -31,8 +31,9 @@
       </button>
     </div>
 
-    <a class="nav-logo" href="#" onclick="showScreen('home'); return false;">
-      <img src="assets/logo-glowup.png" alt="Glow Up" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+    <a class="nav-logo" href="#" onclick="showScreen('home'); return false;" aria-label="Glow Up — accueil">
+      <img class="nav-logo-g"    src="assets/logo-g.png"      alt="Glow Up" onerror="this.style.display='none'">
+      <img class="nav-logo-full" src="assets/logo-glowup.png" alt="Glow Up" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
       <span class="nav-logo-text" style="display:none;">GLOW UP</span>
     </a>
 
@@ -569,26 +570,26 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
   <!-- ===== SCRIPTS ===== -->
-  <script src="js/lookGenerator.js?v=170"></script>
-  <script src="js/makeupAI.js?v=170"></script>
-  <script src="js/skinAnalysis.js?v=170"></script>
-  <script src="js/rulesEngine.js?v=170"></script>
-  <script src="js/catalogue.js?v=170"></script>
-  <script src="js/productCatalog.js?v=170"></script>
-  <script src="js/questionnaire.js?v=170"></script>
-  <script src="js/routineRenderer.js?v=170"></script>
-  <script src="js/tryOn.js?v=170"></script>
-  <script src="js/auth.js?v=170"></script>
-  <script src="js/skinJourney.js?v=170"></script>
-  <script src="js/makeupRoutine.js?v=170"></script>
-  <script src="js/tracker.js?v=170"></script>
-  <script src="js/skinpedia.js?v=170"></script>
-  <script src="js/glowCoach.js?v=170"></script>
-  <script src="js/firestoreProfile.js?v=170"></script>
-  <script src="js/firestoreProducts.js?v=170"></script>
-  <script src="js/subscription.js?v=170"></script>
-  <script src="js/routineSaver.js?v=170"></script>
-  <script src="js/app.js?v=170"></script>
+  <script src="js/lookGenerator.js?v=171"></script>
+  <script src="js/makeupAI.js?v=171"></script>
+  <script src="js/skinAnalysis.js?v=171"></script>
+  <script src="js/rulesEngine.js?v=171"></script>
+  <script src="js/catalogue.js?v=171"></script>
+  <script src="js/productCatalog.js?v=171"></script>
+  <script src="js/questionnaire.js?v=171"></script>
+  <script src="js/routineRenderer.js?v=171"></script>
+  <script src="js/tryOn.js?v=171"></script>
+  <script src="js/auth.js?v=171"></script>
+  <script src="js/skinJourney.js?v=171"></script>
+  <script src="js/makeupRoutine.js?v=171"></script>
+  <script src="js/tracker.js?v=171"></script>
+  <script src="js/skinpedia.js?v=171"></script>
+  <script src="js/glowCoach.js?v=171"></script>
+  <script src="js/firestoreProfile.js?v=171"></script>
+  <script src="js/firestoreProducts.js?v=171"></script>
+  <script src="js/subscription.js?v=171"></script>
+  <script src="js/routineSaver.js?v=171"></script>
+  <script src="js/app.js?v=171"></script>
 
   <!-- Enregistrement du Service Worker PWA -->
   <script>

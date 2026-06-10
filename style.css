@@ -32,7 +32,7 @@
   --radius-sm:  8px;
   --radius-lg:  24px;
 
-  --nav-h: 64px;
+  --nav-h: 78px;
   --transition: 0.25s ease;
 }
 
@@ -86,13 +86,18 @@ em { font-style: italic; color: var(--nude); }
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0 12px;
 }
+/* Le fond pêché des logos se fond dans la navbar via multiply, le glow orange reste */
 .nav-logo img {
-  height: 56px;
+  height: 62px;
   width: auto;
-  max-width: 220px;
+  max-width: 260px;
   object-fit: contain;
+  mix-blend-mode: multiply;
 }
+.nav-logo-g    { display: none; }   /* G : mobile uniquement */
+.nav-logo-full { display: block; }  /* logo complet : desktop */
 .nav-logo-text {
   font-family: var(--font-serif);
   font-size: 1.5rem;
@@ -163,6 +168,31 @@ em { font-style: italic; color: var(--nude); }
 .nav-link-auth--connected:hover {
   color: var(--nude);
   border-bottom-color: var(--nude);
+}
+
+/* Compte : icône seule discrète (ne concurrence pas le logo) */
+.nav-account-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid var(--sand);
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0;
+  transition: color var(--transition), border-color var(--transition), background var(--transition);
+}
+.nav-account-btn:hover {
+  color: var(--charcoal);
+  border-color: var(--nude);
+  background: rgba(201,169,138,0.08);
+}
+.nav-account-btn--connected {
+  color: var(--charcoal);
+  border-color: rgba(201,169,138,0.4);
 }
 
 .hero-login-hint {
@@ -5445,6 +5475,11 @@ em { font-style: italic; color: var(--nude); }
     height: calc(var(--nav-h) + var(--safe-top));
     padding-top: var(--safe-top);
   }
+
+  /* Mobile : afficher le G premium, masquer le logo complet */
+  .nav-logo-g    { display: block; }
+  .nav-logo-full { display: none; }
+  .nav-logo img  { height: 52px; max-width: 64px; }
 
   .hamburger {
     display: none; /* Not needed with bottom nav */

@@ -164,18 +164,18 @@ function closeModal() {
 }
 
 // ─── Auth state dans la UI ────────────────────────────────────
-const _iconProfil = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`;
+const _iconProfil = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`;
 
 function updateAuthUI() {
   const el   = document.getElementById('navUser');
   const hint = document.getElementById('heroLoginHint');
   if (!el) return;
   if (AppState.user.isGuest) {
-    el.innerHTML = `<button class="nav-link-auth" onclick="openAuthModal()">${_iconProfil} Compte</button>`;
+    el.innerHTML = `<button class="nav-account-btn" onclick="openAuthModal()" aria-label="Se connecter" title="Se connecter">${_iconProfil}</button>`;
     if (hint) hint.style.display = '';
   } else {
     const prenom = AppState.user.displayName ? AppState.user.displayName.split(' ')[0] : 'Mon compte';
-    el.innerHTML = `<button class="nav-link-auth nav-link-auth--connected" onclick="openProfileMenu()">${_iconProfil} Bonjour ${prenom}</button>`;
+    el.innerHTML = `<button class="nav-account-btn nav-account-btn--connected" onclick="openProfileMenu()" aria-label="Mon compte" title="Bonjour ${prenom}">${_iconProfil}</button>`;
     if (hint) hint.style.display = 'none';
   }
 }
