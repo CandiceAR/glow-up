@@ -617,12 +617,14 @@ const MakeupRoutine = (() => {
           <strong class="cg-total-amount">${totalWithBonus.toFixed(2)} €</strong>
         </div>` : ''}
 
+        <!-- Enregistrer ma routine — juste après la routine -->
+        ${_renderSaveBanner()}
+
         <!-- Blocs conversion après le contenu -->
         ${conversionBlocks}
 
         <footer class="premium-footer">
           <p>Liens affiliés Amazon · Même commission sur tous les produits</p>
-          ${_renderSaveBanner()}
         </footer>
 
       </div>`;
