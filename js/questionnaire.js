@@ -653,14 +653,14 @@ const Questionnaire = (() => {
     const insights = (typeof SkinAnalysis !== 'undefined' && SkinAnalysis.getTopInsights)
       ? SkinAnalysis.getTopInsights(photo) : [];
 
-    // Points forts — valorisation élégante
+    // Points forts — valorisation élégante (base ~300 commentaires, pondérée par les données)
     const portrait = (typeof SkinAnalysis !== 'undefined' && SkinAnalysis.buildBeautyPortrait)
-      ? SkinAnalysis.buildBeautyPortrait(photo) : [];
+      ? SkinAnalysis.buildBeautyPortrait(photo, AppState.questionnaire?.answers || {}) : [];
     const portraitHtml = portrait.length ? `
       <section class="ap-section ap-strengths">
-        <h2 class="ap-section-title">Ce qui te met déjà en valeur</h2>
+        <h2 class="ap-section-title">✨ Ce qui te met naturellement en valeur</h2>
         <ul class="ap-strengths-list">
-          ${portrait.map(l => `<li>${l}</li>`).join('')}
+          ${portrait.map(l => `<li>🤍 ${l}</li>`).join('')}
         </ul>
       </section>` : '';
 

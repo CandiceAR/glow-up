@@ -2270,116 +2270,245 @@ const SkinAnalysis = (() => {
   // Sélection combinatoire → 2 visages = 2 portraits différents
   // ══════════════════════════════════════════════════════════════
 
+  // Base de ~300 commentaires valorisants répartis en 8 familles.
+  // Sélection pondérée par les vraies données → 2 visages ≠ mêmes phrases.
   const PORTRAIT_LIB = {
-    carnation: {
-      clair: [
-        'Ta carnation claire capte délicatement la lumière.',
-        'Ton teint clair a une jolie luminosité naturelle.',
-        'Ta peau claire offre un fini lumineux très frais.',
-        'Les nuances de ta peau claire apportent beaucoup de fraîcheur.',
-        'Ta carnation claire dégage une vraie délicatesse.',
-        'Ton teint clair laisse une belle place aux teintes douces.',
-        'Ta peau claire a une jolie transparence naturelle.',
-        'Ton teint clair reflète joliment la lumière.',
-      ],
-      medium: [
-        'Ta carnation medium a une belle chaleur naturelle.',
-        'Ton teint medium dégage beaucoup d\'éclat.',
-        'Ta peau medium a une jolie profondeur lumineuse.',
-        'Ta carnation medium t\'offre une belle polyvalence de couleurs.',
-        'Ton teint medium capte magnifiquement la lumière.',
-        'Ta peau medium a une chaleur très flatteuse.',
-        'Ton teint medium a un joli fini doré.',
-        'Ta carnation medium apporte beaucoup d\'harmonie au visage.',
-      ],
-      fonce: [
-        'Ta carnation foncée a une superbe profondeur.',
-        'Ton teint foncé dégage beaucoup d\'intensité lumineuse.',
-        'Ta peau foncée a un éclat naturel magnifique.',
-        'Ta carnation foncée sublime les teintes riches et chaudes.',
-        'Ton teint foncé a une belle luminosité naturelle.',
-        'Ta peau foncée offre une intensité très élégante.',
-        'Ta carnation foncée capte la lumière avec beaucoup d\'éclat.',
-        'Ton teint foncé dégage force et harmonie.',
-      ],
-    },
-    undertone: {
-      warm: [
-        'Ton sous-ton chaud illumine naturellement ton visage.',
-        'Les reflets dorés de ta peau apportent beaucoup de chaleur.',
-        'Ton sous-ton doré réchauffe joliment le teint.',
-        'Les nuances pêchées de ta peau ressortent harmonieusement.',
-        'Ton sous-ton chaud sublime les teintes corail, pêche et or.',
-        'La chaleur de ton teint apporte un bel éclat.',
-      ],
-      cool: [
-        'Ton sous-ton froid apporte beaucoup d\'élégance au visage.',
-        'Les reflets rosés de ta peau sont très lumineux.',
-        'Ton sous-ton frais sublime les teintes rosées et prunées.',
-        'Les nuances délicates de ta peau apportent de la fraîcheur.',
-        'Ton sous-ton froid donne un joli éclat lumineux au teint.',
-      ],
-      neutral: [
-        'Ton sous-ton neutre t\'offre une grande polyvalence en maquillage.',
-        'Ton teint équilibré te permet de porter presque toutes les teintes.',
-        'Ton sous-ton neutre apporte beaucoup d\'harmonie au visage.',
-        'Ta peau équilibrée s\'accorde avec une large palette de couleurs.',
-        'Ton sous-ton neutre est un vrai atout polyvalence.',
-      ],
-    },
-    faceShape: {
-      oval: [
-        'Les proportions de ton visage sont particulièrement harmonieuses.',
-        'Ton visage s\'adapte facilement à tous les styles de maquillage.',
-        'Tes traits sont naturellement équilibrés.',
-      ],
-      round: [
-        'Ton visage dégage beaucoup de douceur.',
-        'Tes traits apportent de la jeunesse et de la fraîcheur.',
-        'Ton visage a une jolie douceur naturelle.',
-      ],
-      square: [
-        'Les contours de ton visage apportent beaucoup de caractère.',
-        'Tes traits sont bien définis et structurés.',
-        'Ton visage dégage de l\'élégance et du caractère.',
-      ],
-      heart: [
-        'Le haut de ton visage met naturellement ton regard en valeur.',
-        'Tes proportions attirent joliment l\'attention vers les yeux.',
-        'Ton visage en cœur a beaucoup de charme.',
-      ],
-      long: [
-        'Les lignes de ton visage apportent beaucoup d\'élégance.',
-        'Tes traits paraissent naturellement raffinés.',
-        'Ton visage dégage de la finesse.',
-      ],
-    },
+    // 1. ÉCLAT NATUREL
+    eclat: [
+      'Ta peau capte déjà joliment la lumière.',
+      'Ton teint a une belle luminosité naturelle.',
+      'Ton visage dégage une fraîcheur très douce.',
+      'Ta peau renvoie une lumière naturelle très flatteuse.',
+      'Il y a déjà un joli glow naturel sur ton visage.',
+      'Ton teint a cette fraîcheur qu\'on cherche à recréer en maquillage.',
+      'Ta peau a une vraie vitalité lumineuse.',
+      'La lumière se pose joliment sur ton visage.',
+      'Ton teint paraît frais et reposé.',
+      'Ta peau a un éclat naturel facile à sublimer.',
+      'Ton visage a une luminosité douce, très agréable.',
+      'Ton teint reflète une belle énergie.',
+      'Il y a une jolie clarté naturelle dans ton teint.',
+      'Ta peau a cette qualité lumineuse qui met tout de suite en valeur.',
+      'Ton teint a une fraîcheur naturelle très élégante.',
+      'Ton visage dégage une lumière naturelle apaisante.',
+      'Ta peau a déjà un beau rayonnement.',
+      'Ton éclat naturel demande très peu pour ressortir.',
+    ],
+    // 2. REGARD
     regard: [
+      'Ton regard est naturellement expressif.',
+      'La forme de tes yeux apporte beaucoup de douceur à ton visage.',
+      'Ton regard structure déjà très bien ton visage.',
+      'Tes yeux donnent beaucoup d\'intensité à ton expression.',
       'Ton regard attire naturellement l\'attention.',
-      'Tes yeux dégagent beaucoup d\'expression.',
-      'Ton regard a une jolie douceur naturelle.',
-      'Ton regard paraît frais et lumineux.',
-      'Tes yeux sont naturellement bien mis en valeur.',
-      'Ton regard dégage beaucoup d\'harmonie.',
+      'Tes yeux ont une belle ouverture naturelle.',
+      'Ton regard dégage de la douceur et de la profondeur.',
+      'La forme de tes yeux est joliment équilibrée.',
+      'Ton regard a quelque chose de très lumineux.',
+      'Tes yeux apportent beaucoup de présence à ton visage.',
+      'Ton regard se suffit presque à lui-même.',
+      'Il y a beaucoup d\'expression dans ton regard.',
+      'Tes yeux structurent naturellement le haut de ton visage.',
+      'Ton regard a une jolie intensité, facile à révéler.',
+      'Ton regard dégage une belle sérénité.',
+      'Tes yeux ont une forme très harmonieuse.',
     ],
-    teint: [
-      'Ton teint reflète joliment la lumière.',
-      'Ta peau a un bel éclat naturel.',
-      'Ton teint paraît frais et lumineux.',
-      'Ta peau capte joliment la lumière.',
-      'Ton teint dégage une belle vitalité.',
+    // 3. SOURCILS
+    sourcils: [
+      'Tes sourcils encadrent naturellement bien ton regard.',
+      'La ligne de tes sourcils apporte de l\'équilibre à ton visage.',
+      'Tes sourcils donnent du caractère à ton expression.',
+      'La forme de tes sourcils structure joliment ton regard.',
+      'Tes sourcils ont une jolie ligne naturelle.',
+      'Tes sourcils soulignent bien l\'harmonie de ton visage.',
+      'La densité de tes sourcils met ton regard en valeur.',
+      'Tes sourcils apportent une belle définition au haut du visage.',
+      'L\'arche de tes sourcils donne de l\'élégance à ton regard.',
+      'Tes sourcils cadrent naturellement tes yeux.',
+      'Tes sourcils participent déjà à l\'équilibre de tes traits.',
+      'La forme de tes sourcils est facile à mettre en valeur.',
+      'Tes sourcils donnent de la structure à ton expression.',
+      'Tes sourcils apportent du relief à ton regard.',
     ],
-    texture: [
-      'Ton grain de peau est joliment régulier.',
-      'Ta peau paraît lisse et homogène.',
-      'Ton grain de peau est doux et uniforme.',
+    // 4. LÈVRES
+    levres: [
+      'La forme de tes lèvres apporte de la douceur à ton visage.',
+      'Tes lèvres équilibrent joliment tes traits.',
+      'Ton sourire donne beaucoup de charme à ton visage.',
+      'Le dessin de tes lèvres est naturellement harmonieux.',
+      'Tes lèvres ont une jolie forme, facile à sublimer.',
+      'Tes lèvres apportent de la rondeur et de la douceur à ton visage.',
+      'La courbe de tes lèvres adoucit joliment ton expression.',
+      'Tes lèvres s\'accordent bien avec l\'ensemble de tes traits.',
+      'Le contour de tes lèvres est joliment dessiné.',
+      'Tes lèvres apportent de l\'équilibre au bas du visage.',
+      'Ton sourire éclaire naturellement ton visage.',
+      'Tes lèvres ont un joli volume naturel.',
+      'La forme de tes lèvres met en valeur ton sourire.',
     ],
-    pointsForts: [
-      'Tu as déjà une belle base de peau.',
-      'L\'ensemble de ton visage paraît harmonieux.',
-      'Ta peau semble bien entretenue.',
-      'Le potentiel beauté de ton visage est déjà très présent.',
-      'Ton visage dégage beaucoup de douceur.',
+    // 5. TEINT (par carnation / sous-ton + général)
+    teint: {
+      carnation: {
+        clair: [
+          'Ta carnation claire a une jolie luminosité naturelle.',
+          'Ton teint clair laisse une belle place aux teintes douces.',
+          'Ta peau claire a une transparence très élégante.',
+          'Ton teint clair capte délicatement la lumière.',
+          'Ta carnation claire dégage beaucoup de fraîcheur.',
+          'Ton teint clair se prête à des couleurs lumineuses et nuancées.',
+          'Ta peau claire a un fini frais et délicat.',
+          'Ta carnation claire est facile à illuminer.',
+        ],
+        medium: [
+          'Ta carnation medium a une belle chaleur naturelle.',
+          'Ton teint medium a une jolie profondeur lumineuse.',
+          'Ta carnation medium t\'offre une belle polyvalence de couleurs.',
+          'Ton teint medium capte magnifiquement la lumière.',
+          'Ta peau medium a une chaleur très flatteuse.',
+          'Ton teint medium a un joli fini légèrement doré.',
+          'Ta carnation medium apporte beaucoup d\'harmonie au visage.',
+          'Ton teint medium met facilement en valeur les teintes chaudes.',
+        ],
+        fonce: [
+          'Ta carnation foncée a une superbe profondeur.',
+          'Ton teint foncé dégage une belle intensité lumineuse.',
+          'Ta peau foncée a un éclat naturel magnifique.',
+          'Ta carnation foncée sublime les teintes riches et chaudes.',
+          'Ton teint foncé a une luminosité naturelle remarquable.',
+          'Ta peau foncée offre une intensité très élégante.',
+          'Ta carnation foncée capte la lumière avec beaucoup d\'éclat.',
+          'Ton teint foncé dégage force et harmonie.',
+        ],
+      },
+      undertone: {
+        warm: [
+          'Ton sous-ton chaud illumine naturellement ton visage.',
+          'Les reflets dorés de ta peau apportent beaucoup de chaleur.',
+          'Ton sous-ton doré réchauffe joliment ton teint.',
+          'Les nuances pêchées de ta peau ressortent harmonieusement.',
+          'Ton sous-ton chaud apporte une vraie élégance à ton visage.',
+          'La chaleur de ton teint lui donne un bel éclat.',
+          'Ton sous-ton doré met facilement le teint en valeur.',
+        ],
+        cool: [
+          'Ton sous-ton froid apporte beaucoup d\'élégance à ton visage.',
+          'Les reflets rosés de ta peau sont très lumineux.',
+          'Ton sous-ton frais donne une belle clarté à ton teint.',
+          'Les nuances délicates de ta peau apportent de la fraîcheur.',
+          'Ton sous-ton froid donne un joli éclat lumineux au teint.',
+          'Ton sous-ton apporte une vraie finesse à ton visage.',
+        ],
+        neutral: [
+          'Ton sous-ton neutre apporte beaucoup d\'harmonie à ton visage.',
+          'Ton teint équilibré te permet de porter presque toutes les teintes.',
+          'Ton sous-ton neutre est un vrai atout polyvalence.',
+          'Ta peau équilibrée s\'accorde avec une large palette de couleurs.',
+          'Ton sous-ton neutre donne une belle élégance naturelle à ton teint.',
+        ],
+      },
+      general: [
+        'Ton teint présente déjà une belle harmonie globale.',
+        'Ta carnation est lumineuse et facile à mettre en valeur.',
+        'Ton teint a une jolie uniformité naturelle.',
+        'Ta peau a une belle régularité de teint.',
+        'Ton teint dégage une élégance discrète.',
+        'Ta carnation a une vraie cohérence lumineuse.',
+        'Ton teint a une jolie richesse naturelle.',
+      ],
+    },
+    // 6. STRUCTURE DU VISAGE (par forme + général)
+    structure: {
+      shape: {
+        oval: [
+          'Les proportions de ton visage sont particulièrement harmonieuses.',
+          'Ton visage s\'adapte facilement à tous les styles de maquillage.',
+          'Tes traits sont naturellement équilibrés.',
+          'La forme ovale de ton visage est très polyvalente.',
+          'Ton visage a un équilibre naturel très élégant.',
+        ],
+        round: [
+          'Ton visage dégage beaucoup de douceur.',
+          'Tes traits apportent de la jeunesse et de la fraîcheur.',
+          'Ton visage a une rondeur très harmonieuse.',
+          'La douceur de tes traits adoucit joliment ton expression.',
+          'Ton visage a un charme naturel très doux.',
+        ],
+        square: [
+          'Les contours de ton visage apportent beaucoup de caractère.',
+          'Tes traits sont bien définis et structurés.',
+          'Ton visage dégage de l\'élégance et du caractère.',
+          'La structure de ton visage a une vraie présence.',
+          'Tes traits affirmés donnent beaucoup de personnalité.',
+        ],
+        heart: [
+          'Le haut de ton visage met naturellement ton regard en valeur.',
+          'Tes proportions attirent joliment l\'attention vers les yeux.',
+          'Ton visage en cœur a beaucoup de charme.',
+          'La finesse du bas de ton visage est très élégante.',
+          'Tes traits ont une jolie délicatesse.',
+        ],
+        long: [
+          'Les lignes de ton visage apportent beaucoup d\'élégance.',
+          'Tes traits paraissent naturellement raffinés.',
+          'Ton visage a une jolie finesse.',
+          'La longueur de ton visage lui donne beaucoup de prestance.',
+          'Tes traits allongés ont une vraie élégance.',
+        ],
+      },
+      general: [
+        'Tes traits se prêtent très bien à un maquillage naturel.',
+        'La structure de ton visage est facile à mettre en valeur.',
+        'Tes traits ont un bel équilibre naturel.',
+        'Les volumes de ton visage sont harmonieux.',
+        'Ton visage a une jolie cohérence d\'ensemble.',
+        'Tes traits dégagent beaucoup d\'harmonie.',
+      ],
+    },
+    // 7. POINTS FORTS MAKE-UP (par sous-ton + général)
+    makeup: {
+      undertone: {
+        warm: [
+          'Les teintes corail, pêche et dorées accompagneront très bien ta carnation.',
+          'Un blush pêche pourrait sublimer naturellement tes pommettes.',
+          'Les nuances chaudes mettront facilement ton teint en valeur.',
+          'Un highlighter doré ferait ressortir ton éclat naturel.',
+        ],
+        cool: [
+          'Les teintes rosées et prunées accompagneront très bien ta carnation.',
+          'Un blush rosé pourrait sublimer naturellement tes pommettes.',
+          'Les nuances froides donneront une belle clarté à ton teint.',
+          'Un highlighter rosé ferait joliment ressortir ton éclat.',
+        ],
+        neutral: [
+          'Les teintes nude et rosées accompagneront très bien ta carnation.',
+          'Un blush nude pourrait sublimer naturellement tes pommettes.',
+          'Presque toutes les teintes peuvent t\'accompagner — un vrai atout.',
+          'Un highlighter champagne ferait ressortir ton éclat naturel.',
+        ],
+      },
+      general: [
+        'Ton regard peut être facilement mis en valeur avec très peu de maquillage.',
+        'Une touche de blush suffirait à réveiller ton teint.',
+        'Un soin léger révèlerait déjà beaucoup ton éclat.',
+        'Tes traits demandent très peu pour être sublimés.',
+        'Un maquillage léger suffirait à révéler tes points forts.',
+        'Quelques touches ciblées suffiraient à intensifier ton regard.',
+      ],
+    },
+    // 8. STYLE BEAUTÉ
+    style: [
+      'Ton visage se prête très bien à un effet glow naturel.',
+      'Un maquillage léger peut suffire à révéler tes traits.',
+      'Ton profil beauté correspond bien à une routine douce et lumineuse.',
+      'Ton visage est fait pour un effet « bonne mine » naturel.',
+      'Un style minimaliste mettrait joliment tes traits en valeur.',
+      'Ton visage supporte aussi très bien un maquillage plus affirmé.',
+      'Les contrastes naturels de ton visage offrent beaucoup de possibilités.',
+      'Un look frais et lumineux te correspond particulièrement.',
+      'Ton visage se prête à une beauté simple et élégante.',
+      'Un effet peau nue sublimée te mettrait très en valeur.',
+      'Ton profil se prête aussi bien au naturel qu\'au sophistiqué.',
+      'Une routine douce révèlerait déjà beaucoup ton potentiel.',
     ],
   };
 
@@ -2387,38 +2516,63 @@ const SkinAnalysis = (() => {
     return arr && arr.length ? arr[Math.floor(Math.random() * arr.length)] : null;
   }
 
-  // Construit 3 lignes valorisantes variées selon le vrai visage
-  function buildBeautyPortrait(result) {
+  // Construit 2-3 commentaires valorisants, catégories tirées au sort
+  // selon les vraies données → deux visages ≈ jamais les mêmes phrases.
+  function buildBeautyPortrait(result, answers = {}) {
     if (!result) return [];
     const ca = result.carnation?.type || 'medium';
     const ut = result.undertone?.type || 'neutral';
     const fs = result.faceShape?.shape || 'oval';
     const zones = result.zones || {};
     const vals = Object.values(zones);
-    const avgEclat   = vals.length ? avg(vals.map(z => z.eclat))   : 50;
-    const avgTexture = vals.length ? avg(vals.map(z => z.texture)) : 50;
+    const avgEclat = vals.length ? avg(vals.map(z => z.eclat)) : 50;
     const cernesMarques = result.cernes?.detected && result.cernes?.intensity === 'marqués';
 
-    const lines = [];
+    const L = PORTRAIT_LIB;
+    const getters = {
+      eclat:    () => _pick(L.eclat),
+      regard:   () => _pick(L.regard),
+      sourcils: () => _pick(L.sourcils),
+      levres:   () => _pick(L.levres),
+      style:    () => _pick(L.style),
+      teint: () => {
+        const r = Math.random();
+        if (r < 0.4)  return _pick(L.teint.carnation[ca] || L.teint.carnation.medium);
+        if (r < 0.75) return _pick(L.teint.undertone[ut] || L.teint.undertone.neutral);
+        return _pick(L.teint.general);
+      },
+      structure: () => Math.random() < 0.7
+        ? _pick(L.structure.shape[fs] || L.structure.shape.oval)
+        : _pick(L.structure.general),
+      makeup: () => Math.random() < 0.6
+        ? _pick(L.makeup.undertone[ut] || L.makeup.undertone.neutral)
+        : _pick(L.makeup.general),
+    };
 
-    // 1. Teint : alterne carnation / sous-ton (hasard) → varie d'une personne à l'autre
-    const toneSource = Math.random() < 0.5
-      ? (PORTRAIT_LIB.carnation[ca] || PORTRAIT_LIB.carnation.medium)
-      : (PORTRAIT_LIB.undertone[ut] || PORTRAIT_LIB.undertone.neutral);
-    lines.push(_pick(toneSource));
+    // Pondération selon les vraies données détectées
+    const weights = [
+      ['teint',     3],
+      ['structure', 3],
+      ['eclat',     avgEclat >= 56 ? 3 : 1.2],
+      ['regard',    cernesMarques ? 0.6 : 2.5],
+      ['makeup',    2],
+      ['style',     2],
+      ['sourcils',  1.4],
+      ['levres',    1.4],
+    ];
 
-    // 2. Forme du visage
-    lines.push(_pick(PORTRAIT_LIB.faceShape[fs] || PORTRAIT_LIB.faceShape.oval));
+    // Tirage pondéré de 3 catégories distinctes
+    const pool = weights.slice();
+    const chosen = [];
+    while (chosen.length < 3 && pool.length) {
+      const total = pool.reduce((s, [, w]) => s + w, 0);
+      let r = Math.random() * total, i = 0;
+      while (i < pool.length - 1 && r > pool[i][1]) { r -= pool[i][1]; i++; }
+      chosen.push(pool[i][0]);
+      pool.splice(i, 1);
+    }
 
-    // 3. Un atout réel : regard (si pas de cernes marqués) / éclat / grain / sinon point fort
-    const strengthPools = [];
-    if (!cernesMarques)      strengthPools.push(PORTRAIT_LIB.regard);
-    if (avgEclat   >= 58)    strengthPools.push(PORTRAIT_LIB.teint);
-    if (avgTexture >= 60)    strengthPools.push(PORTRAIT_LIB.texture);
-    strengthPools.push(PORTRAIT_LIB.pointsForts); // toujours un filet de sécurité
-    lines.push(_pick(strengthPools[Math.floor(Math.random() * strengthPools.length)]));
-
-    // Dédoublonner et nettoyer
+    const lines = chosen.map(k => getters[k]());
     return [...new Set(lines.filter(Boolean))];
   }
 
