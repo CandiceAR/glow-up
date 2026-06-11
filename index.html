@@ -6,7 +6,7 @@
   <title>Glow Up — Skincare & Maquillage Virtuel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=171">
+  <link rel="stylesheet" href="style.css?v=172">
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#C9A98A">
@@ -570,33 +570,53 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
   <!-- ===== SCRIPTS ===== -->
-  <script src="js/lookGenerator.js?v=171"></script>
-  <script src="js/makeupAI.js?v=171"></script>
-  <script src="js/skinAnalysis.js?v=171"></script>
-  <script src="js/rulesEngine.js?v=171"></script>
-  <script src="js/catalogue.js?v=171"></script>
-  <script src="js/productCatalog.js?v=171"></script>
-  <script src="js/questionnaire.js?v=171"></script>
-  <script src="js/routineRenderer.js?v=171"></script>
-  <script src="js/tryOn.js?v=171"></script>
-  <script src="js/auth.js?v=171"></script>
-  <script src="js/skinJourney.js?v=171"></script>
-  <script src="js/makeupRoutine.js?v=171"></script>
-  <script src="js/tracker.js?v=171"></script>
-  <script src="js/skinpedia.js?v=171"></script>
-  <script src="js/glowCoach.js?v=171"></script>
-  <script src="js/firestoreProfile.js?v=171"></script>
-  <script src="js/firestoreProducts.js?v=171"></script>
-  <script src="js/subscription.js?v=171"></script>
-  <script src="js/routineSaver.js?v=171"></script>
-  <script src="js/app.js?v=171"></script>
+  <script src="js/lookGenerator.js?v=172"></script>
+  <script src="js/makeupAI.js?v=172"></script>
+  <script src="js/skinAnalysis.js?v=172"></script>
+  <script src="js/rulesEngine.js?v=172"></script>
+  <script src="js/catalogue.js?v=172"></script>
+  <script src="js/productCatalog.js?v=172"></script>
+  <script src="js/questionnaire.js?v=172"></script>
+  <script src="js/routineRenderer.js?v=172"></script>
+  <script src="js/tryOn.js?v=172"></script>
+  <script src="js/auth.js?v=172"></script>
+  <script src="js/skinJourney.js?v=172"></script>
+  <script src="js/makeupRoutine.js?v=172"></script>
+  <script src="js/tracker.js?v=172"></script>
+  <script src="js/skinpedia.js?v=172"></script>
+  <script src="js/glowCoach.js?v=172"></script>
+  <script src="js/firestoreProfile.js?v=172"></script>
+  <script src="js/firestoreProducts.js?v=172"></script>
+  <script src="js/subscription.js?v=172"></script>
+  <script src="js/routineSaver.js?v=172"></script>
+  <script src="js/app.js?v=172"></script>
 
-  <!-- Enregistrement du Service Worker PWA -->
+  <!-- Enregistrement du Service Worker PWA — AUTO-MISE À JOUR -->
   <script>
     if ('serviceWorker' in navigator && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+      // Recharge automatique quand une nouvelle version prend le contrôle
+      // (skipWaiting + clients.claim dans sw.js déclenchent controllerchange)
+      let _swRefreshing = false;
+      const _hadController = !!navigator.serviceWorker.controller;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (_swRefreshing) return;
+        _swRefreshing = true;
+        // Ne recharger que si une version tournait déjà (= vraie mise à jour, pas 1ʳᵉ install)
+        if (_hadController) window.location.reload();
+      });
+
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js')
-          .then(reg => console.log('Service Worker enregistré :', reg.scope))
+          .then(reg => {
+            // Vérifier les mises à jour à l'ouverture…
+            reg.update();
+            // …puis régulièrement tant que l'app reste ouverte
+            setInterval(() => reg.update(), 60 * 1000);
+            // Re-vérifier dès que l'app revient au premier plan
+            document.addEventListener('visibilitychange', () => {
+              if (document.visibilityState === 'visible') reg.update();
+            });
+          })
           .catch(err => console.warn('Service Worker échec :', err));
       });
     }
