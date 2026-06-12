@@ -315,8 +315,9 @@ em { font-style: italic; color: var(--nude); }
 .hero-bg {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 70% 50%, rgba(201,169,138,0.15) 0%, transparent 60%),
-              radial-gradient(ellipse at 20% 80%, rgba(232,197,191,0.2) 0%, transparent 50%);
+  background: radial-gradient(ellipse at 50% 18%, rgba(240,145,63,0.16) 0%, transparent 55%),
+              radial-gradient(ellipse at 75% 55%, rgba(201,169,138,0.15) 0%, transparent 60%),
+              radial-gradient(ellipse at 20% 85%, rgba(232,197,191,0.2) 0%, transparent 50%);
 }
 .hero-content {
   position: relative;
@@ -324,14 +325,35 @@ em { font-style: italic; color: var(--nude); }
   margin: 0 auto;
   text-align: center;
 }
+/* Logo lumineux du hero — le fond pêché se fond, le glow orange reste */
+.hero-logo {
+  display: block;
+  width: 132px;
+  height: auto;
+  margin: 0 auto 22px;
+  mix-blend-mode: multiply;
+  filter: drop-shadow(0 6px 22px rgba(240,145,63,0.28));
+}
 .eyebrow {
   display: block;
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--nude);
+  color: var(--orange);
   margin-bottom: 16px;
+}
+/* CTA principal du hero — orange Glow Up */
+.btn-hero {
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 18px rgba(240,145,63,0.32);
+}
+.btn-hero:hover {
+  background: var(--orange-deep);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 26px rgba(240,145,63,0.42);
 }
 .hero-title { color: var(--charcoal); margin-bottom: 20px; }
 .hero-sub { font-size: 1rem; max-width: 520px; margin: 0 auto 40px; line-height: 1.7; }
