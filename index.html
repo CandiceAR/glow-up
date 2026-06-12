@@ -6,7 +6,7 @@
   <title>Glow Up — Skincare & Maquillage Virtuel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=176">
+  <link rel="stylesheet" href="style.css?v=177">
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#C9A98A">
@@ -61,13 +61,20 @@
         <div class="hero-bg"></div>
         <div class="hero-content">
           <img class="hero-logo" src="assets/logo-g.png" alt="Glow Up" onerror="this.style.display='none'">
-          <span class="eyebrow">Skincare 100% Objectif · Maquillage Virtuel</span>
-          <h1 class="hero-title">Découvre ta routine,<br><em>essaie avant d'acheter.</em></h1>
-          <p class="hero-sub">Questionnaire personnalisé · Routine sur-mesure · Try-on virtuel MediaPipe<br>Liens Amazon affiliés — même commission, aucun favoritisme.</p>
+          <span class="eyebrow">Skincare personnalisé · 100% objectif</span>
+          <h1 class="hero-title">Analyse ta peau.<br><em>Découvre enfin une routine faite pour toi.</em></h1>
+          <p class="hero-sub">Glow Up sélectionne les produits adaptés à ta peau et compare les prix pour t'aider à faire les meilleurs choix.</p>
+          <ul class="hero-benefits">
+            <li><span class="hb-icon">✨</span> Comprend les besoins de ta peau</li>
+            <li><span class="hb-icon">✨</span> Crée une routine réellement adaptée à toi</li>
+            <li><span class="hb-icon">✨</span> Compare les prix pour trouver les meilleures offres</li>
+            <li><span class="hb-icon">✨</span> Recommande les produits selon <strong>tes</strong> besoins, jamais selon une marque</li>
+          </ul>
           <div class="hero-actions">
             <button class="btn btn-hero" onclick="startGlowUp()">Faire mon analyse ✦</button>
             <button class="btn btn-outline" onclick="showScreen('shop')">Voir la boutique</button>
           </div>
+          <p class="hero-keymsg">La seule influence de Glow Up : <strong>les besoins de ta peau et tes envies.</strong></p>
           <p class="hero-login-hint" id="heroLoginHint">
             Déjà un compte ? <a href="#" onclick="openAuthModal(); return false;">Connecte-toi</a> pour retrouver ton analyse et ta progression.
           </p>
@@ -571,26 +578,26 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
   <!-- ===== SCRIPTS ===== -->
-  <script src="js/lookGenerator.js?v=176"></script>
-  <script src="js/makeupAI.js?v=176"></script>
-  <script src="js/skinAnalysis.js?v=176"></script>
-  <script src="js/rulesEngine.js?v=176"></script>
-  <script src="js/catalogue.js?v=176"></script>
-  <script src="js/productCatalog.js?v=176"></script>
-  <script src="js/questionnaire.js?v=176"></script>
-  <script src="js/routineRenderer.js?v=176"></script>
-  <script src="js/tryOn.js?v=176"></script>
-  <script src="js/auth.js?v=176"></script>
-  <script src="js/skinJourney.js?v=176"></script>
-  <script src="js/makeupRoutine.js?v=176"></script>
-  <script src="js/tracker.js?v=176"></script>
-  <script src="js/skinpedia.js?v=176"></script>
-  <script src="js/glowCoach.js?v=176"></script>
-  <script src="js/firestoreProfile.js?v=176"></script>
-  <script src="js/firestoreProducts.js?v=176"></script>
-  <script src="js/subscription.js?v=176"></script>
-  <script src="js/routineSaver.js?v=176"></script>
-  <script src="js/app.js?v=176"></script>
+  <script src="js/lookGenerator.js?v=177"></script>
+  <script src="js/makeupAI.js?v=177"></script>
+  <script src="js/skinAnalysis.js?v=177"></script>
+  <script src="js/rulesEngine.js?v=177"></script>
+  <script src="js/catalogue.js?v=177"></script>
+  <script src="js/productCatalog.js?v=177"></script>
+  <script src="js/questionnaire.js?v=177"></script>
+  <script src="js/routineRenderer.js?v=177"></script>
+  <script src="js/tryOn.js?v=177"></script>
+  <script src="js/auth.js?v=177"></script>
+  <script src="js/skinJourney.js?v=177"></script>
+  <script src="js/makeupRoutine.js?v=177"></script>
+  <script src="js/tracker.js?v=177"></script>
+  <script src="js/skinpedia.js?v=177"></script>
+  <script src="js/glowCoach.js?v=177"></script>
+  <script src="js/firestoreProfile.js?v=177"></script>
+  <script src="js/firestoreProducts.js?v=177"></script>
+  <script src="js/subscription.js?v=177"></script>
+  <script src="js/routineSaver.js?v=177"></script>
+  <script src="js/app.js?v=177"></script>
 
   <!-- Enregistrement du Service Worker PWA — AUTO-MISE À JOUR -->
   <script>
