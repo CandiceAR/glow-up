@@ -551,13 +551,18 @@ em { font-style: italic; color: var(--nude); }
 }
 .promise-item { text-align: center; }
 .promise-icon {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 18px;
   font-size: 1.5rem;
-  margin-bottom: 16px;
-  color: var(--nude);
+  background: linear-gradient(135deg, rgba(240,145,63,0.14), rgba(201,169,138,0.10));
+  border-radius: 50%;
 }
 .promise-item h4 { margin-bottom: 8px; color: var(--charcoal); }
-.promise-item p { font-size: 0.875rem; }
+.promise-item p { font-size: 0.875rem; line-height: 1.55; max-width: 240px; margin: 0 auto; }
 
 /* ─── Capture Screen ─────────────────────────────────────────── */
 .capture-container {
