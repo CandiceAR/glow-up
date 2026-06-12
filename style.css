@@ -95,9 +95,10 @@ em { font-style: italic; color: var(--nude); }
   object-fit: contain;
 }
 .nav-logo-g    { display: none; }   /* G transparent : mobile uniquement */
-.nav-logo-full { display: block; mix-blend-mode: multiply; } /* logo complet JPEG : desktop */
-/* G transparent → halo orange CSS (rétroéclairé) */
-.nav-logo-g { filter: drop-shadow(0 0 10px rgba(240,145,63,0.45)); }
+.nav-logo-full { display: block; }  /* logo complet transparent : desktop */
+/* Logos transparents → halo orange CSS (rétroéclairé) */
+.nav-logo-g    { filter: drop-shadow(0 0 10px rgba(240,145,63,0.45)); }
+.nav-logo-full { filter: drop-shadow(0 0 9px rgba(240,145,63,0.4)); }
 .nav-logo-text {
   font-family: var(--font-serif);
   font-size: 1.5rem;
