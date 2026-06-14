@@ -9111,3 +9111,47 @@ em { font-style: italic; color: var(--nude); }
   color: var(--charcoal);
   line-height: 1.4;
 }
+
+/* ─── Bandeau navigateur in-app (Instagram, TikTok…) ────────── */
+.inapp-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  padding-top: calc(12px + var(--safe-top, 0px));
+  background: linear-gradient(135deg, #2C2A27, #3a352f);
+  color: #fff;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+}
+.inapp-banner .inapp-icon { font-size: 1.2rem; flex-shrink: 0; }
+.inapp-banner .inapp-text { flex: 1; }
+.inapp-banner .inapp-text strong { color: var(--orange); }
+.inapp-banner .inapp-copy {
+  flex-shrink: 0;
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 7px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.inapp-banner .inapp-close {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.6);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+}
