@@ -1250,6 +1250,7 @@ const SkinAnalysis = (() => {
       }
 
       result.vision = vision || {};
+      _applyVisionSignals(result); // la vision IA peut faire remonter taches/imperfections
       AppState.face.skinAnalysis = result;
       renderReport(result, content);
       console.log('[LookGen] LookGenerator défini?', typeof window.LookGenerator, '| sourceCanvas?', !!AppState.face.sourceCanvas, '| landmarks?', !!AppState.face.landmarks);
@@ -2514,6 +2515,31 @@ const SkinAnalysis = (() => {
 
   function _pick(arr) {
     return arr && arr.length ? arr[Math.floor(Math.random() * arr.length)] : null;
+  }
+
+  // ── B : la vision IA prime sur les pixels pour les signaux localisés ──
+  // Si l'IA voit nettement des taches/imperfections que la métrique pixels
+  // (globale, 5 zones) a ratées, on abaisse le score concerné pour le faire remonter.
+  function _applyVisionSignals(result) {
+    const v = result?.vision;
+    const zones = result?.zones;
+    if (!v || !zones) return;
+    const cap = (metric, value) => {
+      Object.values(zones).forEach(z => {
+        if (typeof z[metric] === 'number') z[metric] = Math.min(z[metric], value);
+      });
+    };
+    // Taches vues par l'IA (métrique 'taches' : haut = uniforme, bas = pire)
+    if (v.taches === 'nombreuses')   cap('taches', 22);
+    else if (v.taches === 'visibles') cap('taches', 35);
+    // Imperfections visibles → impacte la texture/grain
+    if (v.imperfections?.presentes)  cap('texture', 42);
+    // Rougeurs prononcées vues par l'IA (métrique 'redness' : haut = pire)
+    if (v.rougeurs?.niveau === 'prononcées') {
+      Object.values(zones).forEach(z => {
+        if (typeof z.redness === 'number') z.redness = Math.max(z.redness, 64);
+      });
+    }
   }
 
   // Construit 2-3 commentaires valorisants, catégories tirées au sort
