@@ -432,7 +432,8 @@ const TryOn = (() => {
     const cameraWrap   = document.getElementById('cameraWrap');
     const cameraOverlay= document.getElementById('cameraOverlay');
 
-    if (uploadInput) {
+    if (uploadInput && !uploadInput.dataset.bound) {
+      uploadInput.dataset.bound = '1';
       uploadInput.addEventListener('change', e => {
         const file = e.target.files[0];
         if (!file) return;
@@ -451,7 +452,8 @@ const TryOn = (() => {
     }
 
     // Snap : listener attaché une seule fois au setup
-    if (captureBtn) {
+    if (captureBtn && !captureBtn.dataset.bound) {
+      captureBtn.dataset.bound = '1';
       captureBtn.addEventListener('click', () => {
         if (!_activeStream) return;
         if (typeof SkinAnalysis !== 'undefined') SkinAnalysis.stopLiveAnalysis();
@@ -485,7 +487,8 @@ const TryOn = (() => {
       });
     }
 
-    if (cameraBtn) {
+    if (cameraBtn && !cameraBtn.dataset.bound) {
+      cameraBtn.dataset.bound = '1';
       cameraBtn.addEventListener('click', async () => {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
           showToast('La caméra n\'est pas disponible sur ce navigateur. Utilise l\'upload de photo.', 'error', 4000);

@@ -80,6 +80,7 @@ function showScreen(name) {
 
   // Actions spécifiques à chaque écran
   if (name === 'capture') {
+    if (typeof TryOn !== 'undefined' && TryOn.setupCapture) TryOn.setupCapture(); // ré-attache les listeners (garde anti-doublon)
     const overlay = document.getElementById('prephotoOverlay');
     if (overlay && !sessionStorage.getItem('prephoto_seen')) {
       overlay.style.display = 'flex';
