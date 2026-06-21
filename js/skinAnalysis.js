@@ -1232,10 +1232,10 @@ const SkinAnalysis = (() => {
       </div>`;
 
     try {
-      const [result, vision] = await Promise.all([
-        analyzeFromPhoto(AppState.face.photo),
-        callFaceVision(AppState.face.photo)
-      ]);
+      // Analyse locale d'abord (calcule les landmarks), puis vision IA sur un
+      // gros plan recadré haute déf du visage → bien meilleure détection des petites taches.
+      const result = await analyzeFromPhoto(AppState.face.photo);
+      const vision = await callFaceVision(AppState.face.photo, AppState.face.landmarks);
 
       if (!result) {
         content.innerHTML = `
@@ -1690,14 +1690,52 @@ const SkinAnalysis = (() => {
 
   // ─── Analyse vision via Haiku ────────────────────────────────
 
-  async function callFaceVision(photoDataUrl) {
+  // Recadre l'image originale sur le visage (via landmarks) en haute déf →
+  // le visage occupe 100% de l'image envoyée à l'IA = bien plus de détail sur la peau.
+  async function _buildFaceCrop(photoDataUrl, landmarks) {
+    if (!landmarks || !landmarks.length) return photoDataUrl;
     try {
+      const img = new Image();
+      img.src = photoDataUrl;
+      await new Promise((res, rej) => { img.onload = res; img.onerror = rej; });
+      const W = img.naturalWidth, H = img.naturalHeight;
+      let minX = 1, minY = 1, maxX = 0, maxY = 0;
+      for (const p of landmarks) {
+        if (p.x < minX) minX = p.x; if (p.x > maxX) maxX = p.x;
+        if (p.y < minY) minY = p.y; if (p.y > maxY) maxY = p.y;
+      }
+      // Marge autour du visage (front + menton inclus)
+      const padX = (maxX - minX) * 0.18, padY = (maxY - minY) * 0.22;
+      const x0 = Math.max(0, (minX - padX)) * W;
+      const y0 = Math.max(0, (minY - padY)) * H;
+      const x1 = Math.min(1, (maxX + padX)) * W;
+      const y1 = Math.min(1, (maxY + padY)) * H;
+      const cw = x1 - x0, ch = y1 - y0;
+      if (cw < 40 || ch < 40) return photoDataUrl;
+      // Sortie haute déf : 1100px sur le grand côté (sans dépasser l'original)
+      const target = 1100;
+      const scale = Math.min(target / Math.max(cw, ch), 2);
+      const canvas = document.createElement('canvas');
+      canvas.width  = Math.round(cw * scale);
+      canvas.height = Math.round(ch * scale);
+      const ctx = canvas.getContext('2d');
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, x0, y0, cw, ch, 0, 0, canvas.width, canvas.height);
+      return canvas.toDataURL('image/jpeg', 0.92);
+    } catch (e) {
+      return photoDataUrl;
+    }
+  }
+
+  async function callFaceVision(photoDataUrl, landmarks) {
+    try {
+      const photoForAI = await _buildFaceCrop(photoDataUrl, landmarks);
       const controller = new AbortController();
       const tid = setTimeout(() => controller.abort(), 15000);
       const resp = await fetch('/api/faceVision', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ photo: photoDataUrl }),
+        body:    JSON.stringify({ photo: photoForAI }),
         signal:  controller.signal
       });
       clearTimeout(tid);
@@ -2532,8 +2570,10 @@ const SkinAnalysis = (() => {
       });
     };
     // Taches vues par l'IA (métrique 'taches' : haut = uniforme, bas = pire)
+    const hasTacheZones = Array.isArray(v.taches_zones) && v.taches_zones.length > 0;
     if (v.taches === 'nombreuses')   cap('taches', 22);
-    else if (v.taches === 'visibles') cap('taches', 35);
+    else if (v.taches === 'visibles') cap('taches', 34);
+    else if (hasTacheZones)          cap('taches', 40); // l'IA a localisé une marque précise → on la mentionne
     // Imperfections visibles → impacte la texture/grain
     if (v.imperfections?.presentes)  cap('texture', 42);
     // Rougeurs prononcées vues par l'IA (métrique 'redness' : haut = pire)
