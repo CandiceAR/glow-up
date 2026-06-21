@@ -692,6 +692,9 @@ const Questionnaire = (() => {
           <h3 class="colo-block-title">🚫 À éviter</h3>
           ${swatches(colo.avoid, 'colo-sw--avoid')}
         </div>
+        <button class="btn-orange-cta colo-share-btn" onclick="Questionnaire.shareColorimetry()">
+          📲 Partager ma saison
+        </button>
       </section>` : '';
 
     const insightsHtml = insights.length ? `
@@ -1489,6 +1492,108 @@ const Questionnaire = (() => {
     }
   });
 
+  // ─── Génère une image "Ta saison" partageable (story Instagram) ──
+  async function shareColorimetry() {
+    const photo = AppState.face?.skinAnalysis;
+    const colo = (typeof SkinAnalysis !== 'undefined' && SkinAnalysis.buildColorimetry)
+      ? SkinAnalysis.buildColorimetry(photo) : null;
+    if (!colo) { if (typeof showToast === 'function') showToast('Analyse indisponible', 'error'); return; }
+
+    const W = 1080, H = 1920;
+    const canvas = document.createElement('canvas');
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    // Fond nude dégradé + halo orange
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, '#FBF7F2'); g.addColorStop(1, '#F2E4D8');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    const halo = ctx.createRadialGradient(W/2, 360, 60, W/2, 360, 520);
+    halo.addColorStop(0, 'rgba(240,145,63,0.20)'); halo.addColorStop(1, 'rgba(240,145,63,0)');
+    ctx.fillStyle = halo; ctx.fillRect(0, 0, W, 760);
+
+    ctx.textAlign = 'center';
+
+    // Logo G
+    try {
+      const logo = new Image(); logo.crossOrigin = 'anonymous'; logo.src = 'assets/logo-g.png';
+      await new Promise((r) => { logo.onload = r; logo.onerror = r; });
+      if (logo.complete && logo.naturalWidth) {
+        const lw = 190, lh = lw * (logo.naturalHeight / logo.naturalWidth);
+        ctx.drawImage(logo, W/2 - lw/2, 150, lw, lh);
+      }
+    } catch (e) {}
+
+    // Eyebrow
+    ctx.fillStyle = '#C9A98A';
+    ctx.font = '600 30px DM Sans, sans-serif';
+    ctx.fillText('T O N   A N A L Y S E   C O L O R I M É T R I Q U E', W/2, 430);
+
+    // Emoji saison
+    ctx.font = '150px serif';
+    ctx.fillText(colo.emoji, W/2, 620);
+
+    // Saison
+    ctx.fillStyle = '#2C2A27';
+    ctx.font = '400 96px "Cormorant Garamond", Georgia, serif';
+    ctx.fillText(colo.label, W/2, 740);
+
+    // Description (wrap)
+    ctx.fillStyle = '#8a8276';
+    ctx.font = '300 36px DM Sans, sans-serif';
+    _wrapText(ctx, colo.desc, W/2, 820, 820, 48);
+
+    // Palette — 8 pastilles, 2 rangées de 4
+    const cols = 4, r = 78, gapX = 230, startX = W/2 - gapX*1.5, rowY = [1120, 1420];
+    colo.palette.slice(0, 8).forEach(([name, hex], i) => {
+      const cx = startX + (i % cols) * gapX;
+      const cy = rowY[Math.floor(i / cols)];
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
+      ctx.fillStyle = hex; ctx.fill();
+      ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,255,255,0.6)'; ctx.stroke();
+      ctx.fillStyle = '#2C2A27'; ctx.font = '500 28px DM Sans, sans-serif';
+      ctx.fillText(name, cx, cy + r + 46);
+    });
+
+    // Footer
+    ctx.fillStyle = '#F0913F';
+    ctx.font = '600 40px DM Sans, sans-serif';
+    ctx.fillText('✨ Découvre ta saison gratuitement', W/2, 1700);
+    ctx.fillStyle = '#2C2A27';
+    ctx.font = '600 44px DM Sans, sans-serif';
+    ctx.fillText('glowupskin.app', W/2, 1770);
+
+    // Export : partage natif si dispo, sinon téléchargement
+    canvas.toBlob(async (blob) => {
+      if (!blob) return;
+      const file = new File([blob], 'ma-saison-glowup.png', { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: 'Ma saison colorimétrique Glow Up',
+            text: `Je suis ${colo.label} ${colo.emoji} ! Découvre ta saison sur glowupskin.app` });
+          return;
+        } catch (e) {}
+      }
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'ma-saison-glowup.png';
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+      if (typeof showToast === 'function') showToast('Image enregistrée ✨ partage-la en story !', 'success', 3500);
+    }, 'image/png');
+  }
+
+  function _wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+    const words = (text || '').split(' ');
+    let line = '', yy = y;
+    for (const w of words) {
+      const test = line + w + ' ';
+      if (ctx.measureText(test).width > maxWidth && line) {
+        ctx.fillText(line.trim(), x, yy); line = w + ' '; yy += lineHeight;
+      } else line = test;
+    }
+    ctx.fillText(line.trim(), x, yy);
+  }
+
   return {
     startSkincare, startMakeup,
     reset, render,
@@ -1497,6 +1602,7 @@ const Questionnaire = (() => {
     takePhoto, retakePhoto, uploadPhoto, skipPhoto, resumeFromPhoto,
     continueFromAnalysis,
     next, prev, submit,
+    shareColorimetry,
     QUESTIONS, MAKEUP_QUESTIONS
   };
 

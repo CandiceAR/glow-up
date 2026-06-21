@@ -9200,3 +9200,6 @@ em { font-style: italic; color: var(--nude); }
 }
 .colo-block--avoid { padding-top: 14px; border-top: 1px solid rgba(201,169,138,0.18); }
 .colo-block--avoid .colo-name { color: var(--muted); }
+
+/* Bouton partage colorimétrie */
+.colo-share-btn { width: 100%; max-width: 320px; margin: 22px auto 0; display: block; }
