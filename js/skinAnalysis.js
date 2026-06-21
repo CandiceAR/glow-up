@@ -716,8 +716,12 @@ const SkinAnalysis = (() => {
     const lums = pixels.map(p => 0.2126 * p.r / 255 + 0.7152 * p.g / 255 + 0.0722 * p.b / 255);
     const mean = avg(lums);
     const std  = Math.sqrt(lums.reduce((s, l) => s + (l - mean) ** 2, 0) / lums.length);
-    const darkFraction = lums.filter(l => l < mean - 2.0 * std).length / lums.length;
-    return Math.round(clamp(100 - darkFraction * 450, 5, 100));
+    // Seuil abaissé 2.0σ→1.5σ : capte mieux les taches localisées (taches de
+    // rousseur, marques). On soustrait le bruit statistique de base (~6,7% sous 1.5σ
+    // pour une peau lisse) pour que seules les VRAIES taches en plus fassent chuter le score.
+    const darkFraction = lums.filter(l => l < mean - 1.5 * std).length / lums.length;
+    const excess = Math.max(0, darkFraction - 0.067);
+    return Math.round(clamp(100 - excess * 900, 5, 100));
   }
 
   function detectUndertone(allPixels, zoneResults, scleraPixels) {
@@ -2892,8 +2896,16 @@ const SkinAnalysis = (() => {
       groups.cernes = { key: 'cernes', zones: [{ zoneKey: 'eyes', severity: cerSev }], severity: cerSev };
     }
 
-    // 3. Trier par sévérité finale décroissante
-    let ranked = Object.values(groups).sort((a, b) => b.severity - a.severity);
+    // 3. Pondération d'affichage : on rétrograde les rougeurs (trop communes,
+    // peu actionnables) et on met en avant les taches/teint (plus visibles & utiles).
+    const DISPLAY_WEIGHT = { redness: 0.72, texture: 0.82, taches: 1.25, terne: 1.08, sebum: 1.0, cernes: 1.0 };
+    Object.values(groups).forEach(g => {
+      g.severity = Math.round(g.severity * (DISPLAY_WEIGHT[g.key] || 1));
+    });
+    // Re-filtrer après pondération (les rougeurs faibles disparaissent)
+    let ranked = Object.values(groups)
+      .filter(g => g.severity >= INSIGHT_TUNING.THRESHOLD)
+      .sort((a, b) => b.severity - a.severity);
 
     // 4. Anti-doublon : 2 signaux sur la même zone unique + sévérités proches → garder le + fort
     const kept = [];
