@@ -2125,8 +2125,8 @@ const SkinAnalysis = (() => {
     W_ABS:        0.3,  // poids sévérité absolue (réduit : évite que redness domine)
     W_REL:        0.7,  // poids écart relatif au visage (renforcé : personnalisation)
     REL_SCALE:    3.0,  // amplification de l'écart relatif
-    THRESHOLD:    58,   // sévérité minimale pour afficher un signal (élevé = sélectif)
-    MAX_ISSUES:   2,    // max d'observations "à chouchouter" (premium, non alarmiste)
+    THRESHOLD:    48,   // sévérité minimale pour afficher un signal (abaissé = "détecte beaucoup")
+    MAX_ISSUES:   3,    // max d'observations "à chouchouter"
     ALWAYS_POSITIVE: true, // toujours afficher un point positif
     REDUNDANCY:   8,    // écart sous lequel 2 signaux même zone = doublon
   };
