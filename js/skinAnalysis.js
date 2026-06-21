@@ -701,7 +701,9 @@ const SkinAnalysis = (() => {
       const total = p.r + p.g + p.b;
       return total > 0 ? (p.r - (p.g + p.b) / 2) / total : 0;
     });
-    return Math.round(clamp(avg(reds) * 580, 0, 100));
+    // Recalibré 580→420 : la peau saine renvoie ~45/100 (et non ~70) → les rougeurs
+    // ne ressortent que pour une zone réellement plus rouge que le reste du visage.
+    return Math.round(clamp(avg(reds) * 420, 0, 100));
   }
 
   function computeTexture(pixels) {
