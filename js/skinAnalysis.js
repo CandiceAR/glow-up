@@ -2574,16 +2574,17 @@ const SkinAnalysis = (() => {
       });
     };
     // Taches vues par l'IA (métrique 'taches' : haut = uniforme, bas = pire)
+    // Valeurs calées pour franchir le seuil taches (50) : 100 - 40 = 60 > 50.
     const hasTacheZones = Array.isArray(v.taches_zones) && v.taches_zones.length > 0;
-    if (v.taches === 'nombreuses')   cap('taches', 22);
-    else if (v.taches === 'visibles') cap('taches', 34);
+    if (v.taches === 'nombreuses')   cap('taches', 20);
+    else if (v.taches === 'visibles') cap('taches', 30);
     else if (hasTacheZones)          cap('taches', 40); // l'IA a localisé une marque précise → on la mentionne
-    // Imperfections visibles → impacte la texture/grain
-    if (v.imperfections?.presentes)  cap('texture', 42);
-    // Rougeurs prononcées vues par l'IA (métrique 'redness' : haut = pire)
+    // Imperfections visibles → on les fait remonter via 'taches' (seuil bas) plutôt que texture (seuil haut)
+    if (v.imperfections?.presentes)  cap('taches', 38);
+    // Rougeurs prononcées vues par l'IA → forcer au-dessus du seuil rougeurs (84)
     if (v.rougeurs?.niveau === 'prononcées') {
       Object.values(zones).forEach(z => {
-        if (typeof z.redness === 'number') z.redness = Math.max(z.redness, 64);
+        if (typeof z.redness === 'number') z.redness = Math.max(z.redness, 88);
       });
     }
   }
@@ -2879,7 +2880,7 @@ const SkinAnalysis = (() => {
     for (const [zoneKey, z] of Object.entries(result.zones)) {
       const signals = _scoreZoneSignals(z, baseline);
       for (const { key, severity } of signals) {
-        if (severity < INSIGHT_TUNING.THRESHOLD) continue; // pertinence
+        if (severity < 35) continue; // gate bas : on collecte large, le tri fin se fait après
         if (!groups[key]) groups[key] = { key, zones: [], severity: 0 };
         groups[key].zones.push({ zoneKey, severity });
         groups[key].severity = Math.max(groups[key].severity, severity);
@@ -2896,15 +2897,19 @@ const SkinAnalysis = (() => {
       groups.cernes = { key: 'cernes', zones: [{ zoneKey: 'eyes', severity: cerSev }], severity: cerSev };
     }
 
-    // 3. Pondération d'affichage : on rétrograde les rougeurs (trop communes,
-    // peu actionnables) et on met en avant les taches/teint (plus visibles & utiles).
-    const DISPLAY_WEIGHT = { redness: 0.72, texture: 0.82, taches: 1.25, terne: 1.08, sebum: 1.0, cernes: 1.0 };
-    Object.values(groups).forEach(g => {
-      g.severity = Math.round(g.severity * (DISPLAY_WEIGHT[g.key] || 1));
-    });
-    // Re-filtrer après pondération (les rougeurs faibles disparaissent)
+    // 3. Seuil PROPRE À CHAQUE SIGNAL → garantit la variété.
+    // Rougeurs & grain = barre très haute (ne sortent que si vraiment marqués) car
+    // structurellement élevés pour tous. Taches/éclat/zone T/cernes = barre basse.
+    const SIGNAL_MIN = {
+      redness: 84,   // rare : seulement une vraie réactivité localisée
+      texture: 74,   // rare : seulement un grain vraiment irrégulier
+      taches:  50,   // facile à afficher
+      terne:   52,
+      sebum:   52,
+      cernes:  55,
+    };
     let ranked = Object.values(groups)
-      .filter(g => g.severity >= INSIGHT_TUNING.THRESHOLD)
+      .filter(g => g.severity >= (SIGNAL_MIN[g.key] ?? 52))
       .sort((a, b) => b.severity - a.severity);
 
     // 4. Anti-doublon : 2 signaux sur la même zone unique + sévérités proches → garder le + fort
