@@ -490,8 +490,13 @@ const TryOn = (() => {
     if (cameraBtn && !cameraBtn.dataset.bound) {
       cameraBtn.dataset.bound = '1';
       cameraBtn.addEventListener('click', async () => {
+        console.log('[Camera] clic détecté · secureContext=', window.isSecureContext, '· mediaDevices=', !!navigator.mediaDevices);
+        if (!window.isSecureContext) {
+          showToast('La caméra nécessite une connexion sécurisée (https). Utilise l\'upload de photo.', 'error', 5000);
+          return;
+        }
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-          showToast('La caméra n\'est pas disponible sur ce navigateur. Utilise l\'upload de photo.', 'error', 4000);
+          showToast('Ton navigateur ne donne pas accès à la caméra ici. Utilise l\'upload de photo.', 'error', 4000);
           return;
         }
         try {
