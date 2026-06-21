@@ -729,6 +729,9 @@ const Questionnaire = (() => {
         <span class="ap-eyebrow">Étape 2 · Analyse de ta peau ✨</span>
       </div>
       <div class="ap-photo">${overlayDiv}</div>
+      <div style="font-size:11px;color:#b08;background:#fff4f9;border:1px dashed #e0a;padding:8px;margin:8px 0;border-radius:8px;word-break:break-all;text-align:left">
+        🔧 DEBUG vision IA (temporaire) : ${JSON.stringify(photo.vision || {})}
+      </div>
       ${chipsHtml}
       ${coloHtml}
       ${prioritiesHtml}
