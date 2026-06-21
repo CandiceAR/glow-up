@@ -664,9 +664,39 @@ const Questionnaire = (() => {
         </ul>
       </section>` : '';
 
+    // 🎨 Analyse colorimétrique — la feature vedette
+    const colo = (typeof SkinAnalysis !== 'undefined' && SkinAnalysis.buildColorimetry)
+      ? SkinAnalysis.buildColorimetry(photo) : null;
+    const swatches = (arr, cls) => `<div class="colo-swatches">${arr.map(([n, hex]) =>
+      `<div class="colo-sw ${cls || ''}"><span class="colo-dot" style="background:${hex}"></span><span class="colo-name">${n}</span></div>`).join('')}</div>`;
+    const coloHtml = colo ? `
+      <section class="ap-section colo-section">
+        <div class="colo-header">
+          <span class="colo-eyebrow">✦ Ton analyse colorimétrique</span>
+          <h2 class="colo-season">${colo.emoji} ${colo.label}</h2>
+          <p class="colo-desc">${colo.desc}</p>
+        </div>
+        <div class="colo-block">
+          <h3 class="colo-block-title">🎨 Tes couleurs</h3>
+          ${swatches(colo.palette)}
+        </div>
+        <div class="colo-block">
+          <h3 class="colo-block-title">💄 Ton maquillage</h3>
+          ${swatches(colo.makeup)}
+        </div>
+        <div class="colo-block">
+          <h3 class="colo-block-title">💇‍♀️ Tes couleurs de cheveux</h3>
+          ${swatches(colo.hair)}
+        </div>
+        <div class="colo-block colo-block--avoid">
+          <h3 class="colo-block-title">🚫 À éviter</h3>
+          ${swatches(colo.avoid, 'colo-sw--avoid')}
+        </div>
+      </section>` : '';
+
     const insightsHtml = insights.length ? `
       <section class="ap-section q-insights">
-        <h2 class="ap-section-title">En détail</h2>
+        <h2 class="ap-section-title">✦ Ton diagnostic de peau</h2>
         ${insights.map(({ key, pillLabel, sentence, advice, rank }) => {
           const emoji = INSIGHT_EMOJI[key] || '◆';
           const isPri = rank === 0;
@@ -697,6 +727,7 @@ const Questionnaire = (() => {
       </div>
       <div class="ap-photo">${overlayDiv}</div>
       ${chipsHtml}
+      ${coloHtml}
       ${prioritiesHtml}
       ${portraitHtml}
       ${insightsHtml}

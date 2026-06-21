@@ -2730,6 +2730,98 @@ const SkinAnalysis = (() => {
     }));
   }
 
+  // ══════════════════════════════════════════════════════════════
+  // ANALYSE COLORIMÉTRIQUE — saison + palettes (la feature vedette)
+  // Dérivée du sous-ton + carnation + contraste déjà détectés.
+  // ══════════════════════════════════════════════════════════════
+
+  const SEASON_LIB = {
+    printemps: {
+      label: 'Printemps Lumineux', emoji: '🌸',
+      desc: 'Chaleur et clarté. Les couleurs vives et lumineuses illuminent ton teint.',
+      palette: [
+        ['Corail', '#FF7F50'], ['Pêche', '#FFB07C'], ['Jaune chaud', '#FFD966'],
+        ['Vert pomme', '#9ACD32'], ['Turquoise', '#40E0D0'], ['Ivoire', '#FBF3E0'],
+        ['Camel', '#C19A6B'], ['Rose corail', '#FF6F61'],
+      ],
+      avoid: [['Noir', '#1a1a1a'], ['Gris froid', '#708090'], ['Prune sombre', '#4A0E2E'], ['Bordeaux', '#5C0A2E']],
+      makeup: [['Lèvres corail', '#FF6F61'], ['Blush pêche', '#FFB07C'], ['Fard doré', '#E6BE8A']],
+      hair: [['Blond doré', '#D4A857'], ['Châtain doré', '#9C6B30'], ['Cuivré', '#B87333']],
+    },
+    ete: {
+      label: 'Été Doux', emoji: '🌊',
+      desc: 'Douceur et fraîcheur. Les teintes douces et froides subliment ta clarté.',
+      palette: [
+        ['Rose poudré', '#E8B4C8'], ['Bleu ciel', '#A7C7E7'], ['Lavande', '#C3B1E1'],
+        ['Vert d\'eau', '#A8D5BA'], ['Gris perle', '#D3D3D3'], ['Bleu doux', '#6E8CA8'],
+        ['Mauve', '#B784A7'], ['Framboise douce', '#C9648B'],
+      ],
+      avoid: [['Orange', '#FF8C00'], ['Jaune vif', '#FFD700'], ['Marron chaud', '#8B4513'], ['Camel', '#C19A6B']],
+      makeup: [['Lèvres framboise', '#C9486B'], ['Blush rosé', '#E8A6B8'], ['Fard taupe', '#9A8593']],
+      hair: [['Blond cendré', '#C2B280'], ['Châtain cendré', '#7A6A58'], ['Brun froid', '#4A3C30']],
+    },
+    automne: {
+      label: 'Automne Profond', emoji: '🍂',
+      desc: 'Richesse et profondeur. Les teintes chaudes et terreuses révèlent ton intensité.',
+      palette: [
+        ['Terracotta', '#C76B47'], ['Moutarde', '#D4A017'], ['Vert olive', '#708238'],
+        ['Rouille', '#B7410E'], ['Kaki', '#83835C'], ['Crème', '#F5E6CA'],
+        ['Bronze', '#CD7F32'], ['Prune chaude', '#7B3F2B'],
+      ],
+      avoid: [['Rose pastel', '#FFD1DC'], ['Bleu glacé', '#D6EAF8'], ['Gris froid', '#A9A9A9'], ['Fuchsia', '#E0218A']],
+      makeup: [['Lèvres brique', '#A52A2A'], ['Blush terracotta', '#CC6B49'], ['Fard bronze', '#B08D57']],
+      hair: [['Auburn', '#922724'], ['Châtain cuivré', '#8B4513'], ['Chocolat chaud', '#5C4033']],
+    },
+    hiver: {
+      label: 'Hiver Intense', emoji: '❄️',
+      desc: 'Contraste et éclat. Les couleurs franches et froides magnifient ton intensité.',
+      palette: [
+        ['Rouge vif', '#C8102E'], ['Bleu roi', '#1E3A8A'], ['Émeraude', '#046307'],
+        ['Fuchsia', '#C71585'], ['Blanc pur', '#FCFCFC'], ['Noir', '#1a1a1a'],
+        ['Argent', '#C0C0C0'], ['Prune', '#5D2A5C'],
+      ],
+      avoid: [['Orange', '#FF8C00'], ['Beige doré', '#E1C699'], ['Moutarde', '#D4A017'], ['Kaki', '#83835C']],
+      makeup: [['Lèvres framboise', '#B0306A'], ['Blush rose froid', '#D87093'], ['Fard prune', '#6A2C70']],
+      hair: [['Brun froid foncé', '#2C1B18'], ['Noir bleuté', '#1C1C2E'], ['Châtain froid', '#4A3C30']],
+    },
+  };
+
+  // Détermine la saison depuis le sous-ton + la carnation (+ contraste si dispo)
+  function buildColorimetry(result) {
+    if (!result) return null;
+    const ut = result.undertone?.type || 'neutral';
+    const ca = result.carnation?.type || 'medium';   // clair | medium | fonce
+    const contrast = result.eyeContrast?.level || result.eyeContrast || null; // 'fort'|'moyen'|'faible' si dispo
+    const light = ca === 'clair';
+    const deep  = ca === 'fonce';
+    const highContrast = contrast === 'fort' || contrast === 'high';
+
+    let season;
+    if (ut === 'warm') {
+      season = light ? 'printemps' : 'automne';
+    } else if (ut === 'cool') {
+      season = (deep || highContrast) ? 'hiver' : 'ete';
+    } else { // neutre → on s'appuie sur la profondeur / le contraste
+      if (light) season = highContrast ? 'printemps' : 'ete';
+      else if (deep) season = 'hiver';
+      else season = highContrast ? 'hiver' : 'automne';
+    }
+
+    const s = SEASON_LIB[season];
+    return {
+      season,
+      label: s.label,
+      emoji: s.emoji,
+      desc: s.desc,
+      undertone: result.undertone?.label || ut,
+      carnation: result.carnation?.label || ca,
+      palette: s.palette,
+      avoid: s.avoid,
+      makeup: s.makeup,
+      hair: s.hair,
+    };
+  }
+
   function getTopInsights(result) {
     if (!result?.zones) return [];
 
@@ -3641,7 +3733,7 @@ const SkinAnalysis = (() => {
 
   // ─── API publique ─────────────────────────────────────────────
 
-  return { initScreen, startLiveAnalysis, stopLiveAnalysis, analyzeFromPhoto, renderFaceOverlay, getTopInsights, buildPrecisionContext, buildBeautyPortrait, buildPriorities };
+  return { initScreen, startLiveAnalysis, stopLiveAnalysis, analyzeFromPhoto, renderFaceOverlay, getTopInsights, buildPrecisionContext, buildBeautyPortrait, buildPriorities, buildColorimetry };
 
 })();
 
