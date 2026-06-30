@@ -24,18 +24,16 @@ const InAppBrowser = (() => {
   function _html() {
     return `
       <div class="inapp-inner">
-        <span class="inapp-icon">🌐</span>
-        <div class="inapp-text">
-          <strong>Ouvre Glow Up dans ton navigateur</strong>
-          <span>Depuis l'app Instagram, la <b>caméra</b> et la <b>connexion Google</b> sont bloquées. Ouvre Glow Up dans Safari ou Chrome pour tout débloquer.</span>
+        <button class="inapp-close" onclick="InAppBrowser.dismiss()" aria-label="Fermer">✕</button>
+        <div class="inapp-head">
+          <span class="inapp-icon">🌐</span>
+          <strong class="inapp-title">Ouvre Glow Up dans ton navigateur</strong>
         </div>
+        <p class="inapp-desc">Sur Instagram, la <b>caméra</b> et la <b>connexion Google</b> ne fonctionnent pas. Ouvre le lien dans Safari ou Chrome.</p>
         <div class="inapp-actions">
-          <button class="inapp-btn inapp-btn--copy" onclick="InAppBrowser.copyLink(this)">Copier le lien</button>
-          <button class="inapp-btn inapp-btn--close" onclick="InAppBrowser.dismiss()" aria-label="Fermer">✕</button>
+          <button class="inapp-btn inapp-btn--copy" onclick="InAppBrowser.copyLink(this)">📋 Copier le lien</button>
         </div>
-      </div>
-      <div class="inapp-hint">
-        Astuce : appuie sur <b>⋯</b> (en haut à droite) puis <b>« Ouvrir dans le navigateur »</b>.
+        <p class="inapp-hint">Astuce : appuie sur <b>⋯</b> en haut à droite, puis <b>« Ouvrir dans le navigateur »</b></p>
       </div>`;
   }
 
