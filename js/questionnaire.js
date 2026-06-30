@@ -717,18 +717,26 @@ const Questionnaire = (() => {
       </div>`;
     }
 
+    // Dans le navigateur intégré d'Instagram, la caméra live est bloquée :
+    // on met l'upload en avant (qui, lui, fonctionne parfaitement).
+    const inApp = (typeof InAppBrowser !== 'undefined' && InAppBrowser.isInApp());
+    const uploadBtn = `
+      <label class="btn ${inApp ? 'btn-dark' : 'btn-outline'}" style="cursor:pointer;text-align:center;">
+        📂 ${inApp ? 'Choisir une photo' : 'Uploader une photo'}
+        <input type="file" accept="image/*" style="display:none"
+               onchange="Questionnaire.uploadPhoto(this)">
+      </label>`;
+    const cameraBtn = `
+      <button class="btn ${inApp ? 'btn-outline' : 'btn-dark'}" onclick="Questionnaire.takePhoto()">📸 Prendre une photo</button>`;
+
     return `<div class="q-photo-step">
       <p style="font-size:0.9rem;color:var(--muted);margin-bottom:20px;">
         En 5 secondes, l'IA analyse ta peau et pré-remplit les questions suivantes.
       </p>
       <div class="q-photo-buttons">
-        <button class="btn btn-dark" onclick="Questionnaire.takePhoto()">📸 Prendre une photo</button>
-        <label class="btn btn-outline" style="cursor:pointer;text-align:center;">
-          📂 Uploader une photo
-          <input type="file" accept="image/*" style="display:none"
-                 onchange="Questionnaire.uploadPhoto(this)">
-        </label>
+        ${inApp ? uploadBtn + cameraBtn : cameraBtn + uploadBtn}
       </div>
+      ${inApp ? `<p class="q-inapp-note">📷 Pour prendre une photo en direct, ouvre Glow Up dans Safari ou Chrome — l'upload fonctionne ici sans souci ✦</p>` : ''}
       <button class="q-textarea-skip" onclick="Questionnaire.skipPhoto()">
         Passer cette étape →
       </button>

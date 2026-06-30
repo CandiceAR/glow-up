@@ -4206,48 +4206,29 @@ em { font-style: italic; color: var(--nude); }
 .cg-step-card .premium-card-name    { font-size: 0.85rem; }
 .cg-step-card .premium-card-brand   { font-size: 0.65rem; }
 
-/* ─── Bandeau navigateur intégré (Instagram/Facebook…) ──────── */
-.inapp-banner {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 10000;
-  background: var(--charcoal, #2C2A27);
-  color: #fff;
-  padding: 16px 18px calc(16px + env(safe-area-inset-top, 0px));
-  padding-top: calc(16px + env(safe-area-inset-top, 0px));
-  transform: translateY(-110%);
-  transition: transform .3s ease;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.25);
-}
-.inapp-banner--visible { transform: translateY(0); }
-.inapp-inner {
-  position: relative;
-  max-width: 460px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+/* ─── Notes contextuelles navigateur intégré (Instagram…) ───── */
+.q-inapp-note {
+  margin: 14px auto 0;
+  max-width: 420px;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: var(--accent, #F0913F);
+  background: rgba(240,145,63,0.08);
+  border: 1px solid rgba(240,145,63,0.25);
+  border-radius: 12px;
+  padding: 10px 14px;
   text-align: center;
 }
-.inapp-head { display: flex; align-items: center; justify-content: center; gap: 8px; }
-.inapp-icon { font-size: 1.25rem; }
-.inapp-title { font-size: 0.98rem; font-weight: 600; line-height: 1.2; }
-.inapp-desc { margin: 0; font-size: 0.82rem; opacity: 0.9; line-height: 1.5; }
-.inapp-desc b { color: var(--accent, #F0913F); font-weight: 600; }
-.inapp-actions { display: flex; gap: 8px; justify-content: center; }
-.inapp-btn {
-  border: none; cursor: pointer; border-radius: 12px;
-  font-size: 0.92rem; font-weight: 600; padding: 13px 22px;
-}
-.inapp-btn--copy, .inapp-btn--open { background: var(--accent, #F0913F); color: #fff; }
-.inapp-hint { margin: 2px 0 0; font-size: 0.72rem; opacity: 0.65; line-height: 1.4; }
-.inapp-hint b { color: var(--accent, #F0913F); }
-.inapp-close {
-  position: absolute; top: -4px; right: -4px;
-  width: 30px; height: 30px;
-  background: rgba(255,255,255,0.12); color: #fff;
-  border: none; border-radius: 50%; cursor: pointer;
-  font-size: 0.9rem; line-height: 1;
+.auth-inapp-note {
+  margin: 4px 0 14px;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--muted, #6b6358);
+  background: rgba(240,145,63,0.07);
+  border: 1px solid rgba(240,145,63,0.2);
+  border-radius: 12px;
+  padding: 11px 14px;
+  text-align: center;
 }
 
 /* ─── Bandeau cookies RGPD ──────────────────────────────────── */

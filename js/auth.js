@@ -193,6 +193,14 @@ const Auth = (() => {
       <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
     </svg>`;
 
+    // Navigateur intégré (Instagram…) : la connexion Google est bloquée par
+    // Google (disallowed_useragent). On masque le bouton et on guide vers l'email.
+    const inApp = (typeof InAppBrowser !== 'undefined' && InAppBrowser.isInApp());
+    const googleBlock = inApp
+      ? `<p class="auth-inapp-note">✉️ Crée ton compte par email ci-dessous.<br>La connexion Google fonctionne en ouvrant Glow Up dans Safari ou Chrome.</p>`
+      : `<button class="btn btn-google" onclick="Auth.signInWithGoogle()">${googleSVG} Continuer avec Google</button>
+         <div class="auth-divider"><span>ou par email</span></div>`;
+
     const html = `
       <button class="modal-close" onclick="closeModal()">×</button>
       <div class="auth-modal">
@@ -208,8 +216,7 @@ const Auth = (() => {
           <button class="btn btn-dark full-width" onclick="Auth.submitReset()">Envoyer le lien</button>
           <button class="btn-ghost auth-guest" onclick="Auth.openAuthModal('login')">← Retour</button>
         ` : `
-          <button class="btn btn-google" onclick="Auth.signInWithGoogle()">${googleSVG} Continuer avec Google</button>
-          <div class="auth-divider"><span>ou par email</span></div>
+          ${googleBlock}
           <input type="email" id="authEmail" placeholder="Ton adresse email" class="auth-input">
           <input type="password" id="authPassword" placeholder="${mode === 'register' ? 'Choisis un mot de passe (6 car. min)' : 'Ton mot de passe'}" class="auth-input">
           ${mode === 'register'
@@ -504,8 +511,10 @@ const Auth = (() => {
           Crée ton compte gratuit pour la découvrir.
         </p>
 
-        <button class="btn btn-google" onclick="Auth.signInWithGoogle()">${googleSVG} Continuer avec Google</button>
-        <div class="auth-divider"><span>ou par email</span></div>
+        ${(typeof InAppBrowser !== 'undefined' && InAppBrowser.isInApp())
+          ? `<p class="auth-inapp-note">✉️ Crée ton compte par email ci-dessous.<br>La connexion Google fonctionne en ouvrant Glow Up dans Safari ou Chrome.</p>`
+          : `<button class="btn btn-google" onclick="Auth.signInWithGoogle()">${googleSVG} Continuer avec Google</button>
+             <div class="auth-divider"><span>ou par email</span></div>`}
         <input type="email"    id="authEmail"    placeholder="Ton adresse email"        class="auth-input">
         <input type="password" id="authPassword" placeholder="Choisis un mot de passe"  class="auth-input">
 
