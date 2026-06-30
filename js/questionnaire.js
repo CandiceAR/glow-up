@@ -244,6 +244,120 @@ const Questionnaire = (() => {
       ]
     },
 
+    // ── Bloc Protection solaire ☀️ ────────────────────────────
+    // Q-SPF1 — Fréquence d'utilisation SPF visage
+    {
+      id: 'qspf1', key: 'spfFrequency', type: 'single', required: false, skipIf: null,
+      question: '☀️ À quelle fréquence portes-tu un SPF sur le visage ?',
+      subtitle: 'Pour te recommander la meilleure protection solaire',
+      options: [
+        { value: 'daily',    emoji: '🌞', label: 'Tous les jours',            desc: 'Le réflexe anti-âge n°1' },
+        { value: 'sunny',    emoji: '⛅', label: 'Quand il fait beau',         desc: 'Surtout au soleil' },
+        { value: 'vacation', emoji: '🏖', label: 'En vacances / à la plage',   desc: 'Occasionnellement' },
+        { value: 'rarely',   emoji: '🌙', label: 'Rarement / jamais',          desc: 'On va changer ça ensemble' }
+      ]
+    },
+    // Q-SPF2 — Fini préféré
+    {
+      id: 'qspf2', key: 'spfFinish', type: 'single', required: false, skipIf: null,
+      question: 'Quel fini préfères-tu pour ton SPF visage ?',
+      options: [
+        { value: 'invisible', emoji: '👻', label: 'Invisible et très léger', desc: 'Sans trace, ni effet' },
+        { value: 'matte',     emoji: '✦',  label: 'Mat / anti-brillance',    desc: 'Zone T sous contrôle' },
+        { value: 'hydrating', emoji: '💧', label: 'Hydratant et confortable', desc: 'Effet cocon' },
+        { value: 'glow',      emoji: '🌟', label: 'Glow / lumineux',          desc: 'Bonne mine instantanée' },
+        { value: 'any',       emoji: '🤷‍♀️', label: 'Peu importe',            desc: '' }
+      ]
+    },
+    // Q-SPF3 — Sous le maquillage
+    {
+      id: 'qspf3', key: 'spfMakeup', type: 'single', required: false, skipIf: null,
+      question: 'Sous le maquillage, ton SPF doit être :',
+      options: [
+        { value: 'light',     emoji: '🪶', label: 'Très léger, sans pelucher', desc: 'Base parfaite' },
+        { value: 'hydrating', emoji: '💧', label: 'Hydratant',                 desc: 'Confort sous le teint' },
+        { value: 'any',       emoji: '🤷‍♀️', label: 'Peu importe',            desc: '' },
+        { value: 'nomakeup',  emoji: '🌿', label: 'Je ne me maquille pas',     desc: '' }
+      ]
+    },
+    // Q-SPF4 — Yeux sensibles
+    {
+      id: 'qspf4', key: 'spfEyeSensitive', type: 'single', required: false, skipIf: null,
+      question: 'As-tu souvent les yeux qui piquent avec les SPF ?',
+      options: [
+        { value: 'often',     emoji: '😣', label: 'Oui souvent', desc: 'Je veux une formule très tolérée' },
+        { value: 'sometimes', emoji: '😐', label: 'Parfois',     desc: '' },
+        { value: 'no',        emoji: '😊', label: 'Non',          desc: '' }
+      ]
+    },
+    // Q-SPF5 — Parfum
+    {
+      id: 'qspf5', key: 'spfFragrance', type: 'single', required: false, skipIf: null,
+      question: 'Tu préfères ton SPF :',
+      options: [
+        { value: 'fragrancefree', emoji: '🚫', label: 'Sans parfum', desc: 'Idéal peau sensible' },
+        { value: 'any',           emoji: '🤷‍♀️', label: 'Peu importe', desc: '' },
+        { value: 'unknown',       emoji: '❓', label: 'Je ne sais pas', desc: '' }
+      ]
+    },
+    // Q-SPF6 — Priorité n°1
+    {
+      id: 'qspf6', key: 'spfPriority', type: 'single', required: false, skipIf: null,
+      question: 'Quand tu choisis un SPF, le plus important pour toi :',
+      options: [
+        { value: 'invisible',  emoji: '👻', label: 'Qu\'il soit invisible',               desc: '' },
+        { value: 'matte',      emoji: '✦',  label: 'Qu\'il ne fasse pas briller',         desc: '' },
+        { value: 'comfort',    emoji: '💧', label: 'Qu\'il soit confortable / hydratant',  desc: '' },
+        { value: 'antitaches', emoji: '🛡', label: 'Qu\'il protège des taches & du vieillissement', desc: '' },
+        { value: 'heatresist', emoji: '🔥', label: 'Qu\'il tienne à la chaleur / au sport', desc: '' },
+        { value: 'budget',     emoji: '🌱', label: 'Qu\'il soit petit budget',            desc: '' }
+      ]
+    },
+    // Q-SPF7 — Résistance à l'eau
+    {
+      id: 'qspf7', key: 'spfWaterResistant', type: 'single', required: false, skipIf: null,
+      question: 'As-tu besoin d\'un SPF qui résiste à l\'eau / à la transpiration ?',
+      options: [
+        { value: 'yes',    emoji: '💦', label: 'Oui',                       desc: '' },
+        { value: 'no',     emoji: '🚫', label: 'Non',                       desc: '' },
+        { value: 'summer', emoji: '☀️', label: 'En été seulement',          desc: '' }
+      ]
+    },
+    // Q-SPF8 — Intérêt SPF corps
+    {
+      id: 'qspf8', key: 'spfBodyInterest', type: 'single', required: false, skipIf: null,
+      question: 'Veux-tu aussi que Glow Up te recommande un SPF corps ?',
+      options: [
+        { value: 'yes',    emoji: '🧴', label: 'Oui',                          desc: '' },
+        { value: 'no',     emoji: '🚫', label: 'Non',                          desc: '' },
+        { value: 'summer', emoji: '🏖', label: 'Surtout pour l\'été / vacances', desc: '' }
+      ]
+    },
+    // Q-SPF9 — Format corps (conditionnel)
+    {
+      id: 'qspf9', key: 'spfBodyFormat', type: 'single', required: false,
+      skipIf: (answers) => !answers.spfBodyInterest || answers.spfBodyInterest === 'no',
+      question: 'Pour le corps, tu préfères quel format ?',
+      options: [
+        { value: 'milk',  emoji: '🥛', label: 'Lait / crème', desc: '' },
+        { value: 'spray', emoji: '💨', label: 'Spray',         desc: '' },
+        { value: 'mist',  emoji: '🌫', label: 'Brume',         desc: '' },
+        { value: 'any',   emoji: '🤷‍♀️', label: 'Peu importe', desc: '' }
+      ]
+    },
+    // Q-SPF10 — Objectif corps (conditionnel)
+    {
+      id: 'qspf10', key: 'spfBodyGoal', type: 'single', required: false,
+      skipIf: (answers) => !answers.spfBodyInterest || answers.spfBodyInterest === 'no',
+      question: 'Pour le corps, tu recherches surtout :',
+      options: [
+        { value: 'family', emoji: '👨‍👩‍👧', label: 'Un SPF familial / simple',          desc: '' },
+        { value: 'beach',  emoji: '🏖', label: 'Un SPF plage / sport / résistant à l\'eau', desc: '' },
+        { value: 'daily',  emoji: '🌿', label: 'Un SPF agréable au quotidien',        desc: '' },
+        { value: 'budget', emoji: '🌱', label: 'Un SPF petit budget',                 desc: '' }
+      ]
+    },
+
     // Q15 — Champ libre
     {
       id: 'q15', key: 'freeText', type: 'textarea',

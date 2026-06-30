@@ -37,6 +37,15 @@ const Auth = (() => {
       if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
       auth = firebase.auth();
 
+      // Google Analytics (GA4) — comptage automatique des visiteurs
+      // page_view, first_visit, session_start envoyés tout seuls.
+      try {
+        if (typeof firebase.analytics === 'function') {
+          firebase.analytics();
+          console.log('[Auth] Google Analytics activé (G-HLB50Z689S)');
+        }
+      } catch (e) { console.warn('[Auth] Analytics non initialisé:', e.message); }
+
       // Maintenir la session active indéfiniment sur le même appareil
       auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(() => {});
 

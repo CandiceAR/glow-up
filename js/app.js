@@ -34,6 +34,7 @@ const AppState = {
 
   products: {
     catalog: [],        // Tous les produits actifs
+    spfCatalog: [],     // Base SPF dédiée (visage + corps) — voir spfEngine.js
     recommended: [],    // Produits recommandés (après questionnaire)
     selected: null,     // Produit ouvert en modal
     tryOnActive: [],    // Produits actuellement appliqués sur le try-on
@@ -216,7 +217,8 @@ async function initApp() {
   // 1. Chargement du catalogue produits + règles (en parallèle)
   await Promise.all([
     ProductCatalog.load(),
-    RulesEngine.loadRules()
+    RulesEngine.loadRules(),
+    (typeof SpfEngine !== 'undefined' ? SpfEngine.load() : Promise.resolve())
   ]);
 
   console.log(`[GLOW UP] Catalogue chargé : ${AppState.products.catalog.length} produits actifs`);

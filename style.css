@@ -4206,6 +4206,62 @@ em { font-style: italic; color: var(--nude); }
 .cg-step-card .premium-card-name    { font-size: 0.85rem; }
 .cg-step-card .premium-card-brand   { font-size: 0.65rem; }
 
+/* ─── SPF : alternatives + reco corps ───────────────────────── */
+.spf-extras {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.spf-alts-label {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--nude, #C9A98A);
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+.spf-alts-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.spf-alt-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px;
+  background: #fff;
+  border: 1px solid var(--sand, #EFE2D5);
+  border-radius: 12px;
+  text-decoration: none;
+  transition: border-color .2s, transform .2s;
+  max-width: 100%;
+}
+.spf-alt-chip:hover { border-color: var(--nude, #C9A98A); transform: translateY(-1px); }
+.spf-alt-brand { font-size: 0.7rem; color: var(--nude, #C9A98A); font-weight: 600; }
+.spf-alt-name  { font-size: 0.78rem; color: var(--charcoal, #2C2A27); }
+.spf-body-reco {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #FBF7F2, #F7E9DA);
+  border: 1px solid var(--sand, #EFE2D5);
+  border-radius: 14px;
+}
+.spf-body-icon { font-size: 1.5rem; flex-shrink: 0; }
+.spf-body-text { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.spf-body-text strong { font-size: 0.82rem; color: var(--charcoal, #2C2A27); }
+.spf-body-text span   { font-size: 0.76rem; color: var(--muted, #6b6358); }
+.spf-body-reason { font-style: italic; color: var(--nude, #C9A98A) !important; }
+.spf-body-cta {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  background: var(--accent, #F0913F);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
 /* Bonus section */
 .cg-bonus {
   margin-top: 40px;

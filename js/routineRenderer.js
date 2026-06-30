@@ -14,6 +14,69 @@ const RoutineRenderer = (() => {
 
   function _refreshSeed() {
     _renderSeed = Math.random().toString(36).slice(2);
+    if (typeof SpfEngine !== 'undefined') SpfEngine.reset(); // nouveau tirage SPF
+  }
+
+  // ─── SPF : convertir une fiche spfProducts → format carte produit ─
+  function _spfAsProduct(p, description) {
+    if (!p) return null;
+    let buyUrl = p.buyUrl;
+    if (!buyUrl) {
+      // Pas de lien direct → recherche Amazon affiliée (honnête, monétisée)
+      buyUrl = `https://www.amazon.fr/s?k=${encodeURIComponent(p.brand + ' ' + p.name)}&tag=kan10ar-21`;
+    }
+    return {
+      id: p.id, name: p.name, brand: p.brand,
+      imageUrl: p.imageUrl || '',
+      amazonUrl: buyUrl,
+      price: p.price ?? null,
+      rating: null,
+      description: description || ''
+    };
+  }
+
+  // ─── SPF recommandé pour le profil courant (mémoïsé via SpfEngine) ─
+  function _spfReco() {
+    if (typeof SpfEngine === 'undefined') return null;
+    if (!(AppState.products.spfCatalog || []).length) return null;
+    try { return SpfEngine.getRecommendation(); } catch { return null; }
+  }
+
+  // ─── SPF : alternatives + recommandation corps sous la carte ──
+  function _renderSpfExtras() {
+    const reco = _spfReco();
+    if (!reco) return '';
+
+    const alts = (reco.alternatives || []).slice(0, 2);
+    const altHtml = alts.length ? `
+      <div class="spf-alts">
+        <span class="spf-alts-label">✦ 2 alternatives selon tes envies</span>
+        <div class="spf-alts-list">
+          ${alts.map(p => {
+            const compareUrl = `https://www.google.com/search?q=${encodeURIComponent(p.brand + ' ' + p.name)}&tbm=shop`;
+            return `<a class="spf-alt-chip" href="${compareUrl}" target="_blank" rel="noopener">
+              <span class="spf-alt-brand">${p.brand}</span>
+              <span class="spf-alt-name">${p.name}</span>
+            </a>`;
+          }).join('')}
+        </div>
+      </div>` : '';
+
+    const body = reco.body;
+    const bodyHtml = body ? `
+      <div class="spf-body-reco">
+        <span class="spf-body-icon">🧴</span>
+        <div class="spf-body-text">
+          <strong>SPF corps recommandé · ${body.brand}</strong>
+          <span>${body.name}</span>
+          ${reco.bodyReason ? `<span class="spf-body-reason">${reco.bodyReason}</span>` : ''}
+        </div>
+        <a class="spf-body-cta"
+           href="https://www.google.com/search?q=${encodeURIComponent(body.brand + ' ' + body.name)}&tbm=shop"
+           target="_blank" rel="noopener">Voir →</a>
+      </div>` : '';
+
+    return (altHtml || bodyHtml) ? `<div class="spf-extras">${altHtml}${bodyHtml}</div>` : '';
   }
 
   // Hash déterministe seed + clé → float [0, 1)
@@ -98,6 +161,13 @@ const RoutineRenderer = (() => {
   function findBestProductForStep(stepType, excludeIds = null) {
     const catalog  = AppState.products.catalog || [];
     if (!catalog.length) return null;
+
+    // ── SPF : sélection intelligente via la base SPF dédiée ──
+    if (stepType === 'spf') {
+      const reco = _spfReco();
+      if (reco?.primary) return _spfAsProduct(reco.primary, reco.reason);
+      // sinon fallback : ancien comportement (catégorie spf du catalogue)
+    }
 
     // Skin type : analyse faciale en priorité, sinon questionnaire
     const skinType = AppState.face.skinAnalysis?.skinType?.type
@@ -497,6 +567,7 @@ const RoutineRenderer = (() => {
       }
 
       const tip = applyTip || stepNote || '';
+      const spfExtras = step.step === 'spf' ? _renderSpfExtras() : '';
       blocks.push(`
         <div class="cg-step">
           <div class="cg-step-meta">
@@ -507,6 +578,7 @@ const RoutineRenderer = (() => {
             </div>
           </div>
           ${product ? `<div class="cg-step-card">${_renderPremiumProductCard(product)}</div>` : ''}
+          ${spfExtras}
         </div>`);
     }
 
