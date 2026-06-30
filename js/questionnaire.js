@@ -980,6 +980,23 @@ const Questionnaire = (() => {
         }
       } catch {}
 
+      // ── Filet de sécurité : analyse impossible (navigateur ancien,
+      //    MediaPipe/CDN bloqué, webview Instagram…) → ne JAMAIS bloquer ──
+      if (!AppState.face.skinAnalysis) {
+        if (typeof showToast === 'function') {
+          showToast("L'analyse auto n'est pas dispo sur ce navigateur — continue, on personnalise avec tes réponses ✦", 'info', 5500);
+        }
+        if (mode === 'makeup') {
+          const nxt = _mkNextActive(makeupIndex);
+          if (nxt >= 0) { makeupIndex = nxt; _renderMakeupLegacy(); }
+          else { showScreen('makeup'); }
+        } else {
+          const nxt = _nextActive(currentIndex);
+          if (nxt >= 0) _slideTo(nxt, 'forward'); else submit();
+        }
+        return;
+      }
+
       if (mode === 'makeup') {
         // Pré-remplir carnation / sous-ton du quiz makeup depuis la photo
         const an = AppState.face.skinAnalysis;
@@ -1003,6 +1020,15 @@ const Questionnaire = (() => {
 
   function resumeFromPhoto() {
     // Appelé depuis app.js quand la photo est capturée et l'analyse terminée
+    // Filet de sécurité : si l'analyse a échoué, ne pas rester bloqué sur le spinner
+    if (!AppState.face?.skinAnalysis) {
+      if (typeof showToast === 'function') {
+        showToast("L'analyse auto n'est pas dispo sur ce navigateur — continue, on personnalise avec tes réponses ✦", 'info', 5500);
+      }
+      const nxt = _nextActive(currentIndex >= 0 ? currentIndex : 0);
+      if (nxt >= 0) { _slideTo(nxt, 'forward'); } else { submit(); }
+      return;
+    }
     _prefillFromPhoto();
     _showPhotoResult();
   }

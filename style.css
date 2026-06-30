@@ -4206,6 +4206,39 @@ em { font-style: italic; color: var(--nude); }
 .cg-step-card .premium-card-name    { font-size: 0.85rem; }
 .cg-step-card .premium-card-brand   { font-size: 0.65rem; }
 
+/* ─── Bandeau navigateur intégré (Instagram/Facebook…) ──────── */
+.inapp-banner {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 10000;
+  background: var(--charcoal, #2C2A27);
+  color: #fff;
+  padding: 12px 16px 10px;
+  transform: translateY(-110%);
+  transition: transform .3s ease;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+}
+.inapp-banner--visible { transform: translateY(0); }
+.inapp-inner { display: flex; align-items: center; gap: 12px; max-width: 760px; margin: 0 auto; }
+.inapp-icon { font-size: 1.4rem; flex-shrink: 0; }
+.inapp-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.inapp-text strong { font-size: 0.9rem; }
+.inapp-text span { font-size: 0.74rem; opacity: 0.85; line-height: 1.45; }
+.inapp-text b { color: var(--accent, #F0913F); font-weight: 600; }
+.inapp-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.inapp-btn {
+  border: none; cursor: pointer; border-radius: 10px;
+  font-size: 0.78rem; font-weight: 600; padding: 9px 14px;
+}
+.inapp-btn--copy, .inapp-btn--open { background: var(--accent, #F0913F); color: #fff; white-space: nowrap; }
+.inapp-btn--close { background: transparent; color: #fff; opacity: 0.7; padding: 9px 10px; }
+.inapp-hint { max-width: 760px; margin: 6px auto 0; font-size: 0.7rem; opacity: 0.7; text-align: center; }
+.inapp-hint b { color: var(--accent, #F0913F); }
+@media (max-width: 560px) {
+  .inapp-inner { flex-wrap: wrap; }
+  .inapp-text { flex-basis: 100%; order: -1; }
+}
+
 /* ─── Bandeau cookies RGPD ──────────────────────────────────── */
 .cookie-consent {
   position: fixed;
