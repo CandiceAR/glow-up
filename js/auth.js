@@ -37,14 +37,9 @@ const Auth = (() => {
       if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
       auth = firebase.auth();
 
-      // Google Analytics (GA4) — comptage automatique des visiteurs
-      // page_view, first_visit, session_start envoyés tout seuls.
-      try {
-        if (typeof firebase.analytics === 'function') {
-          firebase.analytics();
-          console.log('[Auth] Google Analytics activé (G-HLB50Z689S)');
-        }
-      } catch (e) { console.warn('[Auth] Analytics non initialisé:', e.message); }
+      // Google Analytics (GA4) — UNIQUEMENT si la visiteuse a accepté les
+      // cookies (conformité RGPD/CNIL). Pas de cookie avant consentement.
+      _maybeEnableAnalytics();
 
       // Maintenir la session active indéfiniment sur le même appareil
       auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(() => {});
@@ -530,7 +525,25 @@ const Auth = (() => {
   // Exposer le callback pour la modal de login en chaîne
   function _getFlowCallback() { return _authFlowCallback; }
 
-  return { init, signInWithGoogle, signInWithEmail, signOut, openAuthModal, continueFlow, submitEmail, submitLogin, submitRegister, submitReset, openProfileMenu, openJourneyAuthModal, journeyGoogle, submitJourney, startJourneyGuest, openRequiredAuthModal, _getFlowCallback };
+  // ─── Google Analytics — activé seulement après consentement cookies ──
+  let _analyticsOn = false;
+  function _maybeEnableAnalytics() {
+    try {
+      if (localStorage.getItem('glow_cookie_consent') === 'accepted') enableAnalytics();
+    } catch {}
+  }
+  function enableAnalytics() {
+    if (_analyticsOn) return;
+    try {
+      if (typeof firebase !== 'undefined' && typeof firebase.analytics === 'function') {
+        firebase.analytics();
+        _analyticsOn = true;
+        console.log('[Auth] Google Analytics activé (consentement OK)');
+      }
+    } catch (e) { console.warn('[Auth] Analytics non initialisé:', e.message); }
+  }
+
+  return { init, signInWithGoogle, signInWithEmail, signOut, openAuthModal, continueFlow, submitEmail, submitLogin, submitRegister, submitReset, openProfileMenu, openJourneyAuthModal, journeyGoogle, submitJourney, startJourneyGuest, openRequiredAuthModal, _getFlowCallback, enableAnalytics };
 
 })();
 
