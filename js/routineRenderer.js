@@ -17,6 +17,27 @@ const RoutineRenderer = (() => {
     if (typeof SpfEngine !== 'undefined') SpfEngine.reset(); // nouveau tirage SPF
   }
 
+  // ─── SPF : visuel de marque généré (fallback quand pas de vraie photo) ─
+  // SVG dans la DA Glow Up : soleil + marque + SPF{protection}. Jamais vide.
+  function _spfPlaceholder(brand, protection) {
+    const b = String(brand || 'SPF').toUpperCase().slice(0, 18);
+    const spf = protection ? ('SPF ' + protection) : 'SPF';
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="200" viewBox="0 0 320 200">
+      <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#FBF7F2"/><stop offset="1" stop-color="#F1E2D4"/></linearGradient></defs>
+      <rect width="320" height="200" fill="url(#g)"/>
+      <g stroke="#F0913F" stroke-width="4" stroke-linecap="round">
+        <line x1="160" y1="34" x2="160" y2="20"/><line x1="160" y1="94" x2="160" y2="108"/>
+        <line x1="130" y1="64" x2="116" y2="64"/><line x1="190" y1="64" x2="204" y2="64"/>
+        <line x1="139" y1="43" x2="129" y2="33"/><line x1="181" y1="43" x2="191" y2="33"/>
+        <line x1="139" y1="85" x2="129" y2="95"/><line x1="181" y1="85" x2="191" y2="95"/></g>
+      <circle cx="160" cy="64" r="20" fill="#F0913F"/>
+      <text x="160" y="146" text-anchor="middle" font-family="DM Sans, Arial, sans-serif" font-size="19" font-weight="600" fill="#2C2A27">${b}</text>
+      <text x="160" y="174" text-anchor="middle" font-family="DM Sans, Arial, sans-serif" font-size="14" letter-spacing="2" fill="#C9A98A">${spf}</text>
+    </svg>`;
+    return 'data:image/svg+xml,' + encodeURIComponent(svg);
+  }
+
   // ─── SPF : convertir une fiche spfProducts → format carte produit ─
   function _spfAsProduct(p, description) {
     if (!p) return null;
@@ -27,7 +48,7 @@ const RoutineRenderer = (() => {
     }
     return {
       id: p.id, name: p.name, brand: p.brand,
-      imageUrl: p.imageUrl || '',
+      imageUrl: p.imageUrl && p.imageUrl.trim() ? p.imageUrl : _spfPlaceholder(p.brand, p.protection),
       amazonUrl: buyUrl,
       price: p.price ?? null,
       rating: null,
