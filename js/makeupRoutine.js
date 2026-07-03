@@ -731,6 +731,14 @@ const MakeupRoutine = (() => {
     const skinQuiz = AppState?.questionnaire?.answers || {};
     const mkQuiz   = AppState?.makeupQuiz || {};
 
+    // Compte gratuit : la routine make-up compte comme LA routine offerte.
+    // On l'enregistre (reprenable) et on marque la limite atteinte.
+    if (typeof Subscription !== 'undefined' && Subscription.getPlan() === 'free') {
+      AppState.routineChoice = 'makeup';
+      if (typeof RoutineSaver !== 'undefined') RoutineSaver.save();
+      Subscription.markRoutineGenerated();
+    }
+
     // Merge makeup concerns into skincare complexes so skincare recommandations en bénéficient
     const MK_TO_COMPLEX = {
       rougeurs: 'rougeurs', cernes: 'cernes', pores: 'pores',

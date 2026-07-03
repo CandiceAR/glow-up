@@ -45,6 +45,9 @@ const Subscription = (() => {
 
       // Charger le choix de routine gratuite — effacé si abonné
       AppState.user.freeRoutineChoice = (plan === 'free') ? (sub.freeRoutineChoice || null) : null;
+      AppState.user.freeRoutineUsed   = (plan === 'free') ? !!sub.freeRoutineUsed : false;
+      // Synchroniser le flag local (cross-device) si déjà utilisé côté cloud
+      if (AppState.user.freeRoutineUsed) { try { localStorage.setItem(_routineFlagKey(), '1'); } catch {} }
 
       console.log('[Subscription] Plan chargé:', plan, '| freeRoutineChoice:', AppState.user.freeRoutineChoice);
       updateGatingUI();
@@ -81,6 +84,33 @@ const Subscription = (() => {
   function _spotsLeft() {
     if (_foundersCount === null) return null;
     return Math.max(0, FOUNDERS_MAX - _foundersCount);
+  }
+
+  // ─── Limite routine gratuite : 1 seule génération ────────────
+  // Un compte free peut générer UNE routine. Toute nouvelle génération
+  // (autre routine, refaire l'analyse, mettre à jour les besoins) → abonnement.
+  function _routineFlagKey() {
+    const uid = AppState?.user?.uid;
+    return uid ? `glow_routine_done_${uid}` : 'glow_routine_done';
+  }
+  function hasUsedFreeRoutine() {
+    if (AppState?.user?.freeRoutineUsed) return true;
+    try { return localStorage.getItem(_routineFlagKey()) === '1'; } catch { return false; }
+  }
+  function canGenerateRoutine() {
+    return getPlan() !== 'free' || !hasUsedFreeRoutine();
+  }
+  function markRoutineGenerated() {
+    if (getPlan() !== 'free') return;               // abonnées : illimité
+    try { localStorage.setItem(_routineFlagKey(), '1'); } catch {}
+    if (AppState?.user) AppState.user.freeRoutineUsed = true;
+    const uid = AppState?.user?.uid;
+    if (uid && typeof firebase !== 'undefined' && firebase.apps?.length) {
+      try {
+        firebase.firestore().collection('users').doc(uid)
+          .set({ subscription: { freeRoutineUsed: true } }, { merge: true });
+      } catch {}
+    }
   }
 
   // ─── Vérifier accès à une fonctionnalité ─────────────────────
@@ -132,6 +162,7 @@ const Subscription = (() => {
 
     const CFG = {
       routine_second:      { tag:'Offre complète',  title:'Ta deuxième routine<br>t\'attend.',       desc:'Skincare + Make-up · Profil cross-device · Historique de ta peau',             plan:'Glow',       price:'19,99', fPrice:'15,99', key:'glow_year',  fKey:'glow_found'  },
+      routine_regenerate:  { tag:'Routines illimitées', title:'Envie d\'une nouvelle<br>routine ?',   desc:'Ta 1ʳᵉ routine est offerte. Avec Glow, génère autant de routines que tu veux — à chaque changement de peau, de saison ou d\'envie.', plan:'Glow', price:'19,99', fPrice:'15,99', key:'glow_year', fKey:'glow_found' },
       skinpedia_ai:        { tag:'Skinpedia IA',     title:'L\'analyse IA de tes<br>ingrédients.',    desc:'Comprends chaque actif selon ton profil peau unique.',                          plan:'Glow',       price:'19,99', fPrice:'15,99', key:'glow_year',  fKey:'glow_found'  },
       recommendations_adv: { tag:'Recommandations',  title:'Des produits encore<br>plus ciblés.',     desc:'Sélection avancée selon ton analyse, ta carnation et tes préférences.',          plan:'Glow',       price:'19,99', fPrice:'15,99', key:'glow_year',  fKey:'glow_found'  },
       coach:               { tag:'Glow Coach',       title:'La seule vendeuse<br>beauté qui te connaît.', desc:'La seule vendeuse beauté qui te connaît déjà. Elle connaît ton profil, ta routine et ton budget. Disponible à tout moment.', plan:'Glow Coach', price:'199,99',fPrice:'49,99',key:'coach_year', fKey:'coach_found' }
@@ -446,6 +477,6 @@ const Subscription = (() => {
     }
   }
 
-  return { getPlan, isPlan, canAccess, loadPlan, openCheckout, showPaywall, updateGatingUI, handleCheckoutReturn, renderPlansPage, loadFoundersData, showSkinJourneyDetail, showReferralDashboard };
+  return { getPlan, isPlan, canAccess, canGenerateRoutine, hasUsedFreeRoutine, markRoutineGenerated, loadPlan, openCheckout, showPaywall, updateGatingUI, handleCheckoutReturn, renderPlansPage, loadFoundersData, showSkinJourneyDetail, showReferralDashboard };
 
 })();

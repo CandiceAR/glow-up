@@ -448,6 +448,11 @@ const Questionnaire = (() => {
   }
 
   function startSkincare(keepAnalysis = false) {
+    // Limite gratuite : 1 seule routine générée. Au-delà → abonnement.
+    if (typeof Subscription !== 'undefined' && !Subscription.canGenerateRoutine()) {
+      Subscription.showPaywall('routine_regenerate');
+      return;
+    }
     mode = 'skincare';
     // Effacer l'analyse photo précédente — sauf si on met juste à jour les besoins
     if (!keepAnalysis && AppState.face) {
@@ -472,6 +477,11 @@ const Questionnaire = (() => {
   const CARN_PHOTO_MAP = { light: 'clair', medium: 'medium', dark: 'fonce', clair: 'clair', fonce: 'fonce' };
 
   function startMakeup(keepAnalysis = true) {
+    // Limite gratuite : 1 seule routine générée. Au-delà → abonnement.
+    if (typeof Subscription !== 'undefined' && !Subscription.canGenerateRoutine()) {
+      Subscription.showPaywall('routine_regenerate');
+      return;
+    }
     mode = 'makeup';
     // Refaire l'analyse → on efface la photo pour réafficher l'étape photo
     if (!keepAnalysis && AppState.face) {
@@ -1346,6 +1356,12 @@ const Questionnaire = (() => {
     AppState.routine = { ...routine, log };
     ProductCatalog.getRecommended(answers);
     if (typeof RoutineSaver !== 'undefined') RoutineSaver.saveProfile();
+    // Compte gratuit : 1 routine autorisée → on l'enregistre (toujours reprenable)
+    // et on marque la limite atteinte pour bloquer les générations suivantes.
+    if (typeof Subscription !== 'undefined' && Subscription.getPlan() === 'free') {
+      if (typeof RoutineSaver !== 'undefined') RoutineSaver.save();
+      Subscription.markRoutineGenerated();
+    }
     showScreen('results');
   }
 
