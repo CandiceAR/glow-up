@@ -6,13 +6,14 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const PRICE_TO_PLAN = {
   // ── Tarifs 2026 — À COMPLÉTER avec les vrais Price IDs (test + live) ──
-  'REPLACE_premium_monthly_TEST': 'glow',     // 4,99€/mois
-  'REPLACE_premium_yearly_TEST':  'glow',      // 29,99€/an
-  'REPLACE_coach_monthly_TEST':   'glowplus',  // 9,99€/mois
+  'REPLACE_premium_monthly_TEST': 'glow',       // 4,99€/mois
+  'REPLACE_premium_yearly_TEST':  'glow',        // 39,99€/an
+  'REPLACE_coach_monthly_TEST':   'glowplus',    // 15,99€/mois
+  'REPLACE_coach_yearly_TEST':    'glowplus',    // 149,99€/an
   'REPLACE_premium_monthly_LIVE': 'glow',
   'REPLACE_premium_yearly_LIVE':  'glow',
   'REPLACE_coach_monthly_LIVE':   'glowplus',
-  // (Coach annuel 199,99€ = price_1Tc133… / price_1Tc17g… déjà mappés ci-dessous)
+  'REPLACE_coach_yearly_LIVE':    'glowplus',
   // ── Existants ────────────────────────────────────────────────
   'price_1TM1rqJeKx7T3paEB3gqZnxF': 'glow',
   'price_1TM1tTJeKx7T3paEmWdCIWXE': 'glow',

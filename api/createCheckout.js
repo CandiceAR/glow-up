@@ -8,11 +8,11 @@ const isTestMode = process.env.STRIPE_SECRET_KEY?.startsWith('sk_test_');
 
 const PRICE_IDS = isTestMode ? {
   // ── Tarifs 2026 (juillet) ─────────────────────────────────────
-  // Premium 4,99€/mois · 29,99€/an · Coach 9,99€/mois · 199,99€/an
+  // Premium 4,99€/mois · 39,99€/an · Coach 15,99€/mois · 149,99€/an
   premium_monthly: 'REPLACE_premium_monthly_TEST',  // ⚠️ 4,99€/mois — créer dans Stripe (test)
-  premium_yearly:  'REPLACE_premium_yearly_TEST',   // ⚠️ 29,99€/an — créer dans Stripe (test)
-  coach_monthly:   'REPLACE_coach_monthly_TEST',    // ⚠️ 9,99€/mois — créer dans Stripe (test)
-  coach_yearly:    'price_1Tc133JeKx7T3paET9l1IJHe',// 199,99€/an — réutilise l'existant (coach_year)
+  premium_yearly:  'REPLACE_premium_yearly_TEST',   // ⚠️ 39,99€/an — créer dans Stripe (test)
+  coach_monthly:   'REPLACE_coach_monthly_TEST',    // ⚠️ 15,99€/mois — créer dans Stripe (test)
+  coach_yearly:    'REPLACE_coach_yearly_TEST',     // ⚠️ 149,99€/an — créer dans Stripe (test)
   // ── Legacy (conservés pour compat abonnés existants) ──────────
   glow_monthly: 'price_1TMp8JJeKx7T3paERKVr8oFx',
   glow_yearly:  'price_1TMp8lJeKx7T3paEC2DxJx6j',
@@ -24,9 +24,9 @@ const PRICE_IDS = isTestMode ? {
 } : {
   // ── Tarifs 2026 (juillet) — LIVE ──────────────────────────────
   premium_monthly: 'REPLACE_premium_monthly_LIVE',  // ⚠️ 4,99€/mois — créer dans Stripe (live)
-  premium_yearly:  'REPLACE_premium_yearly_LIVE',   // ⚠️ 29,99€/an — créer dans Stripe (live)
-  coach_monthly:   'REPLACE_coach_monthly_LIVE',    // ⚠️ 9,99€/mois — créer dans Stripe (live)
-  coach_yearly:    'price_1Tc17gJeKx7T3paEzIZBTNqK',// 199,99€/an — réutilise l'existant (coach_year)
+  premium_yearly:  'REPLACE_premium_yearly_LIVE',   // ⚠️ 39,99€/an — créer dans Stripe (live)
+  coach_monthly:   'REPLACE_coach_monthly_LIVE',    // ⚠️ 15,99€/mois — créer dans Stripe (live)
+  coach_yearly:    'REPLACE_coach_yearly_LIVE',     // ⚠️ 149,99€/an — créer dans Stripe (live)
   // ── Legacy ────────────────────────────────────────────────────
   glow_monthly: 'price_1TM1rqJeKx7T3paEB3gqZnxF',
   glow_yearly:  'price_1TM1tTJeKx7T3paEmWdCIWXE',

@@ -722,9 +722,9 @@ const RoutineRenderer = (() => {
                 <li>✨ Le suivi de l'évolution de ta peau</li>
               </ul>
               <div class="locked-price">
-                <span class="locked-price-main">29,99 €</span>
+                <span class="locked-price-main">39,99 €</span>
                 <span class="locked-price-per">/ an</span>
-                <span class="locked-price-sub">soit 2,50 € / mois · ou 4,99 €/mois</span>
+                <span class="locked-price-sub">soit 3,33 € / mois · ou 4,99 €/mois</span>
               </div>
               <button class="btn-orange-cta locked-unlock-btn" onclick="Subscription.showPaywall('routine_second')">
                 Débloquer Premium ✦
@@ -834,10 +834,10 @@ const RoutineRenderer = (() => {
           <li>✓ Nouveaux conseils adaptés à ton profil</li>
         </ul>
         <div class="cb-price">
-          <span class="cb-price-main">29,99 €</span>
+          <span class="cb-price-main">39,99 €</span>
           <span class="cb-price-period">/ an</span>
         </div>
-        <p class="cb-price-sub">Soit seulement 2,50 € par mois · ou 4,99 €/mois</p>
+        <p class="cb-price-sub">Soit seulement 3,33 € par mois · ou 4,99 €/mois</p>
         <button class="btn-orange-cta" onclick="Subscription.showPaywall('routine_second')">
           Débloquer Premium
         </button>
@@ -872,10 +872,10 @@ const RoutineRenderer = (() => {
         </div>
 
         <div class="cb-price">
-          <span class="cb-price-main">199,99 €</span>
+          <span class="cb-price-main">149,99 €</span>
           <span class="cb-price-period">/ an</span>
         </div>
-        <p class="cb-price-sub">ou 9,99 € par mois</p>
+        <p class="cb-price-sub">soit 12,50 € par mois · ou 15,99 €/mois</p>
         <button class="btn-orange-cta btn-orange-cta--coach" onclick="Subscription.showPaywall('coach')">
           Accéder à Glow Up Coach
         </button>
@@ -886,7 +886,7 @@ const RoutineRenderer = (() => {
   // ─── Étape 4 : Tableau comparatif ────────────────────────────
   function renderComparisonTable(plan) {
     const rows = [
-      ['Prix',                                     '29,99 €/an<br><small>ou 4,99 €/mois</small>', '199,99 €/an<br><small>ou 9,99 €/mois</small>'],
+      ['Prix',                                     '39,99 €/an<br><small>ou 4,99 €/mois</small>', '149,99 €/an<br><small>ou 15,99 €/mois</small>'],
       ['Routine skincare personnalisée',            '✅', '✅'],
       ['Routine make-up personnalisée',             '✅', '✅'],
       ['Skin Journey',                              '✅', '✅'],
@@ -1059,7 +1059,7 @@ const RoutineRenderer = (() => {
           <button class="btn-orange-cta journey-teaser-btn" onclick="Subscription.showSkinJourneyDetail()">
             Découvrir Skin Journey →
           </button>`}
-          <p class="journey-teaser-note">${isSubscriber ? 'Inclus dans Glow Up Premium' : 'Inclus dans Glow Up Premium · dès 2,50 €/mois'}</p>
+          <p class="journey-teaser-note">${isSubscriber ? 'Inclus dans Glow Up Premium' : 'Inclus dans Glow Up Premium · dès 3,33 €/mois'}</p>
         </div>
 
         <div class="journey-teaser-right" aria-hidden="true">

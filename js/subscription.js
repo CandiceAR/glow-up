@@ -12,12 +12,12 @@ const Subscription = (() => {
   const PRICING = {
     premium: {
       label: 'Glow Up Premium',
-      monthly: '4,99', yearly: '29,99', yearlyPerMonth: '2,50', save: '50%',
+      monthly: '4,99', yearly: '39,99', yearlyPerMonth: '3,33', save: '33%',
       keyMonthly: 'premium_monthly', keyYearly: 'premium_yearly'
     },
     coach: {
       label: 'Glow Up Coach',
-      monthly: '9,99', yearly: '199,99', yearlyPerMonth: null, save: null,
+      monthly: '15,99', yearly: '149,99', yearlyPerMonth: '12,50', save: '22%',
       keyMonthly: 'coach_monthly', keyYearly: 'coach_yearly'
     }
   };
