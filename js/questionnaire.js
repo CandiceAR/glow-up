@@ -1354,6 +1354,9 @@ const Questionnaire = (() => {
 
     const { routine, log } = RulesEngine.evaluate(answers);
     AppState.routine = { ...routine, log };
+    // Seed STABLE : fige les produits de CETTE routine (mêmes produits au
+    // re-rendu / retour sur la page / reprise). Persisté avec la routine.
+    AppState.routine.seed = Math.random().toString(36).slice(2) + Date.now().toString(36);
     ProductCatalog.getRecommended(answers);
     if (typeof RoutineSaver !== 'undefined') RoutineSaver.saveProfile();
     // Compte gratuit : 1 routine autorisée → on l'enregistre (toujours reprenable)

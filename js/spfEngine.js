@@ -12,6 +12,16 @@ const SpfEngine = (() => {
 
   let _loaded = false;
   let _cache  = null;   // { key, result } — mémoïsation de la dernière reco
+  let _seed   = '';     // seed stable (fixé par la routine) → reco déterministe
+
+  // Aléa DÉTERMINISTE : même seed + même clé → même valeur [0,1)
+  function _rnd(key) {
+    const str = _seed + key;
+    let h = 0;
+    for (let i = 0; i < str.length; i++) h = Math.imul(31, h) + str.charCodeAt(i) | 0;
+    return (h >>> 0) / 4294967296;
+  }
+  function setSeed(s) { if (s !== _seed) { _seed = s || ''; _cache = null; } }
 
   // ─── Chargement de la base SPF ────────────────────────────────
   async function load() {
@@ -191,8 +201,8 @@ const SpfEngine = (() => {
     // Protection : on privilégie légèrement SPF50
     if (p.protection >= 50) s += 4;
 
-    // Variété entre sessions
-    s += Math.random() * 8;
+    // Variété DÉTERMINISTE (seed de la routine)
+    s += _rnd('f_' + p.id) * 8;
     return s;
   }
 
@@ -225,7 +235,7 @@ const SpfEngine = (() => {
     if (u.budget === 'petit')   { if (p.budgetLevel === 'petit') s += 16; if (p.budgetLevel === 'premium') s -= 18; }
     if (u.budget === 'premium') { if (p.budgetLevel === 'premium') s += 6; }
 
-    s += Math.random() * 8;
+    s += _rnd('b_' + p.id) * 8;
     return s;
   }
 
@@ -299,7 +309,7 @@ const SpfEngine = (() => {
   // ─── Reco mémoïsée (utilisée par la routine) ──────────────────
   function getRecommendation() {
     const u   = buildUserProfile();
-    const key = JSON.stringify(u);
+    const key = _seed + '|' + JSON.stringify(u);   // dépend du seed → stable
     if (_cache && _cache.key === key) return _cache.result;
     const result = getBestSpfForUser(u);
     _cache = { key, result };
@@ -324,6 +334,6 @@ const SpfEngine = (() => {
     return list.sort((a, b) => (b.rankingScore || 0) - (a.rankingScore || 0));
   }
 
-  return { load, buildUserProfile, getBestSpfForUser, getRecommendation, reset, filter };
+  return { load, buildUserProfile, getBestSpfForUser, getRecommendation, reset, setSeed, filter };
 
 })();

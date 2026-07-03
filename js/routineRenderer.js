@@ -9,12 +9,26 @@
 
 const RoutineRenderer = (() => {
 
-  // ─── Seed renouvelé à chaque génération de routine ───────────
-  let _renderSeed = Math.random().toString(36).slice(2);
+  // ─── Seed STABLE par routine ─────────────────────────────────
+  // Les produits sont tirés de façon déterministe à partir du seed de
+  // la routine → une routine affiche TOUJOURS les mêmes produits
+  // (au re-rendu, au retour sur la page, à la reprise). Le seed est
+  // persisté avec la routine (RoutineSaver), donc stable dans le temps.
+  let _renderSeed = 'default';
+
+  function newRoutineSeed() {
+    return Math.random().toString(36).slice(2) + Date.now().toString(36);
+  }
 
   function _refreshSeed() {
-    _renderSeed = Math.random().toString(36).slice(2);
-    if (typeof SpfEngine !== 'undefined') SpfEngine.reset(); // nouveau tirage SPF
+    const r = AppState.routine;
+    if (r) {
+      if (!r.seed) r.seed = newRoutineSeed();   // routine sans seed (legacy) → on en fige un
+      _renderSeed = r.seed;
+    } else {
+      _renderSeed = 'default';
+    }
+    if (typeof SpfEngine !== 'undefined' && SpfEngine.setSeed) SpfEngine.setSeed(_renderSeed);
   }
 
   // ─── SPF : visuel de marque généré (fallback quand pas de vraie photo) ─
@@ -233,16 +247,16 @@ const RoutineRenderer = (() => {
       if (p.skinTypeTags && skinType && p.skinTypeTags.includes(skinType)) score += 20;
       if (_isLowBudget() && p.price > 0) score += (20 - Math.min(20, p.price)) * 2;
       if (_isBudgetUnder40() && stepType === 'moisturizer' && p.includesSPF) score += 60;
-      // Variance aléatoire pour la diversité entre sessions
-      score += Math.random() * 15;
+      // Variance DÉTERMINISTE (seed de la routine) — stable au re-rendu
+      score += _seededRandom('jit_' + stepType + '_' + p.id) * 15;
       return { ...p, _score: score };
     });
 
     pool.sort((a, b) => b._score - a._score);
 
-    // Choisir aléatoirement parmi les top-10 produits éligibles
+    // Choix stable parmi les top-10 (déterministe via le seed de la routine)
     const topN = pool.slice(0, Math.min(10, pool.length));
-    return topN[Math.floor(Math.random() * topN.length)] || null;
+    return topN[Math.floor(_seededRandom('pick_' + stepType) * topN.length)] || null;
   }
 
   // ─── Routine matin réduite pour petit budget (dynamique) ────────
