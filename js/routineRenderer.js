@@ -722,12 +722,12 @@ const RoutineRenderer = (() => {
                 <li>✨ Le suivi de l'évolution de ta peau</li>
               </ul>
               <div class="locked-price">
-                <span class="locked-price-main">15,99 €</span>
+                <span class="locked-price-main">39,99 €</span>
                 <span class="locked-price-per">/ an</span>
-                <span class="locked-price-sub">soit 1,33 € / mois</span>
+                <span class="locked-price-sub">soit 3,33 € / mois · ou 4,99 €/mois</span>
               </div>
               <button class="btn-orange-cta locked-unlock-btn" onclick="Subscription.showPaywall('routine_second')">
-                Débloquer Glow Up ✦
+                Débloquer Premium ✦
               </button>
               <p class="locked-note">Paiement annuel · Annulable à tout moment</p>
             </div>
@@ -834,14 +834,14 @@ const RoutineRenderer = (() => {
           <li>✓ Nouveaux conseils adaptés à ton profil</li>
         </ul>
         <div class="cb-price">
-          <span class="cb-price-main">15,99 €</span>
+          <span class="cb-price-main">39,99 €</span>
           <span class="cb-price-period">/ an</span>
         </div>
-        <p class="cb-price-sub">Soit seulement 1,33 € par mois</p>
+        <p class="cb-price-sub">Soit seulement 3,33 € par mois · ou 4,99 €/mois</p>
         <button class="btn-orange-cta" onclick="Subscription.showPaywall('routine_second')">
-          Débloquer Glow Up
+          Débloquer Premium
         </button>
-        <p class="cb-note">Paiement annuel · Annulable à tout moment</p>
+        <p class="cb-note">Formule annuelle la plus avantageuse · Annulable à tout moment</p>
       </div>`;
   }
 
@@ -865,28 +865,28 @@ const RoutineRenderer = (() => {
           <div class="cb-ambassador-reward">
             <span class="cb-ambassador-gift">🎁</span>
             <div>
-              <strong>Carte Cadeau Beauté de 10 €</strong>
-              <span>quand tes amies rejoignent Glow Up · pour t'offrir tes futurs produits beauté</span>
+              <strong>2 € de Crédit Beauté par filleul validé</strong>
+              <span>quand tes amies s'abonnent grâce à ton lien · réservé aux membres Coach</span>
             </div>
           </div>
         </div>
 
         <div class="cb-price">
-          <span class="cb-price-main">49,99 €</span>
+          <span class="cb-price-main">149,99 €</span>
           <span class="cb-price-period">/ an</span>
         </div>
-        <p class="cb-price-sub">Soit seulement 4,17 € par mois</p>
+        <p class="cb-price-sub">soit 12,50 € par mois · ou 15,99 €/mois</p>
         <button class="btn-orange-cta btn-orange-cta--coach" onclick="Subscription.showPaywall('coach')">
-          Tester Glow Up Coach gratuitement
+          Accéder à Glow Up Coach
         </button>
-        <p class="cb-note">Paiement annuel · Annulable à tout moment</p>
+        <p class="cb-note">Annulable à tout moment</p>
       </div>`;
   }
 
   // ─── Étape 4 : Tableau comparatif ────────────────────────────
   function renderComparisonTable(plan) {
     const rows = [
-      ['Prix',                                     '15,99 €/an', '49,99 €/an'],
+      ['Prix',                                     '39,99 €/an<br><small>ou 4,99 €/mois</small>', '149,99 €/an<br><small>ou 15,99 €/mois</small>'],
       ['Routine skincare personnalisée',            '✅', '✅'],
       ['Routine make-up personnalisée',             '✅', '✅'],
       ['Skin Journey',                              '✅', '✅'],
@@ -905,7 +905,7 @@ const RoutineRenderer = (() => {
             <thead>
               <tr>
                 <th></th>
-                <th class="${plan === 'glow' ? 'cb-th--active' : ''}">Glow Up</th>
+                <th class="${plan === 'glow' ? 'cb-th--active' : ''}">Glow Up Premium</th>
                 <th class="${plan === 'glowplus' ? 'cb-th--active' : ''}">Glow Up Coach</th>
               </tr>
             </thead>
@@ -919,7 +919,7 @@ const RoutineRenderer = (() => {
             </tbody>
           </table>
         </div>
-        <p class="cb-table-note">✨ <strong>Glow Up</strong> : l'essentiel pour trouver tes routines idéales grâce à l'IA.</p>
+        <p class="cb-table-note">✨ <strong>Glow Up Premium</strong> : l'essentiel pour trouver tes routines idéales grâce à l'IA.</p>
         <p class="cb-table-note">⭐ <strong>Glow Up Coach</strong> : l'expérience beauté la plus complète avec accompagnement renforcé et programme de parrainage.</p>
       </div>`;
   }
@@ -1059,7 +1059,7 @@ const RoutineRenderer = (() => {
           <button class="btn-orange-cta journey-teaser-btn" onclick="Subscription.showSkinJourneyDetail()">
             Découvrir Skin Journey →
           </button>`}
-          <p class="journey-teaser-note">${isSubscriber ? 'Inclus dans Glow Up · 15,99 €/an' : 'Inclus dans l\'abonnement Glow Up · 15,99 €/an'}</p>
+          <p class="journey-teaser-note">${isSubscriber ? 'Inclus dans Glow Up Premium' : 'Inclus dans Glow Up Premium · dès 3,33 €/mois'}</p>
         </div>
 
         <div class="journey-teaser-right" aria-hidden="true">

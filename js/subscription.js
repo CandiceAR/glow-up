@@ -7,6 +7,21 @@
 
 const Subscription = (() => {
 
+  // ─── Tarifs 2026 (source unique de vérité pour l'affichage) ──
+  // L'annuel est mis en avant comme l'offre la plus avantageuse.
+  const PRICING = {
+    premium: {
+      label: 'Glow Up Premium',
+      monthly: '4,99', yearly: '39,99', yearlyPerMonth: '3,33', save: '33%',
+      keyMonthly: 'premium_monthly', keyYearly: 'premium_yearly'
+    },
+    coach: {
+      label: 'Glow Up Coach',
+      monthly: '15,99', yearly: '149,99', yearlyPerMonth: '12,50', save: '22%',
+      keyMonthly: 'coach_monthly', keyYearly: 'coach_yearly'
+    }
+  };
+
   // ─── Plan courant ─────────────────────────────────────────────
   function getPlan() {
     return AppState?.user?.plan || 'free';
@@ -155,39 +170,20 @@ const Subscription = (() => {
   }
 
   // ─── Modal paywall ────────────────────────────────────────────
-  async function showPaywall(feature) {
-    await loadFoundersData();
-    const isF   = _foundersEligible();
-    const spots = _spotsLeft();
-
+  function showPaywall(feature) {
     const CFG = {
-      routine_second:      { tag:'Offre complète',  title:'Ta deuxième routine<br>t\'attend.',       desc:'Skincare + Make-up · Profil cross-device · Historique de ta peau',             plan:'Glow',       price:'19,99', fPrice:'15,99', key:'glow_year',  fKey:'glow_found'  },
-      routine_regenerate:  { tag:'Routines illimitées', title:'Envie d\'une nouvelle<br>routine ?',   desc:'Ta 1ʳᵉ routine est offerte. Avec Glow, génère autant de routines que tu veux — à chaque changement de peau, de saison ou d\'envie.', plan:'Glow', price:'19,99', fPrice:'15,99', key:'glow_year', fKey:'glow_found' },
-      skinpedia_ai:        { tag:'Skinpedia IA',     title:'L\'analyse IA de tes<br>ingrédients.',    desc:'Comprends chaque actif selon ton profil peau unique.',                          plan:'Glow',       price:'19,99', fPrice:'15,99', key:'glow_year',  fKey:'glow_found'  },
-      recommendations_adv: { tag:'Recommandations',  title:'Des produits encore<br>plus ciblés.',     desc:'Sélection avancée selon ton analyse, ta carnation et tes préférences.',          plan:'Glow',       price:'19,99', fPrice:'15,99', key:'glow_year',  fKey:'glow_found'  },
-      coach:               { tag:'Glow Coach',       title:'La seule vendeuse<br>beauté qui te connaît.', desc:'La seule vendeuse beauté qui te connaît déjà. Elle connaît ton profil, ta routine et ton budget. Disponible à tout moment.', plan:'Glow Coach', price:'199,99',fPrice:'49,99',key:'coach_year', fKey:'coach_found' }
+      routine_second:      { tier:'premium', tag:'Offre complète',      title:'Ta deuxième routine<br>t\'attend.',    desc:'Skincare + Make-up · Profil cross-device · Historique de ta peau' },
+      routine_regenerate:  { tier:'premium', tag:'Routines illimitées', title:'Envie d\'une nouvelle<br>routine ?',   desc:'Ta 1ʳᵉ routine est offerte. Avec Premium, génère autant de routines que tu veux — à chaque changement de peau, de saison ou d\'envie.' },
+      skinpedia_ai:        { tier:'premium', tag:'Skinpedia IA',        title:'L\'analyse IA de tes<br>ingrédients.', desc:'Comprends chaque actif selon ton profil peau unique.' },
+      recommendations_adv: { tier:'premium', tag:'Recommandations',     title:'Des produits encore<br>plus ciblés.',  desc:'Sélection avancée selon ton analyse, ta carnation et tes préférences.' },
+      coach:               { tier:'coach',   tag:'Glow Up Coach',       title:'La seule vendeuse<br>beauté qui te connaît.', desc:'Elle connaît déjà ton profil, ta routine et ton budget. Disponible à tout moment.' }
     };
     const cfg = CFG[feature] || CFG.routine_second;
-    const priceKey = isF ? cfg.fKey : cfg.key;
+    const p   = PRICING[cfg.tier];
+    const isCoach = cfg.tier === 'coach';
 
-    const foundersHtml = isF ? `
-      <div class="paywall-founders-strip">
-        <span class="paywall-founders-tag">✦ Offre Fondatrices</span>
-        ${spots !== null ? `<span class="paywall-founders-spots">${spots} place${spots !== 1 ? 's' : ''} restante${spots !== 1 ? 's' : ''}</span>` : ''}
-        <span class="paywall-founders-date">jusqu'au 30 juin</span>
-      </div>` : '';
-
-    const priceHtml = isF
-      ? `<div class="paywall-price-wrap">
-           <span class="paywall-price-old">${cfg.price}€</span>
-           <span class="paywall-price-new">${cfg.fPrice}€</span>
-           <span class="paywall-price-period">/an</span>
-         </div>
-         <p class="paywall-price-founders-note">Offre fondatrices · réservée aux 50 premières membres</p>`
-      : `<div class="paywall-price-wrap">
-           <span class="paywall-price-new">${cfg.price}€</span>
-           <span class="paywall-price-period">/an</span>
-         </div>`;
+    const saveBadge = p.save ? `<span class="paywall-save-badge">−${p.save}</span>` : '';
+    const perMonth  = p.yearlyPerMonth ? `<p class="paywall-price-permonth">soit ${p.yearlyPerMonth} €/mois · sans engagement</p>` : '';
 
     const html = `
       <button class="modal-close" onclick="closeModal()">×</button>
@@ -196,21 +192,28 @@ const Subscription = (() => {
         <div class="paywall-lux-tag">${cfg.tag}</div>
         <h2 class="paywall-lux-title">${cfg.title}</h2>
         <p class="paywall-lux-desc">${cfg.desc}</p>
-        ${foundersHtml}
         <div class="paywall-lux-card">
-          <div class="paywall-lux-plan-name">${cfg.plan}</div>
-          ${priceHtml}
-          <button class="btn btn-dark full-width paywall-lux-btn" onclick="Subscription.openCheckout('${priceKey}'); closeModal();">
-            ${cfg.plan === 'Glow Coach' ? 'Accéder au Coach ✦' : 'Commencer Glow ✦'}
+          <div class="paywall-lux-plan-name">${p.label}</div>
+          <div class="paywall-billing-best">✦ Formule annuelle — la plus avantageuse ${saveBadge}</div>
+          <div class="paywall-price-wrap">
+            <span class="paywall-price-new">${p.yearly}€</span>
+            <span class="paywall-price-period">/an</span>
+          </div>
+          ${perMonth}
+          <button class="btn btn-dark full-width paywall-lux-btn" onclick="Subscription.openCheckout('${p.keyYearly}'); closeModal();">
+            ${isCoach ? 'Accéder au Coach · Annuel ✦' : 'Choisir l\'annuel ✦'}
+          </button>
+          <button class="btn-ghost paywall-monthly-alt" onclick="Subscription.openCheckout('${p.keyMonthly}'); closeModal();">
+            ou ${p.monthly} €/mois →
           </button>
         </div>
-        ${feature === 'coach' ? `
+        ${isCoach ? `
         <div class="paywall-coach-perks">
-          <span>✨ Échanges illimités</span>
+          <span>✨ Échanges illimités avec ton coach beauté</span>
           <span>✨ Glow Up connaît déjà ta peau, tes habitudes, ton budget</span>
-          <span>🎁 Programme Ambassadrice · gagne 3 € par filleul validé</span>
+          <span>🎁 Programme Ambassadrice · gagne 2 € par filleul validé</span>
         </div>` : ''}
-        <p class="paywall-lux-fine">Paiement annuel · Annulable à tout moment</p>
+        <p class="paywall-lux-fine">Annulable à tout moment</p>
         <button class="btn-ghost paywall-lux-skip" onclick="closeModal()">Continuer avec Free →</button>
       </div>`;
     openModal(html);
@@ -259,44 +262,32 @@ const Subscription = (() => {
   }
 
   // ─── Page abonnements ─────────────────────────────────────────
-  async function renderPlansPage() {
+  function renderPlansPage() {
     const container = document.getElementById('plansContent');
     if (!container) return;
-    container.innerHTML = '<div style="text-align:center;padding:60px 0;color:var(--muted);font-size:0.9rem;">Chargement…</div>';
 
-    await loadFoundersData();
+    const plan = getPlan();
+    const P = PRICING.premium, C = PRICING.coach;
 
-    const plan   = getPlan();
-    const isF    = _foundersEligible();
-    const spots  = _spotsLeft();
-    const glowKey  = isF ? 'glow_found'  : 'glow_year';
-    const coachKey = isF ? 'coach_found' : 'coach_year';
+    // Bloc prix : annuel mis en avant + mensuel en secondaire
+    const priceBlock = (t, save, perMonth) => `
+      <div class="plan-lux-price">
+        <span class="plan-lux-price-main">${t.yearly}€</span>
+        <span class="plan-lux-price-per">/an</span>
+        ${save ? `<span class="plan-lux-save">−${save}</span>` : ''}
+      </div>
+      ${perMonth ? `<p class="plan-lux-permonth">soit ${perMonth} €/mois</p>` : ''}
+      <p class="plan-lux-monthly-alt">ou ${t.monthly} €/mois</p>`;
 
-    const foundersStrip = isF ? `
-      <div class="founders-strip">
-        <span class="founders-strip-tag">✦ Offre Fondatrices</span>
-        <span class="founders-strip-text">
-          Réservée aux 100 premières membres
-          ${spots !== null ? `· <strong>${spots} place${spots !== 1 ? 's' : ''} restante${spots !== 1 ? 's' : ''}</strong>` : ''}
-          · Jusqu'au 30 juin
-        </span>
-      </div>` : '';
-
-    const glowPriceHtml = isF
-      ? `<div class="plan-lux-price"><span class="plan-lux-price-old">19,99€</span><span class="plan-lux-price-main">15,99€</span><span class="plan-lux-price-per">/an</span></div><p class="plan-lux-found-note">Offre fondatrices</p>`
-      : `<div class="plan-lux-price"><span class="plan-lux-price-main">19,99€</span><span class="plan-lux-price-per">/an</span></div>`;
-
-    const coachPriceHtml = isF
-      ? `<div class="plan-lux-price"><span class="plan-lux-price-old">199,99€</span><span class="plan-lux-price-main">49,99€</span><span class="plan-lux-price-per">/an</span></div><p class="plan-lux-found-note">Offre fondatrices · 100 premières</p>`
-      : `<div class="plan-lux-price"><span class="plan-lux-price-main">199,99€</span><span class="plan-lux-price-per">/an</span></div>`;
-
-    const glowCTA = plan === 'glow' || plan === 'glowplus'
+    const premiumCTA = (plan === 'glow' || plan === 'glowplus')
       ? (plan === 'glow' ? '<div class="plan-lux-active">Ton offre actuelle ✦</div>' : '')
-      : `<button class="btn btn-dark full-width" onclick="Subscription.openCheckout('${glowKey}')">Commencer Glow ✦</button>`;
+      : `<button class="btn btn-dark full-width" onclick="Subscription.openCheckout('${P.keyYearly}')">Choisir l'annuel ✦</button>
+         <button class="btn-ghost plan-lux-monthly-btn" onclick="Subscription.openCheckout('${P.keyMonthly}')">Prendre au mois · ${P.monthly} €/mois</button>`;
 
     const coachCTA = plan === 'glowplus'
       ? '<div class="plan-lux-active">Ton offre actuelle ✦</div>'
-      : `<button class="btn btn-dark full-width" onclick="Subscription.openCheckout('${coachKey}')">Accéder au Coach ✦</button>`;
+      : `<button class="btn btn-dark full-width" onclick="Subscription.openCheckout('${C.keyYearly}')">Accéder au Coach · Annuel ✦</button>
+         <button class="btn-ghost plan-lux-monthly-btn" onclick="Subscription.openCheckout('${C.keyMonthly}')">Prendre au mois · ${C.monthly} €/mois</button>`;
 
     container.innerHTML = `
       <div class="plans-page-lux">
@@ -305,9 +296,8 @@ const Subscription = (() => {
           <span class="plans-hero-tag">✦ Glow Up</span>
           <h1 class="plans-hero-title">Tes routines,<br><em>au complet.</em></h1>
           <p class="plans-hero-sub">Commence gratuitement. Développe ton expertise beauté à ton rythme.</p>
+          <div class="plans-annual-hint">💛 Le tarif annuel est le plus avantageux</div>
         </div>
-
-        ${foundersStrip}
 
         <div class="plans-grid-lux">
 
@@ -326,46 +316,46 @@ const Subscription = (() => {
 
           <div class="plan-lux plan-lux--featured ${plan === 'glow' ? 'plan-lux--active' : ''}">
             ${plan !== 'glow' && plan !== 'glowplus' ? '<div class="plan-lux-badge">Le plus choisi</div>' : ''}
-            <div class="plan-lux-name">Glow</div>
-            ${glowPriceHtml}
+            <div class="plan-lux-name">${P.label}</div>
+            ${priceBlock(P, P.save, P.yearlyPerMonth)}
             <ul class="plan-lux-features">
-              <li>Skincare + Make-up complètes</li>
+              <li>Routines skincare + make-up illimitées</li>
               <li>Analyse IA + profil cross-device</li>
               <li>Recommandations avancées</li>
               <li>Skinpedia IA</li>
               <li>Historique de ta peau</li>
             </ul>
-            ${glowCTA}
+            ${premiumCTA}
           </div>
 
           <div class="plan-lux plan-lux--coach ${plan === 'glowplus' ? 'plan-lux--active' : ''}">
-            <div class="plan-lux-name">Glow Coach</div>
-            ${coachPriceHtml}
+            <div class="plan-lux-name">${C.label}</div>
+            ${priceBlock(C, C.save, C.yearlyPerMonth)}
             <p class="plan-lux-tagline">La seule vendeuse beauté qui te connaît déjà.</p>
             <ul class="plan-lux-features">
-              <li>Tout Glow inclus</li>
+              <li>Tout Premium inclus</li>
               <li>Coach beauté IA personnalisé</li>
               <li>Suivi beauté & résumés de séances</li>
               <li>Profil enrichi & mémoire long terme</li>
               <li>Accès prioritaire aux nouveautés</li>
-              <li class="plan-lux-feat-highlight">✨ Programme Ambassadrice Glow Up</li>
+              <li class="plan-lux-feat-highlight">✨ Programme Ambassadrice · réservé aux membres Coach</li>
             </ul>
             <div class="plan-coach-ambassador">
               <span class="plan-coach-ambassador-gift">🎁</span>
-              <span>Recommande Glow Up à tes amies et reçois des <strong>Cartes Cadeaux Beauté de 10 €</strong> à chaque palier atteint.</span>
+              <span>Deviens Ambassadrice : <strong>2 € de Crédit Beauté</strong> pour chaque amie qui s'abonne grâce à ton lien.</span>
             </div>
             ${coachCTA}
           </div>
 
         </div>
 
-        <p class="plans-fine-print">Paiement annuel · Annulable à tout moment</p>
+        <p class="plans-fine-print">Sans engagement · Annulable à tout moment</p>
 
         <!-- Skin Journey feature card -->
         <div class="sj-feature-card" onclick="Subscription.showSkinJourneyDetail()">
           <div class="sj-feature-icon">✨</div>
           <div class="sj-feature-body">
-            <div class="sj-feature-tag">Inclus dans Glow · 15,99 €/an</div>
+            <div class="sj-feature-tag">Inclus dans Premium · dès ${P.yearlyPerMonth} €/mois</div>
             <h3 class="sj-feature-title">Skin Journey</h3>
             <p class="sj-feature-desc">Suivez l'évolution de votre peau dans le temps.</p>
           </div>
@@ -381,13 +371,13 @@ const Subscription = (() => {
     const isSubscriber = plan === 'glow' || plan === 'glowplus';
     const cta = isSubscriber
       ? `<button class="btn-orange-cta" onclick="showScreen('journey'); closeModal()">Ouvrir mon Skin Journey →</button>`
-      : `<button class="btn-orange-cta" onclick="Subscription.showPaywall('routine_second'); closeModal()">Débloquer Glow Up · 15,99 €/an</button>`;
+      : `<button class="btn-orange-cta" onclick="Subscription.showPaywall('routine_second'); closeModal()">Débloquer Premium · ${PRICING.premium.yearly} €/an</button>`;
 
     const html = `
       <button class="modal-close" onclick="closeModal()">×</button>
       <div class="sj-modal">
         <div class="sj-modal-icon">✨</div>
-        <div class="sj-modal-tag">Inclus dans l'abonnement Glow · 15,99 €/an</div>
+        <div class="sj-modal-tag">Inclus dans Glow Up Premium · dès ${PRICING.premium.yearlyPerMonth} €/mois</div>
         <h2 class="sj-modal-title">Skin Journey</h2>
         <p class="sj-modal-intro">Suivez l'évolution de votre peau au fil du temps grâce à des analyses régulières et comparez vos résultats mois après mois.</p>
         <p class="sj-modal-desc">Skin Journey vous aide à comprendre ce qui fonctionne réellement sur votre peau et à mesurer l'impact de votre routine beauté.</p>
@@ -454,7 +444,7 @@ const Subscription = (() => {
             <p class="ref-progress-note">${remaining > 0 && remaining < THRESHOLD
               ? `Plus que <strong>${remaining} €</strong> pour débloquer ta prochaine Carte Cadeau Beauté de 10 €`
               : `Invite tes amies pour débloquer ta Carte Cadeau Beauté de 10 €`}</p>
-            <p class="ref-progress-hint">Chaque amie Glow = +1 € · chaque amie Glow Coach = +3 €</p>
+            <p class="ref-progress-hint">Chaque filleul validé = <strong>+2 € de Crédit Beauté</strong></p>
           </div>
 
           ${cardsEarned > 0 ? `<div class="ref-earned">🎉 ${cardsEarned} Carte${cardsEarned > 1 ? 's' : ''} Cadeau Beauté gagnée${cardsEarned > 1 ? 's' : ''} · ${cardsEarned * 10} €</div>` : ''}

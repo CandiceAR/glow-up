@@ -7,21 +7,30 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const isTestMode = process.env.STRIPE_SECRET_KEY?.startsWith('sk_test_');
 
 const PRICE_IDS = isTestMode ? {
-  // Legacy
+  // ── Tarifs 2026 (juillet) ─────────────────────────────────────
+  // Premium 4,99€/mois · 39,99€/an · Coach 15,99€/mois · 149,99€/an
+  premium_monthly: 'price_1Tp40yJeKx7T3paEnFuyfADa',  // 4,99€/mois (test)
+  premium_yearly:  'price_1Tp41KJeKx7T3paERhO9gRQ0',  // 39,99€/an (test)
+  coach_monthly:   'price_1Tp41iJeKx7T3paEdAff3s5W',  // 15,99€/mois (test)
+  coach_yearly:    'price_1Tp426JeKx7T3paEGBsDy1z9',  // 149,99€/an (test)
+  // ── Legacy (conservés pour compat abonnés existants) ──────────
   glow_monthly: 'price_1TMp8JJeKx7T3paERKVr8oFx',
   glow_yearly:  'price_1TMp8lJeKx7T3paEC2DxJx6j',
   glowplus:     'price_1TMp9CJeKx7T3paE1o7Ml1rO',
-  // Phase 2
   glow_year:    'price_1Tc0xDJeKx7T3paEf15SP5dB',
   coach_year:   'price_1Tc133JeKx7T3paET9l1IJHe',
   glow_found:   'price_1Tc13bJeKx7T3paE9pnJtpP9',
   coach_found:  'price_1TdmseJeKx7T3paEU6Ldaz0M'
 } : {
-  // Legacy
+  // ── Tarifs 2026 (juillet) — LIVE ──────────────────────────────
+  premium_monthly: 'price_1Tp33cJeKx7T3paEN7bn4SVq',  // 4,99€/mois (live)
+  premium_yearly:  'price_1Tp34WJeKx7T3paEyvMzQjMS',  // 39,99€/an (live)
+  coach_monthly:   'price_1Tp3zWJeKx7T3paEr2lI46Fo',  // 15,99€/mois (live)
+  coach_yearly:    'price_1Tp3zrJeKx7T3paENfT1wLf9',  // 149,99€/an (live)
+  // ── Legacy ────────────────────────────────────────────────────
   glow_monthly: 'price_1TM1rqJeKx7T3paEB3gqZnxF',
   glow_yearly:  'price_1TM1tTJeKx7T3paEmWdCIWXE',
   glowplus:     'price_1TM1ttJeKx7T3paEN7e7CZDa',
-  // Phase 2
   glow_year:    'price_1Tc16MJeKx7T3paEKoE2tEj7',
   coach_year:   'price_1Tc17gJeKx7T3paEzIZBTNqK',
   glow_found:   'price_1Tc198JeKx7T3paEzArs3QmO',
