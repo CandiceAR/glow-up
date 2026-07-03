@@ -4206,6 +4206,33 @@ em { font-style: italic; color: var(--nude); }
 .cg-step-card .premium-card-name    { font-size: 0.85rem; }
 .cg-step-card .premium-card-brand   { font-size: 0.65rem; }
 
+/* ─── Tarifs 2026 : annuel mis en avant ─────────────────────── */
+.paywall-billing-best {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.74rem; font-weight: 600;
+  color: var(--accent, #F0913F);
+  background: rgba(240,145,63,0.1);
+  border-radius: 20px; padding: 5px 12px; margin-bottom: 10px;
+}
+.paywall-save-badge, .plan-lux-save {
+  background: var(--accent, #F0913F); color: #fff;
+  font-size: 0.7rem; font-weight: 700;
+  border-radius: 6px; padding: 2px 7px; margin-left: 6px;
+}
+.paywall-price-permonth { font-size: 0.78rem; color: var(--muted, #6b6358); margin: 4px 0 0; }
+.paywall-monthly-alt {
+  display: block; width: 100%; margin-top: 8px;
+  font-size: 0.82rem; color: var(--muted, #6b6358);
+}
+.plan-lux-permonth { font-size: 0.78rem; color: var(--accent, #F0913F); font-weight: 600; margin: 2px 0 0; }
+.plan-lux-monthly-alt { font-size: 0.76rem; color: var(--muted, #6b6358); margin: 2px 0 8px; }
+.plan-lux-monthly-btn { width: 100%; margin-top: 6px; font-size: 0.8rem; }
+.plans-annual-hint {
+  display: inline-block; margin-top: 12px;
+  font-size: 0.82rem; font-weight: 600; color: var(--accent, #F0913F);
+  background: rgba(240,145,63,0.08); border-radius: 20px; padding: 7px 16px;
+}
+
 /* ─── Notes contextuelles navigateur intégré (Instagram…) ───── */
 .q-inapp-note {
   margin: 14px auto 0;

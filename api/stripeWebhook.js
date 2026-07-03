@@ -5,6 +5,15 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const PRICE_TO_PLAN = {
+  // ── Tarifs 2026 — À COMPLÉTER avec les vrais Price IDs (test + live) ──
+  'REPLACE_premium_monthly_TEST': 'glow',     // 4,99€/mois
+  'REPLACE_premium_yearly_TEST':  'glow',      // 29,99€/an
+  'REPLACE_coach_monthly_TEST':   'glowplus',  // 9,99€/mois
+  'REPLACE_premium_monthly_LIVE': 'glow',
+  'REPLACE_premium_yearly_LIVE':  'glow',
+  'REPLACE_coach_monthly_LIVE':   'glowplus',
+  // (Coach annuel 199,99€ = price_1Tc133… / price_1Tc17g… déjà mappés ci-dessous)
+  // ── Existants ────────────────────────────────────────────────
   'price_1TM1rqJeKx7T3paEB3gqZnxF': 'glow',
   'price_1TM1tTJeKx7T3paEmWdCIWXE': 'glow',
   'price_1TM1ttJeKx7T3paEN7e7CZDa': 'glowplus',
@@ -32,9 +41,8 @@ const FOUNDERS_PRICE_KEYS = new Set([
   'price_1TdmqvJeKx7T3paEytDBrEUI'
 ]);
 
-// ─── Programme Ambassadrice ──────────────────────────────────
-const GLOW_CREDIT        = 1;   // 1€ de crédit par filleule Glow
-const COACH_CREDIT       = 3;   // 3€ de crédit par filleule Coach
+// ─── Programme Ambassadrice (réservé aux abonnées Glow Up Coach) ──
+const REFERRAL_CREDIT    = 2;   // 2€ de Crédit Beauté par filleul validé
 const GIFTCARD_THRESHOLD = 10;  // palier de crédit pour débloquer une carte
 const GIFTCARD_VALUE     = 10;  // valeur de la carte cadeau (€)
 
@@ -90,11 +98,11 @@ async function processReferral(uid, plan) {
   const userDoc  = await userRef.get();
   const userData = userDoc.data() || {};
 
-  // 1. Générer un code parrain si l'utilisatrice n'en a pas encore
-  if (!userData.referral?.code) {
+  // 1. Générer un code parrain — RÉSERVÉ aux abonnées Glow Up Coach
+  if (plan === 'glowplus' && !userData.referral?.code) {
     const code = generateReferralCode();
     await userRef.set({ referral: { code, count: 0, coupons: [] } }, { merge: true });
-    console.log(`[Referral] Code généré → ${uid}: ${code}`);
+    console.log(`[Referral] Code Ambassadrice généré → ${uid}: ${code}`);
   }
 
   // 2. Vérifier si cette utilisatrice a été parrainée
@@ -121,12 +129,17 @@ async function processReferral(uid, plan) {
   });
   console.log(`[Referral] Validé → filleule ${uid} parrainée par ${referrerUid}`);
 
-  // 5. Calculer le crédit selon le plan du filleul
-  //    Glow = 1€ · Glow Coach = 3€
-  const creditEarned = plan === 'glowplus' ? COACH_CREDIT : GLOW_CREDIT;
-
+  // 5. Le parrain doit être une Ambassadrice éligible (abonnée Glow Up Coach)
   const referrerRef  = db.collection('users').doc(referrerUid);
   const beforeDoc    = await referrerRef.get();
+  const referrerPlan = beforeDoc.data()?.subscription?.plan;
+  if (referrerPlan !== 'glowplus') {
+    console.log(`[Referral] Parrain ${referrerUid} non-Coach (${referrerPlan}) → pas de crédit`);
+    return;
+  }
+
+  // Récompense fixe : 2€ de Crédit Beauté par filleul validé
+  const creditEarned = REFERRAL_CREDIT;
   const oldCredit    = beforeDoc.data()?.referral?.credit || 0;
   const newCredit    = oldCredit + creditEarned;
 
