@@ -63,6 +63,9 @@ const Subscription = (() => {
       AppState.user.freeRoutineUsed   = (plan === 'free') ? !!sub.freeRoutineUsed : false;
       // Synchroniser le flag local (cross-device) si déjà utilisé côté cloud
       if (AppState.user.freeRoutineUsed) { try { localStorage.setItem(_routineFlagKey(), '1'); } catch {} }
+      // Compteur mensuel de routines (Premium) — cross-device
+      AppState.user.routineMonth = sub.routineMonth || null;
+      if (AppState.user.routineMonth) { try { localStorage.setItem(_routineMonthKey(), JSON.stringify(AppState.user.routineMonth)); } catch {} }
 
       console.log('[Subscription] Plan chargé:', plan, '| freeRoutineChoice:', AppState.user.freeRoutineChoice);
       updateGatingUI();
@@ -101,22 +104,56 @@ const Subscription = (() => {
     return Math.max(0, FOUNDERS_MAX - _foundersCount);
   }
 
-  // ─── Limite routine gratuite : 1 seule génération ────────────
-  // Un compte free peut générer UNE routine. Toute nouvelle génération
-  // (autre routine, refaire l'analyse, mettre à jour les besoins) → abonnement.
+  // ─── Quotas de génération de routine ─────────────────────────
+  // Free = 1 routine au total · Premium = 3 routines / mois · Coach = illimité.
+  const PREMIUM_MONTHLY_LIMIT = 3;
+
   function _routineFlagKey() {
     const uid = AppState?.user?.uid;
     return uid ? `glow_routine_done_${uid}` : 'glow_routine_done';
+  }
+  function _routineMonthKey() {
+    const uid = AppState?.user?.uid;
+    return uid ? `glow_routine_month_${uid}` : 'glow_routine_month';
+  }
+  function _monthStr() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
   }
   function hasUsedFreeRoutine() {
     if (AppState?.user?.freeRoutineUsed) return true;
     try { return localStorage.getItem(_routineFlagKey()) === '1'; } catch { return false; }
   }
+  // Nombre de routines générées ce mois-ci (Premium)
+  function _monthCount() {
+    let rec = AppState?.user?.routineMonth;
+    if (!rec) { try { rec = JSON.parse(localStorage.getItem(_routineMonthKey()) || 'null'); } catch {} }
+    if (!rec || rec.month !== _monthStr()) return 0;   // nouveau mois → compteur remis à 0
+    return rec.count || 0;
+  }
+  function _setMonthCount(n) {
+    const rec = { month: _monthStr(), count: n };
+    if (AppState?.user) AppState.user.routineMonth = rec;
+    try { localStorage.setItem(_routineMonthKey(), JSON.stringify(rec)); } catch {}
+    const uid = AppState?.user?.uid;
+    if (uid && typeof firebase !== 'undefined' && firebase.apps?.length) {
+      try { firebase.firestore().collection('users').doc(uid).set({ subscription: { routineMonth: rec } }, { merge: true }); } catch {}
+    }
+  }
+  function routinesLeftThisMonth() {
+    return Math.max(0, PREMIUM_MONTHLY_LIMIT - _monthCount());
+  }
   function canGenerateRoutine() {
-    return getPlan() !== 'free' || !hasUsedFreeRoutine();
+    const plan = getPlan();
+    if (plan === 'glowplus') return true;                         // Coach : illimité
+    if (plan === 'glow')     return _monthCount() < PREMIUM_MONTHLY_LIMIT; // Premium : 3/mois
+    return !hasUsedFreeRoutine();                                 // Free : 1 au total
   }
   function markRoutineGenerated() {
-    if (getPlan() !== 'free') return;               // abonnées : illimité
+    const plan = getPlan();
+    if (plan === 'glowplus') return;                              // Coach : rien à compter
+    if (plan === 'glow') { _setMonthCount(_monthCount() + 1); return; } // Premium : +1 ce mois
+    // Free : marquer la routine unique consommée
     try { localStorage.setItem(_routineFlagKey(), '1'); } catch {}
     if (AppState?.user) AppState.user.freeRoutineUsed = true;
     const uid = AppState?.user?.uid;
@@ -125,6 +162,31 @@ const Subscription = (() => {
         firebase.firestore().collection('users').doc(uid)
           .set({ subscription: { freeRoutineUsed: true } }, { merge: true });
       } catch {}
+    }
+  }
+
+  // Affiche le bon blocage selon le plan (free → Premium · Premium → Coach)
+  function showRoutineLimit() {
+    if (getPlan() === 'glow') {
+      const html = `
+        <button class="modal-close" onclick="closeModal()">×</button>
+        <div class="paywall-lux">
+          <div class="paywall-lux-icon">✦</div>
+          <div class="paywall-lux-tag">Limite mensuelle atteinte</div>
+          <h2 class="paywall-lux-title">Tes 3 routines du mois<br>sont utilisées ✦</h2>
+          <p class="paywall-lux-desc">Ton forfait Premium inclut 3 routines par mois. Ton compteur se réinitialise le mois prochain — ou passe à Glow Up Coach pour des routines <strong>illimitées</strong>.</p>
+          <div class="paywall-lux-card">
+            <div class="paywall-lux-plan-name">${PRICING.coach.label}</div>
+            <div class="paywall-billing-best">✦ Routines illimitées + coach beauté IA</div>
+            <div class="paywall-price-wrap"><span class="paywall-price-new">${PRICING.coach.yearly}€</span><span class="paywall-price-period">/an</span></div>
+            <p class="paywall-price-permonth">soit ${PRICING.coach.yearlyPerMonth} €/mois · ou ${PRICING.coach.monthly} €/mois</p>
+            <button class="btn btn-dark full-width paywall-lux-btn" onclick="Subscription.openCheckout('${PRICING.coach.keyYearly}'); closeModal();">Passer à Glow Up Coach ✦</button>
+          </div>
+          <button class="btn-ghost paywall-lux-skip" onclick="closeModal()">Je reviens le mois prochain →</button>
+        </div>`;
+      openModal(html);
+    } else {
+      showPaywall('routine_regenerate');   // free → upsell Premium
     }
   }
 
@@ -173,7 +235,7 @@ const Subscription = (() => {
   function showPaywall(feature) {
     const CFG = {
       routine_second:      { tier:'premium', tag:'Offre complète',      title:'Ta deuxième routine<br>t\'attend.',    desc:'Skincare + Make-up · Profil cross-device · Historique de ta peau' },
-      routine_regenerate:  { tier:'premium', tag:'Routines illimitées', title:'Envie d\'une nouvelle<br>routine ?',   desc:'Ta 1ʳᵉ routine est offerte. Avec Premium, génère autant de routines que tu veux — à chaque changement de peau, de saison ou d\'envie.' },
+      routine_regenerate:  { tier:'premium', tag:'Plus de routines', title:'Envie d\'une nouvelle<br>routine ?',   desc:'Ta 1ʳᵉ routine est offerte. Avec Premium, génère jusqu\'à 3 routines par mois — à chaque changement de peau, de saison ou d\'envie.' },
       skinpedia_ai:        { tier:'premium', tag:'Skinpedia IA',        title:'L\'analyse IA de tes<br>ingrédients.', desc:'Comprends chaque actif selon ton profil peau unique.' },
       recommendations_adv: { tier:'premium', tag:'Recommandations',     title:'Des produits encore<br>plus ciblés.',  desc:'Sélection avancée selon ton analyse, ta carnation et tes préférences.' },
       coach:               { tier:'coach',   tag:'Glow Up Coach',       title:'La seule vendeuse<br>beauté qui te connaît.', desc:'Elle connaît déjà ton profil, ta routine et ton budget. Disponible à tout moment.' }
@@ -649,6 +711,6 @@ const Subscription = (() => {
   // Exposé pour les onclick inline
   function _exitPremiumPublic() { _exitPremium(); }
 
-  return { getPlan, isPlan, canAccess, canGenerateRoutine, hasUsedFreeRoutine, markRoutineGenerated, loadPlan, openCheckout, showPaywall, updateGatingUI, handleCheckoutReturn, renderPlansPage, renderPremiumPage, _exitPremiumPublic, loadFoundersData, showSkinJourneyDetail, showReferralDashboard };
+  return { getPlan, isPlan, canAccess, canGenerateRoutine, hasUsedFreeRoutine, routinesLeftThisMonth, markRoutineGenerated, showRoutineLimit, loadPlan, openCheckout, showPaywall, updateGatingUI, handleCheckoutReturn, renderPlansPage, renderPremiumPage, _exitPremiumPublic, loadFoundersData, showSkinJourneyDetail, showReferralDashboard };
 
 })();

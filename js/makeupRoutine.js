@@ -731,11 +731,13 @@ const MakeupRoutine = (() => {
     const skinQuiz = AppState?.questionnaire?.answers || {};
     const mkQuiz   = AppState?.makeupQuiz || {};
 
-    // Compte gratuit : la routine make-up compte comme LA routine offerte.
-    // On l'enregistre (reprenable) et on marque la limite atteinte.
-    if (typeof Subscription !== 'undefined' && Subscription.getPlan() === 'free') {
+    // Compter la routine make-up UNE seule fois par génération (pas à chaque
+    // affichage) — sinon on sur-compterait le quota Premium au ré-affichage.
+    // Free (1 au total) · Premium (+1 ce mois) · Coach (illimité).
+    if (typeof Subscription !== 'undefined' && AppState.makeupQuiz && !AppState.makeupQuiz._genCounted) {
+      AppState.makeupQuiz._genCounted = true;
       AppState.routineChoice = 'makeup';
-      if (typeof RoutineSaver !== 'undefined') RoutineSaver.save();
+      if (Subscription.getPlan() === 'free' && typeof RoutineSaver !== 'undefined') RoutineSaver.save();
       Subscription.markRoutineGenerated();
     }
 

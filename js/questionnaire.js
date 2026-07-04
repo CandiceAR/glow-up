@@ -450,7 +450,7 @@ const Questionnaire = (() => {
   function startSkincare(keepAnalysis = false) {
     // Limite gratuite : 1 seule routine générée. Au-delà → abonnement.
     if (typeof Subscription !== 'undefined' && !Subscription.canGenerateRoutine()) {
-      Subscription.showPaywall('routine_regenerate');
+      Subscription.showRoutineLimit();
       return;
     }
     mode = 'skincare';
@@ -479,7 +479,7 @@ const Questionnaire = (() => {
   function startMakeup(keepAnalysis = true) {
     // Limite gratuite : 1 seule routine générée. Au-delà → abonnement.
     if (typeof Subscription !== 'undefined' && !Subscription.canGenerateRoutine()) {
-      Subscription.showPaywall('routine_regenerate');
+      Subscription.showRoutineLimit();
       return;
     }
     mode = 'makeup';
@@ -1359,10 +1359,10 @@ const Questionnaire = (() => {
     AppState.routine.seed = Math.random().toString(36).slice(2) + Date.now().toString(36);
     ProductCatalog.getRecommended(answers);
     if (typeof RoutineSaver !== 'undefined') RoutineSaver.saveProfile();
-    // Compte gratuit : 1 routine autorisée → on l'enregistre (toujours reprenable)
-    // et on marque la limite atteinte pour bloquer les générations suivantes.
-    if (typeof Subscription !== 'undefined' && Subscription.getPlan() === 'free') {
-      if (typeof RoutineSaver !== 'undefined') RoutineSaver.save();
+    // Compter la génération : free (1 au total) · Premium (+1 ce mois) · Coach (illimité).
+    // Free : on enregistre aussi la routine pour qu'elle reste toujours reprenable.
+    if (typeof Subscription !== 'undefined') {
+      if (Subscription.getPlan() === 'free' && typeof RoutineSaver !== 'undefined') RoutineSaver.save();
       Subscription.markRoutineGenerated();
     }
     showScreen('results');

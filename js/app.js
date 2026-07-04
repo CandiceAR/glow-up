@@ -611,7 +611,7 @@ function _newRoutineModal(type) {
   // Compte gratuit ayant déjà généré sa routine → paywall (routines illimitées)
   if (typeof Subscription !== 'undefined' && !Subscription.canGenerateRoutine()) {
     closeModal();
-    Subscription.showPaywall('routine_regenerate');
+    Subscription.showRoutineLimit();
     return;
   }
   AppState.routineChoice = type;
