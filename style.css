@@ -4233,6 +4233,102 @@ em { font-style: italic; color: var(--nude); }
   background: rgba(240,145,63,0.08); border-radius: 20px; padding: 7px 16px;
 }
 
+/* ============================================================
+   Page vitrine « Tous les avantages de Glow Up Premium »
+   ============================================================ */
+#screen-premium { background: linear-gradient(180deg, #FBF7F2 0%, #F4E7DA 100%); }
+.pv-wrap { max-width: 760px; margin: 0 auto; padding: 32px 20px 80px; }
+
+/* Révélation douce au scroll */
+.pv-reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s cubic-bezier(.2,.8,.2,1); transition-delay: var(--d, 0ms); }
+.pv-reveal.pv-in { opacity: 1; transform: none; }
+
+/* Hero */
+.pv-hero { text-align: center; padding: 24px 0 20px; }
+.pv-hero-eyebrow { display: inline-block; font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; color: var(--nude); font-weight: 500; margin-bottom: 14px; }
+.pv-hero-title { font-family: var(--font-serif); font-size: 2.9rem; line-height: 1.05; color: var(--charcoal); margin: 0 0 16px; font-weight: 500; }
+.pv-hero-title em { color: var(--nude); font-style: italic; }
+.pv-hero-sub { font-size: 1rem; line-height: 1.65; color: var(--muted); max-width: 520px; margin: 0 auto 26px; }
+.pv-hero-cta { display: flex; flex-direction: column; gap: 12px; max-width: 340px; margin: 0 auto; }
+.pv-hero-primary { box-shadow: 0 10px 30px rgba(240,145,63,0.28); }
+.pv-hero-price { margin-top: 16px; font-size: 0.85rem; color: var(--muted); }
+.pv-hero-price strong { color: var(--charcoal); }
+
+/* Bandeau valeur */
+.pv-strip { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin: 28px 0 8px; }
+.pv-strip-item { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; font-size: 0.72rem; color: var(--charcoal); font-weight: 500; background: rgba(255,255,255,0.6); border: 1px solid var(--sand); border-radius: 14px; padding: 12px 6px; }
+.pv-strip-item span { font-size: 1.35rem; }
+
+/* Catégories */
+.pv-cats { display: flex; flex-direction: column; gap: 14px; margin-top: 26px; }
+.pv-cat { background: #fff; border: 1px solid var(--sand); border-radius: 22px; padding: 22px; box-shadow: var(--shadow-sm); }
+.pv-cat-head { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.pv-cat-emoji { font-size: 1.5rem; }
+.pv-cat-title { font-family: var(--font-serif); font-size: 1.4rem; color: var(--charcoal); margin: 0; font-weight: 600; }
+.pv-cat-grid { display: flex; flex-direction: column; gap: 10px; }
+.pv-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px; border-radius: 14px; background: var(--cream); transition: background .2s, transform .2s; }
+.pv-item:hover { background: var(--orange-light); transform: translateX(2px); }
+.pv-item-i { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
+.pv-item-body { flex: 1; min-width: 0; }
+.pv-item-t { font-size: 0.92rem; font-weight: 600; color: var(--charcoal); margin: 0 0 2px; }
+.pv-item-d { font-size: 0.8rem; line-height: 1.5; color: var(--muted); margin: 0; }
+.pv-item-check { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; background: var(--orange); color: #fff; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+
+/* Titres de section */
+.pv-section-title { font-family: var(--font-serif); font-size: 1.8rem; color: var(--charcoal); text-align: center; margin: 0 0 6px; font-weight: 600; }
+.pv-section-sub { text-align: center; color: var(--muted); font-size: 0.9rem; margin: 0 0 22px; }
+
+/* Différenciation */
+.pv-diff { margin: 40px 0; text-align: center; }
+.pv-diff-eyebrow { display: block; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--nude); margin-bottom: 8px; }
+.pv-diff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+.pv-diff-card { background: #fff; border: 1px solid var(--sand); border-radius: 18px; padding: 20px 16px; }
+.pv-diff-i { font-size: 1.7rem; display: block; margin-bottom: 10px; }
+.pv-diff-card p { font-size: 0.85rem; line-height: 1.5; color: var(--charcoal); margin: 0; }
+
+/* Tarifs */
+.pv-pricing { margin: 44px 0; }
+.pv-plans { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.pv-plan { position: relative; background: #fff; border: 1px solid var(--sand); border-radius: 20px; padding: 26px 18px 20px; text-align: center; }
+.pv-plan--best { border: 2px solid var(--orange); box-shadow: 0 12px 34px rgba(240,145,63,0.18); }
+.pv-plan-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); white-space: nowrap; background: var(--orange); color: #fff; font-size: 0.68rem; font-weight: 700; padding: 5px 12px; border-radius: 20px; }
+.pv-plan-name { font-size: 0.9rem; font-weight: 600; color: var(--nude); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.pv-plan-price { display: flex; align-items: baseline; justify-content: center; gap: 3px; }
+.pv-plan-amount { font-family: var(--font-serif); font-size: 2.4rem; font-weight: 600; color: var(--charcoal); }
+.pv-plan-per { font-size: 0.85rem; color: var(--muted); }
+.pv-plan-permonth { font-size: 0.78rem; color: var(--orange); font-weight: 600; margin: 4px 0 16px; }
+.pv-plan .btn { margin-top: 4px; }
+.pv-plan-note { font-size: 0.72rem; color: var(--muted); margin-top: 8px; }
+.pv-free-link, .pv-final .pv-free-link { display: block; margin: 4px auto 0; color: var(--muted); font-size: 0.88rem; }
+
+/* Déjà abonnée */
+.pv-already { text-align: center; background: #fff; border: 1px solid var(--sand); border-radius: 22px; padding: 32px 22px; margin: 40px 0; }
+.pv-already-badge { display: inline-block; background: var(--orange-light); color: var(--orange-deep); font-weight: 600; font-size: 0.85rem; padding: 8px 16px; border-radius: 20px; margin-bottom: 12px; }
+.pv-already p { color: var(--muted); margin: 0 0 18px; }
+
+/* FAQ */
+.pv-faq { margin: 44px 0; }
+.pv-faq-list { display: flex; flex-direction: column; gap: 10px; }
+.pv-faq-item { background: #fff; border: 1px solid var(--sand); border-radius: 16px; overflow: hidden; }
+.pv-faq-q { cursor: pointer; list-style: none; padding: 16px 18px; font-size: 0.92rem; font-weight: 600; color: var(--charcoal); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.pv-faq-q::-webkit-details-marker { display: none; }
+.pv-faq-plus { font-size: 1.3rem; color: var(--nude); transition: transform .25s; flex-shrink: 0; }
+.pv-faq-item[open] .pv-faq-plus { transform: rotate(45deg); }
+.pv-faq-a { padding: 0 18px 16px; margin: 0; font-size: 0.86rem; line-height: 1.6; color: var(--muted); }
+
+/* CTA final */
+.pv-final { text-align: center; background: linear-gradient(135deg, #fff, #F7ECE0); border: 1px solid var(--sand); border-radius: 24px; padding: 40px 24px; margin: 40px 0 0; }
+.pv-final-title { font-family: var(--font-serif); font-size: 2rem; color: var(--charcoal); margin: 0 0 8px; font-weight: 600; }
+.pv-final-sub { color: var(--muted); margin: 0 0 22px; }
+.pv-final .btn { max-width: 420px; margin: 0 auto; }
+.pv-final-fine { font-size: 0.72rem; color: var(--muted); margin-top: 14px; }
+
+@media (max-width: 560px) {
+  .pv-hero-title { font-size: 2.3rem; }
+  .pv-strip { grid-template-columns: 1fr 1fr; }
+  .pv-plans, .pv-diff-grid { grid-template-columns: 1fr; }
+}
+
 /* ─── Notes contextuelles navigateur intégré (Instagram…) ───── */
 .q-inapp-note {
   margin: 14px auto 0;

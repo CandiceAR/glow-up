@@ -213,6 +213,7 @@ const Subscription = (() => {
           <span>✨ Glow Up connaît déjà ta peau, tes habitudes, ton budget</span>
           <span>🎁 Programme Ambassadrice · gagne 2 € par filleul validé</span>
         </div>` : ''}
+        ${!isCoach ? `<button class="btn-ghost paywall-see-all" onclick="closeModal(); showScreen('premium');">Voir tous les avantages de Glow Up Premium →</button>` : ''}
         <p class="paywall-lux-fine">Annulable à tout moment</p>
         <button class="btn-ghost paywall-lux-skip" onclick="closeModal()">Continuer avec Free →</button>
       </div>`;
@@ -467,6 +468,187 @@ const Subscription = (() => {
     }
   }
 
-  return { getPlan, isPlan, canAccess, canGenerateRoutine, hasUsedFreeRoutine, markRoutineGenerated, loadPlan, openCheckout, showPaywall, updateGatingUI, handleCheckoutReturn, renderPlansPage, loadFoundersData, showSkinJourneyDetail, showReferralDashboard };
+  // ─── Page vitrine « Tous les avantages de Glow Up Premium » ──
+  function _exitPremium() {
+    showScreen(AppState.routine?.ruleApplied ? 'results' : 'home');
+  }
+
+  // Révélation douce au scroll (animations discrètes)
+  function _observeReveal(root) {
+    const els = root.querySelectorAll('.pv-reveal');
+    if (!('IntersectionObserver' in window)) { els.forEach(e => e.classList.add('pv-in')); return; }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('pv-in'); io.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    els.forEach(e => io.observe(e));
+  }
+
+  function renderPremiumPage() {
+    const container = document.getElementById('premiumContent');
+    if (!container) return;
+    const P     = PRICING.premium;
+    const plan  = getPlan();
+    const isSub = plan === 'glow' || plan === 'glowplus';
+
+    const CATS = [
+      { emoji: '💫', tag: 'Routines personnalisées', items: [
+        { i: '🧴', t: 'Skincare + Make-up', d: 'Tes deux routines complètes, pensées pour ton visage.' },
+        { i: '🔁', t: 'Jusqu\'à 3 routines / mois', d: 'Régénère ta routine à chaque changement de peau ou d\'envie.' },
+        { i: '🎚️', t: 'Minimaliste ou détaillée', d: 'Choisis le niveau : l\'essentiel, ou le rituel complet.' },
+        { i: '✨', t: 'Adaptation automatique', d: 'Ta routine évolue selon les résultats observés sur ta peau.' },
+      ]},
+      { emoji: '📅', tag: 'Suivi de peau · Skin Journey', items: [
+        { i: '📈', t: 'Évolution sur 30 jours', d: 'Un vrai suivi, jour après jour, de ta transformation.' },
+        { i: '📸', t: 'Avant / Après', d: 'Comparaison photo Jour 1 · 5 · 15 · 30.' },
+        { i: '🔬', t: 'Analyse détaillée', d: 'Hydratation, rougeurs, imperfections, éclat, texture…' },
+        { i: '🌡️', t: 'Réactions dans le temps', d: 'On repère ce qui apaise ta peau et ce qui la dérange.' },
+      ]},
+      { emoji: '🗂️', tag: 'Profil beauté & historique', items: [
+        { i: '💾', t: 'Profil beauté sauvegardé', d: 'Retrouve tout, à chaque connexion, sur tous tes appareils.' },
+        { i: '🧠', t: 'Diagnostic IA enregistré', d: 'Ton analyse de peau conservée et réutilisée.' },
+        { i: '🎨', t: 'Profil colorimétrique', d: 'Ta saison et tes couleurs, gardées en mémoire.' },
+        { i: '📚', t: 'Historique complet', d: 'Toutes tes routines et analyses passées, accessibles.' },
+        { i: '⭐', t: 'Produits qui marchent', d: 'Glow Up mémorise ce qui fonctionne le mieux sur TA peau.' },
+      ]},
+      { emoji: '⚙️', tag: 'Personnalisation avancée', items: [
+        { i: '🚫', t: 'Ingrédients à éviter', d: 'Indique les molécules à bannir : on les exclut de tes routines.' },
+        { i: '💸', t: 'Alternatives selon budget', d: 'Des variantes moins chères ou premium, selon tes préférences.' },
+        { i: '☀️', t: 'Alternatives SPF', d: 'Le bon SPF pour ta peau — et des options de rechange.' },
+      ]},
+      { emoji: '💰', tag: 'Économies & recommandations', items: [
+        { i: '🔎', t: 'Comparateur de prix', d: 'On compare tout le marché pour que tu paies le juste prix.' },
+        { i: '📝', t: 'Conseils avancés', d: 'Sur chaque produit : pourquoi, comment, à quel moment.' },
+        { i: '🖐️', t: 'Gestes d\'application', d: 'Des visuels qui montrent comment appliquer chaque produit.' },
+      ]},
+    ];
+
+    const catsHtml = CATS.map((c, idx) => `
+      <section class="pv-cat pv-reveal" style="--d:${idx * 60}ms">
+        <div class="pv-cat-head">
+          <span class="pv-cat-emoji">${c.emoji}</span>
+          <h2 class="pv-cat-title">${c.tag}</h2>
+        </div>
+        <div class="pv-cat-grid">
+          ${c.items.map(it => `
+            <div class="pv-item">
+              <span class="pv-item-i">${it.i}</span>
+              <div class="pv-item-body">
+                <h3 class="pv-item-t">${it.t}</h3>
+                <p class="pv-item-d">${it.d}</p>
+              </div>
+              <span class="pv-item-check">✓</span>
+            </div>`).join('')}
+        </div>
+      </section>`).join('');
+
+    const FAQ = [
+      ['Puis-je annuler à tout moment ?', 'Oui, sans engagement. Tu résilies en un clic depuis ton compte et tu gardes l\'accès jusqu\'à la fin de la période payée.'],
+      ['Quelle est la différence entre mensuel et annuel ?', `Le contenu est identique. L'annuel (39,99 €) revient à 3,33 €/mois, soit −33% par rapport au mensuel (4,99 €). C'est la formule la plus avantageuse.`],
+      ['Glow Up est-il vraiment impartial ?', 'Oui. On ne fabrique ni ne vend nos propres produits. On référence tout le marché et on ne recommande que ce qui correspond à ton profil — jamais une marque qui paierait plus.'],
+      ['Que se passe-t-il si je reste gratuite ?', 'Tu gardes 1 routine et ton analyse beauté. Premium débloque les routines illimitées, le Skin Journey, l\'historique et la personnalisation avancée.'],
+      ['Mes données et photos sont-elles en sécurité ?', 'Tes analyses restent privées et ne sont jamais revendues. Tu peux supprimer ton compte et tes données à tout moment.'],
+      ['Serai-je débitée automatiquement ?', 'Le paiement est géré de façon sécurisée par Stripe. L\'abonnement se renouvelle automatiquement, et tu peux l\'arrêter quand tu veux.'],
+    ];
+    const faqHtml = FAQ.map(([q, a]) => `
+      <details class="pv-faq-item">
+        <summary class="pv-faq-q">${q}<span class="pv-faq-plus">+</span></summary>
+        <p class="pv-faq-a">${a}</p>
+      </details>`).join('');
+
+    // Bloc tarifs / CTA (ou état « déjà abonnée »)
+    const pricingHtml = isSub ? `
+      <div class="pv-already">
+        <span class="pv-already-badge">✦ Tu es déjà membre ${plan === 'glowplus' ? 'Glow Up Coach' : 'Glow Up Premium'}</span>
+        <p>Profite de tous tes avantages ✨</p>
+        <button class="btn btn-dark" onclick="Subscription._exitPremiumPublic()">Revenir à ma routine →</button>
+      </div>` : `
+      <div class="pv-pricing pv-reveal" id="pv-pricing">
+        <h2 class="pv-section-title">Choisis ta formule</h2>
+        <p class="pv-section-sub">Même contenu, deux rythmes. L'annuel est le plus avantageux.</p>
+        <div class="pv-plans">
+          <div class="pv-plan pv-plan--best">
+            <div class="pv-plan-badge">★ Le plus avantageux · −${P.save}</div>
+            <div class="pv-plan-name">Annuel</div>
+            <div class="pv-plan-price"><span class="pv-plan-amount">${P.yearly}€</span><span class="pv-plan-per">/an</span></div>
+            <div class="pv-plan-permonth">soit ${P.yearlyPerMonth} €/mois</div>
+            <button class="btn btn-dark full-width" onclick="Subscription.openCheckout('${P.keyYearly}')">Débloquer Glow Up Premium ✦</button>
+            <div class="pv-plan-note">2 mois offerts vs mensuel</div>
+          </div>
+          <div class="pv-plan">
+            <div class="pv-plan-name">Mensuel</div>
+            <div class="pv-plan-price"><span class="pv-plan-amount">${P.monthly}€</span><span class="pv-plan-per">/mois</span></div>
+            <div class="pv-plan-permonth">flexible, sans engagement</div>
+            <button class="btn btn-outline full-width" onclick="Subscription.openCheckout('${P.keyMonthly}')">Prendre au mois</button>
+          </div>
+        </div>
+        <button class="btn-ghost pv-free-link" onclick="Subscription._exitPremiumPublic()">Continuer gratuitement</button>
+      </div>`;
+
+    container.innerHTML = `
+      <div class="pv-wrap">
+
+        <!-- HERO -->
+        <header class="pv-hero pv-reveal">
+          <span class="pv-hero-eyebrow">✦ Glow Up Premium</span>
+          <h1 class="pv-hero-title">Toute ta beauté,<br><em>débloquée.</em></h1>
+          <p class="pv-hero-sub">Des routines illimitées, le suivi de ta peau dans le temps, ton profil beauté sauvegardé et les meilleurs prix comparés pour toi — sans aucun favoritisme de marque.</p>
+          <div class="pv-hero-cta">
+            <button class="btn btn-dark pv-hero-primary" onclick="document.getElementById('pv-pricing')?.scrollIntoView({behavior:'smooth'}); if(${isSub}) Subscription._exitPremiumPublic();">Débloquer Glow Up Premium</button>
+            <button class="btn btn-outline" onclick="Subscription._exitPremiumPublic()">Continuer gratuitement</button>
+          </div>
+          <div class="pv-hero-price">dès <strong>${P.yearlyPerMonth} €/mois</strong> · sans engagement</div>
+        </header>
+
+        <!-- VALEUR EN UN COUP D'ŒIL -->
+        <div class="pv-strip pv-reveal">
+          <div class="pv-strip-item"><span>🔁</span>Routines illimitées</div>
+          <div class="pv-strip-item"><span>📅</span>Skin Journey 30 j</div>
+          <div class="pv-strip-item"><span>💰</span>Prix comparés</div>
+          <div class="pv-strip-item"><span>🤍</span>100% impartial</div>
+        </div>
+
+        <!-- AVANTAGES PAR CATÉGORIE -->
+        <div class="pv-cats">${catsHtml}</div>
+
+        <!-- DIFFÉRENCIATION -->
+        <section class="pv-diff pv-reveal">
+          <span class="pv-diff-eyebrow">Pourquoi nous faire confiance</span>
+          <h2 class="pv-section-title">La beauté sans conflit d'intérêt</h2>
+          <div class="pv-diff-grid">
+            <div class="pv-diff-card"><span class="pv-diff-i">🤍</span><p>Aucun intérêt à te vendre un produit plutôt qu'un autre.</p></div>
+            <div class="pv-diff-card"><span class="pv-diff-i">🌍</span><p>On référence <strong>tous</strong> les produits du marché.</p></div>
+            <div class="pv-diff-card"><span class="pv-diff-i">💰</span><p>On compare automatiquement les prix pour toi.</p></div>
+            <div class="pv-diff-card"><span class="pv-diff-i">🎯</span><p>On recommande uniquement ce qui convient à <strong>ton</strong> profil.</p></div>
+          </div>
+        </section>
+
+        <!-- TARIFS -->
+        ${pricingHtml}
+
+        <!-- FAQ -->
+        <section class="pv-faq pv-reveal">
+          <h2 class="pv-section-title">Questions fréquentes</h2>
+          <div class="pv-faq-list">${faqHtml}</div>
+        </section>
+
+        <!-- CTA FINAL -->
+        ${isSub ? '' : `
+        <section class="pv-final pv-reveal">
+          <h2 class="pv-final-title">Prête à révéler ton glow ?</h2>
+          <p class="pv-final-sub">Rejoins Glow Up Premium et prends soin de ta peau, vraiment.</p>
+          <button class="btn btn-dark" onclick="Subscription.openCheckout('${P.keyYearly}')">Débloquer Glow Up Premium · ${P.yearly}€/an ✦</button>
+          <button class="btn-ghost pv-free-link" onclick="Subscription._exitPremiumPublic()">Continuer gratuitement</button>
+          <p class="pv-final-fine">Sans engagement · Annulable à tout moment · Paiement sécurisé Stripe</p>
+        </section>`}
+
+      </div>`;
+
+    _observeReveal(container);
+  }
+
+  // Exposé pour les onclick inline
+  function _exitPremiumPublic() { _exitPremium(); }
+
+  return { getPlan, isPlan, canAccess, canGenerateRoutine, hasUsedFreeRoutine, markRoutineGenerated, loadPlan, openCheckout, showPaywall, updateGatingUI, handleCheckoutReturn, renderPlansPage, renderPremiumPage, _exitPremiumPublic, loadFoundersData, showSkinJourneyDetail, showReferralDashboard };
 
 })();

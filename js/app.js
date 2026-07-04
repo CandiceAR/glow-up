@@ -99,6 +99,7 @@ function showScreen(name) {
   if (name === 'journey')         SkinJourney.initScreen();
   if (name === 'skinpedia')       Skinpedia.initScreen();
   if (name === 'plans')           { if (typeof Subscription !== 'undefined') Subscription.renderPlansPage(); }
+  if (name === 'premium')         { if (typeof Subscription !== 'undefined') Subscription.renderPremiumPage(); }
 
   // ─── Écrans avec gating ───────────────────────────────────────
   if (name === 'makeup') {
