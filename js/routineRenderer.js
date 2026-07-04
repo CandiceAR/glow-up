@@ -613,6 +613,7 @@ const RoutineRenderer = (() => {
             </div>
           </div>
           ${product ? `<div class="cg-step-card">${_renderPremiumProductCard(product)}</div>` : ''}
+          ${product ? _renderWhyProduct(step, product) : ''}
           ${spfExtras}
         </div>`);
     }
@@ -677,6 +678,77 @@ const RoutineRenderer = (() => {
            ${isAffiliate ? `onclick="event.stopPropagation(); trackAmazonClick('${id}')"` : 'onclick="event.stopPropagation()"'}>
           Acheter maintenant →
         </a>
+      </div>`;
+  }
+
+  // ─── « Pourquoi ce produit ? » — explication personnalisée ────
+  // Basée sur le diagnostic peau, les réponses, l'objectif, le budget,
+  // les préférences et les ingrédients à éviter. Dispo aussi en gratuit.
+  const _STEP_NOUN = {
+    cleanser: 'ce nettoyant', toner: 'ce soin', serum: 'ce sérum', treatment: 'ce soin ciblé',
+    eye: 'ce contour des yeux', eyepatch: 'ces patchs', moisturizer: 'cette crème',
+    oil: 'cette huile', exfoliant: 'cet exfoliant', spf: 'ce SPF', lipbalm: 'ce baume'
+  };
+  const _AVOID_LABEL = { alcool: 'sans alcool', parfum: 'sans parfum', silicones: 'sans silicones', parabens: 'sans parabènes' };
+
+  function _reasonProfile() {
+    const a  = AppState.questionnaire?.answers || {};
+    const sa = AppState.face?.skinAnalysis || null;
+    return {
+      skinType:   sa?.skinType?.type || a.skinType || null,
+      complexes:  Array.isArray(a.complexes) ? a.complexes : [],
+      objectives: a.objectives || null,
+      budget:     _normBudget(),
+      avoid:      Array.isArray(a.avoidIngredients) ? a.avoidIngredients : [],
+      korean:     a.skincareStyle === 'korean',
+      sensitive:  (sa?.skinType?.type === 'sensible') || a.skinType === 'sensible'
+                    || (Array.isArray(a.complexes) && a.complexes.includes('rougeurs'))
+                    || (typeof a.sensitivity === 'number' && a.sensitivity >= 6),
+    };
+  }
+
+  function buildProductReason(step, product) {
+    const u = _reasonProfile();
+    const noun = _STEP_NOUN[step.step] || 'ce produit';
+    const SKIN = { normale: 'normale', grasse: 'grasse', seche: 'sèche', mixte: 'mixte', sensible: 'sensible' };
+
+    // SPF : réutiliser la raison personnalisée déjà calculée (description)
+    let why;
+    if (step.step === 'spf' && product.description) {
+      why = product.description;
+    } else {
+      const c = u.complexes;
+      if (u.sensitive)                                    why = `Nous avons choisi ${noun} car il est adapté à ta peau sensible et aide à limiter les rougeurs.`;
+      else if (u.skinType === 'seche' || c.includes('secheresse')) why = `Nous avons choisi ${noun} car ta peau a tendance à la sécheresse et a besoin de confort et d'hydratation.`;
+      else if (c.includes('acne') || c.includes('pores') || u.skinType === 'grasse') why = `Nous avons choisi ${noun} car il purifie et régule la zone T sans agresser ta peau.`;
+      else if (c.includes('taches') || u.objectives === 'uniformisation') why = `Nous avons choisi ${noun} pour aider à unifier ton teint et estomper les taches.`;
+      else if (c.includes('eclat') || u.objectives === 'eclat')       why = `Nous avons choisi ${noun} car ta peau manque un peu d'éclat — il ravive la luminosité.`;
+      else if (c.includes('rides') || u.objectives === 'anti-age')    why = `Nous avons choisi ${noun} pour repulper la peau et prévenir les signes de l'âge.`;
+      else if (u.objectives === 'hydratation')             why = `Nous avons choisi ${noun} pour une hydratation optimale, adaptée à tes besoins.`;
+      else                                                 why = `Nous avons choisi ${noun} car il correspond à ton type de peau ${SKIN[u.skinType] || 'et à ton profil'}.`;
+    }
+
+    // « Pourquoi celui-ci plutôt qu'un autre ? »
+    let vs;
+    const avoidHit = u.avoid.find(x => _AVOID_LABEL[x]);
+    if (avoidHit && (step.step !== 'spf'))            vs = `${_AVOID_LABEL[avoidHit].charAt(0).toUpperCase() + _AVOID_LABEL[avoidHit].slice(1)}, comme tu le souhaites.`;
+    else if (u.sensitive)                             vs = `Plus doux et mieux toléré que les autres options pour ta peau sensible.`;
+    else if (u.budget === 'low')                      vs = `Meilleur rapport qualité/prix parmi les options adaptées.`;
+    else if (u.korean && product.isKorean)            vs = `Dans l'esprit K-Beauty que tu préfères.`;
+    else if (u.objectives)                            vs = `Le plus cohérent avec ton objectif ${({'anti-age':'anti-âge','eclat':'éclat','hydratation':'hydratation','purification':'purification','uniformisation':'teint unifié','apaisement':'apaisement'})[u.objectives] || u.objectives}.`;
+    else                                              vs = `Sélectionné parmi plusieurs options après comparaison, pour ta peau ${SKIN[u.skinType] || ''}.`.trim();
+
+    return { why, vs };
+  }
+
+  function _renderWhyProduct(step, product) {
+    if (!product) return '';
+    const { why, vs } = buildProductReason(step, product);
+    return `
+      <div class="why-product">
+        <div class="why-product-head"><span class="why-product-i">💡</span> Pourquoi ce produit ?</div>
+        <p class="why-product-text">${why}</p>
+        ${vs ? `<p class="why-product-vs"><strong>Pourquoi celui-ci plutôt qu'un autre&nbsp;?</strong> ${vs}</p>` : ''}
       </div>`;
   }
 

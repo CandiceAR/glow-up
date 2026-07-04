@@ -4329,6 +4329,25 @@ em { font-style: italic; color: var(--nude); }
   .pv-plans, .pv-diff-grid { grid-template-columns: 1fr; }
 }
 
+/* ─── « Pourquoi ce produit ? » sous chaque produit ─────────── */
+.why-product {
+  margin-top: 10px;
+  background: var(--orange-light);
+  border: 1px solid rgba(240,145,63,0.22);
+  border-radius: 14px;
+  padding: 13px 15px;
+}
+.why-product-head {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.3px;
+  color: var(--orange-deep); text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.why-product-i { font-size: 0.95rem; }
+.why-product-text { font-size: 0.85rem; line-height: 1.55; color: var(--charcoal); margin: 0; }
+.why-product-vs { font-size: 0.8rem; line-height: 1.5; color: var(--muted); margin: 8px 0 0; padding-top: 8px; border-top: 1px dashed rgba(240,145,63,0.25); }
+.why-product-vs strong { color: var(--charcoal); }
+
 /* ─── PremiumLockCard (composant cadenas réutilisable) ──────── */
 .premium-lock {
   background: linear-gradient(135deg, #fff, #F7ECE0);
