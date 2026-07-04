@@ -4195,7 +4195,8 @@ em { font-style: italic; color: var(--nude); }
   line-height: 1.6;
   margin: 0;
 }
-.cg-step-card { flex: 1; min-width: 0; }
+.cg-step-right { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.cg-step-card { width: 100%; min-width: 0; }
 .cg-step-card .premium-card { margin: 0; }
 .cg-step-card .premium-card-image-wrap {
   aspect-ratio: unset;

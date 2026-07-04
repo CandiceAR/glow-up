@@ -612,9 +612,11 @@ const RoutineRenderer = (() => {
               ${tip ? `<p class="cg-step-tip">${tip}</p>` : ''}
             </div>
           </div>
-          ${product ? `<div class="cg-step-card">${_renderPremiumProductCard(product)}</div>` : ''}
-          ${product ? _renderWhyProduct(step, product) : ''}
-          ${spfExtras}
+          <div class="cg-step-right">
+            ${product ? `<div class="cg-step-card">${_renderPremiumProductCard(product)}</div>` : ''}
+            ${product ? _renderWhyProduct(step, product) : ''}
+            ${spfExtras}
+          </div>
         </div>`);
     }
 
