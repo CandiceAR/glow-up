@@ -838,24 +838,35 @@ const RoutineRenderer = (() => {
   function renderGlowUpOffer() {
     return `
       <div class="conversion-block conversion-block--glow">
-        <div class="cb-badge">✨ Offre Glow Up</div>
-        <h3 class="cb-title">Débloque tout l'univers Glow Up</h3>
-        <ul class="cb-list">
-          <li>✓ Routine skincare complète</li>
-          <li>✓ Routine make-up complète</li>
-          <li>✓ Recommandations produits personnalisées</li>
-          <li>✓ Skin Journey · suivi de ta peau</li>
-          <li>✓ Nouveaux conseils adaptés à ton profil</li>
+        <div class="cb-badge">✨ Glow Up Premium</div>
+        <h3 class="cb-title">Débloque tout le potentiel de Glow Up ✨</h3>
+        <p class="cb-lead">Votre peau évolue. Glow Up aussi. Débloquez le suivi photo, l'évolution de votre peau, les produits alternatifs, le comparateur de prix, votre historique beauté et bien plus encore.</p>
+        <ul class="cb-list cb-list--2col">
+          <li>✓ Skin Journey sur 30 jours</li>
+          <li>✓ Photos J1 / J5 / J15 / J30</li>
+          <li>✓ Jusqu'à 3 routines / mois</li>
+          <li>✓ Skincare + Make-up</li>
+          <li>✓ Produits alternatifs</li>
+          <li>✓ Alternatives SPF</li>
+          <li>✓ Comparateur de prix</li>
+          <li>✓ Historique beauté</li>
+          <li>✓ Profil beauté enregistré</li>
+          <li>✓ Diagnostic IA conservé</li>
+          <li>✓ Colorimétrie sauvegardée</li>
+          <li>✓ Conseils avancés + gestes d'application</li>
         </ul>
         <div class="cb-price">
           <span class="cb-price-main">39,99 €</span>
           <span class="cb-price-period">/ an</span>
         </div>
-        <p class="cb-price-sub">Soit seulement 3,33 € par mois · ou 4,99 €/mois</p>
-        <button class="btn-orange-cta" onclick="Subscription.showPaywall('routine_second')">
-          Débloquer Premium
+        <p class="cb-price-sub">soit 3,33 € / mois · ou 4,99 €/mois</p>
+        <button class="btn-orange-cta" onclick="Subscription.openCheckout('premium_yearly')">
+          Débloquer Glow Up Premium
         </button>
-        <p class="cb-note">Formule annuelle la plus avantageuse · Annulable à tout moment</p>
+        <button class="btn-ghost cb-see-all" onclick="showScreen('premium')">
+          Voir tous les avantages →
+        </button>
+        <p class="cb-note">Formule annuelle la plus avantageuse · Sans engagement · Annulable à tout moment</p>
       </div>`;
   }
 

@@ -4329,6 +4329,37 @@ em { font-style: italic; color: var(--nude); }
   .pv-plans, .pv-diff-grid { grid-template-columns: 1fr; }
 }
 
+/* ─── PremiumLockCard (composant cadenas réutilisable) ──────── */
+.premium-lock {
+  background: linear-gradient(135deg, #fff, #F7ECE0);
+  border: 1px solid var(--sand);
+  border-radius: 20px;
+  padding: 22px;
+  box-shadow: var(--shadow-sm);
+}
+.premium-lock--compact { padding: 16px; border-radius: 16px; }
+.premium-lock-head { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px; }
+.premium-lock-icon {
+  font-size: 1.5rem; flex-shrink: 0;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--orange-light); display: flex; align-items: center; justify-content: center;
+}
+.premium-lock-body { flex: 1; min-width: 0; }
+.premium-lock-title { font-family: var(--font-serif); font-size: 1.2rem; color: var(--charcoal); margin: 0 0 4px; font-weight: 600; }
+.premium-lock-text { font-size: 0.85rem; line-height: 1.55; color: var(--muted); margin: 0; }
+.premium-lock-price { text-align: center; font-size: 0.85rem; color: var(--charcoal); margin-bottom: 14px; }
+.premium-lock-price strong { color: var(--orange-deep); }
+.premium-lock-actions { display: flex; flex-direction: column; gap: 8px; }
+.premium-lock-see { color: var(--muted); font-size: 0.86rem; }
+.premium-lock--compact .premium-lock-title { font-size: 1.05rem; }
+
+/* Bloc abonnement post-routine — valeur d'abord */
+.cb-lead { font-size: 0.9rem; line-height: 1.6; color: var(--muted); margin: 0 0 16px; }
+.cb-list--2col { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 14px; }
+.cb-list--2col li { font-size: 0.82rem; }
+.cb-see-all { display: block; width: 100%; margin-top: 8px; color: var(--muted); font-size: 0.88rem; }
+@media (max-width: 480px) { .cb-list--2col { grid-template-columns: 1fr; } }
+
 /* ─── Notes contextuelles navigateur intégré (Instagram…) ───── */
 .q-inapp-note {
   margin: 14px auto 0;

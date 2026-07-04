@@ -562,25 +562,30 @@ const Subscription = (() => {
       { emoji: '📅', tag: 'Suivi de peau · Skin Journey', items: [
         { i: '📈', t: 'Évolution sur 30 jours', d: 'Un vrai suivi, jour après jour, de ta transformation.' },
         { i: '📸', t: 'Avant / Après', d: 'Comparaison photo Jour 1 · 5 · 15 · 30.' },
-        { i: '🔬', t: 'Analyse détaillée', d: 'Hydratation, rougeurs, imperfections, éclat, texture…' },
+        { i: '🔬', t: 'Analyse détaillée', d: 'Hydratation, rougeurs, imperfections, éclat, texture, zones sèches, brillance.' },
         { i: '🌡️', t: 'Réactions dans le temps', d: 'On repère ce qui apaise ta peau et ce qui la dérange.' },
+        { i: '✅', t: 'Ta routine fonctionne-t-elle ?', d: 'Comprends enfin si ta routine agit vraiment sur ta peau.' },
       ]},
       { emoji: '🗂️', tag: 'Profil beauté & historique', items: [
         { i: '💾', t: 'Profil beauté sauvegardé', d: 'Retrouve tout, à chaque connexion, sur tous tes appareils.' },
         { i: '🧠', t: 'Diagnostic IA enregistré', d: 'Ton analyse de peau conservée et réutilisée.' },
         { i: '🎨', t: 'Profil colorimétrique', d: 'Ta saison et tes couleurs, gardées en mémoire.' },
-        { i: '📚', t: 'Historique complet', d: 'Toutes tes routines et analyses passées, accessibles.' },
-        { i: '⭐', t: 'Produits qui marchent', d: 'Glow Up mémorise ce qui fonctionne le mieux sur TA peau.' },
+        { i: '📚', t: 'Historique complet', d: 'Toutes tes routines et analyses de peau passées, accessibles.' },
+        { i: '⭐', t: 'Produits qui marchent', d: 'Ce qui fonctionne le mieux — et ce que ta peau tolère ou non.' },
+        { i: '🧪', t: 'Ingrédients efficaces / à éviter', d: 'Glow Up mémorise les actifs qui te réussissent et ceux à écarter.' },
       ]},
       { emoji: '⚙️', tag: 'Personnalisation avancée', items: [
         { i: '🚫', t: 'Ingrédients à éviter', d: 'Indique les molécules à bannir : on les exclut de tes routines.' },
+        { i: '✍️', t: 'Option « Autre » · champ libre', d: 'Précise tout ce qui compte pour toi, dans tes mots.' },
         { i: '💸', t: 'Alternatives selon budget', d: 'Des variantes moins chères ou premium, selon tes préférences.' },
         { i: '☀️', t: 'Alternatives SPF', d: 'Le bon SPF pour ta peau — et des options de rechange.' },
+        { i: '🎯', t: 'Routines adaptées à tes besoins', d: 'Chaque étape est ajustée à ton profil et tes objectifs.' },
       ]},
       { emoji: '💰', tag: 'Économies & recommandations', items: [
         { i: '🔎', t: 'Comparateur de prix', d: 'On compare tout le marché pour que tu paies le juste prix.' },
         { i: '📝', t: 'Conseils avancés', d: 'Sur chaque produit : pourquoi, comment, à quel moment.' },
         { i: '🖐️', t: 'Gestes d\'application', d: 'Des visuels qui montrent comment appliquer chaque produit.' },
+        { i: '📐', t: 'Quantité, ordre & fréquence', d: 'Combien, dans quel ordre, matin ou soir, à quelle fréquence.' },
       ]},
     ];
 
@@ -711,6 +716,40 @@ const Subscription = (() => {
   // Exposé pour les onclick inline
   function _exitPremiumPublic() { _exitPremium(); }
 
-  return { getPlan, isPlan, canAccess, canGenerateRoutine, hasUsedFreeRoutine, routinesLeftThisMonth, markRoutineGenerated, showRoutineLimit, loadPlan, openCheckout, showPaywall, updateGatingUI, handleCheckoutReturn, renderPlansPage, renderPremiumPage, _exitPremiumPublic, loadFoundersData, showSkinJourneyDetail, showReferralDashboard };
+  // ─── Composant réutilisable : PremiumLockCard ────────────────
+  // Chaque fonctionnalité verrouillée devient une opportunité de conversion.
+  // opts : { preset, icon, title, text, compact }
+  const LOCK_PRESETS = {
+    alternatives:       { icon: '🔓', title: 'Débloquez les alternatives produits',        text: 'Trouvez des produits moins chers, plus adaptés à votre peau ou plus proches de vos préférences.' },
+    'price-comparator': { icon: '💰', title: 'Comparez les prix sur tout le marché',        text: 'Glow Up vous aide à trouver vos produits au meilleur prix, sans favoriser une marque plutôt qu\'une autre.' },
+    'skin-journey':     { icon: '📅', title: 'Suivez l\'évolution de votre peau sur 30 jours', text: 'Comparez vos photos Jour 1, 5, 15 et 30 pour voir si votre routine fonctionne réellement.' },
+    routine:            { icon: '✨', title: 'Débloquez votre routine complète',            text: 'Accédez à votre routine Skincare et Make-up personnalisée avec Glow Up Premium.' },
+    history:            { icon: '🗂️', title: 'Retrouvez tout votre historique beauté',       text: 'Gardez vos diagnostics, routines, photos de suivi et produits testés au même endroit.' },
+    'advanced-advice':  { icon: '📝', title: 'Comprenez mieux chaque recommandation',        text: 'Accédez aux conseils avancés, aux explications détaillées et aux images d\'application des produits.' },
+  };
+  function lockCard(opts = {}) {
+    const P = PRICING.premium;
+    const preset = LOCK_PRESETS[opts.preset] || {};
+    const icon  = opts.icon  || preset.icon  || '🔒';
+    const title = opts.title || preset.title || 'Débloquez Glow Up Premium';
+    const text  = opts.text  || preset.text  || 'Accédez à tout ce que Glow Up Premium débloque pour ta peau.';
+    return `
+      <div class="premium-lock${opts.compact ? ' premium-lock--compact' : ''}">
+        <div class="premium-lock-head">
+          <span class="premium-lock-icon">${icon}</span>
+          <div class="premium-lock-body">
+            <h3 class="premium-lock-title">${title}</h3>
+            <p class="premium-lock-text">${text}</p>
+          </div>
+        </div>
+        <div class="premium-lock-price">dès <strong>${P.yearlyPerMonth} €/mois</strong> · ${P.yearly} €/an</div>
+        <div class="premium-lock-actions">
+          <button class="btn-orange-cta premium-lock-cta" onclick="Subscription.openCheckout('${P.keyYearly}')">Débloquer Glow Up Premium</button>
+          <button class="btn-ghost premium-lock-see" onclick="showScreen('premium')">Voir tous les avantages →</button>
+        </div>
+      </div>`;
+  }
+
+  return { getPlan, isPlan, canAccess, canGenerateRoutine, hasUsedFreeRoutine, routinesLeftThisMonth, markRoutineGenerated, showRoutineLimit, lockCard, loadPlan, openCheckout, showPaywall, updateGatingUI, handleCheckoutReturn, renderPlansPage, renderPremiumPage, _exitPremiumPublic, loadFoundersData, showSkinJourneyDetail, showReferralDashboard };
 
 })();
