@@ -867,29 +867,11 @@ const RoutineRenderer = (() => {
             <p class="locked-more">+ ${remainCount} étape${remainCount > 1 ? 's' : ''} personnalisée${remainCount > 1 ? 's' : ''} selon ton profil</p>
           </div>
           <div class="locked-overlay">
-            <div class="locked-overlay-inner">
-              <svg class="lock-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
-              <h3 class="locked-title">Débloque ta routine complète avec Glow Up</h3>
-              <ul class="locked-benefits">
-                <li>✨ Une routine pensée pour TOI</li>
-                <li>✨ Des produits adaptés à TON budget</li>
-                <li>✨ Les meilleurs prix du marché</li>
-                <li>✨ Un coach beauté qui te connaît déjà</li>
-                <li>✨ Le suivi de l'évolution de ta peau</li>
-              </ul>
-              <div class="locked-price">
-                <span class="locked-price-main">39,99 €</span>
-                <span class="locked-price-per">/ an</span>
-                <span class="locked-price-sub">soit 3,33 € / mois · ou 4,99 €/mois</span>
-              </div>
-              <button class="btn-orange-cta locked-unlock-btn" onclick="Subscription.showPaywall('routine_second')">
-                Débloquer Premium ✦
-              </button>
-              <p class="locked-note">Paiement annuel · Annulable à tout moment</p>
-            </div>
+            ${typeof Subscription !== 'undefined' ? Subscription.lockCard({
+              preset: 'routine',
+              title: 'Débloquez votre routine du soir',
+              text: 'Accédez à votre routine complète matin ET soir, personnalisée avec Glow Up Premium.'
+            }) : ''}
           </div>
         </div>
       </div>`;
@@ -957,26 +939,15 @@ const RoutineRenderer = (() => {
   // ─── Étape 1 : Routine complémentaire verrouillée ────────────
   function renderLockedRoutineTeaser(routineChoice) {
     const isSkincare = routineChoice === 'skincare';
-    const title   = isSkincare
-      ? '🔒 Débloque aussi ta routine Make-up personnalisée'
-      : '🔒 Débloque aussi ta routine Skincare personnalisée';
-    const items = isSkincare
-      ? ['Ta carnation & ton sous-ton', 'La forme de ton visage', 'Tes objectifs beauté', 'Produits maquillage adaptés']
-      : ['Ton type de peau', 'Tes problématiques détectées', 'Ton budget', 'Tes objectifs beauté'];
-    return `
-      <div class="conversion-block conversion-block--lock">
-        <div class="cb-header">
-          <span class="cb-lock-icon">🔒</span>
-          <h3 class="cb-title">${isSkincare ? 'Débloque aussi ta routine Make-up personnalisée' : 'Débloque aussi ta routine Skincare personnalisée'}</h3>
-        </div>
-        <p class="cb-desc">${isSkincare ? 'Découvre les produits adaptés à :' : 'Découvre la routine idéale adaptée à :'}</p>
-        <ul class="cb-list">
-          ${items.map(i => `<li>✓ ${i}</li>`).join('')}
-        </ul>
-        <button class="btn-orange-cta" onclick="Subscription.showPaywall('routine_second')">
-          Débloquer ma routine complète
-        </button>
-      </div>`;
+    if (typeof Subscription === 'undefined') return '';
+    return Subscription.lockCard({
+      preset: 'routine',
+      icon: '💄',
+      title: isSkincare ? 'Débloquez votre routine Make-up' : 'Débloquez votre routine Skincare',
+      text: isSkincare
+        ? 'Accédez à votre routine maquillage personnalisée : carnation, sous-ton, forme du visage et produits adaptés.'
+        : 'Accédez à votre routine skincare idéale : type de peau, problématiques, budget et objectifs.'
+    });
   }
 
   // ─── Étape 2 : Offre Glow Up ─────────────────────────────────
