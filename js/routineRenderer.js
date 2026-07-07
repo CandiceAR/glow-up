@@ -77,26 +77,13 @@ const RoutineRenderer = (() => {
     try { return SpfEngine.getRecommendation(); } catch { return null; }
   }
 
-  // ─── SPF : alternatives + recommandation corps sous la carte ──
+  // ─── SPF : recommandation corps sous la carte ─────────────────
+  // (Les alternatives SPF sont gérées par _renderAlternatives, comme les autres produits.)
   function _renderSpfExtras() {
     const reco = _spfReco();
     if (!reco) return '';
 
-    const alts = (reco.alternatives || []).slice(0, 2);
-    const altHtml = alts.length ? `
-      <div class="spf-alts">
-        <span class="spf-alts-label">✦ 2 alternatives selon tes envies</span>
-        <div class="spf-alts-list">
-          ${alts.map(p => {
-            const compareUrl = `https://www.google.com/search?q=${encodeURIComponent(p.brand + ' ' + p.name)}&tbm=shop`;
-            return `<a class="spf-alt-chip" href="${compareUrl}" target="_blank" rel="noopener">
-              <span class="spf-alt-brand">${p.brand}</span>
-              <span class="spf-alt-name">${p.name}</span>
-            </a>`;
-          }).join('')}
-        </div>
-      </div>` : '';
-
+    const altHtml = '';
     const body = reco.body;
     const bodyHtml = body ? `
       <div class="spf-body-reco">
@@ -615,6 +602,7 @@ const RoutineRenderer = (() => {
           <div class="cg-step-right">
             ${product ? `<div class="cg-step-card">${_renderPremiumProductCard(product)}</div>` : ''}
             ${product ? _renderWhyProduct(step, product) : ''}
+            ${product ? _renderAlternatives(step, product) : ''}
             ${spfExtras}
           </div>
         </div>`);
@@ -751,6 +739,89 @@ const RoutineRenderer = (() => {
         <div class="why-product-head"><span class="why-product-i">💡</span> Pourquoi ce produit ?</div>
         <p class="why-product-text">${why}</p>
         ${vs ? `<p class="why-product-vs"><strong>Pourquoi celui-ci plutôt qu'un autre&nbsp;?</strong> ${vs}</p>` : ''}
+      </div>`;
+  }
+
+  // ─── Alternatives produit (Lot 3) ────────────────────────────
+  // Gratuit : floutées → carte Premium. Abonnées : liste complète + motif.
+  function _altReason(p, chosen, step) {
+    const u = _reasonProfile();
+    if (chosen.price && p.price && (chosen.price - p.price) >= Math.max(2, chosen.price * 0.12)) return 'Moins cher';
+    if (u.avoid.includes('parfum') && p.fragranceFree) return 'Sans parfum';
+    if (u.sensitive && Array.isArray(p.skinTypeTags) && p.skinTypeTags.includes('sensible')) return 'Peau sensible';
+    if (u.korean && p.isKorean && !chosen.isKorean) return 'Produit coréen';
+    if (step.step === 'spf') {
+      if (p.finish === 'matte') return 'Fini plus mat';
+      if (p.finish === 'glow')  return 'Fini lumineux';
+      if (p.texture === 'cream') return 'Plus hydratant';
+      if (p.texture === 'fluid' || p.texture === 'gel') return 'Plus léger';
+      return 'SPF alternatif';
+    }
+    if ((p.rating || 0) > (chosen.rating || 0)) return 'Mieux noté';
+    return 'Bon rapport qualité/prix';
+  }
+
+  function getAlternatives(step, chosen) {
+    if (!chosen) return [];
+    // SPF : via le moteur SPF (déjà personnalisé)
+    if (step.step === 'spf') {
+      const reco = _spfReco();
+      return (reco?.alternatives || []).slice(0, 3)
+        .map(p => ({ product: _spfAsProduct(p), reason: _altReason(p, chosen, step) }));
+    }
+    const cats    = STEP_TO_CATEGORIES[step.step] || [step.step];
+    const catalog = AppState.products.catalog || [];
+    const skinType = AppState.face.skinAnalysis?.skinType?.type
+                  || AppState.questionnaire.answers?.skinType || null;
+    let pool = [];
+    for (const c of cats) { const f = catalog.filter(p => p.category === c); if (f.length) { pool = f; break; } }
+    pool = pool.filter(p => p.id !== chosen.id);
+    if (!pool.length) return [];
+    pool = pool.map(p => {
+      let s = (p.rating || 0) * 10;
+      if (skinType && p.skinTypeTags?.includes(skinType)) s += 20;
+      s += _seededRandom('alt_' + step.step + '_' + p.id) * 6;   // stable via le seed
+      return { p, s };
+    }).sort((a, b) => b.s - a.s);
+    return pool.slice(0, 3).map(x => ({ product: x.p, reason: _altReason(x.p, chosen, step) }));
+  }
+
+  function _altCard(p, reason) {
+    const compareUrl = `https://www.google.com/search?q=${encodeURIComponent((p.brand || '') + ' ' + (p.name || ''))}&tbm=shop`;
+    const nm = (p.name || '').length > 40 ? (p.name.slice(0, 39) + '…') : (p.name || '');
+    return `
+      <div class="alt-card">
+        <div class="alt-card-info">
+          <span class="alt-card-brand">${p.brand || ''}</span>
+          <span class="alt-card-name">${nm}</span>
+          <div class="alt-card-meta">
+            ${reason ? `<span class="alt-card-reason">${reason}</span>` : ''}
+            ${p.price != null ? `<span class="alt-card-price">${p.price.toFixed(2)} €</span>` : ''}
+            ${p.rating ? `<span class="alt-card-rating">★ ${p.rating}</span>` : ''}
+          </div>
+        </div>
+        <a class="alt-card-compare" href="${compareUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Comparer →</a>
+      </div>`;
+  }
+
+  function _renderAlternatives(step, chosen) {
+    const alts = getAlternatives(step, chosen);
+    if (!alts.length) return '';
+    const plan  = typeof Subscription !== 'undefined' ? Subscription.getPlan() : 'free';
+    const isSub = plan === 'glow' || plan === 'glowplus';
+    if (isSub) {
+      return `
+        <div class="alts">
+          <div class="alts-head">✦ Alternatives pour toi</div>
+          <div class="alts-list">${alts.map(a => _altCard(a.product, a.reason)).join('')}</div>
+        </div>`;
+    }
+    // Gratuit : aperçu flouté cliquable
+    return `
+      <div class="alts alts--locked" onclick="Subscription.openLock('alternatives')" role="button" tabindex="0">
+        <div class="alts-head">🔓 Alternatives</div>
+        <div class="alts-list alts-list--blur" aria-hidden="true">${alts.map(a => _altCard(a.product, a.reason)).join('')}</div>
+        <div class="alts-lock-cta">${alts.length} alternatives disponibles avec Glow Up Premium →</div>
       </div>`;
   }
 

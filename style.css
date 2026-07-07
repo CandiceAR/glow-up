@@ -4330,6 +4330,33 @@ em { font-style: italic; color: var(--nude); }
   .pv-plans, .pv-diff-grid { grid-template-columns: 1fr; }
 }
 
+/* ─── Alternatives sous chaque produit (Lot 3) ──────────────── */
+.alts { margin-top: 10px; border: 1px solid var(--sand); border-radius: 14px; padding: 12px 14px; background: #fff; }
+.alts-head { font-size: 0.74rem; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; color: var(--nude); margin-bottom: 8px; }
+.alts-list { display: flex; flex-direction: column; gap: 8px; }
+.alt-card { display: flex; align-items: center; gap: 10px; padding: 9px 11px; background: var(--cream); border-radius: 11px; }
+.alt-card-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.alt-card-brand { font-size: 0.68rem; color: var(--nude); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+.alt-card-name { font-size: 0.82rem; color: var(--charcoal); font-weight: 500; line-height: 1.2; }
+.alt-card-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 2px; }
+.alt-card-reason { font-size: 0.68rem; font-weight: 600; color: var(--orange-deep); background: var(--orange-light); padding: 2px 8px; border-radius: 20px; }
+.alt-card-price { font-size: 0.78rem; font-weight: 600; color: var(--charcoal); }
+.alt-card-rating { font-size: 0.72rem; color: var(--muted); }
+.alt-card-compare { flex-shrink: 0; font-size: 0.76rem; font-weight: 600; color: var(--orange-deep); text-decoration: none; white-space: nowrap; }
+
+/* Version gratuite : floutée + CTA */
+.alts--locked { position: relative; cursor: pointer; overflow: hidden; }
+.alts-list--blur { filter: blur(5px); opacity: 0.65; pointer-events: none; user-select: none; }
+.alts-lock-cta {
+  position: absolute; left: 0; right: 0; bottom: 0; top: 30px;
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  padding: 0 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.2), rgba(255,255,255,0.92) 55%);
+  font-size: 0.82rem; font-weight: 700; color: var(--orange-deep);
+}
+.alts--locked:hover .alts-lock-cta { color: var(--charcoal); }
+.lock-modal-wrap { padding-top: 8px; }
+
 /* ─── « Pourquoi ce produit ? » sous chaque produit ─────────── */
 .why-product {
   margin-top: 10px;

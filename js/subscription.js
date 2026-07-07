@@ -745,11 +745,17 @@ const Subscription = (() => {
         <div class="premium-lock-price">dès <strong>${P.yearlyPerMonth} €/mois</strong> · ${P.yearly} €/an</div>
         <div class="premium-lock-actions">
           <button class="btn-orange-cta premium-lock-cta" onclick="Subscription.openCheckout('${P.keyYearly}')">Débloquer Glow Up Premium</button>
-          <button class="btn-ghost premium-lock-see" onclick="showScreen('premium')">Voir tous les avantages →</button>
+          <button class="btn-ghost premium-lock-see" onclick="if(typeof closeModal==='function')closeModal(); showScreen('premium')">Voir tous les avantages →</button>
         </div>
       </div>`;
   }
 
-  return { getPlan, isPlan, canAccess, canGenerateRoutine, hasUsedFreeRoutine, routinesLeftThisMonth, markRoutineGenerated, showRoutineLimit, lockCard, loadPlan, openCheckout, showPaywall, updateGatingUI, handleCheckoutReturn, renderPlansPage, renderPremiumPage, _exitPremiumPublic, loadFoundersData, showSkinJourneyDetail, showReferralDashboard };
+  // Ouvre le composant lock dans une modale (ex : alternatives floutées cliquées)
+  function openLock(preset) {
+    if (typeof openModal !== 'function') return;
+    openModal(`<button class="modal-close" onclick="closeModal()">×</button><div class="lock-modal-wrap">${lockCard({ preset })}</div>`);
+  }
+
+  return { getPlan, isPlan, canAccess, canGenerateRoutine, hasUsedFreeRoutine, routinesLeftThisMonth, markRoutineGenerated, showRoutineLimit, lockCard, openLock, loadPlan, openCheckout, showPaywall, updateGatingUI, handleCheckoutReturn, renderPlansPage, renderPremiumPage, _exitPremiumPublic, loadFoundersData, showSkinJourneyDetail, showReferralDashboard };
 
 })();
