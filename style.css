@@ -4380,6 +4380,13 @@ em { font-style: italic; color: var(--nude); }
 .alts--locked:hover .alts-lock-cta { color: var(--charcoal); }
 .lock-modal-wrap { padding-top: 8px; }
 
+/* ─── « Comment l'appliquer » : quantité · moment · fréquence ─ */
+.apply-meta { margin-top: 10px; background: #fff; border: 1px solid var(--sand); border-radius: 14px; padding: 12px 14px; }
+.apply-meta-head { font-size: 0.74rem; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; color: var(--nude); margin-bottom: 9px; }
+.apply-meta-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.apply-chip { display: flex; flex-direction: column; gap: 1px; background: var(--cream); border-radius: 10px; padding: 6px 11px; font-size: 0.82rem; color: var(--charcoal); font-weight: 600; }
+.apply-chip b { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; color: var(--muted); }
+
 /* ─── « Pourquoi ce produit ? » sous chaque produit ─────────── */
 .why-product {
   margin-top: 10px;

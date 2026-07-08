@@ -581,6 +581,36 @@ const MakeupRoutine = (() => {
     </div>`;
   }
 
+  // ── « Comment l'appliquer » make-up : quantité · outil · étape ──
+  const MK_APPLY_META = {
+    foundation:  { qty: 'Noisette',       tool: 'Éponge / doigts' },
+    concealer:   { qty: 'Petite touche',  tool: 'Doigt' },
+    corrector:   { qty: 'Petite touche',  tool: 'Doigt' },
+    powder:      { qty: 'Voile léger',    tool: 'Pinceau' },
+    blush:       { qty: '1 touche',       tool: 'Pinceau / doigt' },
+    highlighter: { qty: '1 touche',       tool: 'Doigt' },
+    bronzer:     { qty: 'Voile léger',    tool: 'Pinceau' },
+    mascara:     { qty: '1-2 couches',    tool: 'Brosse' },
+    eyeliner:    { qty: 'Trait fin',      tool: 'Crayon' },
+    eyeshadow:   { qty: 'Par couches',    tool: 'Pinceau' },
+    eyebrow:     { qty: 'Petites touches',tool: 'Crayon' },
+    lipstick:    { qty: '1 passage',      tool: 'Embout' },
+    lipgloss:    { qty: '1 passage',      tool: 'Embout' },
+    lipliner:    { qty: 'Contour',        tool: 'Crayon' },
+  };
+  function _mkRenderApplyMeta(num, product) {
+    const m = MK_APPLY_META[product.category] || { qty: 'Selon envie', tool: 'Doigt' };
+    return `
+      <div class="apply-meta">
+        <div class="apply-meta-head">🧴 Comment l'appliquer</div>
+        <div class="apply-meta-chips">
+          <span class="apply-chip"><b>Quantité</b>${m.qty}</span>
+          <span class="apply-chip"><b>Application</b>${m.tool}</span>
+          <span class="apply-chip"><b>Étape</b>${String(num).padStart(2, '0')}</span>
+        </div>
+      </div>`;
+  }
+
   // ── Étape numérotée ───────────────────────────────────────────
   function renderStep(num, title, tip, product) {
     if (!product) return '';
@@ -595,6 +625,7 @@ const MakeupRoutine = (() => {
         </div>
         <div class="cg-step-right">
           <div class="cg-step-card">${renderCard(product)}</div>
+          ${_mkRenderApplyMeta(num, product)}
           ${_mkRenderWhy(product)}
           ${_mkRenderAlternatives(product)}
         </div>

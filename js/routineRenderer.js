@@ -617,6 +617,7 @@ const RoutineRenderer = (() => {
           </div>
           <div class="cg-step-right">
             ${product ? `<div class="cg-step-card">${_renderPremiumProductCard(product)}</div>` : ''}
+            ${product ? _renderApplyMeta(step, stepIndex, isMatin) : ''}
             ${product ? _renderWhyProduct(step, product) : ''}
             ${product ? _renderAlternatives(step, product) : ''}
             ${spfExtras}
@@ -684,6 +685,36 @@ const RoutineRenderer = (() => {
            ${isAffiliate ? `onclick="event.stopPropagation(); trackAmazonClick('${id}')"` : 'onclick="event.stopPropagation()"'}>
           Acheter maintenant →
         </a>
+      </div>`;
+  }
+
+  // ─── « Comment l'appliquer » — quantité · moment · fréquence · étape ──
+  const STEP_APPLY_META = {
+    cleanser:    { qty: 'Noisette',       freq: 'Chaque jour' },
+    toner:       { qty: 'Qq gouttes',     freq: 'Chaque jour' },
+    serum:       { qty: '3-4 gouttes',    freq: 'Chaque jour' },
+    treatment:   { qty: 'Fine couche',    freq: 'Selon tolérance' },
+    exfoliant:   { qty: 'Fine couche',    freq: '2×/semaine' },
+    eye:         { qty: '1 point/œil',    freq: 'Chaque jour' },
+    eyepatch:    { qty: '1 paire',        freq: '2-3×/sem.' },
+    moisturizer: { qty: 'Noisette',       freq: 'Chaque jour' },
+    oil:         { qty: '2-3 gouttes',    freq: 'Le soir' },
+    spf:         { qty: '≈ ¼ c. à café',  freq: 'Chaque matin' },
+    lipbalm:     { qty: 'Au besoin',      freq: 'Au besoin' },
+  };
+  function _renderApplyMeta(step, order, isMatin) {
+    const m = STEP_APPLY_META[step.step];
+    if (!m) return '';
+    const moment = step.step === 'spf' ? 'Matin' : (isMatin ? 'Matin' : 'Soir');
+    return `
+      <div class="apply-meta">
+        <div class="apply-meta-head">🧴 Comment l'appliquer</div>
+        <div class="apply-meta-chips">
+          <span class="apply-chip"><b>Quantité</b>${m.qty}</span>
+          <span class="apply-chip"><b>Moment</b>${moment}</span>
+          <span class="apply-chip"><b>Fréquence</b>${m.freq}</span>
+          <span class="apply-chip"><b>Étape</b>${String(order).padStart(2, '0')}</span>
+        </div>
       </div>`;
   }
 
