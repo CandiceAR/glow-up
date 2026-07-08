@@ -4301,6 +4301,7 @@ em { font-style: italic; color: var(--nude); }
 .pv-plan .btn { margin-top: 4px; }
 .pv-plan-note { font-size: 0.72rem; color: var(--muted); margin-top: 8px; }
 .pv-free-link, .pv-final .pv-free-link { display: block; margin: 4px auto 0; color: var(--muted); font-size: 0.88rem; }
+.pv-compare-link { display: block; width: 100%; margin: 4px 0 8px; color: var(--nude); font-size: 0.85rem; text-align: center; }
 
 /* Déjà abonnée */
 .pv-already { text-align: center; background: #fff; border: 1px solid var(--sand); border-radius: 22px; padding: 32px 22px; margin: 40px 0; }

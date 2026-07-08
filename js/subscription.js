@@ -692,6 +692,9 @@ const Subscription = (() => {
         <!-- TARIFS -->
         ${pricingHtml}
 
+        <!-- Comparer toutes les offres (dont Coach) -->
+        <button class="btn-ghost pv-compare-link" onclick="showScreen('plans')">Comparer toutes les offres (dont Glow Up Coach) →</button>
+
         <!-- FAQ -->
         <section class="pv-faq pv-reveal">
           <h2 class="pv-section-title">Questions fréquentes</h2>
