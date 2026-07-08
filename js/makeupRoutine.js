@@ -475,6 +475,92 @@ const MakeupRoutine = (() => {
       </article>`;
   }
 
+  // ── « Pourquoi ce produit ? » make-up ─────────────────────────
+  function _mkWhy(product) {
+    if (product.whyPitch) return product.whyPitch;
+    const mk = AppState.makeupQuiz || {};
+    const c  = mk.mkConcerns || [];
+    const cat = product.category;
+    const carn = { clair: 'claire', medium: 'medium', fonce: 'foncée' }[mk.mkCarnation];
+    if (cat === 'foundation') return `Fond de teint choisi pour s'accorder à ta carnation${carn ? ' ' + carn : ''} et à ton sous-ton.`;
+    if (cat === 'concealer' || cat === 'corrector') {
+      if (c.includes('cernes'))   return `Correcteur choisi pour camoufler tes cernes et défatiguer le regard.`;
+      if (c.includes('rougeurs')) return `Correcteur choisi pour neutraliser tes rougeurs.`;
+      return `Correcteur choisi pour unifier ton teint.`;
+    }
+    if (cat === 'powder')      return `Poudre choisie pour matifier et fixer ton teint là où ça brille.`;
+    if (cat === 'blush')       return `Blush choisi pour raviver ta bonne mine, accordé à ta carnation.`;
+    if (cat === 'highlighter') return `Enlumineur choisi pour un point de lumière naturel.`;
+    if (cat === 'bronzer')     return `Bronzer choisi pour réchauffer et sculpter ton teint.`;
+    if (cat === 'mascara')     return `Mascara choisi pour intensifier et ouvrir ton regard.`;
+    if (cat === 'eyeliner')    return `Crayon choisi pour souligner et agrandir ton regard.`;
+    if (cat === 'eyeshadow')   return `Fards choisis pour un regard accordé à ton objectif.`;
+    if (cat === 'eyebrow')     return `Produit sourcils choisi pour structurer et encadrer ton visage.`;
+    if (['lipstick','lipgloss','lipbalm','lipliner'].includes(cat)) return `Teinte lèvres choisie pour sublimer ta bouche, accordée à ton sous-ton.`;
+    return `Choisi pour s'accorder à ton teint et à ton objectif make-up.`;
+  }
+  function _mkRenderWhy(product) {
+    if (!product) return '';
+    const mk = AppState.makeupQuiz || {};
+    const vs = mk.mkBudget === 'petits-prix'
+      ? 'Meilleur rapport qualité/prix pour ce geste.'
+      : 'Sélectionné parmi plusieurs options pour ton teint.';
+    return `
+      <div class="why-product">
+        <div class="why-product-head"><span class="why-product-i">💡</span> Pourquoi ce produit ?</div>
+        <p class="why-product-text">${_mkWhy(product)}</p>
+        <p class="why-product-vs"><strong>Pourquoi celui-ci plutôt qu'un autre&nbsp;?</strong> ${vs}</p>
+      </div>`;
+  }
+
+  // ── Alternatives make-up (même catégorie) ─────────────────────
+  function _mkAltReason(p, chosen) {
+    if (chosen.price && p.price && (chosen.price - p.price) >= Math.max(2, chosen.price * 0.12)) return 'Moins cher';
+    if (p.isKorean && !chosen.isKorean) return 'Produit coréen';
+    if ((p.rating || 0) > (chosen.rating || 0)) return 'Mieux noté';
+    return 'Bon rapport qualité/prix';
+  }
+  function _mkGetAlternatives(product) {
+    if (!product) return [];
+    const catalog = AppState.products.catalog || [];
+    let pool = catalog.filter(p => p.category === product.category && p.id !== product.id);
+    if (!pool.length) return [];
+    pool.sort((a, b) => (b.rating || 0) - (a.rating || 0) || String(a.id).localeCompare(String(b.id)));
+    return pool.slice(0, 3).map(p => ({ product: p, reason: _mkAltReason(p, product) }));
+  }
+  function _mkAltCard(p, reason) {
+    const compareUrl = `https://www.google.com/search?q=${encodeURIComponent((p.brand || '') + ' ' + (p.name || ''))}&tbm=shop`;
+    const nm = (p.name || '').length > 40 ? (p.name.slice(0, 39) + '…') : (p.name || '');
+    return `
+      <div class="alt-card">
+        <div class="alt-card-info">
+          <span class="alt-card-brand">${p.brand || ''}</span>
+          <span class="alt-card-name">${nm}</span>
+          <div class="alt-card-meta">
+            ${reason ? `<span class="alt-card-reason">${reason}</span>` : ''}
+            ${p.price != null ? `<span class="alt-card-price">${p.price.toFixed(2)} €</span>` : ''}
+            ${p.rating ? `<span class="alt-card-rating">★ ${p.rating}</span>` : ''}
+          </div>
+        </div>
+        <a class="alt-card-compare" href="${compareUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Comparer →</a>
+      </div>`;
+  }
+  function _mkRenderAlternatives(product) {
+    const alts = _mkGetAlternatives(product);
+    if (!alts.length) return '';
+    const plan  = typeof Subscription !== 'undefined' ? Subscription.getPlan() : 'free';
+    const isSub = plan === 'glow' || plan === 'glowplus';
+    if (isSub) {
+      return `<div class="alts"><div class="alts-head">✦ Alternatives pour toi</div>
+        <div class="alts-list">${alts.map(a => _mkAltCard(a.product, a.reason)).join('')}</div></div>`;
+    }
+    return `<div class="alts alts--locked" onclick="Subscription.openLock('alternatives')" role="button" tabindex="0">
+      <div class="alts-head">🔓 Alternatives</div>
+      <div class="alts-list alts-list--blur" aria-hidden="true">${alts.map(a => _mkAltCard(a.product, a.reason)).join('')}</div>
+      <div class="alts-lock-cta">${alts.length} alternatives disponibles avec Glow Up Premium →</div>
+    </div>`;
+  }
+
   // ── Étape numérotée ───────────────────────────────────────────
   function renderStep(num, title, tip, product) {
     if (!product) return '';
@@ -487,8 +573,10 @@ const MakeupRoutine = (() => {
             <p class="cg-step-tip">${tip}</p>
           </div>
         </div>
-        <div class="cg-step-card">
-          ${renderCard(product)}
+        <div class="cg-step-right">
+          <div class="cg-step-card">${renderCard(product)}</div>
+          ${_mkRenderWhy(product)}
+          ${_mkRenderAlternatives(product)}
         </div>
       </div>`;
   }

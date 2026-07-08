@@ -487,6 +487,9 @@ const RoutineRenderer = (() => {
       </div>
       ${renderRoutineSection('Routine du matin', matnSteps, '🌅', hasRetinol)}
 
+      <!-- ✨ Vitrine Premium — au pic d'intention, juste après la routine gratuite -->
+      ${isLocked ? _renderVitrineBanner() : ''}
+
       <!-- 🔒 PREMIUM : Routine du soir -->
       ${lowBudget
         ? renderLowBudgetSoir()
@@ -508,6 +511,19 @@ const RoutineRenderer = (() => {
 
       ${renderDebugLog(routine.log)}
     `;
+  }
+
+  // Bandeau vitrine Premium (résultats, non-abonnées) — au pic d'intention
+  function _renderVitrineBanner() {
+    return `
+      <div class="vitrine-banner" onclick="showScreen('premium')" role="button" tabindex="0">
+        <span class="vitrine-banner-icon">✨</span>
+        <div class="vitrine-banner-text">
+          <strong>Découvre tout ce que débloque Glow Up Premium</strong>
+          <span>Suivi de peau, alternatives, comparateur de prix, historique beauté…</span>
+        </div>
+        <span class="vitrine-banner-arrow">Voir tous les avantages →</span>
+      </div>`;
   }
 
   function renderSaveBanner() {
