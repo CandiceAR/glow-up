@@ -499,12 +499,37 @@ const MakeupRoutine = (() => {
     if (['lipstick','lipgloss','lipbalm','lipliner'].includes(cat)) return `Teinte lèvres choisie pour sublimer ta bouche, accordée à ton sous-ton.`;
     return `Choisi pour s'accorder à ton teint et à ton objectif make-up.`;
   }
+  // Vraie raison courte « plutôt qu'un autre » — tirée des données réelles
+  function _mkVs(product) {
+    const mk   = AppState.makeupQuiz || {};
+    const cat  = product.category;
+    const carn = { clair: 'claire', medium: 'medium', fonce: 'foncée' }[mk.mkCarnation];
+    const tone = { warm: 'chaud', cool: 'froid', neutral: 'neutre' }[mk.mkUndertone];
+    if (['foundation','concealer','corrector'].includes(cat) && (carn || tone))
+      return `Sa teinte colle à ta carnation${carn ? ' ' + carn : ''}${tone ? ' et à ton sous-ton ' + tone : ''}.`;
+    if (['lipstick','lipgloss','lipliner'].includes(cat) && tone)
+      return `Cette nuance flatte particulièrement les sous-tons ${tone}s.`;
+    if (cat === 'powder' && mk.mkSkinType === 'grasse')
+      return `Elle matifie et tient sur peau grasse, sans effet plâtre.`;
+    if (cat === 'blush' && carn)
+      return `Son intensité est dosée pour une carnation ${carn}.`;
+    if (product.isKorean)
+      return `Formule coréenne légère, pour un fini peau naturel.`;
+    if ((product.rating || 0) >= 4.5)
+      return `L'une des mieux notées de sa catégorie (★${product.rating}).`;
+    if (mk.mkBudget === 'petits-prix' && product.price != null && product.price <= 15)
+      return `Excellent rapport qualité-prix à ${product.price.toFixed(2)} €.`;
+    if (mk.mkLook)
+      return `Cohérente avec ton objectif « ${({ naturel: 'naturel', soigne: 'soigné', glam: 'glam' })[mk.mkLook] || mk.mkLook} ».`;
+    return `Formule et tenue adaptées à ton teint.`;
+  }
   function _mkRenderWhy(product) {
     if (!product) return '';
     return `
       <div class="why-product">
         <div class="why-product-head"><span class="why-product-i">💡</span> Pourquoi ce produit ?</div>
         <p class="why-product-text">${_mkWhy(product)}</p>
+        <p class="why-product-vs"><strong>Pourquoi celui-ci plutôt qu'un autre&nbsp;?</strong> ${_mkVs(product)}</p>
       </div>`;
   }
 
