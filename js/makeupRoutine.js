@@ -501,15 +501,10 @@ const MakeupRoutine = (() => {
   }
   function _mkRenderWhy(product) {
     if (!product) return '';
-    const mk = AppState.makeupQuiz || {};
-    const vs = mk.mkBudget === 'petits-prix'
-      ? 'Meilleur rapport qualité/prix pour ce geste.'
-      : 'Sélectionné parmi plusieurs options pour ton teint.';
     return `
       <div class="why-product">
         <div class="why-product-head"><span class="why-product-i">💡</span> Pourquoi ce produit ?</div>
         <p class="why-product-text">${_mkWhy(product)}</p>
-        <p class="why-product-vs"><strong>Pourquoi celui-ci plutôt qu'un autre&nbsp;?</strong> ${vs}</p>
       </div>`;
   }
 
