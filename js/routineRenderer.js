@@ -702,9 +702,11 @@ const RoutineRenderer = (() => {
     const noun = _STEP_NOUN[step.step] || 'ce produit';
     const SKIN = { normale: 'normale', grasse: 'grasse', seche: 'sèche', mixte: 'mixte', sensible: 'sensible' };
 
-    // SPF : réutiliser la raison personnalisée déjà calculée (description)
+    // Explication dédiée du produit (ex : soins cernes ciblés) prioritaire
     let why;
-    if (step.step === 'spf' && product.description) {
+    if (product.whyPitch) {
+      why = product.whyPitch;
+    } else if (step.step === 'spf' && product.description) {
       why = product.description;
     } else {
       const c = u.complexes;
