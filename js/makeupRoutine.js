@@ -445,6 +445,7 @@ const MakeupRoutine = (() => {
     const { id, name, brand, imageUrl, amazonUrl, shopUrl, price, description, rating } = product;
     const safeUrl = amazonUrl || shopUrl || '#';
     const isAffiliate = !!amazonUrl;
+    const canCompare = (typeof ProductCatalog !== 'undefined') ? ProductCatalog.isComparable(product) : true;
     const compareUrl = `https://www.google.com/search?q=${encodeURIComponent((brand || '') + ' ' + (name || ''))}&tbm=shop`;
     return `
       <article class="premium-card" data-product-id="${id}">
@@ -461,15 +462,15 @@ const MakeupRoutine = (() => {
             <div class="premium-card-price-row">
               <span class="premium-card-price">${price != null ? price.toFixed(2) + ' €' : '—'}</span>
             </div>
-            <p class="pc-value">✨ Compare les prix du marché en 1 clic</p>
+            ${canCompare ? '<p class="pc-value">✨ Compare les prix du marché en 1 clic</p>' : ''}
           </div>
         </a>
         <div class="premium-card-ctas">
-          <a class="pc-cta pc-cta--compare" href="${compareUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+          ${canCompare ? `<a class="pc-cta pc-cta--compare" href="${compareUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
             🔍 Comparer les prix sur tout le marché
-          </a>
+          </a>` : ''}
           <a class="pc-cta pc-cta--buy" href="${safeUrl}" target="_blank" rel="noopener nofollow${isAffiliate ? ' sponsored' : ''}" onclick="event.stopPropagation()">
-            Acheter maintenant →
+            ${isAffiliate ? 'Acheter maintenant →' : 'Voir le produit →'}
           </a>
         </div>
       </article>`;
@@ -551,6 +552,7 @@ const MakeupRoutine = (() => {
   function _mkAltCard(p, reason) {
     const compareUrl = `https://www.google.com/search?q=${encodeURIComponent((p.brand || '') + ' ' + (p.name || ''))}&tbm=shop`;
     const nm = (p.name || '').length > 40 ? (p.name.slice(0, 39) + '…') : (p.name || '');
+    const canCompare = (typeof ProductCatalog !== 'undefined') ? ProductCatalog.isComparable(p) : true;
     return `
       <div class="alt-card">
         <div class="alt-card-info">
@@ -562,7 +564,7 @@ const MakeupRoutine = (() => {
             ${p.rating ? `<span class="alt-card-rating">★ ${p.rating}</span>` : ''}
           </div>
         </div>
-        <a class="alt-card-compare" href="${compareUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Comparer →</a>
+        ${canCompare ? `<a class="alt-card-compare" href="${compareUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Comparer →</a>` : ''}
       </div>`;
   }
   function _mkRenderAlternatives(product) {

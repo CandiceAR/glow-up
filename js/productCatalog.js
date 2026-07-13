@@ -328,20 +328,31 @@ const ProductCatalog = (() => {
     openModal(html);
   }
 
+  // ─── Comparaison de prix pertinente ? ─────────────────────────
+  // Non si : flag noCompare (exclusif Amazon), ou vendu uniquement sur
+  // un site de marque (shopUrl sans amazonUrl) → rien à comparer.
+  function isComparable(p) {
+    if (!p) return false;
+    if (p.noCompare === true || p.singleSeller === true) return false;
+    if (p.shopUrl && !p.amazonUrl) return false;
+    return true;
+  }
+
   // ─── Bouton achat (Amazon ou boutique directe) ───────────────
   function renderBuyButton(product) {
     const url = product.amazonUrl || product.shopUrl;
     if (!url) return '';
     const isAmazon = !!product.amazonUrl;
+    const canCompare = isComparable(product);
     const compareUrl = `https://www.google.com/search?q=${encodeURIComponent((product.brand || '') + ' ' + (product.name || ''))}&tbm=shop`;
     return `
-      <p class="pc-value">✨ Compare les prix du marché en 1 clic</p>
+      ${canCompare ? '<p class="pc-value">✨ Compare les prix du marché en 1 clic</p>' : ''}
       <div class="premium-card-ctas">
-        <a class="pc-cta pc-cta--compare"
+        ${canCompare ? `<a class="pc-cta pc-cta--compare"
            href="${compareUrl}" target="_blank" rel="noopener"
            onclick="event.stopPropagation()">
           🔍 Comparer les prix sur tout le marché
-        </a>
+        </a>` : ''}
         <a class="pc-cta pc-cta--buy"
            href="${url}" target="_blank"
            rel="noopener nofollow${isAmazon ? ' sponsored' : ''}"
@@ -422,6 +433,6 @@ const ProductCatalog = (() => {
     if (typeof Tracker !== 'undefined') Tracker.trackBuyClick(productId);
   };
 
-  return { load, getRecommended, getMaturityPreference, getByCategory, renderCard, openProductModal, ensureTag, mergeProducts };
+  return { load, getRecommended, getMaturityPreference, getByCategory, renderCard, openProductModal, ensureTag, mergeProducts, isComparable };
 
 })();
