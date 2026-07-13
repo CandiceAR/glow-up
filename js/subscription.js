@@ -684,7 +684,7 @@ const Subscription = (() => {
           <div class="pv-diff-grid">
             <div class="pv-diff-card"><span class="pv-diff-i">🤍</span><p>Aucun intérêt à te vendre un produit plutôt qu'un autre.</p></div>
             <div class="pv-diff-card"><span class="pv-diff-i">🌍</span><p>On référence <strong>tous</strong> les produits du marché.</p></div>
-            <div class="pv-diff-card"><span class="pv-diff-i">💰</span><p>On compare automatiquement les prix pour toi.</p></div>
+            <div class="pv-diff-card"><span class="pv-diff-i">💰</span><p>On te donne le comparatif des prix du marché, en 1 clic.</p></div>
             <div class="pv-diff-card"><span class="pv-diff-i">🎯</span><p>On recommande uniquement ce qui convient à <strong>ton</strong> profil.</p></div>
           </div>
         </section>

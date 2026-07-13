@@ -335,12 +335,12 @@ const ProductCatalog = (() => {
     const isAmazon = !!product.amazonUrl;
     const compareUrl = `https://www.google.com/search?q=${encodeURIComponent((product.brand || '') + ' ' + (product.name || ''))}&tbm=shop`;
     return `
-      <p class="pc-value">✨ Glow Up compare les prix pour toi</p>
+      <p class="pc-value">✨ Compare les prix du marché en 1 clic</p>
       <div class="premium-card-ctas">
         <a class="pc-cta pc-cta--compare"
            href="${compareUrl}" target="_blank" rel="noopener"
            onclick="event.stopPropagation()">
-          💰 Comparer les prix et économiser
+          🔍 Comparer les prix sur tout le marché
         </a>
         <a class="pc-cta pc-cta--buy"
            href="${url}" target="_blank"

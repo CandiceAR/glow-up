@@ -673,7 +673,7 @@ const RoutineRenderer = (() => {
             <div class="premium-card-price-row">
               <span class="premium-card-price">${price != null ? price.toFixed(2) + ' €' : '—'}</span>
             </div>
-            <p class="pc-value">✨ Glow Up compare les prix pour toi</p>
+            <p class="pc-value">✨ Compare les prix du marché en 1 clic</p>
           </div>
         </a>
         ${_renderCardCtas(url, compareUrl, isAffiliate, id)}
@@ -685,7 +685,7 @@ const RoutineRenderer = (() => {
     return `
       <div class="premium-card-ctas">
         <a class="pc-cta pc-cta--compare" href="${compareUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
-          💰 Comparer les prix et économiser
+          🔍 Comparer les prix sur tout le marché
         </a>
         <a class="pc-cta pc-cta--buy" href="${buyUrl}" target="_blank" rel="noopener nofollow${isAffiliate ? ' sponsored' : ''}"
            ${isAffiliate ? `onclick="event.stopPropagation(); trackAmazonClick('${id}')"` : 'onclick="event.stopPropagation()"'}>
