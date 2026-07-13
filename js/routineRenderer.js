@@ -478,6 +478,9 @@ const RoutineRenderer = (() => {
 
       ${renderWarnings(routine.warnings, hasRetinol)}
 
+      <!-- 🧪 Molécules clés pour ta peau (Premium) -->
+      ${_renderMoleculesBlock()}
+
       <!-- Total global -->
       ${renderGlobalTotal({ ...routine, matin: matnSteps }, isLocked)}
 
@@ -686,6 +689,55 @@ const RoutineRenderer = (() => {
           Acheter maintenant →
         </a>
       </div>`;
+  }
+
+  // ─── 🧪 Molécules clés (Premium) — actifs recommandés selon le diagnostic ──
+  const ACTIVES = [
+    { k: ['niacinamide'],                     label: 'Niacinamide',            benefit: 'apaise, resserre les pores, unifie le teint' },
+    { k: ['retinol', 'retinoide'],            label: 'Rétinol',                benefit: 'anti-rides & renouvellement — le soir uniquement' },
+    { k: ['vitamine c', 'vitaminec'],         label: 'Vitamine C',             benefit: 'éclat & anti-taches — idéal le matin' },
+    { k: ['acide hyaluronique', 'hyaluron'],  label: 'Acide hyaluronique',     benefit: 'hydratation intense, repulpe la peau' },
+    { k: ['salicyl', 'bha'],                  label: 'Acide salicylique (BHA)',benefit: 'désincruste les pores, anti-imperfections' },
+    { k: ['glycol', 'lactique', 'aha'],       label: 'AHA',                    benefit: 'exfolie en douceur, lisse le grain' },
+    { k: ['peptide'],                         label: 'Peptides',               benefit: 'fermeté, effet repulpant' },
+    { k: ['ceramide'],                        label: 'Céramides',              benefit: 'réparent la barrière cutanée' },
+    { k: ['bakuchiol'],                       label: 'Bakuchiol',              benefit: 'alternative douce au rétinol' },
+    { k: ['cafeine'],                         label: 'Caféine',                benefit: 'décongestionne cernes & poches' },
+    { k: ['panthenol'],                       label: 'Panthénol (B5)',         benefit: 'apaise et réconforte' },
+    { k: ['centella', 'cica'],                label: 'Centella (Cica)',        benefit: 'apaise, réduit les rougeurs' },
+    { k: ['azela'],                           label: 'Acide azélaïque',        benefit: 'anti-rougeurs & anti-taches' },
+  ];
+  function _collectActives() {
+    const r = AppState.routine || {};
+    const norm = s => (s || '').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+    let hay = [...(r.matin || []), ...(r.soir || [])].map(s => (s.label || '') + ' ' + (s.note || '')).join(' ');
+    (AppState.products.recommended || []).forEach(p => { hay += ' ' + (p.name || '') + ' ' + (p.ingredientTags || []).join(' '); });
+    hay = norm(hay);
+    const found = [];
+    for (const a of ACTIVES) if (a.k.some(kw => hay.includes(kw))) found.push(a);
+    return found.slice(0, 6);
+  }
+  function _renderMoleculesBlock() {
+    const actives = _collectActives();
+    if (!actives.length) return '';
+    const plan  = typeof Subscription !== 'undefined' ? Subscription.getPlan() : 'free';
+    const isSub = plan === 'glow' || plan === 'glowplus';
+    const items = actives.map(a => `<div class="molecule-item"><strong>${a.label}</strong><span>${a.benefit}</span></div>`).join('');
+    if (isSub) {
+      return `
+        <section class="molecules-block">
+          <div class="molecules-head">🧪 Molécules clés pour ta peau</div>
+          <p class="molecules-sub">Les actifs sélectionnés selon ton diagnostic — et pourquoi.</p>
+          <div class="molecules-list">${items}</div>
+          <button class="btn-ghost molecules-more" onclick="showScreen('skinpedia')">En savoir plus sur ces actifs →</button>
+        </section>`;
+    }
+    return `
+      <section class="molecules-block molecules-block--locked" onclick="Subscription.openLock('molecules')" role="button" tabindex="0">
+        <div class="molecules-head">🧪 Molécules clés pour ta peau</div>
+        <div class="molecules-list molecules-list--blur" aria-hidden="true">${items}</div>
+        <div class="molecules-lock-cta">${actives.length} molécules identifiées pour ta peau · Débloque avec Premium →</div>
+      </section>`;
   }
 
   // ─── « Comment l'appliquer » — quantité · moment · fréquence · étape ──
