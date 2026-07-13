@@ -730,6 +730,7 @@ const Subscription = (() => {
     history:            { icon: '🗂️', title: 'Retrouvez tout votre historique beauté',       text: 'Gardez vos diagnostics, routines, photos de suivi et produits testés au même endroit.' },
     'advanced-advice':  { icon: '📝', title: 'Comprenez mieux chaque recommandation',        text: 'Accédez aux conseils avancés, aux explications détaillées et aux images d\'application des produits.' },
     molecules:          { icon: '🧪', title: 'Découvre les molécules faites pour ta peau',    text: 'Quels actifs choisir selon ton diagnostic — niacinamide, rétinol, vitamine C… et pourquoi.' },
+    associations:       { icon: '⚗️', title: 'Associe tes actifs sans risque',                text: 'Quels actifs combiner, lesquels séparer matin/soir, et comment éviter les irritations.' },
   };
   function lockCard(opts = {}) {
     const P = PRICING.premium;

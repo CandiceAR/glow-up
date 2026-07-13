@@ -481,6 +481,9 @@ const RoutineRenderer = (() => {
       <!-- 🧪 Molécules clés pour ta peau (Premium) -->
       ${_renderMoleculesBlock()}
 
+      <!-- ⚗️ Associations & précautions (Premium) -->
+      ${_renderAssociationsBlock()}
+
       <!-- Total global -->
       ${renderGlobalTotal({ ...routine, matin: matnSteps }, isLocked)}
 
@@ -738,6 +741,56 @@ const RoutineRenderer = (() => {
         <div class="molecules-list molecules-list--blur" aria-hidden="true">${items}</div>
         <div class="molecules-lock-cta">${actives.length} molécules identifiées pour ta peau · Débloque avec Premium →</div>
       </section>`;
+  }
+
+  // ─── ⚗️ Associations & incompatibilités d'actifs (Premium) ────
+  function _activePresence() {
+    const r = AppState.routine || {};
+    const norm = s => (s || '').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+    let hay = [...(r.matin || []), ...(r.soir || [])].map(s => (s.label || '') + ' ' + (s.note || '')).join(' ');
+    (AppState.products.recommended || []).forEach(p => { hay += ' ' + (p.name || '') + ' ' + (p.ingredientTags || []).join(' '); });
+    hay = norm(hay);
+    return {
+      retinol: /(retinol|retinoide|bakuchiol)/.test(hay),
+      vitc:    /(vitamine c|vitaminec)/.test(hay),
+      exfo:    /(salicyl|glycol|lactique|\baha\b|\bbha\b|exfoli)/.test(hay),
+      niacin:  /niacinamide/.test(hay),
+      ha:      /(hyaluron)/.test(hay),
+    };
+  }
+  function _buildActiveGuidance() {
+    const a = _activePresence();
+    const good = [], warn = [];
+    if (a.retinol) warn.push('Rétinol : le soir uniquement, jamais le matin — et SPF le lendemain, sans exception.');
+    if (a.retinol && a.exfo) warn.push('Ne combine pas rétinol et acides (AHA/BHA) le même soir : alterne un soir sur deux pour éviter les irritations.');
+    if (a.exfo) warn.push('Exfoliants (AHA/BHA) : 2 à 3 fois par semaine maximum, le soir. Toujours un SPF le lendemain.');
+    if (a.vitc && a.retinol) good.push('Vitamine C le matin + rétinol le soir : le duo parfait, à condition de bien séparer matin / soir.');
+    else if (a.vitc) good.push('Vitamine C : le matin, suivie d\'un SPF pour protéger et prolonger l\'éclat.');
+    if (a.niacin) good.push('Niacinamide : compatible avec tous tes autres actifs, matin comme soir.');
+    if (a.ha) good.push('Acide hyaluronique : applique-le sur peau encore humide, avant ta crème, pour sceller l\'hydratation.');
+    good.push('Termine toujours ta routine du matin par un SPF — c\'est le geste anti-âge n°1.');
+    return { good, warn };
+  }
+  function _renderAssociationsBlock() {
+    const g = _buildActiveGuidance();
+    if (!g.good.length && !g.warn.length) return '';
+    const plan  = typeof Subscription !== 'undefined' ? Subscription.getPlan() : 'free';
+    const isSub = plan === 'glow' || plan === 'glowplus';
+    const body = `
+      ${g.warn.length ? `<div class="assoc-group assoc-group--warn"><div class="assoc-group-title">⚠️ Précautions</div>${g.warn.map(t => `<p class="assoc-line">${t}</p>`).join('')}</div>` : ''}
+      ${g.good.length ? `<div class="assoc-group assoc-group--good"><div class="assoc-group-title">✅ Bonnes associations</div>${g.good.map(t => `<p class="assoc-line">${t}</p>`).join('')}</div>` : ''}`;
+    if (isSub) {
+      return `<section class="assoc-block">
+        <div class="assoc-head">⚗️ Associations & précautions</div>
+        <p class="assoc-sub">Comment combiner tes actifs sans risque d'irritation.</p>
+        ${body}
+      </section>`;
+    }
+    return `<section class="assoc-block assoc-block--locked" onclick="Subscription.openLock('associations')" role="button" tabindex="0">
+      <div class="assoc-head">⚗️ Associations & précautions</div>
+      <div class="assoc-body-blur" aria-hidden="true">${body}</div>
+      <div class="assoc-lock-cta">Comment combiner tes actifs sans irritation · Débloque avec Premium →</div>
+    </section>`;
   }
 
   // ─── « Comment l'appliquer » — quantité · moment · fréquence · étape ──

@@ -4380,6 +4380,20 @@ em { font-style: italic; color: var(--nude); }
 .alts--locked:hover .alts-lock-cta { color: var(--charcoal); }
 .lock-modal-wrap { padding-top: 8px; }
 
+/* ─── ⚗️ Associations & précautions (Premium) ───────────────── */
+.assoc-block { position: relative; margin: 18px 0; background: #fff; border: 1px solid var(--sand); border-radius: 18px; padding: 20px; box-shadow: var(--shadow-sm); overflow: hidden; }
+.assoc-head { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 600; color: var(--charcoal); }
+.assoc-sub { font-size: 0.82rem; color: var(--muted); margin: 4px 0 14px; }
+.assoc-group { border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; }
+.assoc-group--warn { background: rgba(230,126,34,0.08); border: 1px solid rgba(230,126,34,0.25); }
+.assoc-group--good { background: rgba(39,174,96,0.07); border: 1px solid rgba(39,174,96,0.2); }
+.assoc-group-title { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 6px; color: var(--charcoal); }
+.assoc-line { font-size: 0.83rem; line-height: 1.5; color: var(--charcoal); margin: 0 0 6px; }
+.assoc-line:last-child { margin-bottom: 0; }
+.assoc-block--locked { cursor: pointer; }
+.assoc-body-blur { filter: blur(5px); opacity: 0.6; pointer-events: none; user-select: none; margin-top: 12px; }
+.assoc-lock-cta { position: absolute; left: 0; right: 0; bottom: 0; top: 54px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 0 18px; background: linear-gradient(180deg, rgba(255,255,255,0.15), rgba(255,255,255,0.94) 55%); font-size: 0.9rem; font-weight: 700; color: var(--orange-deep); }
+
 /* ─── 🧪 Molécules clés pour ta peau (Premium) ──────────────── */
 .molecules-block { position: relative; margin: 18px 0; background: #fff; border: 1px solid var(--sand); border-radius: 18px; padding: 20px; box-shadow: var(--shadow-sm); overflow: hidden; }
 .molecules-head { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 600; color: var(--charcoal); }
