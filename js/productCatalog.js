@@ -338,6 +338,71 @@ const ProductCatalog = (() => {
     return true;
   }
 
+  // ─── 💸 DUPE — équivalent moins cher (100% catalogue) ────────
+  // status: 'found' (dupe moins cher) · 'cheapest' (déjà le meilleur prix) · 'none'
+  function findDupe(product) {
+    if (!product || product.price == null) return { status: 'none' };
+    // Override curé prioritaire (Lot Dupe 2)
+    if (product.dupeId) {
+      const d = (AppState.products.catalog || []).find(p => p.id === product.dupeId);
+      if (d && d.price != null && d.price < product.price) {
+        const savings = +(product.price - d.price).toFixed(2);
+        return { status: 'found', dupe: d, savings, pct: Math.round(savings / product.price * 100), shared: [], curated: true };
+      }
+    }
+    const catalog  = AppState.products.catalog || [];
+    const myActives = new Set((product.ingredientTags || []).map(t => String(t).toLowerCase()));
+    const mySkin    = new Set(product.skinTypeTags || []);
+    const MIN_SAVE  = Math.max(3, product.price * 0.2);
+    let best = null, bestScore = -1;
+    for (const p of catalog) {
+      if (p.id === product.id || p.category !== product.category || p.price == null) continue;
+      if ((product.price - p.price) < MIN_SAVE) continue;
+      const shared    = (p.ingredientTags || []).map(t => String(t).toLowerCase()).filter(t => myActives.has(t));
+      const sharedSkin = (p.skinTypeTags || []).filter(t => mySkin.has(t)).length;
+      const score = shared.length * 12 + sharedSkin * 3 + (p.rating || 0) + (product.price - p.price) / product.price * 6;
+      if (score > bestScore) { bestScore = score; best = { p, shared }; }
+    }
+    if (!best) return { status: 'cheapest' };
+    const savings = +(product.price - best.p.price).toFixed(2);
+    return { status: 'found', dupe: best.p, savings, pct: Math.round(savings / product.price * 100), shared: best.shared };
+  }
+
+  function renderDupe(product) {
+    const r = findDupe(product);
+    if (r.status === 'none') return '';
+    if (r.status === 'cheapest') {
+      return `<div class="dupe-block dupe-block--best"><span class="dupe-badge">💸 Dupe</span><span class="dupe-best-text">Déjà un excellent rapport qualité-prix — difficile de trouver moins cher pour un résultat équivalent.</span></div>`;
+    }
+    const d = r.dupe;
+    const url = d.amazonUrl || d.shopUrl || '#';
+    const reason = r.curated ? 'Le dupe culte : même résultat, une fraction du prix.'
+      : (r.shared.length ? `Mêmes actifs clés (${r.shared.slice(0, 2).join(', ')}) — bien moins cher.`
+                         : 'Même type de produit, résultat similaire — bien moins cher.');
+    const plan  = typeof Subscription !== 'undefined' ? Subscription.getPlan() : 'free';
+    const isSub = plan === 'glow' || plan === 'glowplus';
+    const cardInner = `
+      ${d.imageUrl ? `<img class="dupe-img" src="${d.imageUrl}" alt="${d.name}" onerror="this.style.display='none'">` : ''}
+      <div class="dupe-info">
+        <span class="dupe-brand">${d.brand || ''}</span>
+        <span class="dupe-name">${d.name || ''}</span>
+        <span class="dupe-reason">${reason}</span>
+      </div>
+      <div class="dupe-price"><s>${product.price.toFixed(2)} €</s><strong>${d.price.toFixed(2)} €</strong></div>`;
+    if (isSub) {
+      return `<div class="dupe-block">
+        <div class="dupe-head"><span class="dupe-badge">💸 Le dupe de ce produit</span><span class="dupe-save">−${r.pct}% · économise ${r.savings} €</span></div>
+        <div class="dupe-card">${cardInner}</div>
+        <a class="dupe-buy" href="${url}" target="_blank" rel="noopener nofollow" onclick="event.stopPropagation()">Voir le dupe →</a>
+      </div>`;
+    }
+    return `<div class="dupe-block dupe-block--locked" onclick="Subscription.openLock('dupe')" role="button" tabindex="0">
+      <div class="dupe-head"><span class="dupe-badge">💸 Le dupe de ce produit</span><span class="dupe-save">économise ${r.savings} €</span></div>
+      <div class="dupe-card dupe-card--blur" aria-hidden="true">${cardInner}</div>
+      <div class="dupe-lock-cta">Débloque le dupe à ${d.price.toFixed(2)} € · Premium →</div>
+    </div>`;
+  }
+
   // ─── Bouton achat (Amazon ou boutique directe) ───────────────
   function renderBuyButton(product) {
     const url = product.amazonUrl || product.shopUrl;
@@ -433,6 +498,6 @@ const ProductCatalog = (() => {
     if (typeof Tracker !== 'undefined') Tracker.trackBuyClick(productId);
   };
 
-  return { load, getRecommended, getMaturityPreference, getByCategory, renderCard, openProductModal, ensureTag, mergeProducts, isComparable };
+  return { load, getRecommended, getMaturityPreference, getByCategory, renderCard, openProductModal, ensureTag, mergeProducts, isComparable, findDupe, renderDupe };
 
 })();

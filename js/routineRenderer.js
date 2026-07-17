@@ -625,6 +625,7 @@ const RoutineRenderer = (() => {
             ${product ? `<div class="cg-step-card">${_renderPremiumProductCard(product)}</div>` : ''}
             ${product ? _renderApplyMeta(step, stepIndex, isMatin) : ''}
             ${product ? _renderWhyProduct(step, product) : ''}
+            ${product && typeof ProductCatalog !== 'undefined' ? ProductCatalog.renderDupe(product) : ''}
             ${product ? _renderAlternatives(step, product) : ''}
             ${spfExtras}
           </div>

@@ -629,6 +629,7 @@ const MakeupRoutine = (() => {
           <div class="cg-step-card">${renderCard(product)}</div>
           ${_mkRenderApplyMeta(num, product)}
           ${_mkRenderWhy(product)}
+          ${typeof ProductCatalog !== 'undefined' ? ProductCatalog.renderDupe(product) : ''}
           ${_mkRenderAlternatives(product)}
         </div>
       </div>`;
