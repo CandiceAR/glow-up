@@ -12,7 +12,7 @@ const Subscription = (() => {
   const PRICING = {
     premium: {
       label: 'Glow Up Premium',
-      monthly: '4,99', yearly: '39,99', yearlyPerMonth: '3,33', save: '33%',
+      monthly: '3,99', yearly: '29,99', yearlyPerMonth: '2,49', save: '37%',
       keyMonthly: 'premium_monthly', keyYearly: 'premium_yearly'
     },
     coach: {
@@ -245,7 +245,7 @@ const Subscription = (() => {
     const isCoach = cfg.tier === 'coach';
 
     const saveBadge = p.save ? `<span class="paywall-save-badge">−${p.save}</span>` : '';
-    const perMonth  = p.yearlyPerMonth ? `<p class="paywall-price-permonth">soit ${p.yearlyPerMonth} €/mois · sans engagement</p>` : '';
+    const perMonth  = p.yearlyPerMonth ? `<p class="paywall-price-permonth">soit ${p.yearlyPerMonth} €/mois (facturé ${p.yearly} €/an)</p>` : '';
 
     const html = `
       <button class="modal-close" onclick="closeModal()">×</button>
@@ -339,7 +339,7 @@ const Subscription = (() => {
         <span class="plan-lux-price-per">/an</span>
         ${save ? `<span class="plan-lux-save">−${save}</span>` : ''}
       </div>
-      ${perMonth ? `<p class="plan-lux-permonth">soit ${perMonth} €/mois</p>` : ''}
+      ${perMonth ? `<p class="plan-lux-permonth">soit ${perMonth} €/mois (facturé ${t.yearly} €/an)</p>` : ''}
       <p class="plan-lux-monthly-alt">ou ${t.monthly} €/mois</p>`;
 
     const premiumCTA = (plan === 'glow' || plan === 'glowplus')
@@ -412,7 +412,7 @@ const Subscription = (() => {
 
         </div>
 
-        <p class="plans-fine-print">Sans engagement · Annulable à tout moment</p>
+        <p class="plans-fine-print">Annulable à tout moment</p>
 
         <!-- Skin Journey feature card -->
         <div class="sj-feature-card" onclick="Subscription.showSkinJourneyDetail()">
@@ -609,8 +609,8 @@ const Subscription = (() => {
       </section>`).join('');
 
     const FAQ = [
-      ['Puis-je annuler à tout moment ?', 'Oui, sans engagement. Tu résilies en un clic depuis ton compte et tu gardes l\'accès jusqu\'à la fin de la période payée.'],
-      ['Quelle est la différence entre mensuel et annuel ?', `Le contenu est identique. L'annuel (39,99 €) revient à 3,33 €/mois, soit −33% par rapport au mensuel (4,99 €). C'est la formule la plus avantageuse.`],
+      ['Puis-je annuler à tout moment ?', 'Oui. Tu résilies en un clic depuis ton compte et tu gardes l\'accès jusqu\'à la fin de la période payée.'],
+      ['Quelle est la différence entre mensuel et annuel ?', `Le contenu est identique. L'annuel (29,99 €) revient à 2,49 €/mois, soit −37% par rapport au mensuel (3,99 €). C'est la formule la plus avantageuse.`],
       ['Glow Up est-il vraiment impartial ?', 'Oui. On ne fabrique ni ne vend nos propres produits. On référence tout le marché et on ne recommande que ce qui correspond à ton profil — jamais une marque qui paierait plus.'],
       ['Que se passe-t-il si je reste gratuite ?', 'Tu gardes 1 routine et ton analyse beauté. Premium débloque les routines illimitées, le Skin Journey, l\'historique et la personnalisation avancée.'],
       ['Mes données et photos sont-elles en sécurité ?', 'Tes analyses restent privées et ne sont jamais revendues. Tu peux supprimer ton compte et tes données à tout moment.'],
@@ -639,12 +639,12 @@ const Subscription = (() => {
             <div class="pv-plan-price"><span class="pv-plan-amount">${P.yearly}€</span><span class="pv-plan-per">/an</span></div>
             <div class="pv-plan-permonth">soit ${P.yearlyPerMonth} €/mois</div>
             <button class="btn btn-dark full-width" onclick="Subscription.openCheckout('${P.keyYearly}')">Débloquer Glow Up Premium ✦</button>
-            <div class="pv-plan-note">2 mois offerts vs mensuel</div>
+            <div class="pv-plan-note">−37% vs mensuel</div>
           </div>
           <div class="pv-plan">
             <div class="pv-plan-name">Mensuel</div>
             <div class="pv-plan-price"><span class="pv-plan-amount">${P.monthly}€</span><span class="pv-plan-per">/mois</span></div>
-            <div class="pv-plan-permonth">flexible, sans engagement</div>
+            <div class="pv-plan-permonth">paiement au mois, flexible</div>
             <button class="btn btn-outline full-width" onclick="Subscription.openCheckout('${P.keyMonthly}')">Prendre au mois</button>
           </div>
         </div>
@@ -663,7 +663,7 @@ const Subscription = (() => {
             <button class="btn btn-dark pv-hero-primary" onclick="document.getElementById('pv-pricing')?.scrollIntoView({behavior:'smooth'}); if(${isSub}) Subscription._exitPremiumPublic();">Débloquer Glow Up Premium</button>
             <button class="btn btn-outline" onclick="Subscription._exitPremiumPublic()">Continuer gratuitement</button>
           </div>
-          <div class="pv-hero-price">dès <strong>${P.yearlyPerMonth} €/mois</strong> · sans engagement</div>
+          <div class="pv-hero-price">dès <strong>${P.yearlyPerMonth} €/mois</strong> (facturé ${P.yearly} €/an)</div>
         </header>
 
         <!-- VALEUR EN UN COUP D'ŒIL -->
@@ -708,7 +708,7 @@ const Subscription = (() => {
           <p class="pv-final-sub">Rejoins Glow Up Premium et prends soin de ta peau, vraiment.</p>
           <button class="btn btn-dark" onclick="Subscription.openCheckout('${P.keyYearly}')">Débloquer Glow Up Premium · ${P.yearly}€/an ✦</button>
           <button class="btn-ghost pv-free-link" onclick="Subscription._exitPremiumPublic()">Continuer gratuitement</button>
-          <p class="pv-final-fine">Sans engagement · Annulable à tout moment · Paiement sécurisé Stripe</p>
+          <p class="pv-final-fine">Annulable à tout moment · Paiement sécurisé Stripe</p>
         </section>`}
 
       </div>`;
