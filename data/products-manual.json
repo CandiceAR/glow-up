@@ -5,7 +5,7 @@
     "tag": "kand10ar-21",
     "lastUpdated": "2026-05-27",
     "totalProducts": 340,
-    "count": 386
+    "count": 425
   },
   "products": [
     {
@@ -9049,6 +9049,854 @@
       ],
       "skinTypeTags": [],
       "whyPitch": "Cernes + poches + ridules à la fois ? Il te faut un soin multi-correction : Optim-Eyes agit sur les 3 en un seul geste.",
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m391",
+      "name": "Multi-Peptide \"Buffet\" Serum",
+      "brand": "The Ordinary",
+      "category": "serum",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3ETHE%20ORDINARY%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3ES%C3%89RUM%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=The%20Ordinary%20Multi-Peptide%20%22Buffet%22%20Serum&tag=kan10ar-21",
+      "price": 14.9,
+      "rating": 4.5,
+      "reviews": 9000,
+      "description": "Multi-Peptide \"Buffet\" Serum.",
+      "concernTags": [
+        "rides",
+        "anti_age"
+      ],
+      "ingredientTags": [
+        "peptides",
+        "hyaluronique"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche"
+      ],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m392",
+      "name": "Hyaluronic Acid 2% + B5",
+      "brand": "The Ordinary",
+      "category": "serum",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3ETHE%20ORDINARY%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3ES%C3%89RUM%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=The%20Ordinary%20Hyaluronic%20Acid%202%25%20%2B%20B5&tag=kan10ar-21",
+      "price": 8.9,
+      "rating": 4.5,
+      "reviews": 30000,
+      "description": "Hyaluronic Acid 2% + B5.",
+      "concernTags": [
+        "hydratation"
+      ],
+      "ingredientTags": [
+        "hyaluronique",
+        "panthenol"
+      ],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m393",
+      "name": "Lactic Acid 10% + HA",
+      "brand": "The Ordinary",
+      "category": "exfoliant",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3ETHE%20ORDINARY%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3EEXFOLIANT%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=The%20Ordinary%20Lactic%20Acid%2010%25%20%2B%20HA&tag=kan10ar-21",
+      "price": 8.5,
+      "rating": 4.4,
+      "reviews": 12000,
+      "description": "Lactic Acid 10% + HA.",
+      "concernTags": [
+        "eclat",
+        "texture"
+      ],
+      "ingredientTags": [
+        "aha",
+        "acide-lactique"
+      ],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m394",
+      "name": "Alpha Arbutin 2% + HA",
+      "brand": "The Ordinary",
+      "category": "serum",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3ETHE%20ORDINARY%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3ES%C3%89RUM%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=The%20Ordinary%20Alpha%20Arbutin%202%25%20%2B%20HA&tag=kan10ar-21",
+      "price": 9.5,
+      "rating": 4.4,
+      "reviews": 15000,
+      "description": "Alpha Arbutin 2% + HA.",
+      "concernTags": [
+        "taches",
+        "eclat"
+      ],
+      "ingredientTags": [
+        "alpha-arbutine",
+        "hyaluronique"
+      ],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m395",
+      "name": "Salicylic Acid 2% Solution",
+      "brand": "The Ordinary",
+      "category": "serum",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3ETHE%20ORDINARY%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3ES%C3%89RUM%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=The%20Ordinary%20Salicylic%20Acid%202%25%20Solution&tag=kan10ar-21",
+      "price": 6.5,
+      "rating": 4.3,
+      "reviews": 11000,
+      "description": "Salicylic Acid 2% Solution.",
+      "concernTags": [
+        "acne",
+        "pores"
+      ],
+      "ingredientTags": [
+        "salicylique",
+        "bha"
+      ],
+      "skinTypeTags": [
+        "grasse",
+        "mixte"
+      ],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m396",
+      "name": "Retinol 0.5% in Squalane",
+      "brand": "The Ordinary",
+      "category": "serum",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3ETHE%20ORDINARY%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3ES%C3%89RUM%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=The%20Ordinary%20Retinol%200.5%25%20in%20Squalane&tag=kan10ar-21",
+      "price": 8.9,
+      "rating": 4.4,
+      "reviews": 10000,
+      "description": "Retinol 0.5% in Squalane.",
+      "concernTags": [
+        "rides",
+        "anti_age"
+      ],
+      "ingredientTags": [
+        "retinol"
+      ],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m397",
+      "name": "Argireline Solution 10%",
+      "brand": "The Ordinary",
+      "category": "serum",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3ETHE%20ORDINARY%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3ES%C3%89RUM%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=The%20Ordinary%20Argireline%20Solution%2010%25&tag=kan10ar-21",
+      "price": 10.5,
+      "rating": 4.2,
+      "reviews": 4000,
+      "description": "Argireline Solution 10%.",
+      "concernTags": [
+        "rides"
+      ],
+      "ingredientTags": [
+        "peptides"
+      ],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m398",
+      "name": "Natural Moisturizing Factors + HA",
+      "brand": "The Ordinary",
+      "category": "moisturizer",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3ETHE%20ORDINARY%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3ECR%C3%88ME%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=The%20Ordinary%20Natural%20Moisturizing%20Factors%20%2B%20HA&tag=kan10ar-21",
+      "price": 6.9,
+      "rating": 4.5,
+      "reviews": 18000,
+      "description": "Natural Moisturizing Factors + HA.",
+      "concernTags": [
+        "hydratation"
+      ],
+      "ingredientTags": [
+        "ceramides",
+        "hyaluronique"
+      ],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m399",
+      "name": "100% Plant-Derived Squalane",
+      "brand": "The Ordinary",
+      "category": "oil",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3ETHE%20ORDINARY%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3EHUILE%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=The%20Ordinary%20100%25%20Plant-Derived%20Squalane&tag=kan10ar-21",
+      "price": 8.5,
+      "rating": 4.5,
+      "reviews": 14000,
+      "description": "100% Plant-Derived Squalane.",
+      "concernTags": [
+        "hydratation"
+      ],
+      "ingredientTags": [
+        "squalane"
+      ],
+      "skinTypeTags": [
+        "seche"
+      ],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m400",
+      "name": "AHA 30% + BHA 2% Peeling Solution",
+      "brand": "The Ordinary",
+      "category": "exfoliant",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3ETHE%20ORDINARY%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3EEXFOLIANT%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=The%20Ordinary%20AHA%2030%25%20%2B%20BHA%202%25%20Peeling%20Solution&tag=kan10ar-21",
+      "price": 8.5,
+      "rating": 4.5,
+      "reviews": 40000,
+      "description": "AHA 30% + BHA 2% Peeling Solution.",
+      "concernTags": [
+        "eclat",
+        "texture"
+      ],
+      "ingredientTags": [
+        "aha",
+        "bha",
+        "glycolique",
+        "salicylique"
+      ],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m401",
+      "name": "Glycolic Acid 7% Toning Solution",
+      "brand": "The Ordinary",
+      "category": "toner",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3ETHE%20ORDINARY%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3ETONIQUE%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=The%20Ordinary%20Glycolic%20Acid%207%25%20Toning%20Solution&tag=kan10ar-21",
+      "price": 9.5,
+      "rating": 4.5,
+      "reviews": 25000,
+      "description": "Glycolic Acid 7% Toning Solution.",
+      "concernTags": [
+        "eclat",
+        "texture"
+      ],
+      "ingredientTags": [
+        "glycolique",
+        "aha"
+      ],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m402",
+      "name": "Vitamin C Suspension 23% + HA",
+      "brand": "The Ordinary",
+      "category": "serum",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3ETHE%20ORDINARY%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3ES%C3%89RUM%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=The%20Ordinary%20Vitamin%20C%20Suspension%2023%25%20%2B%20HA&tag=kan10ar-21",
+      "price": 6.9,
+      "rating": 4.1,
+      "reviews": 6000,
+      "description": "Vitamin C Suspension 23% + HA.",
+      "concernTags": [
+        "eclat"
+      ],
+      "ingredientTags": [
+        "vitaminec"
+      ],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m403",
+      "name": "Hyaluronic Acid Serum",
+      "brand": "The Inkey List",
+      "category": "serum",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3ETHE%20INKEY%20LIST%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3ES%C3%89RUM%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=The%20Inkey%20List%20Hyaluronic%20Acid%20Serum&tag=kan10ar-21",
+      "price": 8.5,
+      "rating": 4.4,
+      "reviews": 5000,
+      "description": "Hyaluronic Acid Serum.",
+      "concernTags": [
+        "hydratation"
+      ],
+      "ingredientTags": [
+        "hyaluronique"
+      ],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m404",
+      "name": "Retinol Serum",
+      "brand": "The Inkey List",
+      "category": "serum",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3ETHE%20INKEY%20LIST%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3ES%C3%89RUM%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=The%20Inkey%20List%20Retinol%20Serum&tag=kan10ar-21",
+      "price": 11,
+      "rating": 4.3,
+      "reviews": 3000,
+      "description": "Retinol Serum.",
+      "concernTags": [
+        "rides",
+        "anti_age"
+      ],
+      "ingredientTags": [
+        "retinol"
+      ],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m405",
+      "name": "Niacinamide Serum",
+      "brand": "The Inkey List",
+      "category": "serum",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3ETHE%20INKEY%20LIST%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3ES%C3%89RUM%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=The%20Inkey%20List%20Niacinamide%20Serum&tag=kan10ar-21",
+      "price": 8.5,
+      "rating": 4.4,
+      "reviews": 4000,
+      "description": "Niacinamide Serum.",
+      "concernTags": [
+        "acne",
+        "pores"
+      ],
+      "ingredientTags": [
+        "niacinamide"
+      ],
+      "skinTypeTags": [
+        "grasse",
+        "mixte"
+      ],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m406",
+      "name": "Oat Cleansing Balm",
+      "brand": "The Inkey List",
+      "category": "cleanser",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3ETHE%20INKEY%20LIST%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3ENETTOYANT%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=The%20Inkey%20List%20Oat%20Cleansing%20Balm&tag=kan10ar-21",
+      "price": 11,
+      "rating": 4.4,
+      "reviews": 3500,
+      "description": "Oat Cleansing Balm.",
+      "concernTags": [
+        "apaisement"
+      ],
+      "ingredientTags": [
+        "avoine"
+      ],
+      "skinTypeTags": [
+        "sensible",
+        "seche"
+      ],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m407",
+      "name": "PHA Toner",
+      "brand": "The Inkey List",
+      "category": "toner",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3ETHE%20INKEY%20LIST%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3ETONIQUE%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=The%20Inkey%20List%20PHA%20Toner&tag=kan10ar-21",
+      "price": 11,
+      "rating": 4.2,
+      "reviews": 2000,
+      "description": "PHA Toner.",
+      "concernTags": [
+        "eclat",
+        "texture"
+      ],
+      "ingredientTags": [
+        "pha"
+      ],
+      "skinTypeTags": [
+        "sensible"
+      ],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m408",
+      "name": "Vitamin C Serum",
+      "brand": "The Inkey List",
+      "category": "serum",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3ETHE%20INKEY%20LIST%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3ES%C3%89RUM%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=The%20Inkey%20List%20Vitamin%20C%20Serum&tag=kan10ar-21",
+      "price": 10,
+      "rating": 4.2,
+      "reviews": 2500,
+      "description": "Vitamin C Serum.",
+      "concernTags": [
+        "eclat"
+      ],
+      "ingredientTags": [
+        "vitaminec"
+      ],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m409",
+      "name": "Power Grip Primer",
+      "brand": "e.l.f.",
+      "category": "primer",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3EE.L.F.%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3EPRIMER%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=e.l.f.%20Power%20Grip%20Primer&tag=kan10ar-21",
+      "price": 10,
+      "rating": 4.6,
+      "reviews": 12000,
+      "description": "Power Grip Primer.",
+      "concernTags": [],
+      "ingredientTags": [
+        "hyaluronique"
+      ],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m410",
+      "name": "Camo Concealer",
+      "brand": "e.l.f.",
+      "category": "concealer",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3EE.L.F.%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3ECORRECTEUR%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=e.l.f.%20Camo%20Concealer&tag=kan10ar-21",
+      "price": 7,
+      "rating": 4.5,
+      "reviews": 20000,
+      "description": "Camo Concealer.",
+      "concernTags": [
+        "cernes",
+        "imperfections"
+      ],
+      "ingredientTags": [],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m411",
+      "name": "Camo Liquid Blush",
+      "brand": "e.l.f.",
+      "category": "blush",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3EE.L.F.%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3EBLUSH%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=e.l.f.%20Camo%20Liquid%20Blush&tag=kan10ar-21",
+      "price": 8,
+      "rating": 4.5,
+      "reviews": 8000,
+      "description": "Camo Liquid Blush.",
+      "concernTags": [],
+      "ingredientTags": [],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m412",
+      "name": "Putty Primer",
+      "brand": "e.l.f.",
+      "category": "primer",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3EE.L.F.%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3EPRIMER%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=e.l.f.%20Putty%20Primer&tag=kan10ar-21",
+      "price": 10,
+      "rating": 4.4,
+      "reviews": 15000,
+      "description": "Putty Primer.",
+      "concernTags": [
+        "pores"
+      ],
+      "ingredientTags": [],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m413",
+      "name": "Halo Glow Blush Beauty Wand",
+      "brand": "e.l.f.",
+      "category": "blush",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3EE.L.F.%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3EBLUSH%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=e.l.f.%20Halo%20Glow%20Blush%20Beauty%20Wand&tag=kan10ar-21",
+      "price": 11,
+      "rating": 4.5,
+      "reviews": 6000,
+      "description": "Halo Glow Blush Beauty Wand.",
+      "concernTags": [],
+      "ingredientTags": [],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m414",
+      "name": "Glow Reviver Lip Oil",
+      "brand": "e.l.f.",
+      "category": "lipgloss",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3EE.L.F.%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3EGLOSS%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=e.l.f.%20Glow%20Reviver%20Lip%20Oil&tag=kan10ar-21",
+      "price": 8,
+      "rating": 4.5,
+      "reviews": 7000,
+      "description": "Glow Reviver Lip Oil.",
+      "concernTags": [],
+      "ingredientTags": [],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m415",
+      "name": "Holy Hydration! Face Cream",
+      "brand": "e.l.f.",
+      "category": "moisturizer",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3EE.L.F.%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3ECR%C3%88ME%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=e.l.f.%20Holy%20Hydration!%20Face%20Cream&tag=kan10ar-21",
+      "price": 13,
+      "rating": 4.5,
+      "reviews": 9000,
+      "description": "Holy Hydration! Face Cream.",
+      "concernTags": [
+        "hydratation"
+      ],
+      "ingredientTags": [
+        "hyaluronique",
+        "peptides"
+      ],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m416",
+      "name": "Conceal & Define Concealer",
+      "brand": "Makeup Revolution",
+      "category": "concealer",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3EMAKEUP%20REVOLUTION%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3ECORRECTEUR%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=Makeup%20Revolution%20Conceal%20%26%20Define%20Concealer&tag=kan10ar-21",
+      "price": 6,
+      "rating": 4.4,
+      "reviews": 14000,
+      "description": "Conceal & Define Concealer.",
+      "concernTags": [
+        "cernes",
+        "imperfections"
+      ],
+      "ingredientTags": [],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m417",
+      "name": "Fast Base Stick Foundation",
+      "brand": "Makeup Revolution",
+      "category": "foundation",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3EMAKEUP%20REVOLUTION%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3EFOND%20DE%20TEINT%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=Makeup%20Revolution%20Fast%20Base%20Stick%20Foundation&tag=kan10ar-21",
+      "price": 8,
+      "rating": 4.3,
+      "reviews": 5000,
+      "description": "Fast Base Stick Foundation.",
+      "concernTags": [],
+      "ingredientTags": [],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m418",
+      "name": "Superdewy Face Primer",
+      "brand": "Makeup Revolution",
+      "category": "primer",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3EMAKEUP%20REVOLUTION%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3EPRIMER%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=Makeup%20Revolution%20Superdewy%20Face%20Primer&tag=kan10ar-21",
+      "price": 10,
+      "rating": 4.3,
+      "reviews": 4000,
+      "description": "Superdewy Face Primer.",
+      "concernTags": [],
+      "ingredientTags": [
+        "hyaluronique"
+      ],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m419",
+      "name": "Matte Finish Setting Spray",
+      "brand": "NYX Professional Makeup",
+      "category": "set",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3ENYX%20PROFESSIONAL%20MAK%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3EFIXATEUR%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=NYX%20Professional%20Makeup%20Matte%20Finish%20Setting%20Spray&tag=kan10ar-21",
+      "price": 8.9,
+      "rating": 4.5,
+      "reviews": 22000,
+      "description": "Matte Finish Setting Spray.",
+      "concernTags": [],
+      "ingredientTags": [],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m420",
+      "name": "Jumbo Eye Pencil — Milk",
+      "brand": "NYX Professional Makeup",
+      "category": "eyeshadow",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3ENYX%20PROFESSIONAL%20MAK%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3EFARDS%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=NYX%20Professional%20Makeup%20Jumbo%20Eye%20Pencil%20%E2%80%94%20Milk&tag=kan10ar-21",
+      "price": 6,
+      "rating": 4.6,
+      "reviews": 18000,
+      "description": "Jumbo Eye Pencil — Milk.",
+      "concernTags": [],
+      "ingredientTags": [],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m421",
+      "name": "Fat Oil Lip Drip",
+      "brand": "NYX Professional Makeup",
+      "category": "lipgloss",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3ENYX%20PROFESSIONAL%20MAK%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3EGLOSS%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=NYX%20Professional%20Makeup%20Fat%20Oil%20Lip%20Drip&tag=kan10ar-21",
+      "price": 10.9,
+      "rating": 4.4,
+      "reviews": 6000,
+      "description": "Fat Oil Lip Drip.",
+      "concernTags": [],
+      "ingredientTags": [],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m422",
+      "name": "Lash Princess False Lash Mascara",
+      "brand": "Essence",
+      "category": "mascara",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3EESSENCE%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3EMASCARA%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=Essence%20Lash%20Princess%20False%20Lash%20Mascara&tag=kan10ar-21",
+      "price": 4.5,
+      "rating": 4.5,
+      "reviews": 60000,
+      "description": "Lash Princess False Lash Mascara.",
+      "concernTags": [],
+      "ingredientTags": [],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m423",
+      "name": "Camouflage+ Healthy Glow Concealer",
+      "brand": "Essence",
+      "category": "concealer",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3EESSENCE%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3ECORRECTEUR%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=Essence%20Camouflage%2B%20Healthy%20Glow%20Concealer&tag=kan10ar-21",
+      "price": 4.5,
+      "rating": 4.3,
+      "reviews": 9000,
+      "description": "Camouflage+ Healthy Glow Concealer.",
+      "concernTags": [
+        "cernes"
+      ],
+      "ingredientTags": [],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m424",
+      "name": "Fixing Spray",
+      "brand": "Essence",
+      "category": "set",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3EESSENCE%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3EFIXATEUR%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=Essence%20Fixing%20Spray&tag=kan10ar-21",
+      "price": 4,
+      "rating": 4.3,
+      "reviews": 7000,
+      "description": "Fixing Spray.",
+      "concernTags": [],
+      "ingredientTags": [],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m425",
+      "name": "HD Liquid Coverage Foundation",
+      "brand": "Catrice",
+      "category": "foundation",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3ECATRICE%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3EFOND%20DE%20TEINT%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=Catrice%20HD%20Liquid%20Coverage%20Foundation&tag=kan10ar-21",
+      "price": 8,
+      "rating": 4.3,
+      "reviews": 11000,
+      "description": "HD Liquid Coverage Foundation.",
+      "concernTags": [],
+      "ingredientTags": [],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m426",
+      "name": "Prime And Fine Refreshing Primer",
+      "brand": "Catrice",
+      "category": "primer",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3ECATRICE%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3EPRIMER%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=Catrice%20Prime%20And%20Fine%20Refreshing%20Primer&tag=kan10ar-21",
+      "price": 6,
+      "rating": 4.2,
+      "reviews": 5000,
+      "description": "Prime And Fine Refreshing Primer.",
+      "concernTags": [],
+      "ingredientTags": [],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m427",
+      "name": "Cicaplast Baume B5+",
+      "brand": "La Roche-Posay",
+      "category": "moisturizer",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3ELA%20ROCHE-POSAY%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3ECR%C3%88ME%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=La%20Roche-Posay%20Cicaplast%20Baume%20B5%2B&tag=kan10ar-21",
+      "price": 10,
+      "rating": 4.7,
+      "reviews": 25000,
+      "description": "Cicaplast Baume B5+.",
+      "concernTags": [
+        "apaisement"
+      ],
+      "ingredientTags": [
+        "panthenol",
+        "ceramides"
+      ],
+      "skinTypeTags": [
+        "sensible",
+        "seche"
+      ],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m428",
+      "name": "Discoloration Correcting Serum",
+      "brand": "Good Molecules",
+      "category": "serum",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3EGOOD%20MOLECULES%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3ES%C3%89RUM%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=Good%20Molecules%20Discoloration%20Correcting%20Serum&tag=kan10ar-21",
+      "price": 12,
+      "rating": 4.3,
+      "reviews": 4000,
+      "description": "Discoloration Correcting Serum.",
+      "concernTags": [
+        "taches",
+        "eclat"
+      ],
+      "ingredientTags": [
+        "niacinamide",
+        "tranexamique"
+      ],
+      "skinTypeTags": [],
+      "dupeStar": true,
+      "isFeatured": false,
+      "active": true
+    },
+    {
+      "id": "m429",
+      "name": "Vitamin C Complex Serum",
+      "brand": "Naturium",
+      "category": "serum",
+      "imageUrl": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22320%22%20viewBox%3D%220%200%20320%20320%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FBF7F2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F1E2D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22320%22%20height%3D%22320%22%20fill%3D%22url(%23g)%22%2F%3E%0A%3Cpath%20d%3D%22M160%2066%20C132%20108%20122%20138%20160%20168%20C198%20138%20188%20108%20160%2066%20Z%22%20fill%3D%22%23F0913F%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22132%22%20r%3D%229%22%20fill%3D%22%23FBF7F2%22%20opacity%3D%220.8%22%2F%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22228%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22600%22%20fill%3D%22%232C2A27%22%3ENATURIUM%3C%2Ftext%3E%0A%3Ctext%20x%3D%22160%22%20y%3D%22258%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2C%20Arial%2C%20sans-serif%22%20font-size%3D%2212%22%20letter-spacing%3D%222%22%20fill%3D%22%23C9A98A%22%3ES%C3%89RUM%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+      "amazonUrl": "https://www.amazon.fr/s?k=Naturium%20Vitamin%20C%20Complex%20Serum&tag=kan10ar-21",
+      "price": 20,
+      "rating": 4.3,
+      "reviews": 3000,
+      "description": "Vitamin C Complex Serum.",
+      "concernTags": [
+        "eclat"
+      ],
+      "ingredientTags": [
+        "vitaminec"
+      ],
+      "skinTypeTags": [],
+      "dupeStar": true,
       "isFeatured": false,
       "active": true
     }
