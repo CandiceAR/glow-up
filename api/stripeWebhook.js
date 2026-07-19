@@ -8,8 +8,8 @@ const PRICE_TO_PLAN = {
   // ── Premium 3,99€/mois · 29,99€/an — À COMPLÉTER (test + live) ──
   'REPLACE_premium_monthly_TEST': 'glow',  // 3,99€/mois
   'REPLACE_premium_yearly_TEST':  'glow',   // 29,99€/an
-  'REPLACE_premium_monthly_LIVE': 'glow',
-  'REPLACE_premium_yearly_LIVE':  'glow',
+  'price_1TuuvQJeKx7T3paEjNG1qIEa': 'glow',  // Premium 3,99€/mois (live)
+  'price_1Tuux2JeKx7T3paEDWPlMT4w': 'glow',  // Premium 29,99€/an (live)
   // ── Anciens Premium 4,99/39,99 (conservés pour les abonnés existants) ──
   'price_1Tp40yJeKx7T3paEnFuyfADa': 'glow',      // Premium 4,99€/mois (ancien)
   'price_1Tp41KJeKx7T3paERhO9gRQ0': 'glow',      // Premium 39,99€/an (ancien)

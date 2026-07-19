@@ -23,8 +23,8 @@ const PRICE_IDS = isTestMode ? {
   coach_found:  'price_1TdmseJeKx7T3paEU6Ldaz0M'
 } : {
   // ── Tarifs 2026 — LIVE ────────────────────────────────────────
-  premium_monthly: 'REPLACE_premium_monthly_LIVE',   // ⚠️ 3,99€/mois — créer dans Stripe (live)
-  premium_yearly:  'REPLACE_premium_yearly_LIVE',    // ⚠️ 29,99€/an — créer dans Stripe (live)
+  premium_monthly: 'price_1TuuvQJeKx7T3paEjNG1qIEa',  // 3,99€/mois (live)
+  premium_yearly:  'price_1Tuux2JeKx7T3paEDWPlMT4w',  // 29,99€/an (live)
   coach_monthly:   'price_1Tp3zWJeKx7T3paEr2lI46Fo',  // 15,99€/mois (live)
   coach_yearly:    'price_1Tp3zrJeKx7T3paENfT1wLf9',  // 149,99€/an (live)
   // ── Legacy ────────────────────────────────────────────────────
