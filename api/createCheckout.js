@@ -7,10 +7,10 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const isTestMode = process.env.STRIPE_SECRET_KEY?.startsWith('sk_test_');
 
 const PRICE_IDS = isTestMode ? {
-  // ── Tarifs 2026 (juillet) ─────────────────────────────────────
-  // Premium 4,99€/mois · 39,99€/an · Coach 15,99€/mois · 149,99€/an
-  premium_monthly: 'price_1Tp40yJeKx7T3paEnFuyfADa',  // 4,99€/mois (test)
-  premium_yearly:  'price_1Tp41KJeKx7T3paERhO9gRQ0',  // 39,99€/an (test)
+  // ── Tarifs 2026 ─────────────────────────────────────────────
+  // Premium 3,99€/mois · 29,99€/an · Coach 15,99€/mois · 149,99€/an
+  premium_monthly: 'REPLACE_premium_monthly_TEST',   // ⚠️ 3,99€/mois — créer dans Stripe (test)
+  premium_yearly:  'REPLACE_premium_yearly_TEST',    // ⚠️ 29,99€/an — créer dans Stripe (test)
   coach_monthly:   'price_1Tp41iJeKx7T3paEdAff3s5W',  // 15,99€/mois (test)
   coach_yearly:    'price_1Tp426JeKx7T3paEGBsDy1z9',  // 149,99€/an (test)
   // ── Legacy (conservés pour compat abonnés existants) ──────────
@@ -22,9 +22,9 @@ const PRICE_IDS = isTestMode ? {
   glow_found:   'price_1Tc13bJeKx7T3paE9pnJtpP9',
   coach_found:  'price_1TdmseJeKx7T3paEU6Ldaz0M'
 } : {
-  // ── Tarifs 2026 (juillet) — LIVE ──────────────────────────────
-  premium_monthly: 'price_1Tp33cJeKx7T3paEN7bn4SVq',  // 4,99€/mois (live)
-  premium_yearly:  'price_1Tp34WJeKx7T3paEyvMzQjMS',  // 39,99€/an (live)
+  // ── Tarifs 2026 — LIVE ────────────────────────────────────────
+  premium_monthly: 'price_1TuuvQJeKx7T3paEjNG1qIEa',  // 3,99€/mois (live)
+  premium_yearly:  'price_1Tuux2JeKx7T3paEDWPlMT4w',  // 29,99€/an (live)
   coach_monthly:   'price_1Tp3zWJeKx7T3paEr2lI46Fo',  // 15,99€/mois (live)
   coach_yearly:    'price_1Tp3zrJeKx7T3paENfT1wLf9',  // 149,99€/an (live)
   // ── Legacy ────────────────────────────────────────────────────

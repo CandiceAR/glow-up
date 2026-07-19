@@ -5,9 +5,14 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const PRICE_TO_PLAN = {
-  // ── Tarifs 2026 ── TEST
-  'price_1Tp40yJeKx7T3paEnFuyfADa': 'glow',      // Premium 4,99€/mois
-  'price_1Tp41KJeKx7T3paERhO9gRQ0': 'glow',      // Premium 39,99€/an
+  // ── Premium 3,99€/mois · 29,99€/an — À COMPLÉTER (test + live) ──
+  'REPLACE_premium_monthly_TEST': 'glow',  // 3,99€/mois
+  'REPLACE_premium_yearly_TEST':  'glow',   // 29,99€/an
+  'price_1TuuvQJeKx7T3paEjNG1qIEa': 'glow',  // Premium 3,99€/mois (live)
+  'price_1Tuux2JeKx7T3paEDWPlMT4w': 'glow',  // Premium 29,99€/an (live)
+  // ── Anciens Premium 4,99/39,99 (conservés pour les abonnés existants) ──
+  'price_1Tp40yJeKx7T3paEnFuyfADa': 'glow',      // Premium 4,99€/mois (ancien)
+  'price_1Tp41KJeKx7T3paERhO9gRQ0': 'glow',      // Premium 39,99€/an (ancien)
   'price_1Tp41iJeKx7T3paEdAff3s5W': 'glowplus',  // Coach 15,99€/mois
   'price_1Tp426JeKx7T3paEGBsDy1z9': 'glowplus',  // Coach 149,99€/an
   // ── Tarifs 2026 ── LIVE
