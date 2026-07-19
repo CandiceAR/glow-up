@@ -1,0 +1,706 @@
+{
+  "version": 1,
+  "count": 50,
+  "dupes": [
+    {
+      "hero": {
+        "brand": "Estée Lauder",
+        "name": "Double Wear Stay-in-Place",
+        "price": 42
+      },
+      "dupeId": "m022",
+      "dupeBrand": "Dermacol",
+      "dupeName": "Dermacol Mini Fond de Teint Mat Couverture Complète SPF30",
+      "dupePrice": 9.99,
+      "savings": 32.01,
+      "savingsPct": 76,
+      "reason": "Même couvrance totale longue tenue"
+    },
+    {
+      "hero": {
+        "brand": "NARS",
+        "name": "Sheer Glow Foundation",
+        "price": 42
+      },
+      "dupeId": "m201",
+      "dupeBrand": "NYX",
+      "dupeName": "NYX Born to Glow Naturally Radiant Foundation",
+      "dupePrice": 14,
+      "savings": 28,
+      "savingsPct": 67,
+      "reason": "Fini lumineux \"seconde peau\" très proche"
+    },
+    {
+      "hero": {
+        "brand": "MAC",
+        "name": "Studio Fix Fluid",
+        "price": 33
+      },
+      "dupeId": "m016",
+      "dupeBrand": "Wet n Wild",
+      "dupeName": "Wet n Wild Photo Focus Foundation Matte",
+      "dupePrice": 9.99,
+      "savings": 23.01,
+      "savingsPct": 70,
+      "reason": "Fond mat couvrant longue tenue"
+    },
+    {
+      "hero": {
+        "brand": "It Cosmetics",
+        "name": "CC+ Cream SPF50",
+        "price": 39
+      },
+      "dupeId": "m153",
+      "dupeBrand": "Erborian",
+      "dupeName": "Erborian CC Crème SPF50 — Light Medium (Carnation Claire à Moyenne)",
+      "dupePrice": 19,
+      "savings": 20,
+      "savingsPct": 51,
+      "reason": "CC crème couvrante SPF, teint unifié"
+    },
+    {
+      "hero": {
+        "brand": "Charlotte Tilbury",
+        "name": "Flawless Filter",
+        "price": 44
+      },
+      "dupeId": "m202",
+      "dupeBrand": "e.l.f.",
+      "dupeName": "e.l.f. Halo Glow Liquid Filter",
+      "dupePrice": 14,
+      "savings": 30,
+      "savingsPct": 68,
+      "reason": "Le flouteur glow culte — effet peau parfaite"
+    },
+    {
+      "hero": {
+        "brand": "Tarte",
+        "name": "Shape Tape Concealer",
+        "price": 29
+      },
+      "dupeId": "m040",
+      "dupeBrand": "Kiko Milano",
+      "dupeName": "Kiko Milano Full Coverage Concealer Light Beige",
+      "dupePrice": 9.99,
+      "savings": 19.01,
+      "savingsPct": 66,
+      "reason": "Haute couvrance camouflante — le dupe iconique"
+    },
+    {
+      "hero": {
+        "brand": "NARS",
+        "name": "Radiant Creamy Concealer",
+        "price": 30
+      },
+      "dupeId": "m047",
+      "dupeBrand": "Maybelline",
+      "dupeName": "Maybelline Instant Anti-Age Eraser",
+      "dupePrice": 11.9,
+      "savings": 18.1,
+      "savingsPct": 60,
+      "reason": "Couvrance lumineuse anti-cernes"
+    },
+    {
+      "hero": {
+        "brand": "NARS",
+        "name": "Soft Matte Concealer",
+        "price": 30
+      },
+      "dupeId": "m042",
+      "dupeBrand": "NYX Professional Makeup",
+      "dupeName": "NYX HD Photogenic Concealer Ivoire Clair",
+      "dupePrice": 8.9,
+      "savings": 21.1,
+      "savingsPct": 70,
+      "reason": "Correcteur mat haute tenue"
+    },
+    {
+      "hero": {
+        "brand": "Lancôme",
+        "name": "Monsieur Big",
+        "price": 28
+      },
+      "dupeId": "m054",
+      "dupeBrand": "Maybelline",
+      "dupeName": "Maybelline Lash Sensational Mascara",
+      "dupePrice": 12.9,
+      "savings": 15.1,
+      "savingsPct": 54,
+      "reason": "Volume intense sans paquets"
+    },
+    {
+      "hero": {
+        "brand": "Benefit",
+        "name": "They're Real! Mascara",
+        "price": 27
+      },
+      "dupeId": "m055",
+      "dupeBrand": "Maybelline",
+      "dupeName": "Maybelline Sky High Mascara",
+      "dupePrice": 13.9,
+      "savings": 13.1,
+      "savingsPct": 49,
+      "reason": "Effet allongeant spectaculaire"
+    },
+    {
+      "hero": {
+        "brand": "Anastasia Beverly Hills",
+        "name": "Brow Wiz",
+        "price": 25
+      },
+      "dupeId": "m218",
+      "dupeBrand": "Maybelline",
+      "dupeName": "Maybelline Express Brow Ultra Slim",
+      "dupePrice": 9,
+      "savings": 16,
+      "savingsPct": 64,
+      "reason": "Crayon sourcils ultra-fin précis"
+    },
+    {
+      "hero": {
+        "brand": "Anastasia Beverly Hills",
+        "name": "Brow Definer",
+        "price": 23
+      },
+      "dupeId": "m222",
+      "dupeBrand": "Makeup Revolution",
+      "dupeName": "Makeup Revolution Precise Brow Pencil — Dark Brown",
+      "dupePrice": 5,
+      "savings": 18,
+      "savingsPct": 78,
+      "reason": "Trait précis poil par poil, à 5 €"
+    },
+    {
+      "hero": {
+        "brand": "Benefit",
+        "name": "Gimme Brow+",
+        "price": 26
+      },
+      "dupeId": "m219",
+      "dupeBrand": "NYX",
+      "dupeName": "NYX Control Freak Eyebrow Gel",
+      "dupePrice": 8,
+      "savings": 18,
+      "savingsPct": 69,
+      "reason": "Gel sourcils volumateur teinté"
+    },
+    {
+      "hero": {
+        "brand": "Charlotte Tilbury",
+        "name": "Lip Lustre Gloss",
+        "price": 23
+      },
+      "dupeId": "m071",
+      "dupeBrand": "NYX Professional Makeup",
+      "dupeName": "NYX Butter Gloss Cerise",
+      "dupePrice": 7.9,
+      "savings": 15.1,
+      "savingsPct": 66,
+      "reason": "Gloss brillant confort — LE dupe du Butter Gloss"
+    },
+    {
+      "hero": {
+        "brand": "Charlotte Tilbury",
+        "name": "Pillow Talk Lip Liner",
+        "price": 24
+      },
+      "dupeId": "m068",
+      "dupeBrand": "NYX Professional Makeup",
+      "dupeName": "NYX Lip Liner Crayon Repulpant",
+      "dupePrice": 9.9,
+      "savings": 14.1,
+      "savingsPct": 59,
+      "reason": "Crayon lèvres nude repulpant"
+    },
+    {
+      "hero": {
+        "brand": "MAC",
+        "name": "Matte Lipstick",
+        "price": 21
+      },
+      "dupeId": "m066",
+      "dupeBrand": "Kiko Milano",
+      "dupeName": "Kiko Milano Velvet Passion Matte Lipstick",
+      "dupePrice": 7.99,
+      "savings": 13.01,
+      "savingsPct": 62,
+      "reason": "Rouge mat intense longue tenue"
+    },
+    {
+      "hero": {
+        "brand": "Estée Lauder",
+        "name": "Pure Color Lipstick",
+        "price": 34
+      },
+      "dupeId": "m069",
+      "dupeBrand": "NYX Professional Makeup",
+      "dupeName": "NYX Shine Loud Lipstick All Night",
+      "dupePrice": 12.9,
+      "savings": 21.1,
+      "savingsPct": 62,
+      "reason": "Rouge brillant vinyl longue tenue"
+    },
+    {
+      "hero": {
+        "brand": "Benefit",
+        "name": "Hoola Bronzer",
+        "price": 32
+      },
+      "dupeId": "m093",
+      "dupeBrand": "NYX Professional Makeup",
+      "dupeName": "NYX Butter Bronzer Deserve Butta",
+      "dupePrice": 11.9,
+      "savings": 20.1,
+      "savingsPct": 63,
+      "reason": "Le bronzer mat naturel de référence"
+    },
+    {
+      "hero": {
+        "brand": "Fenty Beauty",
+        "name": "Killawatt Highlighter",
+        "price": 36
+      },
+      "dupeId": "m205",
+      "dupeBrand": "Makeup Revolution",
+      "dupeName": "Makeup Revolution Luminize Highlighter",
+      "dupePrice": 8,
+      "savings": 28,
+      "savingsPct": 78,
+      "reason": "Enlumineur intense multi-usage"
+    },
+    {
+      "hero": {
+        "brand": "Charlotte Tilbury",
+        "name": "Beauty Light Wand",
+        "price": 32
+      },
+      "dupeId": "m224",
+      "dupeBrand": "L'Oreal Paris",
+      "dupeName": "L'Oreal Paris Lumi Glass Highlighter Stick — Teinte Doree",
+      "dupePrice": 14,
+      "savings": 18,
+      "savingsPct": 56,
+      "reason": "Stick enlumineur glow liquide"
+    },
+    {
+      "hero": {
+        "brand": "Bobbi Brown",
+        "name": "Pot Rouge",
+        "price": 30
+      },
+      "dupeId": "m104",
+      "dupeBrand": "KIKO MILANO",
+      "dupeName": "Blush Mousse — Pink",
+      "dupePrice": 15,
+      "savings": 15,
+      "savingsPct": 50,
+      "reason": "Blush crème bonne mine fondu"
+    },
+    {
+      "hero": {
+        "brand": "Rare Beauty",
+        "name": "Soft Pinch Blush",
+        "price": 24
+      },
+      "dupeId": "m112",
+      "dupeBrand": "REVLON",
+      "dupeName": "Blush Illuminance — Mauve",
+      "dupePrice": 9.49,
+      "savings": 14.51,
+      "savingsPct": 60,
+      "reason": "Blush pigmenté effet bonne mine"
+    },
+    {
+      "hero": {
+        "brand": "SkinCeuticals",
+        "name": "C E Ferulic",
+        "price": 166
+      },
+      "dupeId": "m256",
+      "dupeBrand": "La Roche-Posay",
+      "dupeName": "La Roche-Posay Pure Vitamin C10 Sérum Concentré",
+      "dupePrice": 28.5,
+      "savings": 137.5,
+      "savingsPct": 83,
+      "reason": "Vitamine C concentrée éclat & antioxydant"
+    },
+    {
+      "hero": {
+        "brand": "Paula's Choice",
+        "name": "10% Niacinamide Booster",
+        "price": 44
+      },
+      "dupeId": "m139",
+      "dupeBrand": "The Ordinary",
+      "dupeName": "The Ordinary Niacinamide 10% + Zinc 1%",
+      "dupePrice": 7.9,
+      "savings": 36.1,
+      "savingsPct": 82,
+      "reason": "Niacinamide 10 % pores & imperfections"
+    },
+    {
+      "hero": {
+        "brand": "Paula's Choice",
+        "name": "Skin Perfecting 2% BHA",
+        "price": 35
+      },
+      "dupeId": "m142",
+      "dupeBrand": "Geek & Gorgeous",
+      "dupeName": "Geek & Gorgeous Porefectly Clare Sérum Acide Salicylique",
+      "dupePrice": 11.83,
+      "savings": 23.17,
+      "savingsPct": 66,
+      "reason": "Exfoliant BHA anti-pores"
+    },
+    {
+      "hero": {
+        "brand": "Drunk Elephant",
+        "name": "Protini Polypeptide",
+        "price": 68
+      },
+      "dupeId": "m141",
+      "dupeBrand": "Médicube",
+      "dupeName": "Médicube PDRN Pink Peptide Sérum",
+      "dupePrice": 16,
+      "savings": 52,
+      "savingsPct": 76,
+      "reason": "Peptides repulpants fermeté"
+    },
+    {
+      "hero": {
+        "brand": "SkinCeuticals",
+        "name": "H.A. Intensifier",
+        "price": 100
+      },
+      "dupeId": "m296",
+      "dupeBrand": "Neutrogena",
+      "dupeName": "Neutrogena Hydro Boost Sérum Ultra Hydratant 30ml",
+      "dupePrice": 16.9,
+      "savings": 83.1,
+      "savingsPct": 83,
+      "reason": "Sérum acide hyaluronique repulpant"
+    },
+    {
+      "hero": {
+        "brand": "Kiehl's",
+        "name": "Clearly Corrective Dark Spot",
+        "price": 55
+      },
+      "dupeId": "m353",
+      "dupeBrand": "Beauty of Joseon",
+      "dupeName": "Glow Deep Serum Riz + Alpha-Arbutine",
+      "dupePrice": 14.9,
+      "savings": 40.1,
+      "savingsPct": 73,
+      "reason": "Sérum éclat anti-taches (arbutine)"
+    },
+    {
+      "hero": {
+        "brand": "Medik8",
+        "name": "Crystal Retinal",
+        "price": 50
+      },
+      "dupeId": "m171",
+      "dupeBrand": "Some By Mi",
+      "dupeName": "Some By Mi Retinol Intense Reactivating Sérum",
+      "dupePrice": 23.97,
+      "savings": 26.03,
+      "savingsPct": 52,
+      "reason": "Rétinol renouvellement anti-âge"
+    },
+    {
+      "hero": {
+        "brand": "SkinCeuticals",
+        "name": "Discoloration Defense",
+        "price": 100
+      },
+      "dupeId": "m253",
+      "dupeBrand": "Vichy",
+      "dupeName": "Vichy Liftactiv Specialist B3 Sérum Anti-Rides Anti-Taches",
+      "dupePrice": 28.5,
+      "savings": 71.5,
+      "savingsPct": 72,
+      "reason": "Anti-taches niacinamide + AHA"
+    },
+    {
+      "hero": {
+        "brand": "Caudalie",
+        "name": "Vinoperfect Sérum Éclat",
+        "price": 49
+      },
+      "dupeId": "m144",
+      "dupeBrand": "Arencia",
+      "dupeName": "Arencia Sérum Vitamine C, Glutathion & Niacinamide",
+      "dupePrice": 20,
+      "savings": 29,
+      "savingsPct": 59,
+      "reason": "Vitamine C éclat anti-taches"
+    },
+    {
+      "hero": {
+        "brand": "Glow Recipe",
+        "name": "Watermelon Niacinamide Dew Drops",
+        "price": 35
+      },
+      "dupeId": "m348",
+      "dupeBrand": "ANUA",
+      "dupeName": "Peach 70% Niacin Serum",
+      "dupePrice": 20.9,
+      "savings": 14.1,
+      "savingsPct": 40,
+      "reason": "Niacinamide + vitamine C éclat"
+    },
+    {
+      "hero": {
+        "brand": "Estée Lauder",
+        "name": "Advanced Night Repair",
+        "price": 75
+      },
+      "dupeId": "m285",
+      "dupeBrand": "COSRX",
+      "dupeName": "COSRX Advanced Snail 96% Mucin Power Essence 100ml",
+      "dupePrice": 22.9,
+      "savings": 52.1,
+      "savingsPct": 69,
+      "reason": "Essence réparatrice nuit (escargot 96 %)"
+    },
+    {
+      "hero": {
+        "brand": "Missha",
+        "name": "Time Revolution Essence",
+        "price": 45
+      },
+      "dupeId": "m138",
+      "dupeBrand": "Beauty of Joseon",
+      "dupeName": "Beauty of Joseon Revive Sérum Ginseng & Escargot",
+      "dupePrice": 16.5,
+      "savings": 28.5,
+      "savingsPct": 63,
+      "reason": "Essence anti-âge ginseng repulpante"
+    },
+    {
+      "hero": {
+        "brand": "Paula's Choice",
+        "name": "BHA Liquid Exfoliant (toner)",
+        "price": 35
+      },
+      "dupeId": "m279",
+      "dupeBrand": "COSRX",
+      "dupeName": "COSRX AHA/BHA Clarifying Treatment Toner 150ml",
+      "dupePrice": 16.9,
+      "savings": 18.1,
+      "savingsPct": 52,
+      "reason": "Toner exfoliant AHA/BHA pores"
+    },
+    {
+      "hero": {
+        "brand": "Elemis",
+        "name": "Pro-Collagen Cleansing Balm",
+        "price": 46
+      },
+      "dupeId": "m178",
+      "dupeBrand": "Beauty of Joseon",
+      "dupeName": "Baume Nettoyant Éclat au Son de Riz",
+      "dupePrice": 17.98,
+      "savings": 28.02,
+      "savingsPct": 61,
+      "reason": "Baume nettoyant fondant éclat"
+    },
+    {
+      "hero": {
+        "brand": "DHC",
+        "name": "Deep Cleansing Oil",
+        "price": 28
+      },
+      "dupeId": "m183",
+      "dupeBrand": "SKIN1004",
+      "dupeName": "Madagascar Centella Light Cleansing Oil",
+      "dupePrice": 10,
+      "savings": 18,
+      "savingsPct": 64,
+      "reason": "Huile démaquillante douce centella"
+    },
+    {
+      "hero": {
+        "brand": "Farmacy",
+        "name": "Green Clean Balm",
+        "price": 34
+      },
+      "dupeId": "m347",
+      "dupeBrand": "ANUA",
+      "dupeName": "Heartleaf Pore Control Cleansing Oil",
+      "dupePrice": 19.9,
+      "savings": 14.1,
+      "savingsPct": 41,
+      "reason": "Baume/huile démaquillant pores"
+    },
+    {
+      "hero": {
+        "brand": "Fresh",
+        "name": "Soy Face Cleanser",
+        "price": 40
+      },
+      "dupeId": "m173",
+      "dupeBrand": "CeraVe",
+      "dupeName": "Gel Moussant Anti-Imperfections",
+      "dupePrice": 13,
+      "savings": 27,
+      "savingsPct": 68,
+      "reason": "Gel nettoyant doux anti-imperfections"
+    },
+    {
+      "hero": {
+        "brand": "Clinique",
+        "name": "Moisture Surge",
+        "price": 42
+      },
+      "dupeId": "m293",
+      "dupeBrand": "Neutrogena",
+      "dupeName": "Neutrogena Hydro Boost Aqua-Gel 50ml",
+      "dupePrice": 13.9,
+      "savings": 28.1,
+      "savingsPct": 67,
+      "reason": "Gel-crème hydratation intense"
+    },
+    {
+      "hero": {
+        "brand": "First Aid Beauty",
+        "name": "Ultra Repair Cream",
+        "price": 34
+      },
+      "dupeId": "m262",
+      "dupeBrand": "CeraVe",
+      "dupeName": "CeraVe Baume Hydratant Visage & Corps 177ml",
+      "dupePrice": 13.9,
+      "savings": 20.1,
+      "savingsPct": 59,
+      "reason": "Baume réparateur riche céramides"
+    },
+    {
+      "hero": {
+        "brand": "Kiehl's",
+        "name": "Ultra Facial Cream",
+        "price": 32
+      },
+      "dupeId": "m264",
+      "dupeBrand": "CeraVe",
+      "dupeName": "CeraVe Pommade Réparatrice Intensive 90ml",
+      "dupePrice": 12.5,
+      "savings": 19.5,
+      "savingsPct": 61,
+      "reason": "Baume réparateur intense confort"
+    },
+    {
+      "hero": {
+        "brand": "Dr.Jart+",
+        "name": "Cicapair Tiger Grass",
+        "price": 45
+      },
+      "dupeId": "m301",
+      "dupeBrand": "Bioderma",
+      "dupeName": "Bioderma Sensibio Soin Anti-Rougeurs 40ml",
+      "dupePrice": 14.5,
+      "savings": 30.5,
+      "savingsPct": 68,
+      "reason": "Soin anti-rougeurs apaisant"
+    },
+    {
+      "hero": {
+        "brand": "Charlotte Tilbury",
+        "name": "Magic Cream",
+        "price": 90
+      },
+      "dupeId": "m186",
+      "dupeBrand": "La Provençale",
+      "dupeName": "Oléo-Jeunesse Crème d'Hydratation à l'Acide Hyaluronique",
+      "dupePrice": 7,
+      "savings": 83,
+      "savingsPct": 92,
+      "reason": "Crème hydratante à l'acide hyaluronique"
+    },
+    {
+      "hero": {
+        "brand": "Laneige",
+        "name": "Water Sleeping Mask",
+        "price": 25
+      },
+      "dupeId": "m121",
+      "dupeBrand": "Médicube",
+      "dupeName": "MASQUE NUIT",
+      "dupePrice": 17.15,
+      "savings": 7.85,
+      "savingsPct": 31,
+      "reason": "Masque de nuit hydratant repulpant"
+    },
+    {
+      "hero": {
+        "brand": "Clinique",
+        "name": "All About Eyes",
+        "price": 30
+      },
+      "dupeId": "m383",
+      "dupeBrand": "The Ordinary",
+      "dupeName": "Caffeine Solution 5% + EGCG",
+      "dupePrice": 8.9,
+      "savings": 21.1,
+      "savingsPct": 70,
+      "reason": "Décongestionne cernes & poches (caféine)"
+    },
+    {
+      "hero": {
+        "brand": "Kiehl's",
+        "name": "Creamy Eye Treatment Avocado",
+        "price": 32
+      },
+      "dupeId": "m385",
+      "dupeBrand": "CeraVe",
+      "dupeName": "Eye Repair Cream",
+      "dupePrice": 13.5,
+      "savings": 18.5,
+      "savingsPct": 58,
+      "reason": "Contour yeux réparateur nourrissant"
+    },
+    {
+      "hero": {
+        "brand": "Medik8",
+        "name": "Crystal Retinal Eye",
+        "price": 42
+      },
+      "dupeId": "m168",
+      "dupeBrand": "Beauty of Joseon",
+      "dupeName": "Beauty of Joseon Revive Eye Serum",
+      "dupePrice": 20,
+      "savings": 22,
+      "savingsPct": 52,
+      "reason": "Contour yeux rétinal anti-âge"
+    },
+    {
+      "hero": {
+        "brand": "Ole Henriksen",
+        "name": "Banana Bright Eye Crème",
+        "price": 42
+      },
+      "dupeId": "m387",
+      "dupeBrand": "The Inkey List",
+      "dupeName": "Brighten-i Vitamine C Eye Cream",
+      "dupePrice": 10.99,
+      "savings": 31.01,
+      "savingsPct": 74,
+      "reason": "Contour vitamine C illumine les cernes"
+    },
+    {
+      "hero": {
+        "brand": "Origins",
+        "name": "GinZing Eye Cream",
+        "price": 33
+      },
+      "dupeId": "m384",
+      "dupeBrand": "The Inkey List",
+      "dupeName": "Caffeine Eye Cream",
+      "dupePrice": 10.99,
+      "savings": 22.01,
+      "savingsPct": 67,
+      "reason": "Contour caféine anti-fatigue"
+    }
+  ]
+}

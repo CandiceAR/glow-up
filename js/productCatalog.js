@@ -9,6 +9,18 @@ const ProductCatalog = (() => {
 
   const TAG = 'kan10ar-21';
 
+  // ─── Dupes curés (dupeId → { hero, savings, ... }) ────────────
+  let _dupeMap = {};
+  async function _loadDupes() {
+    try {
+      const r = await fetch('data/dupes.json?v=1');
+      if (!r.ok) return;
+      const d = await r.json();
+      (d.dupes || []).forEach(x => { _dupeMap[x.dupeId] = x; });
+      console.log('[Dupes] Curés chargés:', Object.keys(_dupeMap).length);
+    } catch (e) { /* ignore */ }
+  }
+
   // ─── Injecter/normaliser le tag affilié dans une URL Amazon ──
   function ensureTag(url) {
     if (!url) return url;
@@ -95,6 +107,7 @@ const ProductCatalog = (() => {
         }));
 
       AppState.products.catalog = products;
+      await _loadDupes();
       console.log('[Catalog] Chargé:', AppState.products.catalog.length, 'produits actifs');
     } catch (err) {
       console.error('[Catalog] Erreur chargement:', err);
@@ -341,7 +354,11 @@ const ProductCatalog = (() => {
   // ─── 💸 DUPE — équivalent moins cher (100% catalogue) ────────
   // status: 'found' (dupe moins cher) · 'cheapest' (déjà le meilleur prix) · 'none'
   function findDupe(product) {
-    if (!product || product.price == null) return { status: 'none' };
+    if (!product) return { status: 'none' };
+    // 0) Ce produit EST un dupe culte curé → on le valorise (non gated)
+    const cur = _dupeMap[product.id];
+    if (cur) return { status: 'isDupe', hero: cur.hero, savings: cur.savings, pct: cur.savingsPct, reason: cur.reason };
+    if (product.price == null) return { status: 'none' };
     // Override curé prioritaire (Lot Dupe 2)
     if (product.dupeId) {
       const d = (AppState.products.catalog || []).find(p => p.id === product.dupeId);
@@ -371,6 +388,13 @@ const ProductCatalog = (() => {
   function renderDupe(product) {
     const r = findDupe(product);
     if (r.status === 'none') return '';
+    // Ce produit EST le dupe d'un produit culte → mise en valeur (non gated)
+    if (r.status === 'isDupe') {
+      return `<div class="dupe-block dupe-block--is">
+        <div class="dupe-head"><span class="dupe-badge">💸 C'est un dupe culte</span><span class="dupe-save">−${r.pct}% vs ${r.hero.brand}</span></div>
+        <p class="dupe-is-text">Tu paies <strong>${product.price != null ? product.price.toFixed(2) + ' €' : '—'}</strong> au lieu de <s>${Number(r.hero.price).toFixed(2)} €</s> — c'est le dupe de <strong>${r.hero.brand} ${r.hero.name}</strong>. ${r.reason}.</p>
+      </div>`;
+    }
     if (r.status === 'cheapest') {
       return `<div class="dupe-block dupe-block--best"><span class="dupe-badge">💸 Dupe</span><span class="dupe-best-text">Déjà un excellent rapport qualité-prix — difficile de trouver moins cher pour un résultat équivalent.</span></div>`;
     }

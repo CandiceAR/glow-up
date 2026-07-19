@@ -4355,6 +4355,9 @@ em { font-style: italic; color: var(--nude); }
 
 /* ─── 💸 Dupe (équivalent moins cher) ───────────────────────── */
 .dupe-block { position: relative; margin-top: 10px; border-radius: 14px; padding: 13px 15px; background: linear-gradient(135deg, #FFF6EC, #FDEBD8); border: 1px solid rgba(240,145,63,0.3); overflow: hidden; }
+.dupe-block--is { background: linear-gradient(135deg, #FFF3E4, #FBE3CC); border-color: rgba(240,145,63,0.4); }
+.dupe-is-text { font-size: 0.85rem; line-height: 1.55; color: var(--charcoal); margin: 0; }
+.dupe-is-text s { color: var(--muted); }
 .dupe-block--best { background: var(--cream); border-color: var(--sand); display: flex; align-items: center; gap: 10px; }
 .dupe-best-text { font-size: 0.8rem; color: var(--muted); line-height: 1.45; }
 .dupe-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
