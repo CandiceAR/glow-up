@@ -201,6 +201,9 @@ const Auth = (() => {
       : `<button class="btn btn-google" onclick="Auth.signInWithGoogle()">${googleSVG} Continuer avec Google</button>
          <div class="auth-divider"><span>ou par email</span></div>`;
 
+    // On récupère l'email déjà saisi pour le reporter (pas de re-saisie)
+    const prefillEmail = document.getElementById('authEmail')?.value?.trim() || '';
+
     const html = `
       <button class="modal-close" onclick="closeModal()">×</button>
       <div class="auth-modal">
@@ -211,18 +214,18 @@ const Auth = (() => {
 
         ${mode === 'reset' ? `
           <h2>Mot de passe oublié</h2>
-          <p>Entre ton email, on t'envoie un lien de réinitialisation.</p>
-          <input type="email" id="authEmail" placeholder="Ton adresse email" class="auth-input">
-          <button class="btn btn-dark full-width" onclick="Auth.submitReset()">Envoyer le lien</button>
+          <p>Entre ton email, on t'envoie un lien pour en créer un nouveau.</p>
+          <input type="email" id="authEmail" value="${prefillEmail}" placeholder="Ton adresse email" class="auth-input">
+          <button class="btn btn-dark full-width" onclick="Auth.submitReset()">Envoyer le lien 💌</button>
           <button class="btn-ghost auth-guest" onclick="Auth.openAuthModal('login')">← Retour</button>
         ` : `
           ${googleBlock}
-          <input type="email" id="authEmail" placeholder="Ton adresse email" class="auth-input">
+          <input type="email" id="authEmail" value="${prefillEmail}" placeholder="Ton adresse email" class="auth-input">
           <input type="password" id="authPassword" placeholder="${mode === 'register' ? 'Choisis un mot de passe (6 car. min)' : 'Ton mot de passe'}" class="auth-input">
           ${mode === 'register'
             ? `<button class="btn btn-dark full-width" onclick="Auth.submitRegister()">Créer mon compte ✦</button>`
             : `<button class="btn btn-dark full-width" onclick="Auth.submitLogin()">Se connecter</button>
-               <button class="btn-ghost auth-forgot" onclick="Auth.openAuthModal('reset')">Mot de passe oublié ?</button>`
+               <button class="btn-ghost auth-forgot" onclick="Auth.submitReset()">Mot de passe oublié ? Recevoir un lien</button>`
           }
           <button class="btn-ghost auth-guest" onclick="Auth.continueFlow()">Continuer sans compte →</button>
         `}
@@ -259,7 +262,7 @@ const Auth = (() => {
     try {
       await auth.sendPasswordResetEmail(email);
       closeModal();
-      showToast('Email envoyé ! Vérifie ta boîte mail ✦', 'success', 4000);
+      showToast('Lien envoyé ! Pense à vérifier tes spams / courrier indésirable ✦', 'success', 6000);
     } catch (err) {
       const msgs = { 'auth/user-not-found': 'Aucun compte avec cet email', 'auth/invalid-email': 'Email invalide' };
       showToast(msgs[err.code] || 'Erreur lors de l\'envoi', 'error');

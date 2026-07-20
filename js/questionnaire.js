@@ -244,6 +244,20 @@ const Questionnaire = (() => {
       ]
     },
 
+    // Q-SPF — Fini SPF préféré (seule question SPF, le reste est dérivé du profil peau)
+    {
+      id: 'qspf', key: 'spfFinish', type: 'single', required: false, skipIf: null,
+      question: '☀️ Quel fini préfères-tu pour ta protection solaire ?',
+      subtitle: 'Pour te recommander le meilleur SPF adapté à ta peau',
+      options: [
+        { value: 'invisible', emoji: '👻', label: 'Invisible et très léger', desc: 'Sans trace ni effet' },
+        { value: 'matte',     emoji: '✦',  label: 'Mat / anti-brillance',     desc: 'Zone T sous contrôle' },
+        { value: 'hydrating', emoji: '💧', label: 'Hydratant et confortable', desc: 'Effet cocon' },
+        { value: 'glow',      emoji: '🌟', label: 'Glow / lumineux',           desc: 'Bonne mine instantanée' },
+        { value: 'any',       emoji: '🤷‍♀️', label: 'Peu importe',            desc: '' }
+      ]
+    },
+
     // Q15 — Champ libre
     {
       id: 'q15', key: 'freeText', type: 'textarea',
