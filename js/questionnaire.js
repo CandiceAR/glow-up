@@ -15,9 +15,9 @@ const Questionnaire = (() => {
 
     // Q0 — Complexes (toujours affichée, multiple max 2)
     {
-      id: 'q0', key: 'complexes', type: 'multiple', max: 2,
+      id: 'q0', key: 'complexes', type: 'multiple', max: 3,
       question: 'Qu\'est-ce qui te complexe le plus ?',
-      subtitle: 'Choisis jusqu\'à 2 réponses',
+      subtitle: 'Choisis jusqu\'à 3 réponses — on en déduit ton objectif',
       required: true,
       skipIf: null,
       options: [
@@ -71,17 +71,6 @@ const Questionnaire = (() => {
       ]
     },
 
-    // Q2 — Brillance slider (skip si photo a mesuré les pores)
-    {
-      id: 'q2', key: 'oiliness', type: 'slider',
-      question: 'À quel point ta peau brille-t-elle ?',
-      required: false,
-      min: 0, maxVal: 10,
-      labels: ['Aucune brillance', 'Brille toute la journée'],
-      skipIf: (answers, photo) => _hasPhotoZones(photo),
-      prefill: (photo) => _oilinessFromPhoto(photo)
-    },
-
     // Q3 — Visage interactif (skip si photo faite)
     {
       id: 'q3', key: 'problemZones', type: 'face-map',
@@ -89,17 +78,6 @@ const Questionnaire = (() => {
       subtitle: 'Touche les zones concernées',
       required: false,
       skipIf: (answers, photo) => _hasPhotoZones(photo)
-    },
-
-    // Q4 — Sensibilité slider
-    {
-      id: 'q4', key: 'sensitivity', type: 'slider',
-      question: 'Ma peau est sensible…',
-      required: true,
-      min: 0, maxVal: 10,
-      labels: ['Pas du tout', 'Extrêmement sensible'],
-      skipIf: (answers, photo) => _hasPhotoZones(photo),
-      prefill: (photo) => _sensitivityFromPhoto(photo)
     },
 
     // Q5 — Localisation rougeurs (conditionnel : sensitivity ≥ 7)
@@ -138,21 +116,6 @@ const Questionnaire = (() => {
       min: 0, maxVal: 10,
       labels: ['Très ferme', 'Très relâchée'],
       skipIf: (answers) => !answers.complexes?.includes('rides')
-    },
-
-    // Q8 — Objectif prioritaire
-    {
-      id: 'q8', key: 'objectives', type: 'single',
-      question: 'Quel est ton objectif principal ?',
-      required: true, skipIf: null,
-      options: [
-        { value: 'anti-age',       emoji: '⏳', label: 'Anti-âge',       desc: 'Prévenir et réduire les rides' },
-        { value: 'eclat',          emoji: '✨', label: 'Éclat',           desc: 'Teint lumineux, bonne mine' },
-        { value: 'hydratation',    emoji: '💧', label: 'Hydratation',     desc: 'Peau souple et confortable' },
-        { value: 'purification',   emoji: '🌿', label: 'Purification',    desc: 'Réduire imperfections et pores' },
-        { value: 'uniformisation', emoji: '🪞', label: 'Uniformisation',  desc: 'Unifier le teint, estomper taches' },
-        { value: 'apaisement',     emoji: '🕊', label: 'Apaisement',      desc: 'Calmer la réactivité' }
-      ]
     },
 
     // Q9 — Tranche d'âge
@@ -196,36 +159,35 @@ const Questionnaire = (() => {
       ]
     },
 
-    // Q12 — Ingrédients à éviter
+    // Q12+Q13 — Préférences & exclusions (écran groupé : labels + ingrédients à éviter)
     {
-      id: 'q12', key: 'avoidIngredients', type: 'multiple', max: 5,
-      question: 'Des ingrédients à éviter ?',
-      subtitle: 'Allergies, intolérances, préférences — optionnel',
-      required: false, skipIf: null,
-      options: [
-        { value: 'alcool',      emoji: '🚫', label: 'Alcool dénaturé',    desc: '' },
-        { value: 'parfum',      emoji: '🚫', label: 'Parfum / Fragrance', desc: '' },
-        { value: 'silicones',   emoji: '🚫', label: 'Silicones',          desc: '' },
-        { value: 'parabens',    emoji: '🚫', label: 'Parabènes',          desc: '' },
-        { value: 'retinol',     emoji: '⚠️', label: 'Rétinol',            desc: '' },
-        { value: 'aha_bha',     emoji: '⚠️', label: 'AHA / BHA',          desc: '' },
-        { value: 'niacinamide', emoji: '⚠️', label: 'Niacinamide',        desc: '' }
-      ]
-    },
-
-    // Q13 — Labels
-    {
-      id: 'q13', key: 'labels', type: 'multiple', max: 3,
-      question: 'Des labels importants pour toi ?',
-      subtitle: 'Optionnel',
-      required: false, skipIf: null,
-      options: [
-        { value: 'vegan',              emoji: '🌱', label: 'Vegan',            desc: '' },
-        { value: 'bio',                emoji: '🌿', label: 'Bio / Certifié',   desc: '' },
-        { value: 'cruelty',            emoji: '🐰', label: 'Cruelty-free',     desc: '' },
-        { value: 'grossesse',          emoji: '🤰', label: 'Grossesse safe',   desc: '' },
-        { value: 'dermo',              emoji: '🏥', label: 'Dermato-testé',    desc: '' },
-        { value: 'non_comedogenique',  emoji: '◇',  label: 'Non-comédogène',  desc: '' }
+      id: 'qprefs', key: 'prefs', type: 'prefs-group', required: false, skipIf: null,
+      question: 'Tes préférences & exclusions',
+      subtitle: 'Optionnel — on filtre tes recommandations en conséquence',
+      groups: [
+        {
+          key: 'labels', title: '✅ Labels importants pour toi', max: 3,
+          options: [
+            { value: 'vegan',              emoji: '🌱', label: 'Vegan',            desc: '' },
+            { value: 'bio',                emoji: '🌿', label: 'Bio / Certifié',   desc: '' },
+            { value: 'cruelty',            emoji: '🐰', label: 'Cruelty-free',     desc: '' },
+            { value: 'grossesse',          emoji: '🤰', label: 'Grossesse safe',   desc: '' },
+            { value: 'dermo',              emoji: '🏥', label: 'Dermato-testé',    desc: '' },
+            { value: 'non_comedogenique',  emoji: '◇',  label: 'Non-comédogène',  desc: '' }
+          ]
+        },
+        {
+          key: 'avoidIngredients', title: '🚫 Ingrédients à éviter', max: 5,
+          options: [
+            { value: 'alcool',      emoji: '🚫', label: 'Alcool dénaturé',    desc: '' },
+            { value: 'parfum',      emoji: '🚫', label: 'Parfum / Fragrance', desc: '' },
+            { value: 'silicones',   emoji: '🚫', label: 'Silicones',          desc: '' },
+            { value: 'parabens',    emoji: '🚫', label: 'Parabènes',          desc: '' },
+            { value: 'retinol',     emoji: '⚠️', label: 'Rétinol',            desc: '' },
+            { value: 'aha_bha',     emoji: '⚠️', label: 'AHA / BHA',          desc: '' },
+            { value: 'niacinamide', emoji: '⚠️', label: 'Niacinamide',        desc: '' }
+          ]
+        }
       ]
     },
 
@@ -376,6 +338,8 @@ const Questionnaire = (() => {
     } else {
       currentIndex = 0; // Q0 toujours en premier
     }
+    // Profil partagé : si un quiz maquillage a déjà été rempli, pré-remplir le skincare
+    _seedSkincareFromMakeup();
     AppState.questionnaire.currentQ = currentIndex;
     showScreen('questionnaire');
   }
@@ -401,6 +365,8 @@ const Questionnaire = (() => {
       mkCarnation: CARN_PHOTO_MAP[analysis?.carnation?.type] || null,
       mkUndertone: analysis?.undertone?.type || null
     };
+    // Profil partagé : réutiliser le skincare déjà répondu (type de peau, budget, cernes, préoccupations)
+    _seedMakeupFromShared();
     showScreen('questionnaire');
     render();
   }
@@ -417,6 +383,49 @@ const Questionnaire = (() => {
         }
       }
     });
+  }
+
+  // ─── Profil partagé skincare ⇆ maquillage (pas de questions posées 2×) ─
+  const _BUDGET_S2M = { low: 'petits-prix', medium: 'bon-rapport', high: 'premium', premium: 'premium' };
+  const _BUDGET_M2S = { 'petits-prix': 'low', 'bon-rapport': 'medium', premium: 'premium' };
+  const _COMPLEXE_2_MK = { rougeurs: 'rougeurs', cernes: 'cernes', pores: 'pores', eclat: 'eclat', acne: 'imperfections', rides: 'ridules', taches: 'uniformite' };
+  const _MK_2_COMPLEXE = { rougeurs: 'rougeurs', cernes: 'cernes', pores: 'pores', eclat: 'eclat', imperfections: 'acne', ridules: 'rides', uniformite: 'taches' };
+
+  function _syncSharedProfileFromSkincare() {
+    const a = AppState.questionnaire?.answers || {};
+    AppState.profile = AppState.profile || {};
+    if (a.skinType)    AppState.profile.skinType    = a.skinType;
+    if (a.complexes)   AppState.profile.concerns    = a.complexes;
+    if (a.cernesColor) AppState.profile.cernesColor = a.cernesColor;
+    if (a.budget)      AppState.profile.budget      = a.budget;
+  }
+
+  // Pré-remplit le quiz maquillage depuis le skincare déjà répondu (dans la session)
+  function _seedMakeupFromShared() {
+    const sk = AppState.questionnaire?.answers || {};
+    const mq = AppState.makeupQuiz = AppState.makeupQuiz || {};
+    mq._shared = mq._shared || {};
+    if (!mq.mkSkinType && sk.skinType)       { mq.mkSkinType = sk.skinType; mq._shared.skinType = true; }
+    if (!mq.mkCernesColor && sk.cernesColor) { mq.mkCernesColor = sk.cernesColor; mq._shared.cernesColor = true; }
+    if (!mq.mkBudget && sk.budget)           { mq.mkBudget = _BUDGET_S2M[sk.budget] || null; mq._shared.budget = true; }
+    if (!mq.mkConcerns && Array.isArray(sk.complexes) && sk.complexes.length) {
+      const mapped = sk.complexes.map(c => _COMPLEXE_2_MK[c]).filter(Boolean);
+      if (mapped.length) mq.mkConcerns = mapped.slice(0, 3);
+    }
+  }
+
+  // Sens inverse : pré-remplit le skincare depuis un quiz maquillage déjà répondu
+  function _seedSkincareFromMakeup() {
+    const mq = AppState.makeupQuiz || {};
+    const a  = AppState.questionnaire.answers;
+    const pf = AppState.questionnaire.photoPreFill = AppState.questionnaire.photoPreFill || {};
+    if (!a.skinType && mq.mkSkinType)       { a.skinType = mq.mkSkinType; pf.skinType = mq.mkSkinType; }
+    if (!a.cernesColor && mq.mkCernesColor) { a.cernesColor = mq.mkCernesColor; }
+    if (!a.budget && mq.mkBudget)           { a.budget = _BUDGET_M2S[mq.mkBudget] || null; if (a.budget) pf.budget = a.budget; }
+    if ((!a.complexes || !a.complexes.length) && Array.isArray(mq.mkConcerns) && mq.mkConcerns.length) {
+      const mapped = mq.mkConcerns.map(c => _MK_2_COMPLEXE[c]).filter(Boolean);
+      if (mapped.length) a.complexes = mapped.slice(0, 3);
+    }
   }
 
   // ─── Render ───────────────────────────────────────────────────
@@ -491,8 +500,34 @@ const Questionnaire = (() => {
       case 'photo-step':return _renderPhotoStep(q);
       case 'textarea':  return _renderTextarea(q);
       case 'current-routine': return _renderCurrentRoutine(q);
+      case 'prefs-group':     return _renderPrefsGroup(q);
       default:          return '';
     }
+  }
+
+  // ─── Écran groupé « Préférences & exclusions » (2 multi-sélecteurs) ─
+  function _renderPrefsGroup(q) {
+    const answers = AppState.questionnaire.answers;
+    return (q.groups || []).map(group => {
+      const sel = Array.isArray(answers[group.key]) ? answers[group.key] : [];
+      const opts = group.options.map(opt => {
+        const checked = sel.includes(opt.value);
+        return `<div class="q-option-premium${checked ? ' selected' : ''}"
+                     data-value="${opt.value}"
+                     onclick="Questionnaire.selectOption('${group.key}','${opt.value}','multiple',${group.max || 99})">
+          <span class="q-option-emoji">${opt.emoji || ''}</span>
+          <div class="q-option-body">
+            <div class="q-option-label">${opt.label}</div>
+            ${opt.desc ? `<div class="q-option-desc">${opt.desc}</div>` : ''}
+          </div>
+          <div class="q-option-check">✓</div>
+        </div>`;
+      }).join('');
+      return `<div class="q-prefs-group">
+        <p class="q-prefs-group-title">${group.title}</p>
+        ${opts}
+      </div>`;
+    }).join('');
   }
 
   // ─── Étape « Ma routine actuelle » ────────────────────────────
@@ -1339,10 +1374,44 @@ const Questionnaire = (() => {
     _updateNextBtn();
   }
 
+  // ─── Dérivations : champs déduits pour éviter les questions redondantes ─
+  // objectif ← préoccupations · brillance/sensibilité ← type de peau/photo
+  const _OBJ_FROM_COMPLEXE = {
+    rides: 'anti-age', taches: 'uniformisation', eclat: 'eclat',
+    secheresse: 'hydratation', pores: 'purification', acne: 'purification',
+    rougeurs: 'apaisement', cernes: 'eclat'
+  };
+  function _deriveObjective(complexes) {
+    for (const c of (complexes || [])) if (_OBJ_FROM_COMPLEXE[c]) return _OBJ_FROM_COMPLEXE[c];
+    return 'hydratation';
+  }
+  function _deriveOiliness(a, photo) {
+    if (_hasPhotoZones(photo)) return _oilinessFromPhoto(photo);
+    return ({ grasse: 8, mixte: 6, normale: 4, seche: 2, sensible: 3 })[a.skinType] ?? 5;
+  }
+  function _deriveSensitivity(a, photo) {
+    if (_hasPhotoZones(photo)) return _sensitivityFromPhoto(photo);
+    if (a.skinType === 'sensible') return 8;
+    if (Array.isArray(a.complexes) && a.complexes.includes('rougeurs')) return 7;
+    return 3;
+  }
+  function _deriveSkincareFields() {
+    const a = AppState.questionnaire.answers;
+    const photo = AppState.face?.skinAnalysis;
+    if (!a.objectives)              a.objectives  = _deriveObjective(a.complexes);
+    if (a.oiliness == null)         a.oiliness    = _deriveOiliness(a, photo);
+    if (a.sensitivity == null)      a.sensitivity = _deriveSensitivity(a, photo);
+  }
+
   // ─── Submit ───────────────────────────────────────────────────
 
   function submit() {
     AppState.questionnaire.completed = true;
+
+    // Déduire les champs qu'on ne demande plus explicitement (objectif, brillance, sensibilité)
+    _deriveSkincareFields();
+    // Alimenter le profil partagé (réutilisé par le questionnaire maquillage)
+    _syncSharedProfileFromSkincare();
 
     // Construire l'objet final avec données photo
     const answers = {
@@ -1408,6 +1477,7 @@ const Questionnaire = (() => {
     },
     {
       id: 'mq1', key: 'mkSkinType', type: 'single', required: true,
+      skipIfMk: (a) => !!(a._shared && a._shared.skinType),
       question: 'Ma peau au réveil est plutôt :',
       options: [
         { value: 'normale',  emoji: '◇', label: 'Normale',  desc: 'Équilibrée, sans excès' },
@@ -1434,7 +1504,7 @@ const Questionnaire = (() => {
     },
     {
       id: 'mq_cernes_color', key: 'mkCernesColor', type: 'single', required: false,
-      skipIfMk: (answers) => !answers.mkConcerns?.includes('cernes'),
+      skipIfMk: (a) => !a.mkConcerns?.includes('cernes') || !!(a._shared && a._shared.cernesColor),
       question: 'De quelle couleur sont tes cernes ?',
       subtitle: 'Pour te proposer le bon correcteur coloré',
       options: [
@@ -1474,6 +1544,7 @@ const Questionnaire = (() => {
     },
     {
       id: 'mq5', key: 'mkBudget', type: 'single', required: true,
+      skipIfMk: (a) => !!(a._shared && a._shared.budget),
       question: 'Je préfère :',
       options: [
         { value: 'petits-prix', emoji: '🌱', label: 'Petits prix',     desc: 'Maxi effet, mini budget' },

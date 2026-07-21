@@ -9734,3 +9734,11 @@ em { font-style: italic; color: var(--nude); }
 .cr-recap-txt strong { font-size: 14px; color: var(--charcoal); }
 .cr-recap-txt span   { font-size: 13px; color: var(--muted); line-height: 1.4; }
 .cr-recap-heart { flex-shrink: 0; }
+
+/* Écran groupé « Préférences & exclusions » (questionnaire) */
+.q-prefs-group { margin-bottom: 22px; }
+.q-prefs-group:last-child { margin-bottom: 0; }
+.q-prefs-group-title {
+  font-family: var(--font-sans); font-size: 14px; font-weight: 700; color: var(--charcoal);
+  margin: 0 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--sand);
+}
