@@ -478,6 +478,9 @@ const RoutineRenderer = (() => {
 
       ${renderWarnings(routine.warnings, hasRetinol)}
 
+      <!-- 🧴 Ta routine actuelle : ce qu'on garde / ce qu'on remplace -->
+      ${typeof CurrentRoutine !== 'undefined' ? CurrentRoutine.renderRecapBlock() : ''}
+
       <!-- 🧪 Molécules clés pour ta peau (Premium) -->
       ${_renderMoleculesBlock()}
 
@@ -591,13 +594,28 @@ const RoutineRenderer = (() => {
     const blocks    = [];
     const products  = []; // pour le total
     const usedProductIds = new Set(); // dédup : pas le même produit pour deux étapes différentes
+    const usedKept       = new Set(); // produits « à garder » déjà placés
+    const usedReplaced   = new Set(); // produits « à remplacer » déjà signalés
+    const hasCR          = typeof CurrentRoutine !== 'undefined';
 
     for (const step of sortedSteps) {
-      const product  = findBestProductForStep(step.step, usedProductIds);
-      if (product) usedProductIds.add(product.id);
+      // Produit que l'utilisatrice utilise déjà ET adapté → on le garde à sa place
+      const kept = hasCR ? CurrentRoutine.getKeptForStep(step.step, usedKept) : null;
+      let product = null, replaced = null;
+      if (kept) {
+        usedKept.add(kept._key);
+      } else {
+        product = findBestProductForStep(step.step, usedProductIds);
+        if (product) usedProductIds.add(product.id);
+        // Produit actuel non adapté sur cette étape → note « à la place de… »
+        if (hasCR) {
+          replaced = CurrentRoutine.getReplacedForStep(step.step, usedReplaced);
+          if (replaced) usedReplaced.add(replaced._key);
+        }
+      }
       const applyTip = STEP_APPLY_TIPS[step.step] || '';
       stepIndex++;
-      if (product?.price) products.push(product);
+      if (product?.price) products.push(product); // les produits gardés ne comptent pas dans le total
 
       // Nettoyer les mentions rétinol dans les notes si non applicable
       let stepNote = step.note || '';
@@ -622,12 +640,18 @@ const RoutineRenderer = (() => {
             </div>
           </div>
           <div class="cg-step-right">
-            ${product ? `<div class="cg-step-card">${_renderPremiumProductCard(product)}</div>` : ''}
-            ${product ? _renderApplyMeta(step, stepIndex, isMatin) : ''}
-            ${product ? _renderWhyProduct(step, product) : ''}
-            ${product && typeof ProductCatalog !== 'undefined' ? ProductCatalog.renderDupe(product) : ''}
-            ${product ? _renderAlternatives(step, product) : ''}
-            ${spfExtras}
+            ${kept ? `
+              ${CurrentRoutine.renderKeptCard(kept)}
+              ${_renderApplyMeta(step, stepIndex, isMatin)}
+            ` : `
+              ${replaced ? `<div class="cr-replace-note">🔄 À la place de ton <strong>${(replaced.brand ? replaced.brand + ' ' : '') + replaced.name}</strong> — ${CurrentRoutine.evaluate(replaced).reason}</div>` : ''}
+              ${product ? `<div class="cg-step-card">${_renderPremiumProductCard(product)}</div>` : ''}
+              ${product ? _renderApplyMeta(step, stepIndex, isMatin) : ''}
+              ${product ? _renderWhyProduct(step, product) : ''}
+              ${product && typeof ProductCatalog !== 'undefined' ? ProductCatalog.renderDupe(product) : ''}
+              ${product ? _renderAlternatives(step, product) : ''}
+              ${spfExtras}
+            `}
           </div>
         </div>`);
     }

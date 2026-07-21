@@ -258,6 +258,13 @@ const Questionnaire = (() => {
       ]
     },
 
+    // Q-ROUTINE — Ma routine actuelle (produits déjà utilisés)
+    {
+      id: 'qcurrent', key: 'currentRoutine', type: 'current-routine', required: false, skipIf: null,
+      question: '🧴 Quels produits utilises-tu déjà ?',
+      subtitle: 'On part de ta routine actuelle. On garde ce qui te va, on remplace seulement ce qui ne convient pas. (Facultatif)'
+    },
+
     // Q15 — Champ libre
     {
       id: 'q15', key: 'freeText', type: 'textarea',
@@ -483,8 +490,106 @@ const Questionnaire = (() => {
       case 'face-map':  return _renderFaceMap(q);
       case 'photo-step':return _renderPhotoStep(q);
       case 'textarea':  return _renderTextarea(q);
+      case 'current-routine': return _renderCurrentRoutine(q);
       default:          return '';
     }
+  }
+
+  // ─── Étape « Ma routine actuelle » ────────────────────────────
+  function _renderCurrentRoutine() {
+    return `
+      <div class="cr-step">
+        <div class="cr-search-wrap">
+          <input type="text" id="crSearchInput" class="cr-search-input" autocomplete="off"
+                 placeholder="🔍 Rechercher un produit (ex : Effaclar, CeraVe…)"
+                 oninput="Questionnaire.crSearch(this.value)">
+          <div id="crSearchResults" class="cr-search-results"></div>
+        </div>
+        <div id="crManualZone" class="cr-manual-zone"></div>
+        <button type="button" class="cr-manual-toggle" onclick="Questionnaire.crToggleManual()">
+          + Je ne trouve pas mon produit → l'ajouter à la main
+        </button>
+        <div id="crList" class="cr-list">${_renderCrList()}</div>
+      </div>`;
+  }
+
+  function _renderCrList() {
+    const l = (typeof CurrentRoutine !== 'undefined') ? CurrentRoutine.list() : [];
+    if (!l.length) {
+      return '<p class="cr-empty">Aucun produit pour l\'instant — tu peux aussi partir de zéro et passer cette étape.</p>';
+    }
+    return l.map(e => `
+      <div class="cr-item${e.loved ? ' loved' : ''}">
+        <div class="cr-item-main">
+          <span class="cr-item-cat">${CurrentRoutine.catLabel(e.category)}</span>
+          <span class="cr-item-name">${e.brand ? e.brand + ' ' : ''}${e.name}</span>
+        </div>
+        <button type="button" class="cr-love-btn${e.loved ? ' on' : ''}" title="J'adore, à garder"
+                onclick="Questionnaire.crToggleLove('${e._key}')">${e.loved ? '❤️' : '🤍'}</button>
+        <button type="button" class="cr-remove-btn" title="Retirer"
+                onclick="Questionnaire.crRemove('${e._key}')">×</button>
+      </div>`).join('');
+  }
+
+  function crSearch(query) {
+    const box = document.getElementById('crSearchResults');
+    if (!box) return;
+    const res = (typeof CurrentRoutine !== 'undefined') ? CurrentRoutine.searchCatalog(query) : [];
+    if (!query || query.trim().length < 2) { box.innerHTML = ''; return; }
+    if (!res.length) {
+      box.innerHTML = '<div class="cr-noresult">Aucun résultat — ajoute-le à la main ci-dessous 👇</div>';
+      return;
+    }
+    box.innerHTML = res.map(p => `
+      <div class="cr-result" onclick="Questionnaire.crAdd('${p.id}')">
+        <span class="cr-result-brand">${p.brand || ''}</span>
+        <span class="cr-result-name">${p.name || ''}</span>
+        <span class="cr-result-add">+ Ajouter</span>
+      </div>`).join('');
+  }
+
+  function crAdd(id) {
+    CurrentRoutine.addFromCatalog(id);
+    const input = document.getElementById('crSearchInput');
+    if (input) input.value = '';
+    const box = document.getElementById('crSearchResults');
+    if (box) box.innerHTML = '';
+    _refreshCrList();
+  }
+
+  function crToggleManual() {
+    const zone = document.getElementById('crManualZone');
+    if (!zone) return;
+    if (zone.dataset.open === '1') { zone.dataset.open = '0'; zone.innerHTML = ''; return; }
+    zone.dataset.open = '1';
+    const opts = CurrentRoutine.CATEGORIES.map(c => `<option value="${c.value}">${c.label}</option>`).join('');
+    zone.innerHTML = `
+      <div class="cr-manual-form">
+        <input type="text" id="crManualBrand" class="cr-manual-input" placeholder="Marque (ex : CeraVe)">
+        <input type="text" id="crManualName"  class="cr-manual-input" placeholder="Nom du produit *">
+        <select id="crManualCat" class="cr-manual-input">${opts}</select>
+        <button type="button" class="cr-manual-add" onclick="Questionnaire.crAddManual()">Ajouter à ma routine</button>
+      </div>`;
+  }
+
+  function crAddManual() {
+    const brand = document.getElementById('crManualBrand')?.value;
+    const name  = document.getElementById('crManualName')?.value;
+    const cat   = document.getElementById('crManualCat')?.value;
+    if (!name || !name.trim()) { showToast('Indique au moins le nom du produit', 'warning'); return; }
+    CurrentRoutine.addManual(brand, name, cat);
+    const zone = document.getElementById('crManualZone');
+    if (zone) { zone.dataset.open = '0'; zone.innerHTML = ''; }
+    showToast('Produit ajouté à ta routine ✦', 'success', 1800);
+    _refreshCrList();
+  }
+
+  function crToggleLove(key) { CurrentRoutine.toggleLove(key); _refreshCrList(); }
+  function crRemove(key)     { CurrentRoutine.remove(key);     _refreshCrList(); }
+
+  function _refreshCrList() {
+    const el = document.getElementById('crList');
+    if (el) el.innerHTML = _renderCrList();
   }
 
   function _renderChoices(q) {
@@ -1252,6 +1357,9 @@ const Questionnaire = (() => {
     // Compatibilité ageGroup
     if (!answers.ageGroup && answers.age) answers.ageGroup = answers.age;
 
+    // Enregistrer les produits saisis manuellement (enrichissement catalogue)
+    if (typeof CurrentRoutine !== 'undefined') CurrentRoutine.saveManual();
+
     const { routine, log } = RulesEngine.evaluate(answers);
     AppState.routine = { ...routine, log };
     // Seed STABLE : fige les produits de CETTE routine (mêmes produits au
@@ -1670,6 +1778,7 @@ const Questionnaire = (() => {
     continueFromAnalysis,
     next, prev, submit,
     shareColorimetry,
+    crSearch, crAdd, crToggleManual, crAddManual, crToggleLove, crRemove,
     QUESTIONS, MAKEUP_QUESTIONS
   };
 

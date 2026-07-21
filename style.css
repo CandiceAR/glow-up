@@ -9630,3 +9630,107 @@ em { font-style: italic; color: var(--nude); }
 
 /* Bouton partage colorimétrie */
 .colo-share-btn { width: 100%; max-width: 320px; margin: 22px auto 0; display: block; }
+
+/* ============================================================
+   Étape « Ma routine actuelle » (currentRoutine.js)
+   ============================================================ */
+.cr-step { display: flex; flex-direction: column; gap: 14px; text-align: left; }
+
+.cr-search-wrap { position: relative; }
+.cr-search-input,
+.cr-manual-input {
+  width: 100%; padding: 14px 16px; border: 1.5px solid var(--sand);
+  border-radius: var(--radius-sm); font-family: var(--font-sans); font-size: 15px;
+  background: var(--white); color: var(--charcoal); box-sizing: border-box;
+}
+.cr-search-input:focus,
+.cr-manual-input:focus { outline: none; border-color: var(--nude); }
+
+.cr-search-results { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.cr-result {
+  display: flex; align-items: center; gap: 8px; padding: 11px 14px;
+  background: var(--cream); border: 1px solid var(--sand); border-radius: var(--radius-sm);
+  cursor: pointer; transition: border-color .15s, background .15s;
+}
+.cr-result:hover { border-color: var(--nude); background: var(--white); }
+.cr-result-brand { font-weight: 600; color: var(--charcoal); font-size: 14px; }
+.cr-result-name  { color: var(--muted); font-size: 13px; flex: 1; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cr-result-add   { color: var(--nude); font-weight: 600; font-size: 13px; white-space: nowrap; }
+.cr-noresult { padding: 10px 4px; color: var(--muted); font-size: 13px; }
+
+.cr-manual-toggle {
+  background: none; border: none; color: var(--nude); font-family: var(--font-sans);
+  font-size: 14px; font-weight: 600; cursor: pointer; text-align: left; padding: 2px 0;
+}
+.cr-manual-form { display: flex; flex-direction: column; gap: 8px; padding: 12px;
+  background: var(--cream); border-radius: var(--radius-sm); }
+.cr-manual-add {
+  padding: 12px; background: var(--charcoal); color: var(--white); border: none;
+  border-radius: var(--radius-sm); font-family: var(--font-sans); font-weight: 600;
+  font-size: 14px; cursor: pointer;
+}
+
+.cr-list { display: flex; flex-direction: column; gap: 8px; }
+.cr-empty { color: var(--muted); font-size: 13px; font-style: italic; padding: 4px 0; }
+.cr-item {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+  background: var(--white); border: 1px solid var(--sand); border-radius: var(--radius-sm);
+}
+.cr-item.loved { border-color: var(--rose-deep); background: rgba(232,197,191,0.12); }
+.cr-item-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.cr-item-cat  { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--nude); font-weight: 600; }
+.cr-item-name { font-size: 14px; color: var(--charcoal); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cr-love-btn, .cr-remove-btn {
+  background: none; border: none; cursor: pointer; font-size: 18px; line-height: 1;
+  padding: 4px; flex-shrink: 0;
+}
+.cr-remove-btn { color: var(--muted); font-size: 22px; }
+
+/* Carte « produit que tu gardes » (dans la routine) */
+.cr-kept-card {
+  border: 1.5px solid var(--success); border-radius: var(--radius);
+  background: rgba(39,174,96,0.05); overflow: hidden; position: relative;
+}
+.cr-kept-badge {
+  background: var(--success); color: var(--white); font-size: 12px; font-weight: 700;
+  padding: 6px 12px; display: inline-block; border-bottom-right-radius: var(--radius-sm);
+}
+.cr-kept-body { display: flex; gap: 14px; padding: 14px 16px 16px; align-items: center; }
+.cr-kept-img  { width: 64px; height: 64px; object-fit: contain; border-radius: var(--radius-sm);
+  background: var(--white); flex-shrink: 0; }
+.cr-kept-icon { width: 64px; height: 64px; display: flex; align-items: center; justify-content: center;
+  font-size: 30px; background: var(--white); border-radius: var(--radius-sm); flex-shrink: 0; }
+.cr-kept-info { flex: 1; min-width: 0; }
+.cr-kept-brand { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; }
+.cr-kept-name  { font-family: var(--font-serif); font-size: 19px; color: var(--charcoal); margin: 2px 0 6px; }
+.cr-kept-reason { font-size: 13px; color: var(--success); font-weight: 600; margin: 0 0 4px; }
+.cr-kept-note   { font-size: 12px; color: var(--muted); margin: 0; }
+
+/* Note « à la place de ton produit » sous une reco */
+.cr-replace-note {
+  font-size: 13px; color: var(--charcoal); background: var(--orange-light);
+  border-left: 3px solid var(--orange); padding: 10px 12px; border-radius: var(--radius-sm);
+  margin-bottom: 10px; line-height: 1.4;
+}
+
+/* Récap « Ta routine actuelle » (écran résultats) */
+.cr-recap {
+  background: var(--white); border: 1px solid var(--sand); border-radius: var(--radius);
+  padding: 18px; margin: 18px 0; box-shadow: var(--shadow-sm);
+}
+.cr-recap-head { display: flex; gap: 12px; align-items: center; margin-bottom: 14px; }
+.cr-recap-emoji { font-size: 26px; }
+.cr-recap-head h2 { font-family: var(--font-serif); font-size: 22px; color: var(--charcoal); margin: 0; }
+.cr-recap-head p  { font-size: 13px; color: var(--muted); margin: 2px 0 0; }
+.cr-recap-row {
+  display: flex; gap: 10px; align-items: flex-start; padding: 10px 0;
+  border-top: 1px solid var(--sand);
+}
+.cr-recap-verdict { font-size: 16px; font-weight: 700; flex-shrink: 0; width: 20px; text-align: center; }
+.cr-keep .cr-recap-verdict    { color: var(--success); }
+.cr-replace .cr-recap-verdict { color: var(--orange-deep); }
+.cr-recap-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.cr-recap-txt strong { font-size: 14px; color: var(--charcoal); }
+.cr-recap-txt span   { font-size: 13px; color: var(--muted); line-height: 1.4; }
+.cr-recap-heart { flex-shrink: 0; }
