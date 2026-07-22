@@ -27,12 +27,11 @@ module.exports = async (req, res) => {
   if (!apiKey) return res.status(503).json({ error: 'ANTHROPIC_API_KEY manquante' });
 
   const { product, candidates, userSkin } = req.body || {};
-  if (!product || !Array.isArray(candidates) || !candidates.length) {
-    return res.status(400).json({ error: 'product/candidates manquants' });
-  }
+  if (!product) return res.status(400).json({ error: 'product manquant' });
+  const cands = Array.isArray(candidates) ? candidates : [];
 
   // Limiter la charge : max 25 candidats, champs compacts
-  const slim = candidates.slice(0, 25).map(c => ({
+  const slim = cands.slice(0, 25).map(c => ({
     id: c.id, brand: c.brand, name: c.name, category: c.category,
     price: c.price, actives: (c.ingredientTags || []).slice(0, 8),
     concerns: (c.concernTags || []).slice(0, 8),
@@ -61,18 +60,20 @@ Ta mission : trouver le VRAI dupe du produit photographié — un produit qui of
 RÈGLES IMPÉRATIVES :
 - Un dupe n'est PAS juste "moins cher" : il doit réellement RESSEMBLER (catégorie, fonction, actifs principaux, texture, fini, couvrance/tenue pour le maquillage, résultat, teinte/sous-ton).
 - Le prix est essentiel : un vrai dupe est significativement MOINS CHER que le produit d'origine.
-- Si AUCUN candidat n'est un vrai dupe (rien de vraiment ressemblant et moins cher), mets "trueDupeExists": false et NE PROPOSE PAS de dupe bidon. Explique dans "noDupeMessage" (ex: le produit a déjà un excellent rapport qualité-prix).
+- PRIORITÉ ABSOLUE au catalogue ("results" via id). N'utilise "externalResults" QUE si le catalogue ne contient PAS de vrai dupe convaincant (aucun candidat avec une similarité ≥ 70).
+- "externalResults" : dupes RÉELS et connus que tu proposes hors de notre catalogue (ex: The Ordinary, e.l.f., Inkey List, Revolution…). Donne marque + nom exact + prix public approximatif en euros. N'invente jamais un produit qui n'existe pas.
+- Si AUCUN vrai dupe n'existe (ni catalogue ni ailleurs — le produit a déjà un excellent rapport qualité-prix), mets "trueDupeExists": false, laisse "results" et "externalResults" vides, et explique dans "noDupeMessage".
 - La recherche part TOUJOURS du produit photographié, PAS du profil de peau. Le profil sert seulement à remplir "skinFit"/"skinNote".
-- "skinFit" : "adapted" (adapté à sa peau), "caution" (peut convenir avec précautions), "unfit" (peu adapté). Même un dupe "unfit" doit être affiché comme dupe.
-- "bestSkinAlternativeId" : parmi les candidats, celui qui ressemble au produit MAIS est le mieux adapté à SA peau (peut différer du meilleur dupe). null si identique au meilleur dupe ou aucun.
+- "skinFit" : "adapted" / "caution" / "unfit". Même un dupe "unfit" doit être affiché comme dupe.
+- "bestSkinAlternativeId" : parmi les candidats du CATALOGUE (id), celui qui ressemble au produit MAIS est le mieux adapté à SA peau. null si identique au meilleur dupe ou aucun.
 
 Retourne UNIQUEMENT ce JSON, sans texte avant/après :
 {
   "trueDupeExists": boolean,
-  "noDupeMessage": "message si trueDupeExists=false, sinon ''",
+  "noDupeMessage": "message si aucun vrai dupe, sinon ''",
   "results": [
     {
-      "id": "id d'un candidat",
+      "id": "id d'un candidat du catalogue",
       "similarity": 0-100,
       "commonPoints": ["2-4 points communs concrets"],
       "differences": ["1-3 différences honnêtes"],
@@ -82,9 +83,23 @@ Retourne UNIQUEMENT ce JSON, sans texte avant/après :
       "skinNote": "phrase courte sur l'adéquation à sa peau"
     }
   ],
-  "bestSkinAlternativeId": "id ou null"
+  "externalResults": [
+    {
+      "brand": "marque du dupe hors catalogue",
+      "name": "nom exact du produit",
+      "approxPrice": number,
+      "similarity": 0-100,
+      "commonPoints": ["..."],
+      "differences": ["..."],
+      "why": "phrase courte",
+      "role": "closest | value | cheapest",
+      "skinFit": "adapted | caution | unfit",
+      "skinNote": "phrase courte"
+    }
+  ],
+  "bestSkinAlternativeId": "id du catalogue ou null"
 }
-Donne au maximum 3 résultats, du plus similaire au moins similaire. Utilise les "role" pour marquer: le plus proche (closest), le meilleur rapport qualité-prix (value), le moins cher (cheapest).`;
+Donne au maximum 3 résultats au total (catalogue + externes confondus), du plus similaire au moins similaire.`;
 
   try {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
@@ -132,10 +147,32 @@ Donne au maximum 3 résultats, du plus similaire au moins similaire. Utilise les
         why:          typeof r.why === 'string' ? r.why.slice(0, 200) : '',
         role:         ROLES.includes(r.role) ? r.role : 'closest',
         skinFit:      FITS.includes(r.skinFit) ? r.skinFit : 'caution',
-        skinNote:     typeof r.skinNote === 'string' ? r.skinNote.slice(0, 200) : ''
+        skinNote:     typeof r.skinNote === 'string' ? r.skinNote.slice(0, 200) : '',
+        source:       'catalog'
       })) : [];
 
-    const trueDupeExists = Boolean(parsed.trueDupeExists) && results.length > 0;
+    // Dupes hors catalogue (repli quand le catalogue ne couvre pas)
+    const externalResults = Array.isArray(parsed.externalResults) ? parsed.externalResults
+      .filter(r => r && (r.brand || r.name))
+      .slice(0, 3)
+      .map(r => ({
+        brand:        typeof r.brand === 'string' ? r.brand.slice(0, 60) : '',
+        name:         typeof r.name === 'string' ? r.name.slice(0, 120) : '',
+        approxPrice:  (typeof r.approxPrice === 'number' && r.approxPrice > 0 && r.approxPrice < 1000) ? Math.round(r.approxPrice * 100) / 100 : 0,
+        similarity:   Math.max(0, Math.min(100, parseInt(r.similarity, 10) || 0)),
+        commonPoints: strArr(r.commonPoints),
+        differences:  strArr(r.differences),
+        why:          typeof r.why === 'string' ? r.why.slice(0, 200) : '',
+        role:         ROLES.includes(r.role) ? r.role : 'closest',
+        skinFit:      FITS.includes(r.skinFit) ? r.skinFit : 'caution',
+        skinNote:     typeof r.skinNote === 'string' ? r.skinNote.slice(0, 200) : '',
+        source:       'external'
+      })) : [];
+
+    // Garder au max 3 résultats au total, catalogue prioritaire
+    const trimmedExternal = externalResults.slice(0, Math.max(0, 3 - results.length));
+
+    const trueDupeExists = Boolean(parsed.trueDupeExists) && (results.length > 0 || trimmedExternal.length > 0);
     const bestAlt = (parsed.bestSkinAlternativeId && validIds.has(parsed.bestSkinAlternativeId))
       ? parsed.bestSkinAlternativeId : null;
 
@@ -145,6 +182,7 @@ Donne au maximum 3 résultats, du plus similaire au moins similaire. Utilise les
         ? parsed.noDupeMessage.slice(0, 400)
         : "Après analyse, nous n'avons pas trouvé de véritable dupe pour ce produit. Son excellent rapport qualité-prix explique qu'il n'existe pas actuellement d'alternative significativement moins chère aux performances équivalentes.") : '',
       results: trueDupeExists ? results : [],
+      externalResults: trueDupeExists ? trimmedExternal : [],
       bestSkinAlternativeId: bestAlt
     });
 

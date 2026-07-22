@@ -11,7 +11,7 @@ const DupeFinder = (() => {
 
   // Vue courante + données de la session de scan
   let S = { view: 'home', photo: null, identified: null,
-            results: null, noDupeMsg: '', bestAltId: null, trueDupe: false, busy: false };
+            results: null, externalResults: [], noDupeMsg: '', bestAltId: null, trueDupe: false, busy: false };
 
   let _barcodeStream = null, _barcodeStop = false;
 
@@ -59,7 +59,7 @@ const DupeFinder = (() => {
   function initScreen() {
     _stopBarcode();
     // Nouvelle session propre à chaque entrée
-    S = { view: 'home', photo: null, identified: null, results: null,
+    S = { view: 'home', photo: null, identified: null, results: null, externalResults: [],
           noDupeMsg: '', bestAltId: null, trueDupe: false, busy: false };
     render();
   }
@@ -200,6 +200,48 @@ const DupeFinder = (() => {
 
   function _catalogProduct(id) { return (AppState.products.catalog || []).find(p => p.id === id); }
   function _compareUrl(p) { return `https://www.google.com/search?q=${encodeURIComponent((p.brand || '') + ' ' + (p.name || ''))}&tbm=shop`; }
+  function _amazonSearch(brand, name) { return `https://www.amazon.fr/s?k=${encodeURIComponent(((brand || '') + ' ' + (name || '')).trim())}&tag=kan10ar-21`; }
+
+  // Carte d'un dupe HORS catalogue (proposé par l'IA, lien Amazon affilié)
+  function _externalCard(r) {
+    const est = S.identified?.estPrice || 0;
+    const savings = (est > 0 && r.approxPrice > 0 && r.approxPrice < est) ? (est - r.approxPrice) : 0;
+    const fit = FIT[r.skinFit] || FIT.caution;
+    const buyUrl = _amazonSearch(r.brand, r.name);
+    return `
+      <article class="df-result df-result--ext">
+        <div class="df-result-role">${ROLE_LABEL[r.role] || ROLE_LABEL.closest} <span class="df-ext-tag">hors catalogue</span></div>
+        <div class="df-result-top">
+          <div class="df-result-img-wrap">
+            <div class="df-result-noimg">🔎</div>
+            ${r.similarity > 0 ? `<span class="df-sim">${r.similarity}%<small>similaire</small></span>` : ''}
+          </div>
+          <div class="df-result-info">
+            <span class="df-result-brand">${r.brand || ''}</span>
+            <h3 class="df-result-name">${r.name || ''}</h3>
+            <div class="df-result-price">
+              <strong>${r.approxPrice > 0 ? '≈ ' + r.approxPrice.toFixed(2) + ' €' : 'Prix à vérifier'}</strong>
+              ${savings > 0 ? `<span class="df-save">≈ ${savings.toFixed(2)} € d'économie</span>` : ''}
+            </div>
+            <div class="df-fit ${fit.cls}">${fit.icon} ${fit.label}</div>
+          </div>
+        </div>
+        ${r.why ? `<p class="df-why-line">${r.why}</p>` : ''}
+        <details class="df-why">
+          <summary>Pourquoi est-ce un dupe&nbsp;?</summary>
+          <div class="df-why-body">
+            ${r.commonPoints?.length ? `<p class="df-why-h">✓ Points communs</p><ul>${r.commonPoints.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}
+            ${r.differences?.length ? `<p class="df-why-h">≠ Différences</p><ul>${r.differences.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}
+            ${r.skinNote ? `<p class="df-why-h">🧴 Pour ta peau</p><p class="df-skinnote">${r.skinNote}</p>` : ''}
+            <p class="df-ext-note">✨ Ce dupe ne fait pas encore partie de notre sélection — prix indicatif, à confirmer sur la boutique.</p>
+          </div>
+        </details>
+        <div class="df-result-ctas">
+          <a class="pc-cta pc-cta--compare" href="https://www.google.com/search?q=${encodeURIComponent((r.brand || '') + ' ' + (r.name || ''))}&tbm=shop" target="_blank" rel="noopener">🔍 Comparer les prix</a>
+          <a class="pc-cta pc-cta--buy" href="${buyUrl}" target="_blank" rel="noopener nofollow sponsored">Voir sur Amazon →</a>
+        </div>
+      </article>`;
+  }
 
   function _resultCard(r, idx) {
     const p = _catalogProduct(r.id);
@@ -257,8 +299,11 @@ const DupeFinder = (() => {
         </div>
       </div>`;
 
-    // Pas de vrai dupe
-    if (!S.trueDupe || !S.results?.length) {
+    const catRes = S.results || [];
+    const extRes = S.externalResults || [];
+
+    // Pas de vrai dupe (ni catalogue ni externe)
+    if (!S.trueDupe || (!catRes.length && !extRes.length)) {
       const alt = S.bestAltId ? _catalogProduct(S.bestAltId) : null;
       return `
         <div class="df-results">
@@ -272,14 +317,19 @@ const DupeFinder = (() => {
         </div>`;
     }
 
-    // Avertissement si le meilleur dupe n'est pas adapté
-    const best = S.results[0];
+    // Avertissement si le meilleur dupe (catalogue prioritaire, sinon externe) n'est pas adapté
+    const best = catRes[0] || extRes[0];
     const warn = (best && best.skinFit === 'unfit')
       ? `<div class="df-warn">⚠️ C'est le dupe le plus proche de ton produit, mais il ne semble pas idéal pour ta peau.</div>` : '';
 
-    // Alternative peau distincte du meilleur dupe
+    const catHtml = catRes.map((r, i) => _resultCard(r, i)).join('');
+    const extHtml = extRes.length
+      ? `<div class="df-altsep"><span>Trouvés au-delà de notre sélection</span></div>${extRes.map(r => _externalCard(r)).join('')}`
+      : '';
+
+    // Alternative peau distincte du meilleur dupe (catalogue)
     let altBlock = '';
-    if (S.bestAltId && S.bestAltId !== best.id) {
+    if (S.bestAltId && (!best || S.bestAltId !== best.id)) {
       const alt = _catalogProduct(S.bestAltId);
       if (alt) altBlock = `
         <div class="df-altsep"><span>Mieux adapté à ta peau</span></div>
@@ -291,7 +341,7 @@ const DupeFinder = (() => {
       <div class="df-results">
         ${header}
         ${warn}
-        <div class="df-list">${S.results.map((r, i) => _resultCard(r, i)).join('')}</div>
+        <div class="df-list">${catHtml}${extHtml}</div>
         ${altBlock}
         ${_footer(left)}
       </div>`;
@@ -406,21 +456,13 @@ const DupeFinder = (() => {
     if (!id) { S.view = 'home'; render(); return; }
 
     S.view = 'searching'; render();
+    // Pré-filtre catalogue ; même vide, l'IA peut proposer un dupe hors catalogue
     const candidates = _shortlist(id);
     _saveScan(id, candidates.length > 0);
 
-    // Aucun candidat dans la bonne catégorie → pas de dupe possible
-    if (!candidates.length) {
-      S.trueDupe = false; S.results = []; S.bestAltId = null;
-      S.noDupeMsg = "On n'a pas encore de produit comparable dans notre catalogue pour cette catégorie. On l'a bien noté pour l'enrichir 💛";
-      _inc();
-      S.view = 'results'; render();
-      return;
-    }
-
     try {
       const controller = new AbortController();
-      const tid = setTimeout(() => controller.abort(), 30000);
+      const tid = setTimeout(() => controller.abort(), 40000);
       const resp = await fetch('/api/dupeMatch', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ product: id, candidates, userSkin: _userSkin() }),
@@ -429,10 +471,11 @@ const DupeFinder = (() => {
       clearTimeout(tid);
       const data = await resp.json().catch(() => null);
       if (!resp.ok || !data) throw new Error('réponse invalide');
-      S.trueDupe   = !!data.trueDupeExists;
-      S.results    = data.results || [];
-      S.noDupeMsg  = data.noDupeMessage || '';
-      S.bestAltId  = data.bestSkinAlternativeId || null;
+      S.trueDupe        = !!data.trueDupeExists;
+      S.results         = data.results || [];
+      S.externalResults = data.externalResults || [];
+      S.noDupeMsg       = data.noDupeMessage || '';
+      S.bestAltId       = data.bestSkinAlternativeId || null;
       _inc();
       S.view = 'results'; render();
     } catch (err) {
