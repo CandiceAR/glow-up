@@ -100,6 +100,7 @@ function showScreen(name) {
   if (name === 'skinpedia')       Skinpedia.initScreen();
   if (name === 'plans')           { if (typeof Subscription !== 'undefined') Subscription.renderPlansPage(); }
   if (name === 'premium')         { if (typeof Subscription !== 'undefined') Subscription.renderPremiumPage(); }
+  if (name === 'dupe-finder')     { if (typeof DupeFinder !== 'undefined') DupeFinder.initScreen(); }
 
   // ─── Écrans avec gating ───────────────────────────────────────
   if (name === 'makeup') {

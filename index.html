@@ -6,7 +6,7 @@
   <title>Glow Up — Skincare & Maquillage Virtuel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=221">
+  <link rel="stylesheet" href="style.css?v=222">
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#C9A98A">
@@ -44,6 +44,7 @@
         <a class="nav-link" id="navSkinJourney" data-screen="journey"   href="#" onclick="goToSkinJourney(); return false;" style="display:none">Skin Journey</a>
         <a class="nav-link nav-link-primary" data-screen="questionnaire" href="#" onclick="goToSkincare(); return false;">Skincare</a>
         <a class="nav-link nav-link-primary" data-screen="makeup"        href="#" onclick="goToMakeup(); return false;">Make-up</a>
+        <a class="nav-link"                 data-screen="dupe-finder"   href="#" onclick="showScreen('dupe-finder'); return false;">Trouver son dupe 🔍</a>
         <a class="nav-link nav-link-coach"   data-screen="coach"         href="#" onclick="showScreen('coach'); return false;">Coach ⭐</a>
         <a class="nav-link nav-link-secondary" data-screen="skinpedia"   href="#" onclick="showScreen('skinpedia'); return false;">Skinpedia</a>
         <a class="nav-link nav-link-primary" data-screen="premium"       href="#" onclick="showScreen('premium'); return false;">Offres</a>
@@ -78,6 +79,18 @@
           <p class="hero-login-hint" id="heroLoginHint">
             Déjà un compte ? <a href="#" onclick="openAuthModal(); return false;">Connecte-toi</a> pour retrouver ton analyse et ta progression.
           </p>
+        </div>
+      </section>
+
+      <!-- Trouver son dupe — entrée mise en avant -->
+      <section class="section df-home-cta-wrap">
+        <div class="df-home-cta" onclick="showScreen('dupe-finder')" role="button" tabindex="0">
+          <span class="df-home-cta-emoji">📸</span>
+          <div class="df-home-cta-txt">
+            <h3>Trouver le dupe d'un produit</h3>
+            <p>Prends-le en photo, Glow Up te trouve son dupe le plus proche, au meilleur prix.</p>
+          </div>
+          <span class="df-home-cta-arrow">→</span>
         </div>
       </section>
 
@@ -509,7 +522,24 @@
       </div>
     </div><!-- /screen-premium -->
 
+    <div class="screen" id="screen-dupe-finder">
+      <div class="screen-inner">
+        <div id="dupeFinderContent">
+          <p class="loading-placeholder">Chargement…</p>
+        </div>
+      </div>
+    </div><!-- /screen-dupe-finder -->
+
   </div><!-- /app -->
+
+  <!-- ===== FAB « Trouver son dupe » (mobile) ===== -->
+  <button class="df-fab" id="dupeFab" onclick="showScreen('dupe-finder')" aria-label="Trouver son dupe">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+      <circle cx="12" cy="13" r="3.2"/>
+    </svg>
+    <span class="df-fab-label">Dupe</span>
+  </button>
 
   <!-- ===== MOBILE BOTTOM NAV ===== -->
   <nav class="mobile-nav" id="mobileNav">
@@ -613,7 +643,8 @@
   <script src="js/firestoreProducts.js?v=192"></script>
   <script src="js/subscription.js?v=221"></script>
   <script src="js/routineSaver.js?v=192"></script>
-  <script src="js/app.js?v=202"></script>
+  <script src="js/dupeFinder.js?v=1"></script>
+  <script src="js/app.js?v=203"></script>
 
   <!-- Bandeau navigateur in-app (Instagram, TikTok…) : Google Sign-In y est bloqué -->
   <script>

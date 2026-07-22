@@ -36,6 +36,12 @@
     "api/faceVision.js": {
       "maxDuration": 30
     },
+    "api/identifyProduct.js": {
+      "maxDuration": 30
+    },
+    "api/dupeMatch.js": {
+      "maxDuration": 45
+    },
     "api/uploadImage.js": {
       "maxDuration": 30
     },
