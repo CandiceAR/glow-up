@@ -169,19 +169,34 @@ Donne au maximum 3 résultats au total (catalogue + externes confondus), du plus
         source:       'external'
       })) : [];
 
+    // Seuil minimum : en dessous, ce n'est pas un vrai dupe → on ne le propose pas
+    const MIN_SIM = 55;
+    const strongCatalog  = results.filter(r => r.similarity >= MIN_SIM);
+    const strongExternal = externalResults.filter(r => r.similarity >= MIN_SIM);
     // Garder au max 3 résultats au total, catalogue prioritaire
-    const trimmedExternal = externalResults.slice(0, Math.max(0, 3 - results.length));
+    const trimmedExternal = strongExternal.slice(0, Math.max(0, 3 - strongCatalog.length));
 
-    const trueDupeExists = Boolean(parsed.trueDupeExists) && (results.length > 0 || trimmedExternal.length > 0);
+    const trueDupeExists = Boolean(parsed.trueDupeExists) && (strongCatalog.length > 0 || trimmedExternal.length > 0);
     const bestAlt = (parsed.bestSkinAlternativeId && validIds.has(parsed.bestSkinAlternativeId))
       ? parsed.bestSkinAlternativeId : null;
 
+    // Message honnête si pas de vrai dupe (aucun / trop faible similarité)
+    let noDupeMessage = '';
+    if (!trueDupeExists) {
+      if (Boolean(parsed.trueDupeExists)) {
+        // L'IA avait des pistes mais aucune assez proche (< seuil)
+        noDupeMessage = "Les produits les plus proches restent trop différents pour être de vrais dupes. On préfère ne pas t'en proposer un approximatif.";
+      } else {
+        noDupeMessage = (typeof parsed.noDupeMessage === 'string' && parsed.noDupeMessage)
+          ? parsed.noDupeMessage.slice(0, 400)
+          : "Après analyse, nous n'avons pas trouvé de véritable dupe pour ce produit. Son excellent rapport qualité-prix explique qu'il n'existe pas actuellement d'alternative significativement moins chère aux performances équivalentes.";
+      }
+    }
+
     return res.status(200).json({
       trueDupeExists,
-      noDupeMessage: !trueDupeExists ? (typeof parsed.noDupeMessage === 'string' && parsed.noDupeMessage
-        ? parsed.noDupeMessage.slice(0, 400)
-        : "Après analyse, nous n'avons pas trouvé de véritable dupe pour ce produit. Son excellent rapport qualité-prix explique qu'il n'existe pas actuellement d'alternative significativement moins chère aux performances équivalentes.") : '',
-      results: trueDupeExists ? results : [],
+      noDupeMessage,
+      results: trueDupeExists ? strongCatalog : [],
       externalResults: trueDupeExists ? trimmedExternal : [],
       bestSkinAlternativeId: bestAlt
     });
