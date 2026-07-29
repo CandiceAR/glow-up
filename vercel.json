@@ -42,6 +42,9 @@
     "api/dupeMatch.js": {
       "maxDuration": 45
     },
+    "api/analyzeRoutine.js": {
+      "maxDuration": 60
+    },
     "api/uploadImage.js": {
       "maxDuration": 30
     },

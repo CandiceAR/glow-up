@@ -57,6 +57,21 @@ const AppState = {
 };
 
 // ─── Navigation ───────────────────────────────────────────────
+// ─── FAB scan (menu 2 choix : dupe / analyse routine) ─────────
+function toggleFabMenu(e) {
+  if (e) e.stopPropagation();
+  document.getElementById('fabWrap')?.classList.toggle('open');
+}
+function openScan(name) {
+  document.getElementById('fabWrap')?.classList.remove('open');
+  showScreen(name);
+}
+// Fermer le menu si on clique ailleurs
+document.addEventListener('click', (ev) => {
+  const wrap = document.getElementById('fabWrap');
+  if (wrap && wrap.classList.contains('open') && !wrap.contains(ev.target)) wrap.classList.remove('open');
+});
+
 function showScreen(name) {
   // Stopper l'analyse live caméra si on quitte la capture
   if (AppState.screen === 'capture' && name !== 'capture') {
@@ -101,6 +116,7 @@ function showScreen(name) {
   if (name === 'plans')           { if (typeof Subscription !== 'undefined') Subscription.renderPlansPage(); }
   if (name === 'premium')         { if (typeof Subscription !== 'undefined') Subscription.renderPremiumPage(); }
   if (name === 'dupe-finder')     { if (typeof DupeFinder !== 'undefined') DupeFinder.initScreen(); }
+  if (name === 'routine-analyzer'){ if (typeof RoutineAnalyzer !== 'undefined') RoutineAnalyzer.initScreen(); }
 
   // ─── Écrans avec gating ───────────────────────────────────────
   if (name === 'makeup') {
