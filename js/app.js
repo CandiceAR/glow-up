@@ -96,12 +96,13 @@ function showScreen(name) {
   window.scrollTo(0, 0);
   if (typeof Tracker !== 'undefined') Tracker.trackScreen(name);
 
-  // Masquer le FAB scan quand on est déjà dans un écran de scan
-  // (sinon il se superpose aux boutons "Continuer" en bas à droite)
+  // Le FAB scan ne s'affiche que sur les écrans de navigation (accueil, boutique).
+  // Ailleurs il se superposait aux boutons "Continuer" en bas à droite (questionnaire, scans…).
   const _fab = document.getElementById('fabWrap');
   if (_fab) {
     _fab.classList.remove('open');
-    _fab.classList.toggle('fab-hidden', name === 'dupe-finder' || name === 'routine-analyzer');
+    const FAB_SHOW = ['home', 'shop'];
+    _fab.classList.toggle('fab-hidden', !FAB_SHOW.includes(name));
   }
 
   // Mettre à jour les liens actifs de la nav (desktop + mobile)
