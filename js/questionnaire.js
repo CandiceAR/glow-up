@@ -1403,6 +1403,26 @@ const Questionnaire = (() => {
     if (a.sensitivity == null)      a.sensitivity = _deriveSensitivity(a, photo);
   }
 
+  // Réintègre les bons produits de « Analyser ma routine » dans la routine générée.
+  // Si l'utilisatrice n'a pas fait l'analyse → rien n'est ajouté (routine 100% nouveaux produits).
+  function _integrateRoutineAnalysisProducts() {
+    let ra = AppState.routineAnalysis;
+    if (!ra) {
+      try { ra = JSON.parse(localStorage.getItem('glow_routine_analysis') || 'null'); AppState.routineAnalysis = ra; } catch (e) {}
+    }
+    if (!ra || !Array.isArray(ra.keepProducts) || !ra.keepProducts.length) return;
+    if (typeof CurrentRoutine === 'undefined') return;
+    const list = CurrentRoutine.list();
+    ra.keepProducts.forEach(p => {
+      const exists = list.some(e => (e.name || '').toLowerCase().trim() === (p.name || '').toLowerCase().trim());
+      if (!exists) list.push({
+        _key: 'ra_' + Math.random().toString(36).slice(2, 9),
+        id: p.id || null, brand: p.brand || '', name: p.name || '',
+        category: p.category || 'other', fromCatalog: !!p.id, loved: true, forceKeep: true
+      });
+    });
+  }
+
   // ─── Submit ───────────────────────────────────────────────────
 
   function submit() {
@@ -1426,6 +1446,8 @@ const Questionnaire = (() => {
     // Compatibilité ageGroup
     if (!answers.ageGroup && answers.age) answers.ageGroup = answers.age;
 
+    // Intégrer les bons produits de l'analyse "Ma routine actuelle" (si faite)
+    _integrateRoutineAnalysisProducts();
     // Enregistrer les produits saisis manuellement (enrichissement catalogue)
     if (typeof CurrentRoutine !== 'undefined') CurrentRoutine.saveManual();
 

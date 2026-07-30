@@ -10027,3 +10027,16 @@ em { font-style: italic; color: var(--nude); }
 
 /* Masquer le FAB scan dans les écrans de scan (évite le chevauchement des boutons) */
 .fab-wrap.fab-hidden { display: none !important; }
+
+/* Bannière enregistrement + CTA nouvelle routine (analyse routine) */
+.ra-savecta { display: flex; align-items: center; gap: 12px; background: linear-gradient(135deg, var(--rose), var(--nude)); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 16px; }
+.ra-savecta-ic { font-size: 26px; flex-shrink: 0; }
+.ra-savecta-txt { flex: 1; min-width: 0; }
+.ra-savecta-txt strong { font-size: 15px; color: var(--charcoal); }
+.ra-savecta-txt p { font-size: 12px; margin: 2px 0 0; color: var(--charcoal); opacity: .85; line-height: 1.35; }
+.ra-savecta .btn { flex-shrink: 0; padding: 10px 16px; }
+.ra-saved { background: rgba(39,174,96,.1); color: var(--success); font-size: 13px; font-weight: 600; text-align: center; padding: 10px; border-radius: var(--radius-sm); margin-bottom: 16px; }
+.ra-newroutine { background: var(--charcoal); border-radius: var(--radius); padding: 22px 18px; text-align: center; margin: 8px 0 16px; }
+.ra-newroutine h3 { font-family: var(--font-serif); font-size: 22px; margin: 0 0 6px; color: var(--white); }
+.ra-newroutine p { font-size: 13px; margin: 0 0 14px; color: rgba(255,255,255,.82); line-height: 1.4; }
+.ra-newroutine .btn { background: var(--white); color: var(--charcoal); max-width: 340px; width: 100%; }

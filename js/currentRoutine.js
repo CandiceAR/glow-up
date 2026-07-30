@@ -110,6 +110,11 @@ const CurrentRoutine = (() => {
   function evaluate(entry) {
     const skinType = _userSkinType();
 
+    // Validé par l'analyse "Ma routine actuelle" → on garde, quelle que soit la catégorie
+    if (entry.forceKeep) {
+      return { verdict: 'keep', reason: 'Validée par ton analyse de routine ✓' };
+    }
+
     // Produit saisi manuellement : pas de données ingrédient → on fait confiance
     if (!entry.fromCatalog) {
       return { verdict: 'keep',

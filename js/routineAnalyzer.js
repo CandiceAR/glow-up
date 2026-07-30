@@ -387,11 +387,57 @@ const RoutineAnalyzer = (() => {
       const data = await resp.json().catch(() => null);
       if (!resp.ok || !data || typeof data.score !== 'number') throw new Error('réponse invalide');
       S.result = data;
+      _persistAnalysis(data);        // garde l'analyse + les bons produits à réintégrer
       S.view = 'results'; render();
     } catch (err) {
       console.warn('[RoutineAnalyzer] analyse échouée:', err.message);
       showToast('L\'analyse a échoué, réessaie dans un instant', 'error');
       S.view = 'quiz'; render();
+    }
+  }
+
+  // Produits jugés adaptés (verdict "adapted" ou dans la routine optimisée "keep")
+  function _computeKeep(result) {
+    const refs = new Set();
+    (result.optimized?.keep || []).forEach(r => refs.add(r));
+    (result.products || []).forEach(p => { if (p.verdict === 'adapted') refs.add(p.ref); });
+    return [...refs].map(ref => S.products[ref]).filter(Boolean).map(p => ({
+      id: p.id || null, brand: p.brand || '', name: p.name || '', category: p.category || 'other', fromCatalog: !!p.id
+    }));
+  }
+
+  function _persistAnalysis(result) {
+    const payload = {
+      score: result.score,
+      keepProducts: _computeKeep(result),
+      products: S.products.map(p => ({ id: p.id || null, brand: p.brand || '', name: p.name || '', category: p.category || 'other', fromCatalog: !!p.id })),
+      savedAt: Date.now()
+    };
+    AppState.routineAnalysis = payload;
+    try { localStorage.setItem('glow_routine_analysis', JSON.stringify(payload)); } catch (e) {}
+    _saveAnalysisFirestore(result);
+  }
+
+  async function _saveAnalysisFirestore(result) {
+    try {
+      const uid = AppState?.user?.uid;
+      if (!uid || typeof firebase === 'undefined' || !firebase.apps.length) return;
+      await firebase.firestore().collection('users').doc(uid).set({
+        routineAnalysis: {
+          score: result.score, keepProducts: AppState.routineAnalysis.keepProducts,
+          updatedAt: new Date().toISOString()
+        }
+      }, { merge: true });
+    } catch (err) { console.warn('[RoutineAnalyzer] save analyse Firestore échoué:', err.message); }
+  }
+
+  function saveAndRegister() {
+    if (typeof openAuthModal === 'function') {
+      openAuthModal('register', () => {
+        _saveAnalysisFirestore(S.result || {});
+        showToast('Analyse enregistrée ✦', 'success');
+        render();
+      });
     }
   }
 
@@ -459,9 +505,33 @@ const RoutineAnalyzer = (() => {
       detail = _renderDetail(r);
     }
 
-    return `<div class="ra-results">${freeBlock}${detail}
-      <button class="btn btn-outline ra-btn" onclick="RoutineAnalyzer.go('intro')">🔬 Analyser une autre routine</button>
+    return `<div class="ra-results">
+      ${_saveBanner()}
+      ${freeBlock}${detail}
+      <div class="ra-newroutine">
+        <h3>✨ Passe à ta routine améliorée</h3>
+        <p>On garde automatiquement tes produits adaptés et on complète seulement ce qu'il manque.</p>
+        <button class="btn btn-dark ra-btn-main" onclick="RoutineAnalyzer.buildNewRoutine()">Créer ma nouvelle routine →</button>
+      </div>
+      <button class="btn btn-ghost ra-btn" onclick="RoutineAnalyzer.go('intro')">🔬 Analyser une autre routine</button>
     </div>`;
+  }
+
+  function _saveBanner() {
+    if (AppState?.user?.uid) return `<div class="ra-saved">✓ Ton analyse est enregistrée dans ton compte</div>`;
+    return `<div class="ra-savecta">
+      <span class="ra-savecta-ic">💾</span>
+      <div class="ra-savecta-txt">
+        <strong>Garde ton analyse</strong>
+        <p>Crée ton compte pour la retrouver et intégrer tes bons produits à ta prochaine routine.</p>
+      </div>
+      <button class="btn btn-dark" onclick="RoutineAnalyzer.saveAndRegister()">Enregistrer</button>
+    </div>`;
+  }
+
+  function buildNewRoutine() {
+    if (typeof goToSkincare === 'function') goToSkincare();
+    else if (typeof Questionnaire !== 'undefined') Questionnaire.startSkincare();
   }
 
   function _renderDetail(r) {
@@ -513,7 +583,7 @@ const RoutineAnalyzer = (() => {
     search, addFromCatalog, toggleManual, addManual, removeProduct, toStep2,
     pickProductPhoto, onProductPhoto,
     pickCam, pickGal, skipPhoto, onPhoto,
-    qToggle, setNotes, analyze
+    qToggle, setNotes, analyze, saveAndRegister, buildNewRoutine
   };
 })();
 
