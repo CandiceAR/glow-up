@@ -96,6 +96,14 @@ function showScreen(name) {
   window.scrollTo(0, 0);
   if (typeof Tracker !== 'undefined') Tracker.trackScreen(name);
 
+  // Masquer le FAB scan quand on est déjà dans un écran de scan
+  // (sinon il se superpose aux boutons "Continuer" en bas à droite)
+  const _fab = document.getElementById('fabWrap');
+  if (_fab) {
+    _fab.classList.remove('open');
+    _fab.classList.toggle('fab-hidden', name === 'dupe-finder' || name === 'routine-analyzer');
+  }
+
   // Mettre à jour les liens actifs de la nav (desktop + mobile)
   document.querySelectorAll('.nav-link').forEach(l => {
     l.classList.toggle('active', l.dataset.screen === name);
