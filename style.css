@@ -10009,3 +10009,9 @@ em { font-style: italic; color: var(--nude); }
 .ra-opt-add > span { color: var(--nude); }
 .ra-opt-row p { font-size: 13px; color: var(--charcoal); margin: 0; line-height: 1.4; }
 .ra-opt-row em { color: var(--muted); font-style: italic; }
+
+/* Barre de progression analyse routine */
+.ra-progress { width: 100%; max-width: 320px; height: 6px; background: var(--sand); border-radius: 6px; margin: 18px auto 10px; overflow: hidden; }
+.ra-progress-fill { width: 0; height: 100%; background: var(--nude); border-radius: 6px; transition: width 24s cubic-bezier(.15,.7,.2,1); }
+.ra-load-step { font-size: 14px; color: var(--charcoal); font-weight: 600; min-height: 20px; margin: 0 0 6px; }
+.ra-load-sub { font-size: 12px; color: var(--muted); margin: 0; }

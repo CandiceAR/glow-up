@@ -53,6 +53,7 @@ const RoutineAnalyzer = (() => {
       default:          html = _vIntro();
     }
     c.innerHTML = html;
+    if (S.view === 'analyzing') _startLoadingAnim(); else _stopLoadingAnim();
   }
 
   function _vIntro() {
@@ -254,13 +255,44 @@ const RoutineAnalyzer = (() => {
   function setNotes(v) { S.quiz.notes = v; }
 
   // ─── Étape 3 : analyse ────────────────────────────────────────
+  let _loadTimer = null;
+  const _LOAD_STEPS = [
+    '🔍 Lecture de tes produits…',
+    '🧪 Analyse des actifs et de la composition…',
+    '⚗️ Vérification des associations et doublons…',
+    '🧴 Comparaison avec ton profil de peau…',
+    '📊 Calcul de ton score…'
+  ];
+
   function _vLoading() {
+    // Photo (rapide) : simple spinner. Analyse routine (~25s) : barre + étapes.
+    if (S._loadingMsg) {
+      return `<div class="ra-loading"><div class="ra-spinner"></div><h2>${S._loadingMsg}</h2></div>`;
+    }
     return `<div class="ra-loading">
       <div class="ra-spinner"></div>
-      <h2>${S._loadingMsg || '🔬 Analyse experte de ta routine…'}</h2>
-      <p>On croise tes produits, leurs actifs et ton profil</p>
+      <h2>🔬 Analyse experte de ta routine…</h2>
+      <div class="ra-progress"><div class="ra-progress-fill" id="raProgress"></div></div>
+      <p id="raLoadStep" class="ra-load-step">On démarre l'analyse…</p>
+      <p class="ra-load-sub">Un vrai expert regarde toute ta routine — ça prend quelques secondes ✦</p>
     </div>`;
   }
+
+  function _startLoadingAnim() {
+    const bar = document.getElementById('raProgress');
+    if (!bar) return;                        // pas la vue analyse routine
+    requestAnimationFrame(() => { bar.style.width = '92%'; }); // 0 → 92% en ~24s (CSS)
+    const step = document.getElementById('raLoadStep');
+    if (step) step.textContent = _LOAD_STEPS[0];
+    _stopLoadingAnim();
+    let i = 0;
+    _loadTimer = setInterval(() => {
+      i = (i + 1) % _LOAD_STEPS.length;
+      const s = document.getElementById('raLoadStep');
+      if (s) s.textContent = _LOAD_STEPS[i];
+    }, 4800);
+  }
+  function _stopLoadingAnim() { if (_loadTimer) { clearInterval(_loadTimer); _loadTimer = null; } }
 
   async function analyze() {
     S.view = 'analyzing'; S._loadingMsg = null; render();
