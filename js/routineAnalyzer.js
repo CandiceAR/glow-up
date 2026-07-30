@@ -77,18 +77,24 @@ const RoutineAnalyzer = (() => {
       <div class="ra-products">
         <div class="ra-head"><span class="ra-step-badge">Étape 1/3</span><h2>Ta routine actuelle</h2>
           <p>Ajoute tes produits : nettoyant, sérum, crème, contour des yeux, SPF, huiles, traitements…</p></div>
+
+        <button type="button" class="btn btn-dark ra-photo-add" onclick="RoutineAnalyzer.pickProductPhoto()">📷 Ajouter un produit en photo</button>
+        <div id="raProdIdMsg" class="ra-prodid-msg"></div>
+        <div class="ra-or"><span>ou</span></div>
+
         <div class="ra-search-wrap">
           <input type="text" id="raSearch" class="ra-input" autocomplete="off"
                  placeholder="🔍 Rechercher un produit (ex : CeraVe, Effaclar…)" oninput="RoutineAnalyzer.search(this.value)">
           <div id="raSearchResults" class="ra-search-results"></div>
         </div>
         <div id="raManualZone" class="ra-manual-zone"></div>
-        <button type="button" class="ra-manual-toggle" onclick="RoutineAnalyzer.toggleManual()">+ Ajouter un produit qui n'est pas dans la liste</button>
+        <button type="button" class="ra-manual-toggle" onclick="RoutineAnalyzer.toggleManual()">⌨️ Saisir à la main (marque, nom, type)</button>
         <div id="raList" class="ra-list">${_renderList()}</div>
         <div class="ra-nav">
           <button class="btn btn-ghost" onclick="RoutineAnalyzer.go('intro')">← Retour</button>
           <button class="btn btn-dark" onclick="RoutineAnalyzer.toStep2()">Continuer →</button>
         </div>
+        <input type="file" id="raProdPhoto" accept="image/*" style="display:none" onchange="RoutineAnalyzer.onProductPhoto(this)">
       </div>`;
   }
 
@@ -158,6 +164,73 @@ const RoutineAnalyzer = (() => {
 
   function removeProduct(key) { S.products = S.products.filter(e => e._key !== key); _refreshList(); }
   function _refreshList() { const el = document.getElementById('raList'); if (el) el.innerHTML = _renderList(); }
+
+  // ─── Ajout d'un produit par PHOTO (identification IA) ─────────
+  function pickProductPhoto() { document.getElementById('raProdPhoto')?.click(); }
+
+  function _compress(dataUrl) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1100 / Math.max(img.naturalWidth, img.naturalHeight), 1);
+        const cv = document.createElement('canvas');
+        cv.width = Math.round(img.naturalWidth * scale);
+        cv.height = Math.round(img.naturalHeight * scale);
+        const ctx = cv.getContext('2d'); ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, cv.width, cv.height);
+        resolve(cv.toDataURL('image/jpeg', 0.85));
+      };
+      img.onerror = () => resolve(dataUrl);
+      img.src = dataUrl;
+    });
+  }
+
+  function _openManualPrefill(d) {
+    const zone = document.getElementById('raManualZone');
+    if (zone && zone.dataset.open !== '1') toggleManual();
+    setTimeout(() => {
+      const b = document.getElementById('raBrand'); if (b) b.value = d.brand || '';
+      const n = document.getElementById('raName');  if (n) n.value = d.name || '';
+      const c = document.getElementById('raCat');   if (c && d.category) c.value = d.category;
+    }, 0);
+  }
+
+  function onProductPhoto(input) {
+    const file = input.files?.[0];
+    if (!file) return;
+    input.value = '';
+    const msg = document.getElementById('raProdIdMsg');
+    if (msg) msg.innerHTML = '<div class="ra-prodid-loading"><span class="ra-mini-spin"></span> 🔍 Identification du produit…</div>';
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const photo = await _compress(e.target.result);
+      try {
+        const controller = new AbortController();
+        const tid = setTimeout(() => controller.abort(), 25000);
+        const resp = await fetch(apiUrl('/api/identifyProduct'), {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ photo }), signal: controller.signal
+        });
+        clearTimeout(tid);
+        const data = await resp.json().catch(() => null);
+        if (msg) msg.innerHTML = '';
+        if (!resp.ok || !data || (!data.brand && !data.name)) {
+          showToast('Produit non reconnu — ajoute-le à la main', 'info', 3000);
+          _openManualPrefill(data || {});
+          return;
+        }
+        S.products.push({ _key: _mkKey(), id: null, brand: data.brand || '', name: data.name || '',
+                          category: data.category || 'other', fromCatalog: false });
+        showToast(`✓ ${(data.brand ? data.brand + ' ' : '') + data.name} ajouté`, 'success', 2600);
+        _refreshList();
+      } catch (err) {
+        if (msg) msg.innerHTML = '';
+        showToast('Identification impossible — ajoute-le à la main', 'error');
+        _openManualPrefill({});
+      }
+    };
+    reader.readAsDataURL(file);
+  }
 
   function toStep2() {
     if (!S.products.length) { showToast('Ajoute au moins un produit', 'warning'); return; }
@@ -438,6 +511,7 @@ const RoutineAnalyzer = (() => {
   return {
     initScreen, render, go,
     search, addFromCatalog, toggleManual, addManual, removeProduct, toStep2,
+    pickProductPhoto, onProductPhoto,
     pickCam, pickGal, skipPhoto, onPhoto,
     qToggle, setNotes, analyze
   };

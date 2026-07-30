@@ -10015,3 +10015,12 @@ em { font-style: italic; color: var(--nude); }
 .ra-progress-fill { width: 0; height: 100%; background: var(--nude); border-radius: 6px; transition: width 24s cubic-bezier(.15,.7,.2,1); }
 .ra-load-step { font-size: 14px; color: var(--charcoal); font-weight: 600; min-height: 20px; margin: 0 0 6px; }
 .ra-load-sub { font-size: 12px; color: var(--muted); margin: 0; }
+
+/* Ajout produit par photo (analyse routine) */
+.ra-photo-add { width: 100%; }
+.ra-or { display: flex; align-items: center; text-align: center; color: var(--muted); font-size: 12px; margin: 14px 0; }
+.ra-or::before, .ra-or::after { content: ""; flex: 1; height: 1px; background: var(--sand); }
+.ra-or span { padding: 0 12px; text-transform: uppercase; letter-spacing: .05em; }
+.ra-prodid-msg { margin-top: 8px; }
+.ra-prodid-loading { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--nude); font-weight: 600; padding: 6px 2px; }
+.ra-mini-spin { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--sand); border-top-color: var(--nude); animation: dfspin .8s linear infinite; display: inline-block; }
