@@ -273,7 +273,7 @@ const RoutineAnalyzer = (() => {
     try {
       const controller = new AbortController();
       const tid = setTimeout(() => controller.abort(), 55000);
-      const resp = await fetch('/api/analyzeRoutine', {
+      const resp = await fetch(apiUrl('/api/analyzeRoutine'), {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ products: payloadProducts, quiz: S.quiz, skin: S.faceSummary }),
         signal: controller.signal

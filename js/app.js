@@ -57,6 +57,16 @@ const AppState = {
 };
 
 // ─── Navigation ───────────────────────────────────────────────
+// ─── Base API : forcer www (l'apex glowupskin.app redirige en 307,
+//     ce qui casse le préflight CORS des POST → appels IA/Stripe bloqués) ──
+function apiUrl(path) {
+  try {
+    if (location.hostname === 'glowupskin.app') return 'https://www.glowupskin.app' + path;
+  } catch (e) {}
+  return path;
+}
+if (typeof window !== 'undefined') window.apiUrl = apiUrl;
+
 // ─── FAB scan (menu 2 choix : dupe / analyse routine) ─────────
 function toggleFabMenu(e) {
   if (e) e.stopPropagation();

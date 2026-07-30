@@ -673,7 +673,7 @@ const Admin = (() => {
       const timeout = setTimeout(() => controller.abort(), 25000);
 
       try {
-        const res = await fetch('/api/uploadImage', {
+        const res = await fetch(apiUrl('/api/uploadImage'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ filename, contentBase64: base64 }),
@@ -938,7 +938,7 @@ const Admin = (() => {
     const result = document.getElementById('coachTestResult');
     result.innerHTML = '<span style="color:var(--muted);">⏳ Test en cours…</span>';
     try {
-      const res = await fetch('/api/coach', {
+      const res = await fetch(apiUrl('/api/coach'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

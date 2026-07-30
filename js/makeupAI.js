@@ -331,7 +331,7 @@ const MakeupAI = (() => {
 
   async function callMakeupRender(imageB64, maskB64, prompt, _retry) {
     const retry = _retry || 0;
-    const res = await fetch('/api/makeupRender', {
+    const res = await fetch(apiUrl('/api/makeupRender'), {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

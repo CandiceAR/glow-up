@@ -1197,7 +1197,7 @@ const Questionnaire = (() => {
     };
 
     try {
-      const resp = await fetch('/api/skinInsights', {
+      const resp = await fetch(apiUrl('/api/skinInsights'), {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ analysisData })

@@ -1736,7 +1736,7 @@ const SkinAnalysis = (() => {
       const photoForAI = await _buildFaceCrop(photoDataUrl, landmarks);
       const controller = new AbortController();
       const tid = setTimeout(() => controller.abort(), 15000);
-      const resp = await fetch('/api/faceVision', {
+      const resp = await fetch(apiUrl('/api/faceVision'), {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ photo: photoForAI }),

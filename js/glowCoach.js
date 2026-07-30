@@ -337,7 +337,7 @@ Conseils Glow Up : ${(_knowledge.glowup_advice || []).join(' | ')}`;
   async function _callClaude(messages) {
     try {
       const ctx = _buildContext();
-      const res = await fetch('/api/coach', {
+      const res = await fetch(apiUrl('/api/coach'), {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({

@@ -400,7 +400,7 @@ const DupeFinder = (() => {
     try {
       const controller = new AbortController();
       const tid = setTimeout(() => controller.abort(), 25000);
-      const resp = await fetch('/api/identifyProduct', {
+      const resp = await fetch(apiUrl('/api/identifyProduct'), {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ photo }), signal: controller.signal
       });
@@ -463,7 +463,7 @@ const DupeFinder = (() => {
     try {
       const controller = new AbortController();
       const tid = setTimeout(() => controller.abort(), 40000);
-      const resp = await fetch('/api/dupeMatch', {
+      const resp = await fetch(apiUrl('/api/dupeMatch'), {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ product: id, candidates, userSkin: _userSkin() }),
         signal: controller.signal
