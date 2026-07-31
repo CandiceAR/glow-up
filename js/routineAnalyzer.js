@@ -268,14 +268,18 @@ const RoutineAnalyzer = (() => {
       try {
         if (typeof SkinAnalysis !== 'undefined' && SkinAnalysis.analyzeFromPhoto) {
           const an = await SkinAnalysis.analyzeFromPhoto(e.target.result);
-          if (an) S.faceSummary = {
-            skinType:  an.skinType?.type || null,
-            undertone: an.undertone?.type || null,
-            cernes:    an.cernes?.detected ? (an.cernes.type || 'oui') : 'non',
-            rougeurs:  an.rougeurs?.niveau || null,
-            eclat:     an.eclat || null,
-            taches:    an.taches || null
-          };
+          if (an) {
+            S.faceAnalysis = an;              // analyse complète (réutilisée dans le questionnaire)
+            S.photo = e.target.result;
+            S.faceSummary = {
+              skinType:  an.skinType?.type || null,
+              undertone: an.undertone?.type || null,
+              cernes:    an.cernes?.detected ? (an.cernes.type || 'oui') : 'non',
+              rougeurs:  an.rougeurs?.niveau || null,
+              eclat:     an.eclat || null,
+              taches:    an.taches || null
+            };
+          }
         }
       } catch (err) { console.warn('[RoutineAnalyzer] analyse photo échouée:', err.message); }
       S._loadingMsg = null;
@@ -411,10 +415,14 @@ const RoutineAnalyzer = (() => {
       score: result.score,
       keepProducts: _computeKeep(result),
       products: S.products.map(p => ({ id: p.id || null, brand: p.brand || '', name: p.name || '', category: p.category || 'other', fromCatalog: !!p.id })),
+      quiz: S.quiz ? JSON.parse(JSON.stringify(S.quiz)) : null,   // réponses du mini-quiz
+      faceAnalysis: S.faceAnalysis || null,                       // analyse peau (photo)
+      photo: S.photo || null,
       savedAt: Date.now()
     };
     AppState.routineAnalysis = payload;
-    try { localStorage.setItem('glow_routine_analysis', JSON.stringify(payload)); } catch (e) {}
+    // localStorage : sans l'image base64 (trop lourde) — l'analyse suffit à la réutilisation
+    try { localStorage.setItem('glow_routine_analysis', JSON.stringify({ ...payload, photo: null })); } catch (e) {}
     _saveAnalysisFirestore(result);
   }
 

@@ -323,8 +323,18 @@ const Questionnaire = (() => {
       return;
     }
     mode = 'skincare';
-    // Effacer l'analyse photo précédente — sauf si on met juste à jour les besoins
-    if (!keepAnalysis && AppState.face) {
+
+    // Réutiliser « Analyser ma routine » (photo + quiz déjà collectés)
+    const ra    = _loadAnalysisLS();
+    const reuse = !keepAnalysis && !!(ra && (ra.faceAnalysis || ra.quiz));
+    if (reuse && ra.faceAnalysis) {
+      AppState.face = AppState.face || {};
+      AppState.face.skinAnalysis = ra.faceAnalysis;   // on reprend l'analyse photo
+      if (ra.photo) AppState.face.photo = ra.photo;
+    }
+
+    // Effacer l'analyse photo précédente — sauf si on met à jour les besoins ou qu'on la réutilise
+    if (!keepAnalysis && !reuse && AppState.face) {
       AppState.face.skinAnalysis = null;
       AppState.face.photo        = null;
     }
@@ -336,10 +346,13 @@ const Questionnaire = (() => {
       currentIndex = _nextActive(photoIdx >= 0 ? photoIdx : 0);
       if (currentIndex < 0) currentIndex = 0;
     } else {
-      currentIndex = 0; // Q0 toujours en premier
+      currentIndex = 0; // Q0 toujours en premier (les questions restent visibles/modifiables)
+      if (reuse && AppState.face?.skinAnalysis) _prefillFromPhoto();
     }
     // Profil partagé : si un quiz maquillage a déjà été rempli, pré-remplir le skincare
     _seedSkincareFromMakeup();
+    // Réutiliser les réponses du quiz « Analyser ma routine » (type de peau, préoccupations)
+    _seedSkincareFromAnalysis(ra);
     AppState.questionnaire.currentQ = currentIndex;
     showScreen('questionnaire');
   }
@@ -383,6 +396,53 @@ const Questionnaire = (() => {
         }
       }
     });
+  }
+
+  // ─── Réutilisation de « Analyser ma routine » (photo + quiz) ──
+  function _loadAnalysisLS() {
+    if (AppState.routineAnalysis) return AppState.routineAnalysis;
+    try {
+      const r = JSON.parse(localStorage.getItem('glow_routine_analysis') || 'null');
+      if (r) AppState.routineAnalysis = r;
+      return r;
+    } catch (e) { return null; }
+  }
+
+  const _ST_MAP = { grasse: 'grasse', mixte: 'mixte', seche: 'seche', sensible: 'sensible', normale: 'normale', deshydratee: 'seche', reactive: 'sensible' };
+  const _ST_PRIORITY = ['grasse', 'mixte', 'seche', 'sensible', 'normale'];
+  function _skinTypeFromDesc(desc) {
+    if (!Array.isArray(desc)) return null;
+    const mapped = desc.map(d => _ST_MAP[d]).filter(Boolean);
+    for (const t of _ST_PRIORITY) if (mapped.includes(t)) return t;
+    return null;
+  }
+  const _CX_FROM_ANALYSIS = {
+    acne: 'acne', boutons: 'acne', points_noirs: 'acne',
+    rides: 'rides', ridules: 'rides',
+    taches: 'taches',
+    rougeurs: 'rougeurs', sensibilite: 'rougeurs',
+    hydratation: 'secheresse', tiraillements: 'secheresse',
+    eclat: 'eclat', manque_eclat: 'eclat',
+    pores: 'pores', sebum: 'pores', brillance: 'pores', texture: 'pores'
+  };
+  function _complexesFromAnalysis(ra) {
+    const out = [];
+    const add = v => { const m = _CX_FROM_ANALYSIS[v]; if (m && !out.includes(m)) out.push(m); };
+    (ra.quiz?.objectives || []).forEach(add);
+    (ra.quiz?.bother || []).forEach(add);
+    if (ra.faceAnalysis?.cernes?.detected && !out.includes('cernes')) out.push('cernes');
+    return out.slice(0, 3);
+  }
+
+  // Pré-remplit le questionnaire skincare depuis l'analyse de routine (type de peau + préoccupations)
+  function _seedSkincareFromAnalysis(ra) {
+    if (!ra || !ra.quiz) return;
+    const a  = AppState.questionnaire.answers;
+    const pf = AppState.questionnaire.photoPreFill = AppState.questionnaire.photoPreFill || {};
+    const st = _skinTypeFromDesc(ra.quiz.skinDesc);
+    if (st) { a.skinType = st; pf.skinType = st; }
+    const cx = _complexesFromAnalysis(ra);
+    if (cx.length) { a.complexes = cx; pf.complexes = cx; }
   }
 
   // ─── Profil partagé skincare ⇆ maquillage (pas de questions posées 2×) ─
