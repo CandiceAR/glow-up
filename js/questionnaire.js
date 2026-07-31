@@ -170,7 +170,6 @@ const Questionnaire = (() => {
           options: [
             { value: 'vegan',              emoji: '🌱', label: 'Vegan',            desc: '' },
             { value: 'bio',                emoji: '🌿', label: 'Bio / Certifié',   desc: '' },
-            { value: 'cruelty',            emoji: '🐰', label: 'Cruelty-free',     desc: '' },
             { value: 'grossesse',          emoji: '🤰', label: 'Grossesse safe',   desc: '' },
             { value: 'dermo',              emoji: '🏥', label: 'Dermato-testé',    desc: '' },
             { value: 'non_comedogenique',  emoji: '◇',  label: 'Non-comédogène',  desc: '' }
@@ -221,8 +220,13 @@ const Questionnaire = (() => {
     },
 
     // Q-ROUTINE — Ma routine actuelle (produits déjà utilisés)
+    // Sautée si l'utilisatrice a déjà fait « Analyser ma routine » (redondant).
     {
-      id: 'qcurrent', key: 'currentRoutine', type: 'current-routine', required: false, skipIf: null,
+      id: 'qcurrent', key: 'currentRoutine', type: 'current-routine', required: false,
+      skipIf: () => {
+        const ra = _loadAnalysisLS();
+        return !!(ra && ((ra.products && ra.products.length) || (ra.keepProducts && ra.keepProducts.length)));
+      },
       question: '🧴 Quels produits utilises-tu déjà ?',
       subtitle: 'On part de ta routine actuelle. On garde ce qui te va, on remplace seulement ce qui ne convient pas. (Facultatif)'
     },
@@ -594,6 +598,9 @@ const Questionnaire = (() => {
   function _renderCurrentRoutine() {
     return `
       <div class="cr-step">
+        <button type="button" class="btn btn-dark cr-photo-add" onclick="Questionnaire.crPickPhoto()">📷 Prendre un produit en photo</button>
+        <div id="crPhotoMsg" class="cr-photo-msg"></div>
+        <div class="cr-or"><span>ou</span></div>
         <div class="cr-search-wrap">
           <input type="text" id="crSearchInput" class="cr-search-input" autocomplete="off"
                  placeholder="🔍 Rechercher un produit (ex : Effaclar, CeraVe…)"
@@ -602,10 +609,60 @@ const Questionnaire = (() => {
         </div>
         <div id="crManualZone" class="cr-manual-zone"></div>
         <button type="button" class="cr-manual-toggle" onclick="Questionnaire.crToggleManual()">
-          + Je ne trouve pas mon produit → l'ajouter à la main
+          ⌨️ Saisir à la main (marque, nom)
         </button>
         <div id="crList" class="cr-list">${_renderCrList()}</div>
+        <input type="file" id="crProdPhoto" accept="image/*" style="display:none" onchange="Questionnaire.crPhoto(this)">
       </div>`;
+  }
+
+  function crPickPhoto() { document.getElementById('crProdPhoto')?.click(); }
+
+  function _crCompress(dataUrl) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1100 / Math.max(img.naturalWidth, img.naturalHeight), 1);
+        const cv = document.createElement('canvas');
+        cv.width = Math.round(img.naturalWidth * scale); cv.height = Math.round(img.naturalHeight * scale);
+        cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+        resolve(cv.toDataURL('image/jpeg', 0.85));
+      };
+      img.onerror = () => resolve(dataUrl);
+      img.src = dataUrl;
+    });
+  }
+
+  function crPhoto(input) {
+    const file = input.files?.[0];
+    if (!file) return;
+    input.value = '';
+    const msg = document.getElementById('crPhotoMsg');
+    if (msg) msg.innerHTML = '<div class="cr-photo-loading">🔍 Identification du produit…</div>';
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const photo = await _crCompress(e.target.result);
+      try {
+        const resp = await fetch(apiUrl('/api/identifyProduct'), {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ photo })
+        });
+        const data = await resp.json().catch(() => null);
+        if (msg) msg.innerHTML = '';
+        if (!resp.ok || !data || (!data.brand && !data.name)) {
+          showToast('Produit non reconnu — ajoute-le à la main', 'info', 3000);
+          crToggleManual();
+          return;
+        }
+        if (typeof CurrentRoutine !== 'undefined') CurrentRoutine.addManual(data.brand || '', data.name || '', data.category || 'other');
+        showToast(`✓ ${(data.brand ? data.brand + ' ' : '') + data.name} ajouté`, 'success', 2500);
+        _refreshCrList();
+      } catch (err) {
+        if (msg) msg.innerHTML = '';
+        showToast('Identification impossible — ajoute-le à la main', 'error');
+        crToggleManual();
+      }
+    };
+    reader.readAsDataURL(file);
   }
 
   function _renderCrList() {
@@ -1931,7 +1988,7 @@ const Questionnaire = (() => {
     continueFromAnalysis,
     next, prev, submit,
     shareColorimetry,
-    crSearch, crAdd, crToggleManual, crAddManual, crToggleLove, crRemove,
+    crSearch, crAdd, crToggleManual, crAddManual, crToggleLove, crRemove, crPickPhoto, crPhoto,
     QUESTIONS, MAKEUP_QUESTIONS
   };
 

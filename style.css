@@ -10040,3 +10040,11 @@ em { font-style: italic; color: var(--nude); }
 .ra-newroutine h3 { font-family: var(--font-serif); font-size: 22px; margin: 0 0 6px; color: var(--white); }
 .ra-newroutine p { font-size: 13px; margin: 0 0 14px; color: rgba(255,255,255,.82); line-height: 1.4; }
 .ra-newroutine .btn { background: var(--white); color: var(--charcoal); max-width: 340px; width: 100%; }
+
+/* Photo produit dans l étape "Ma routine actuelle" */
+.cr-photo-add { width: 100%; }
+.cr-or { display: flex; align-items: center; text-align: center; color: var(--muted); font-size: 12px; margin: 14px 0; }
+.cr-or::before, .cr-or::after { content: ""; flex: 1; height: 1px; background: var(--sand); }
+.cr-or span { padding: 0 12px; text-transform: uppercase; letter-spacing: .05em; }
+.cr-photo-msg { margin-top: 8px; }
+.cr-photo-loading { font-size: 13px; color: var(--nude); font-weight: 600; padding: 6px 2px; }

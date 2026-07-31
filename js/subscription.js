@@ -105,8 +105,9 @@ const Subscription = (() => {
   }
 
   // ─── Quotas de génération de routine ─────────────────────────
-  // Free = 1 routine au total · Premium = 3 routines / mois · Coach = illimité.
+  // Free = 4 routines au total · Premium = 3 routines / mois · Coach = illimité.
   const PREMIUM_MONTHLY_LIMIT = 3;
+  const FREE_TOTAL_LIMIT      = 4;
 
   function _routineFlagKey() {
     const uid = AppState?.user?.uid;
@@ -120,9 +121,18 @@ const Subscription = (() => {
     const d = new Date();
     return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
   }
+  // Nombre de routines gratuites déjà générées (compat : ancien flag '1' = 1)
+  function _freeCount() {
+    let n = 0;
+    try {
+      const v = localStorage.getItem(_routineFlagKey());
+      n = v === '1' ? 1 : (parseInt(v, 10) || 0);
+    } catch {}
+    if (typeof AppState?.user?.freeRoutineCount === 'number') n = Math.max(n, AppState.user.freeRoutineCount);
+    return n;
+  }
   function hasUsedFreeRoutine() {
-    if (AppState?.user?.freeRoutineUsed) return true;
-    try { return localStorage.getItem(_routineFlagKey()) === '1'; } catch { return false; }
+    return _freeCount() >= FREE_TOTAL_LIMIT;
   }
   // Nombre de routines générées ce mois-ci (Premium)
   function _monthCount() {
@@ -147,20 +157,21 @@ const Subscription = (() => {
     const plan = getPlan();
     if (plan === 'glowplus') return true;                         // Coach : illimité
     if (plan === 'glow')     return _monthCount() < PREMIUM_MONTHLY_LIMIT; // Premium : 3/mois
-    return !hasUsedFreeRoutine();                                 // Free : 1 au total
+    return _freeCount() < FREE_TOTAL_LIMIT;                        // Free : 4 au total
   }
   function markRoutineGenerated() {
     const plan = getPlan();
     if (plan === 'glowplus') return;                              // Coach : rien à compter
     if (plan === 'glow') { _setMonthCount(_monthCount() + 1); return; } // Premium : +1 ce mois
-    // Free : marquer la routine unique consommée
-    try { localStorage.setItem(_routineFlagKey(), '1'); } catch {}
-    if (AppState?.user) AppState.user.freeRoutineUsed = true;
+    // Free : incrémenter le compteur (max 4 au total)
+    const n = _freeCount() + 1;
+    try { localStorage.setItem(_routineFlagKey(), String(n)); } catch {}
+    if (AppState?.user) { AppState.user.freeRoutineCount = n; AppState.user.freeRoutineUsed = n >= FREE_TOTAL_LIMIT; }
     const uid = AppState?.user?.uid;
     if (uid && typeof firebase !== 'undefined' && firebase.apps?.length) {
       try {
         firebase.firestore().collection('users').doc(uid)
-          .set({ subscription: { freeRoutineUsed: true } }, { merge: true });
+          .set({ subscription: { freeRoutineCount: n, freeRoutineUsed: n >= FREE_TOTAL_LIMIT } }, { merge: true });
       } catch {}
     }
   }
@@ -369,7 +380,7 @@ const Subscription = (() => {
             <div class="plan-lux-price"><span class="plan-lux-price-main">Gratuit</span></div>
             <p class="plan-lux-tagline">Pour découvrir</p>
             <ul class="plan-lux-features">
-              <li>1 routine sur-mesure</li>
+              <li>4 routines sur-mesure (matin)</li>
               <li>Analyse beauté IA offerte</li>
               <li>Catalogue 300+ produits</li>
               <li>Skinpedia dictionnaire</li>
@@ -612,7 +623,7 @@ const Subscription = (() => {
       ['Puis-je annuler à tout moment ?', 'Oui. Tu résilies en un clic depuis ton compte et tu gardes l\'accès jusqu\'à la fin de la période payée.'],
       ['Quelle est la différence entre mensuel et annuel ?', `Le contenu est identique. L'annuel (29,99 €) revient à 2,49 €/mois, soit −37% par rapport au mensuel (3,99 €). C'est la formule la plus avantageuse.`],
       ['Glow Up est-il vraiment impartial ?', 'Oui. On ne fabrique ni ne vend nos propres produits. On référence tout le marché et on ne recommande que ce qui correspond à ton profil — jamais une marque qui paierait plus.'],
-      ['Que se passe-t-il si je reste gratuite ?', 'Tu gardes 1 routine et ton analyse beauté. Premium débloque les routines illimitées, le Skin Journey, l\'historique et la personnalisation avancée.'],
+      ['Que se passe-t-il si je reste gratuite ?', 'Tu gardes jusqu\'à 4 routines (matin) et ton analyse beauté. Premium débloque les routines illimitées, la routine du soir, le Skin Journey, l\'historique et la personnalisation avancée.'],
       ['Mes données et photos sont-elles en sécurité ?', 'Tes analyses restent privées et ne sont jamais revendues. Tu peux supprimer ton compte et tes données à tout moment.'],
       ['Serai-je débitée automatiquement ?', 'Le paiement est géré de façon sécurisée par Stripe. L\'abonnement se renouvelle automatiquement, et tu peux l\'arrêter quand tu veux.'],
     ];
