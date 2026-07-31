@@ -321,7 +321,12 @@ const Questionnaire = (() => {
   }
 
   function startSkincare(keepAnalysis = false) {
-    // Limite gratuite : 1 seule routine générée. Au-delà → abonnement.
+    // Compte OBLIGATOIRE pour générer une routine (quel que soit le chemin d'accès)
+    if (!(AppState.user && AppState.user.uid) && typeof Auth !== 'undefined' && Auth.openRequiredAuthModal) {
+      Auth.openRequiredAuthModal(() => startSkincare(keepAnalysis));
+      return;
+    }
+    // Limite gratuite : 4 routines générées. Au-delà → abonnement.
     if (typeof Subscription !== 'undefined' && !Subscription.canGenerateRoutine()) {
       Subscription.showRoutineLimit();
       return;
@@ -365,7 +370,12 @@ const Questionnaire = (() => {
   const CARN_PHOTO_MAP = { light: 'clair', medium: 'medium', dark: 'fonce', clair: 'clair', fonce: 'fonce' };
 
   function startMakeup(keepAnalysis = true) {
-    // Limite gratuite : 1 seule routine générée. Au-delà → abonnement.
+    // Compte OBLIGATOIRE pour générer une routine (quel que soit le chemin d'accès)
+    if (!(AppState.user && AppState.user.uid) && typeof Auth !== 'undefined' && Auth.openRequiredAuthModal) {
+      Auth.openRequiredAuthModal(() => startMakeup(keepAnalysis));
+      return;
+    }
+    // Limite gratuite : 4 routines générées. Au-delà → abonnement.
     if (typeof Subscription !== 'undefined' && !Subscription.canGenerateRoutine()) {
       Subscription.showRoutineLimit();
       return;

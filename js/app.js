@@ -83,6 +83,14 @@ document.addEventListener('click', (ev) => {
 });
 
 function showScreen(name) {
+  // Compte OBLIGATOIRE pour le dupe et l'analyse de routine (comme la génération de routine)
+  if ((name === 'dupe-finder' || name === 'routine-analyzer') && !(AppState.user && AppState.user.uid)) {
+    if (typeof Auth !== 'undefined' && Auth.openRequiredAuthModal) {
+      Auth.openRequiredAuthModal(() => showScreen(name));
+      return;
+    }
+  }
+
   // Stopper l'analyse live caméra si on quitte la capture
   if (AppState.screen === 'capture' && name !== 'capture') {
     if (typeof SkinAnalysis !== 'undefined') SkinAnalysis.stopLiveAnalysis();
