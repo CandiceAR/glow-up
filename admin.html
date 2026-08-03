@@ -360,6 +360,7 @@
         <button class="admin-tab" onclick="Admin.showTab('asin')">Extracteur ASIN</button>
         <button class="admin-tab" onclick="Admin.showTab('coach')">✦ Coach IA</button>
         <button class="admin-tab" onclick="Admin.showTab('referrals')">🎁 Ambassadrices</button>
+        <button class="admin-tab" onclick="Admin.showTab('scanned')">📷 Produits scannés</button>
       </div>
 
       <!-- Tab: Produits -->
@@ -989,6 +990,16 @@
           <div id="referralsTable"></div>
         </div>
       </div><!-- /tabReferrals -->
+
+      <div id="tabScanned" style="display:none;">
+        <div class="analytics-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <h3>📷 Produits scannés par les utilisatrices</h3>
+            <button class="btn btn-outline" onclick="Admin.loadScanned()" style="font-size:0.8rem;padding:6px 14px;">🔄 Actualiser</button>
+          </div>
+          <div id="scannedList"></div>
+        </div>
+      </div><!-- /tabScanned -->
 
     </div><!-- /admin-wrap -->
   </div><!-- /adminPanel -->

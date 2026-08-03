@@ -893,7 +893,7 @@ const Admin = (() => {
 
   // ─── Onglets ──────────────────────────────────────────────────
   let currentTab = 'products';
-  const TAB_IDS  = ['products', 'analytics', 'asin', 'coach', 'catalogue', 'referrals'];
+  const TAB_IDS  = ['products', 'analytics', 'catalogue', 'asin', 'coach', 'referrals', 'scanned'];
 
   function showTab(tab) {
     currentTab = tab;
@@ -908,6 +908,93 @@ const Admin = (() => {
     if (tab === 'coach')      renderCoachKeyStatus();
     if (tab === 'referrals')  { loadRewards(); loadReferrals(); }
     if (tab === 'catalogue') renderCatalogueTab();
+    if (tab === 'scanned')   loadScanned();
+  }
+
+  // ─── Produits scannés par les utilisatrices (à valider) ───────
+  let _scanned = [];
+
+  async function loadScanned() {
+    const el = document.getElementById('scannedList');
+    if (el) el.innerHTML = '<p style="color:var(--muted)">Chargement…</p>';
+    _scanned = [];
+    try {
+      if (typeof firebase === 'undefined' || !firebase.apps?.length) {
+        if (el) el.innerHTML = '<p style="color:var(--error)">Firebase indisponible.</p>'; return;
+      }
+      const db = firebase.firestore();
+      const groups = new Map();
+      for (const coll of ['scannedProducts', 'userProducts']) {
+        let snap;
+        try { snap = await db.collection(coll).get(); } catch { continue; }
+        snap.forEach(doc => {
+          const d = doc.data() || {};
+          const status = d.status || 'pending_review';
+          if (status === 'added' || status === 'dismissed') return;
+          const brand = (d.brand || '').trim(), name = (d.name || '').trim();
+          if (!brand && !name) return;
+          const key = (brand + ' ' + name).toLowerCase().replace(/\s+/g, ' ').trim();
+          let g = groups.get(key);
+          if (!g) { g = { brand, name, category: d.category || 'other', source: d.source || coll, count: 0, docs: [], lastAt: d.createdAt || '' }; groups.set(key, g); }
+          g.count++;
+          g.docs.push({ coll, id: doc.id });
+          if ((d.createdAt || '') > g.lastAt) g.lastAt = d.createdAt || '';
+          if ((!g.category || g.category === 'other') && d.category) g.category = d.category;
+        });
+      }
+      _scanned = [...groups.values()].sort((a, b) => (b.count - a.count) || (b.lastAt || '').localeCompare(a.lastAt || ''));
+      renderScanned();
+    } catch (err) {
+      if (el) el.innerHTML = '<p style="color:var(--error)">Erreur : ' + err.message + '</p>';
+    }
+  }
+
+  function renderScanned() {
+    const el = document.getElementById('scannedList');
+    if (!el) return;
+    if (!_scanned.length) { el.innerHTML = '<p style="color:var(--muted)">Aucun produit scanné en attente 🎉</p>'; return; }
+    const rows = _scanned.map((g, i) => `
+      <tr>
+        <td><strong>${g.brand || ''}</strong> ${g.name || ''}</td>
+        <td>${g.category || ''}</td>
+        <td>${g.source === 'routine-analysis' ? 'Analyse routine' : (g.source === 'photo' ? 'Scan dupe' : g.source || '')}</td>
+        <td>${g.count > 1 ? '×' + g.count : '1'}</td>
+        <td style="white-space:nowrap">
+          <button class="btn-sm btn-dark" onclick="Admin.addScannedToCatalog(${i})">➕ Catalogue</button>
+          <button class="btn-sm btn-toggle" onclick="Admin.dismissScanned(${i})">✕ Retirer</button>
+        </td>
+      </tr>`).join('');
+    el.innerHTML = `
+      <p style="color:var(--muted); margin-bottom:12px">${_scanned.length} produit(s) recherché(s) par tes utilisatrices, en attente de validation. « ➕ Catalogue » pré-remplit le formulaire d'ajout — complète le prix + le lien affilié, puis Enregistre.</p>
+      <table class="products-table">
+        <thead><tr><th>Produit</th><th>Catégorie</th><th>Source</th><th>Scans</th><th>Action</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  }
+
+  function addScannedToCatalog(i) {
+    const g = _scanned[i];
+    if (!g) return;
+    showTab('products');
+    showAddForm();
+    const b = document.getElementById('fBrand');    if (b) b.value = g.brand || '';
+    const n = document.getElementById('fName');     if (n) n.value = g.name || '';
+    const c = document.getElementById('fCategory'); if (c && g.category && g.category !== 'other') { c.value = g.category; if (typeof onCategoryChange === 'function') onCategoryChange(g.category); }
+    toast('Formulaire pré-rempli — complète prix + lien puis Enregistre. Pense à « ✕ Retirer » ensuite.', 'success');
+  }
+
+  async function _markScannedStatus(g, status) {
+    if (typeof firebase === 'undefined' || !firebase.apps?.length) return;
+    const db = firebase.firestore();
+    await Promise.all(g.docs.map(d => db.collection(d.coll).doc(d.id).set({ status }, { merge: true }).catch(() => {})));
+  }
+
+  async function dismissScanned(i) {
+    const g = _scanned[i];
+    if (!g) return;
+    await _markScannedStatus(g, 'dismissed');
+    _scanned.splice(i, 1);
+    renderScanned();
   }
 
   // ─── Coach IA ─────────────────────────────────────────────────
@@ -1395,7 +1482,8 @@ const Admin = (() => {
     previewImage, onImageUrlChange,
     openImagePicker, closeImagePicker, selectImage, renderImagePicker,
     uploadImageFile,
-    loadRewards, markRewardSent
+    loadRewards, markRewardSent,
+    loadScanned, addScannedToCatalog, dismissScanned
   };
 
   // ─── Récompenses (cartes cadeaux à envoyer) ──────────────────
