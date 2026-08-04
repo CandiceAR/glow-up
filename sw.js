@@ -1,4 +1,4 @@
-const CACHE_NAME = 'glowup-v145';
+const CACHE_NAME = 'glowup-v146';
 
 const STATIC_ASSETS = [
   '/',

@@ -10048,3 +10048,7 @@ em { font-style: italic; color: var(--nude); }
 .cr-or span { padding: 0 12px; text-transform: uppercase; letter-spacing: .05em; }
 .cr-photo-msg { margin-top: 8px; }
 .cr-photo-loading { font-size: 13px; color: var(--nude); font-weight: 600; padding: 6px 2px; }
+
+/* Lien d achat dans les réponses du Coach */
+.coach-link { color: var(--nude); font-weight: 600; text-decoration: none; border-bottom: 1.5px solid var(--nude); white-space: nowrap; }
+.coach-link:hover { color: var(--charcoal); border-color: var(--charcoal); }

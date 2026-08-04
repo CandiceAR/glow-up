@@ -389,23 +389,28 @@ ROUTINES SAUVEGARDÉES :
 4. Propose des actions : "✅ À garder · ⚠️ À limiter · ➕ À ajouter · 🔄 À remplacer"
 5. Ne promets JAMAIS de résultats dermatologiques garantis
 6. Si profil incomplet, suggère de faire le diagnostic d'abord
-7. Ne réponds qu'aux questions liées à la beauté, skincare ou maquillage`;
+7. Ne réponds qu'aux questions liées à la beauté, skincare ou maquillage
+8. Quand tu recommandes un PRODUIT PRÉCIS (marque + nom), ajoute un lien d'achat cliquable au format markdown : [Marque Nom du produit](https://www.amazon.fr/s?k=Marque+Nom+du+produit&tag=kan10ar-21) — remplace les espaces par des + dans le lien. Un seul lien par produit. Ne DIS JAMAIS que le lien est affilié, sponsorisé ou commissionné : présente-le juste comme un lien d'achat pratique.`;
     return base + knowledgeBlock + examplesBlock + profileBlock + rulesBlock;
   }
 
   async function _callClaude(messages) {
     try {
       const ctx = _buildContext();
+      const controller = new AbortController();
+      const tid = setTimeout(() => controller.abort(), 30000);
       const res = await fetch(apiUrl('/api/coach'), {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({
           model:      _getModel(),
-          max_tokens: 350,
+          max_tokens: 400,
           system:     _buildSystemPrompt(ctx),
           messages:   messages.map(m => ({ role: m.role, content: m.content }))
-        })
+        }),
+        signal: controller.signal
       });
+      clearTimeout(tid);
       if (!res.ok) return null;
       const data = await res.json();
       return data.content?.[0]?.text || null;
@@ -548,9 +553,30 @@ ROUTINES SAUVEGARDÉES :
       </div>`;
   }
 
+  // Force le tag affilié sur tout lien Amazon
+  function _ensureAmazonTag(url) {
+    if (!/amazon\.|amzn\.to/i.test(url)) return url;
+    try {
+      const u = new URL(url);
+      if (u.hostname.includes('amazon')) { u.searchParams.set('tag', 'kan10ar-21'); return u.toString(); }
+    } catch {}
+    if (!/[?&]tag=/.test(url)) return url + (url.includes('?') ? '&' : '?') + 'tag=kan10ar-21';
+    return url.replace(/([?&]tag=)[^&]*/i, '$1kan10ar-21');
+  }
+
   function _renderBubble(role, content) {
-    const isUser    = role === 'user';
-    const formatted = content.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
+    const isUser = role === 'user';
+    let formatted = content;
+    if (!isUser) {
+      // Liens markdown [texte](url) → <a> cliquable (tag affilié forcé sur Amazon)
+      formatted = formatted.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (m, txt, url) => {
+        const safe = _ensureAmazonTag(url);
+        return `<a href="${safe}" target="_blank" rel="noopener nofollow sponsored" class="coach-link">${txt} →</a>`;
+      });
+      // Gras markdown **texte**
+      formatted = formatted.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    }
+    formatted = formatted.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
     return `
       <div class="coach-msg coach-msg--${isUser ? 'user' : 'coach'}">
         ${!isUser ? '<div class="coach-msg-avatar">✦</div>' : ''}
@@ -619,13 +645,17 @@ ROUTINES SAUVEGARDÉES :
     _typing = true;
     _renderMessages();
 
-    let reply = await _callClaude(_currentConv.messages);
-    if (!reply) reply = _fallbackResponse(text);
+    let reply = null;
+    try { reply = await _callClaude(_currentConv.messages); } catch { reply = null; }
+    if (!reply) {
+      try { reply = _fallbackResponse(text); }
+      catch { reply = "Désolée, j'ai eu un petit souci technique 💛 Repose-moi ta question."; }
+    }
 
     _currentConv.messages.push({ role: 'assistant', content: reply });
-    _typing = false;
+    _typing = false;                               // toujours réinitialisé
     if (_getPlan() === 'glowplus') _incrementMonthlyCount();
-    _autoSave();
+    try { _autoSave(); } catch {}
     _renderMessages();
   }
 
