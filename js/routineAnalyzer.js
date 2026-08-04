@@ -98,16 +98,27 @@ const RoutineAnalyzer = (() => {
       </div>`;
   }
 
+  // Image d'un produit : photo prise par l'utilisatrice (prioritaire) sinon image catalogue
+  function _prodImg(e) {
+    if (e.photo) return e.photo;
+    if (e.id) { const p = (AppState.products.catalog || []).find(x => x.id === e.id); if (p?.imageUrl) return p.imageUrl; }
+    return null;
+  }
+
   function _renderList() {
     if (!S.products.length) return '<p class="ra-empty">Aucun produit pour l\'instant.</p>';
-    return S.products.map(e => `
+    return S.products.map(e => {
+      const img = _prodImg(e);
+      return `
       <div class="ra-item">
+        ${img ? `<img src="${img}" class="ra-item-img" alt="" loading="lazy" onerror="this.style.display='none'">` : '<div class="ra-item-img ra-item-noimg">🧴</div>'}
         <div class="ra-item-main">
           <span class="ra-item-cat">${_catLabel(e.category)}</span>
           <span class="ra-item-name">${e.brand ? e.brand + ' ' : ''}${e.name}</span>
         </div>
         <button type="button" class="ra-remove" onclick="RoutineAnalyzer.removeProduct('${e._key}')">×</button>
-      </div>`).join('');
+      </div>`;
+    }).join('');
   }
 
   function _catLabel(c) { return (typeof CurrentRoutine !== 'undefined') ? CurrentRoutine.catLabel(c) : c; }
@@ -252,34 +263,48 @@ const RoutineAnalyzer = (() => {
 
   function toStep2() {
     if (!S.products.length) { showToast('Ajoute au moins un produit', 'warning'); return; }
-    // Visage déjà analysé (création de routine / précédemment) → on réutilise, on saute la photo
-    const existing = AppState?.face?.skinAnalysis
-      || ((typeof RoutineSaver !== 'undefined' && RoutineSaver.load) ? RoutineSaver.load()?.skinAnalysis : null);
-    if (existing) {
-      S.faceAnalysis = existing;
-      S.faceSummary = {
-        skinType:  existing.skinType?.type || null,
-        undertone: existing.undertone?.type || null,
-        cernes:    existing.cernes?.detected ? (existing.cernes.type || 'oui') : 'non',
-        rougeurs:  existing.rougeurs?.niveau || null,
-        eclat:     existing.eclat || null,
-        taches:    existing.taches || null
-      };
-      S.view = 'quiz'; render();
-      return;
-    }
     S.view = 'photo'; render();
+  }
+
+  // Analyse visage déjà disponible (création de routine / précédemment)
+  function _existingFace() {
+    return AppState?.face?.skinAnalysis
+      || ((typeof RoutineSaver !== 'undefined' && RoutineSaver.load) ? RoutineSaver.load()?.skinAnalysis : null);
+  }
+
+  // Réutiliser l'analyse visage existante → on saute directement au quiz
+  function reuseFace() {
+    const ex = _existingFace();
+    if (!ex) { S.view = 'photo'; render(); return; }
+    S.faceAnalysis = ex;
+    S.faceSummary = {
+      skinType:  ex.skinType?.type || null,
+      undertone: ex.undertone?.type || null,
+      cernes:    ex.cernes?.detected ? (ex.cernes.type || 'oui') : 'non',
+      rougeurs:  ex.rougeurs?.niveau || null,
+      eclat:     ex.eclat || null,
+      taches:    ex.taches || null
+    };
+    S.view = 'quiz'; render();
   }
 
   // ─── Étape 2a : photo (optionnelle) ───────────────────────────
   function _vPhoto() {
+    const hasExisting = !!_existingFace();
+    // Si une analyse existe déjà → proposer de la réutiliser OU d'en refaire une
+    const reuseBlock = hasExisting ? `
+        <div class="ra-reuse">
+          <p class="ra-reuse-txt">✦ Tu as déjà une analyse de ton visage. Tu peux la réutiliser, ou en refaire une nouvelle.</p>
+          <button class="btn btn-dark ra-btn-main" onclick="RoutineAnalyzer.reuseFace()">Réutiliser mon analyse ✓</button>
+        </div>` : '';
     return `
       <div class="ra-photo">
         <div class="ra-head"><span class="ra-step-badge">Étape 2/3</span><h2>Une photo de ton visage&nbsp;?</h2>
           <p>Optionnel — ça affine l'analyse. Tu peux passer, l'analyse marche aussi sans.</p></div>
         <span class="ra-hero-emoji">📸</span>
+        ${reuseBlock}
         <div class="ra-actions">
-          <button class="btn btn-dark ra-btn-main" onclick="RoutineAnalyzer.pickCam()">📷 Prendre une photo</button>
+          <button class="btn ${hasExisting ? 'btn-outline' : 'btn-dark ra-btn-main'}" onclick="RoutineAnalyzer.pickCam()">📷 ${hasExisting ? 'Reprendre une photo' : 'Prendre une photo'}</button>
           <button class="btn btn-outline" onclick="RoutineAnalyzer.pickGal()">🖼 Importer une photo</button>
           <button class="btn btn-ghost" onclick="RoutineAnalyzer.skipPhoto()">Passer cette étape →</button>
         </div>
@@ -581,9 +606,14 @@ const RoutineAnalyzer = (() => {
     // Cartes produit
     const cards = (r.products || []).map(p => {
       const v = VERDICT[p.verdict] || VERDICT.weak;
+      const img = S.products[p.ref] ? _prodImg(S.products[p.ref]) : null;
       return `
         <div class="ra-pcard ${v.cls}">
-          <div class="ra-pcard-head"><span class="ra-pcard-name">${_pName(p.ref)}</span><span class="ra-pcard-verdict">${v.icon} ${v.label}</span></div>
+          <div class="ra-pcard-head">
+            ${img ? `<img src="${img}" class="ra-pcard-img" alt="" loading="lazy" onerror="this.style.display='none'">` : '<div class="ra-pcard-img ra-pcard-noimg">🧴</div>'}
+            <span class="ra-pcard-name">${_pName(p.ref)}</span>
+            <span class="ra-pcard-verdict">${v.icon} ${v.label}</span>
+          </div>
           ${p.why ? `<p class="ra-pcard-why">${p.why}</p>` : ''}
           ${p.goodIngredients?.length ? `<div class="ra-ing"><span class="ra-ing-h ra-ing-good">Actifs +</span>${p.goodIngredients.map(x => `<span class="ra-tag ra-tag-good">${x}</span>`).join('')}</div>` : ''}
           ${p.problemIngredients?.length ? `<div class="ra-ing"><span class="ra-ing-h ra-ing-bad">À surveiller</span>${p.problemIngredients.map(x => `<span class="ra-tag ra-tag-bad">${x}</span>`).join('')}</div>` : ''}
@@ -625,7 +655,7 @@ const RoutineAnalyzer = (() => {
     initScreen, render, go,
     search, addFromCatalog, toggleManual, addManual, removeProduct, toStep2,
     pickProductPhoto, onProductPhoto,
-    pickCam, pickGal, skipPhoto, onPhoto,
+    pickCam, pickGal, skipPhoto, onPhoto, reuseFace,
     qToggle, setNotes, analyze, saveAndRegister, buildNewRoutine
   };
 })();
