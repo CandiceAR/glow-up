@@ -59,7 +59,16 @@ Retourne UNIQUEMENT ce JSON valide, sans texte avant ni après :
 
 Règles :
 - Si tu n'arrives pas à lire la marque ET le nom, mets "recognized": false et remplis ce que tu peux.
-- "category" DOIT être une valeur exacte de la liste.
+- "category" DOIT être une valeur exacte de la liste. Déduis-la du NOM et du packaging :
+  • "serum/sérum/ampoule/ampoule/essence/booster" → serum
+  • "eye/contour des yeux/yeux" → eye
+  • "cream/crème/moisturizer/hydratant/lotion/emulsion" → moisturizer
+  • "cleanser/nettoyant/foam/mousse/cleansing" → cleanser
+  • "toner/tonique/lotion tonique" → toner
+  • "spf/sun/sunscreen/solaire/uv" → spf
+  • "exfoliant/peeling/gommage/scrub/aha/bha" → exfoliant
+  Un flacon compte-gouttes ou une ampoule = presque toujours un serum, pas une crème.
+  Ne confonds JAMAIS un sérum avec une crème hydratante, ni un contour des yeux avec une crème.
 - Sois factuelle : n'invente pas une marque que tu ne vois pas. Mais tu peux déduire actifs/texture/fini d'un produit que tu reconnais.
 - "estPrice" = prix de vente public estimé en euros (0 si inconnu).
 - Réponds UNIQUEMENT avec le JSON.`;

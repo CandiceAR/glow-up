@@ -407,6 +407,8 @@ const DupeFinder = (() => {
       clearTimeout(tid);
       const data = await resp.json().catch(() => null);
       if (!resp.ok || !data || (!data.brand && !data.name)) { S.view = 'notfound'; render(); return; }
+      // Corriger la catégorie à partir du nom (l'IA se trompe parfois)
+      if (typeof CurrentRoutine !== 'undefined') data.category = CurrentRoutine.inferCategory(data.name, data.category);
       S.identified = data;
       S.view = data.recognized ? 'confirm' : 'notfound';
       render();

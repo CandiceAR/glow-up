@@ -23,6 +23,36 @@ const CurrentRoutine = (() => {
   ];
 
   const CAT_LABEL = CATEGORIES.reduce((m, c) => (m[c.value] = c.label, m), {});
+  // Alias & catégories catalogue supplémentaires (sinon "Autre" à tort)
+  Object.assign(CAT_LABEL, {
+    eye_cream: 'Contour des yeux', sunscreen: 'Protection solaire (SPF)',
+    nightmask: 'Masque de nuit', mist: 'Brume', multi_usage: 'Multi-usage',
+    foundation: 'Fond de teint', concealer: 'Correcteur', corrector: 'Correcteur coloré',
+    powder: 'Poudre', primer: 'Base', blush: 'Blush', bronzer: 'Bronzer',
+    highlighter: 'Enlumineur', mascara: 'Mascara', eyeliner: 'Eyeliner',
+    eyebrow: 'Sourcils', eyeshadow: 'Fard à paupières', lipstick: 'Rouge à lèvres',
+    lipgloss: 'Gloss', lipliner: 'Crayon lèvres', set: 'Coffret', tools: 'Accessoire'
+  });
+
+  // Déduit la catégorie à partir du NOM du produit (corrige les erreurs de l'IA)
+  const _CAT_RULES = [
+    ['eye',         ['contour des yeux', 'contour yeux', 'eye cream', 'eye serum', 'eye contour', ' eye ', 'yeux', 'dark circle', 'anti-cerne', 'cerne']],
+    ['exfoliant',   ['exfolia', 'peeling', 'gommage', 'scrub', 'glycolic', 'salicylic', 'aha ', 'bha ']],
+    ['cleanser',    ['cleanser', 'nettoyant', 'cleansing', 'foam', 'mousse', 'demaquill', 'démaquill', 'makeup remover', 'gel moussant']],
+    ['toner',       ['toner', 'tonique', 'toning', 'treatment essence', 'first essence']],
+    ['mist',        ['face mist', 'brume']],
+    ['spf',         ['sunscreen', 'sun cream', 'sun stick', 'sun serum', 'sun fluid', 'protection solaire', 'solaire', 'spf', ' uv ', 'uvmune', 'anthelios']],
+    ['lipbalm',     ['lip balm', 'baume à lèvres', 'baume levres', 'lip mask', 'lip treatment']],
+    ['oil',         ['face oil', 'facial oil', 'huile visage', 'cleansing oil']],
+    ['mask',        ['sleeping mask', 'sleeping pack', 'wash off mask', 'masque', ' mask']],
+    ['serum',       ['serum', 'sérum', 'ampoule', 'ampule', 'ampoul', 'essence', 'booster', 'concentr', 'concentrate']],
+    ['moisturizer', ['moistur', 'crème', 'creme', 'cream', 'hydratant', 'emulsion', 'émulsion', 'gel-crème', 'gel cream', 'lotion']]
+  ];
+  function inferCategory(name, fallback) {
+    const n = ' ' + (name || '').toLowerCase() + ' ';
+    for (const [cat, kws] of _CAT_RULES) { for (const k of kws) if (n.includes(k)) return cat; }
+    return fallback || 'other';
+  }
 
   // Normalise une catégorie catalogue vers un « bucket » d'étape routine
   const NORM = {
@@ -251,7 +281,7 @@ const CurrentRoutine = (() => {
   }
 
   return {
-    CATEGORIES, catLabel: (c) => CAT_LABEL[c] || 'Autre',
+    CATEGORIES, catLabel: (c) => CAT_LABEL[c] || 'Autre', inferCategory,
     list, addFromCatalog, addManual, remove, toggleLove,
     searchCatalog, evaluate, matchesStep,
     getKeptForStep, getReplacedForStep,

@@ -248,8 +248,10 @@ const RoutineAnalyzer = (() => {
           _openManualPrefill(data || {});
           return;
         }
+        // Corriger la catégorie à partir du nom (l'IA se trompe parfois : sérum ↔ crème…)
+        const cat = (typeof CurrentRoutine !== 'undefined') ? CurrentRoutine.inferCategory(data.name, data.category) : (data.category || 'other');
         S.products.push({ _key: _mkKey(), id: null, brand: data.brand || '', name: data.name || '',
-                          category: data.category || 'other', fromCatalog: false, photo: thumb });
+                          category: cat, fromCatalog: false, photo: thumb });
         showToast(`✓ ${(data.brand ? data.brand + ' ' : '') + data.name} ajouté`, 'success', 2600);
         _refreshList();
       } catch (err) {

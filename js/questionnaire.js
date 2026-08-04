@@ -703,7 +703,10 @@ const Questionnaire = (() => {
           crToggleManual();
           return;
         }
-        if (typeof CurrentRoutine !== 'undefined') CurrentRoutine.addManual(data.brand || '', data.name || '', data.category || 'other', thumb);
+        if (typeof CurrentRoutine !== 'undefined') {
+          const _cat = CurrentRoutine.inferCategory(data.name, data.category);
+          CurrentRoutine.addManual(data.brand || '', data.name || '', _cat, thumb);
+        }
         showToast(`✓ ${(data.brand ? data.brand + ' ' : '') + data.name} ajouté`, 'success', 2500);
         _refreshCrList();
       } catch (err) {
