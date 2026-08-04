@@ -268,20 +268,58 @@ const GlowCoach = (() => {
     const photoScores = zones
       ? `Pores: ${Math.round((zones.pores||0)*100)}% · Rougeurs: ${Math.round((zones.redness||0)*100)}% · Éclat: ${Math.round((zones.glow||0)*100)}%`
       : 'Non analysée';
+    // Détails analyse visage (au-delà des zones)
+    const faceDetails = face ? [
+      face.cernes?.detected ? `cernes ${face.cernes.type || ''}`.trim() : null,
+      (face.taches && face.taches !== 'aucune') ? `taches ${face.taches}` : null,
+      (face.rougeurs?.niveau && face.rougeurs.niveau !== 'aucune') ? `rougeurs ${face.rougeurs.niveau}` : null,
+      face.eclat && face.eclat !== 'normal' ? `éclat ${face.eclat}` : null,
+      face.carnation?.type ? `carnation ${face.carnation.type}` : null,
+      face.undertone?.type ? `sous-ton ${face.undertone.type}` : null
+    ].filter(Boolean).join(' · ') : '';
+
+    // ── Analyse de routine (« Analyser ma routine ») ──
+    let ra = AppState.routineAnalysis;
+    if (!ra) { try { ra = JSON.parse(localStorage.getItem('glow_routine_analysis') || 'null'); } catch {} }
+    const raProducts = (ra?.products || []).map(p => `${p.brand ? p.brand + ' ' : ''}${p.name}`.trim()).filter(Boolean);
+    const raKept     = (ra?.keepProducts || []).map(p => `${p.brand ? p.brand + ' ' : ''}${p.name}`.trim()).filter(Boolean);
+
+    // ── Produits déclarés dans l'étape « Ma routine actuelle » ──
+    const declared = (answers.currentRoutine || []).map(p => `${p.brand ? p.brand + ' ' : ''}${p.name}`.trim()).filter(Boolean);
+
+    // ── Routine(s) sauvegardée(s) ──
+    const saved = (typeof RoutineSaver !== 'undefined' && RoutineSaver.load) ? RoutineSaver.load() : null;
+    const savedSkincare = saved?.skincare?.routine?.ruleName || saved?.routine?.ruleName || null;
+    const savedMakeup   = saved?.makeup?.makeupQuiz ? Object.values(saved.makeup.makeupQuiz).filter(v => typeof v === 'string').slice(0, 5).join(', ') : null;
+    const savedAt       = saved?.savedAt ? new Date(saved.savedAt).toLocaleDateString('fr-FR') : null;
 
     return {
       skinType:    face?.skinType?.type || answers.skinType || 'Non analysée',
-      concerns:    (answers.concerns || []).join(', ') || 'Non renseignés',
+      concerns:    (answers.concerns || answers.complexes || []).join(', ') || 'Non renseignés',
       oiliness:    answers.oiliness     || 'Non renseignée',
       sensitivity: answers.sensitivity  || 'Non renseignée',
-      age:         answers.age          || 'Non renseigné',
+      age:         answers.ageGroup || answers.age || 'Non renseigné',
       undertone:   answers.undertone    || answers.carnation || 'Non renseigné',
       budget:      answers.budget       || 'Non renseigné',
+      texture:     answers.texture      || 'Non renseignée',
+      objectives:  answers.objectives   || 'Non renseigné',
+      avoid:       (answers.avoidIngredients || []).join(', ') || 'Aucun',
+      labels:      (answers.labels || []).join(', ') || 'Aucun',
+      spfFinish:   answers.spfFinish    || 'Non renseigné',
+      style:       answers.skincareStyle || 'Non renseigné',
       morning:     fmt(routine.matin),
       evening:     fmt(routine.soir),
       ruleName:    routine.ruleName || 'Non générée',
       products:    products.slice(0, 8).map(p => `${p.brand} ${p.name}`).join(', ') || 'Aucun',
       photoScores,
+      faceDetails: faceDetails || 'Aucun détail',
+      raScore:     ra?.score != null ? `${ra.score}/100` : 'Pas d\'analyse',
+      raProducts:  raProducts.slice(0, 15).join(', ') || 'Aucun',
+      raKept:      raKept.slice(0, 15).join(', ') || 'Aucun',
+      declared:    declared.slice(0, 15).join(', ') || 'Aucun',
+      savedSkincare: savedSkincare || 'Aucune',
+      savedMakeup:   savedMakeup || 'Aucune',
+      savedAt:       savedAt || '—',
       journeyDay:  journeyDay ? `Jour ${journeyDay}/30` : 'Non démarré',
       premium:     premium ? 'Abonnée Premium' : 'Version gratuite',
       makeupUsed:  (answers.makeupUsed || []).join(', ') || 'Non renseigné',
@@ -307,19 +345,40 @@ Conseils Glow Up : ${(_knowledge.glowup_advice || []).join(' | ')}`;
     if (_examples.length) {
       examplesBlock = `\n\n---\nEXEMPLES DE TON ET STYLE :\n${_examples.map(e => `Utilisatrice : "${e.user}"\nCoach : "${e.assistant}"`).join('\n\n')}`;
     }
-    const profileBlock = `\n---\nPROFIL DE L'UTILISATRICE :
+    const profileBlock = `\n---\nPROFIL DE L'UTILISATRICE (utilise-le pour personnaliser CHAQUE réponse) :
 • Type de peau : ${ctx.skinType}
 • Sébum / brillance : ${ctx.oiliness}
 • Sensibilité : ${ctx.sensitivity}
 • Âge : ${ctx.age}
 • Sous-ton / carnation : ${ctx.undertone}
 • Budget : ${ctx.budget}
+• Texture préférée : ${ctx.texture}
+• Objectif : ${ctx.objectives}
 • Préoccupations : ${ctx.concerns}
+• Ingrédients à éviter : ${ctx.avoid}
+• Labels importants : ${ctx.labels}
+• Fini SPF préféré : ${ctx.spfFinish}
+• Style skincare : ${ctx.style}
 • Analyse photo (zones) : ${ctx.photoScores}
+• Analyse visage (détails) : ${ctx.faceDetails}
+
+ROUTINE GÉNÉRÉE PAR GLOW UP :
 • Routine matin : ${ctx.morning}
 • Routine soir : ${ctx.evening}
 • Diagnostic appliqué : ${ctx.ruleName}
 • Produits recommandés : ${ctx.products}
+
+ANALYSE DE SA ROUTINE ACTUELLE (« Analyser ma routine ») :
+• Score de compatibilité : ${ctx.raScore}
+• Produits qu'elle utilise : ${ctx.raProducts}
+• Produits jugés adaptés (à garder) : ${ctx.raKept}
+• Produits déclarés (étape routine actuelle) : ${ctx.declared}
+
+ROUTINES SAUVEGARDÉES :
+• Routine skincare enregistrée : ${ctx.savedSkincare}
+• Routine maquillage enregistrée : ${ctx.savedMakeup}
+• Dernière sauvegarde : ${ctx.savedAt}
+
 • Maquillage utilisé : ${ctx.makeupUsed} (fréquence : ${ctx.makeupFreq})
 • Skin Journey : ${ctx.journeyDay}
 • Statut : ${ctx.premium}`;
