@@ -19,7 +19,7 @@ const Questionnaire = (() => {
       question: 'Qu\'est-ce qui te complexe le plus ?',
       subtitle: 'Choisis jusqu\'à 3 réponses — on en déduit ton objectif',
       required: true,
-      skipIf: null,
+      skipIf: () => !!AppState.questionnaire?.reused?.complexes,
       options: [
         { value: 'acne',      emoji: '😓', label: 'Acné / Boutons',        desc: 'Points noirs, kystes, imperfections' },
         { value: 'taches',    emoji: '🫥', label: 'Taches & Teint inégal', desc: 'Hyperpigmentation, cicatrices' },
@@ -46,13 +46,13 @@ const Questionnaire = (() => {
       ]
     },
 
-    // Q-PHOTO — Étape analyse photo intégrée (jamais sautée)
+    // Q-PHOTO — Étape analyse photo (sautée si le visage a déjà été analysé)
     {
       id: 'q-photo', key: null, type: 'photo-step',
       question: 'Analyse ta peau en temps réel',
       subtitle: 'Pour des recommandations ultra-personnalisées',
       required: false,
-      skipIf: null
+      skipIf: () => !!AppState.questionnaire?.reused?.face
     },
 
     // Q1 — Type de peau (toujours affiché — photo pré-sélectionne mais user peut corriger)
@@ -60,7 +60,7 @@ const Questionnaire = (() => {
       id: 'q1', key: 'skinType', type: 'single',
       question: 'Quel est ton type de peau ?',
       required: true,
-      skipIf: null,
+      skipIf: () => !!AppState.questionnaire?.reused?.skinType,
       prefill: (photo) => photo?.skinType?.type,
       options: [
         { value: 'normale',  emoji: '◇', label: 'Normale',  desc: 'Équilibrée, confortable' },
@@ -316,7 +316,7 @@ const Questionnaire = (() => {
   // ─── Init ─────────────────────────────────────────────────────
 
   function reset() {
-    AppState.questionnaire = { answers: {}, completed: false, currentQ: 0, photoPreFill: {} };
+    AppState.questionnaire = { answers: {}, completed: false, currentQ: 0, photoPreFill: {}, reused: {} };
     currentIndex = 0;
   }
 
@@ -348,20 +348,23 @@ const Questionnaire = (() => {
       AppState.face.photo        = null;
     }
     reset();
+    // Analyse visage déjà faite (analyse de routine OU création précédente) → on la réutilise
+    if ((reuse || keepAnalysis) && AppState.face?.skinAnalysis) {
+      AppState.questionnaire.reused.face = true;   // → l'étape photo sera sautée
+    }
     if (keepAnalysis && AppState.face?.skinAnalysis) {
-      // Garder l'analyse → commencer après l'étape photo
       _prefillFromPhoto();
-      const photoIdx = QUESTIONS.findIndex(q => q.type === 'photo-step');
-      currentIndex = _nextActive(photoIdx >= 0 ? photoIdx : 0);
-      if (currentIndex < 0) currentIndex = 0;
     } else {
-      currentIndex = 0; // Q0 toujours en premier (les questions restent visibles/modifiables)
       if (reuse && AppState.face?.skinAnalysis) _prefillFromPhoto();
     }
     // Profil partagé : si un quiz maquillage a déjà été rempli, pré-remplir le skincare
     _seedSkincareFromMakeup();
     // Réutiliser les réponses du quiz « Analyser ma routine » (type de peau, préoccupations)
     _seedSkincareFromAnalysis(ra);
+    // Réutiliser un profil déjà rempli (routine créée précédemment) → sauter les questions identiques
+    _seedSkincareFromSavedProfile();
+    // Démarrer sur la première question NON sautée
+    currentIndex = _firstActive();
     AppState.questionnaire.currentQ = currentIndex;
     showScreen('questionnaire');
   }
@@ -449,14 +452,34 @@ const Questionnaire = (() => {
   }
 
   // Pré-remplit le questionnaire skincare depuis l'analyse de routine (type de peau + préoccupations)
+  // et MARQUE ces réponses comme réutilisées → les questions identiques ne sont pas reposées.
   function _seedSkincareFromAnalysis(ra) {
     if (!ra || !ra.quiz) return;
     const a  = AppState.questionnaire.answers;
     const pf = AppState.questionnaire.photoPreFill = AppState.questionnaire.photoPreFill || {};
+    const r  = AppState.questionnaire.reused = AppState.questionnaire.reused || {};
     const st = _skinTypeFromDesc(ra.quiz.skinDesc);
-    if (st) { a.skinType = st; pf.skinType = st; }
+    if (st) { a.skinType = st; pf.skinType = st; r.skinType = true; }
     const cx = _complexesFromAnalysis(ra);
-    if (cx.length) { a.complexes = cx; pf.complexes = cx; }
+    if (cx.length) { a.complexes = cx; pf.complexes = cx; r.complexes = true; }
+  }
+
+  // Réutilise un profil déjà rempli lors d'une PRÉCÉDENTE création de routine
+  // → marque type de peau / préoccupations comme réutilisés (questions non reposées).
+  function _seedSkincareFromSavedProfile() {
+    let prof = null;
+    try { prof = (typeof RoutineSaver !== 'undefined' && RoutineSaver.loadProfile) ? RoutineSaver.loadProfile() : null; } catch (e) {}
+    const src = prof?.answers;
+    if (!src) return;
+    const a  = AppState.questionnaire.answers;
+    const pf = AppState.questionnaire.photoPreFill = AppState.questionnaire.photoPreFill || {};
+    const r  = AppState.questionnaire.reused = AppState.questionnaire.reused || {};
+    const _has = v => v !== undefined && v !== null && !(Array.isArray(v) && !v.length);
+    const _empty = v => v === undefined || v === null || (Array.isArray(v) && !v.length);
+    ['skinType', 'complexes', 'cernesColor'].forEach(k => {
+      if (_empty(a[k]) && _has(src[k])) { a[k] = src[k]; pf[k] = src[k]; r[k] = true; }
+    });
+    if (prof.skinAnalysis && AppState.face?.skinAnalysis) r.face = true;
   }
 
   // ─── Profil partagé skincare ⇆ maquillage (pas de questions posées 2×) ─

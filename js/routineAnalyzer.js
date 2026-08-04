@@ -252,6 +252,22 @@ const RoutineAnalyzer = (() => {
 
   function toStep2() {
     if (!S.products.length) { showToast('Ajoute au moins un produit', 'warning'); return; }
+    // Visage déjà analysé (création de routine / précédemment) → on réutilise, on saute la photo
+    const existing = AppState?.face?.skinAnalysis
+      || ((typeof RoutineSaver !== 'undefined' && RoutineSaver.load) ? RoutineSaver.load()?.skinAnalysis : null);
+    if (existing) {
+      S.faceAnalysis = existing;
+      S.faceSummary = {
+        skinType:  existing.skinType?.type || null,
+        undertone: existing.undertone?.type || null,
+        cernes:    existing.cernes?.detected ? (existing.cernes.type || 'oui') : 'non',
+        rougeurs:  existing.rougeurs?.niveau || null,
+        eclat:     existing.eclat || null,
+        taches:    existing.taches || null
+      };
+      S.view = 'quiz'; render();
+      return;
+    }
     S.view = 'photo'; render();
   }
 
