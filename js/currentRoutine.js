@@ -64,11 +64,12 @@ const CurrentRoutine = (() => {
              category: p.category || 'other', fromCatalog: true, loved: false });
   }
 
-  function addManual(brand, name, category) {
+  function addManual(brand, name, category, photo) {
     brand = (brand || '').trim(); name = (name || '').trim();
     if (!name) return false;
     list().push({ _key: _mkKey(), id: null, brand, name,
-                  category: category || 'other', fromCatalog: false, loved: false });
+                  category: category || 'other', fromCatalog: false, loved: false,
+                  photo: photo || null });
     return true;
   }
 
@@ -169,6 +170,7 @@ const CurrentRoutine = (() => {
 
   // ─── Rendu : carte « produit que tu gardes » (dans le slot routine) ─
   function _entryImg(entry) {
+    if (entry.photo) return entry.photo;   // photo prise par l'utilisatrice (prioritaire)
     if (entry.fromCatalog) {
       const p = (AppState.products.catalog || []).find(x => x.id === entry.id);
       if (p?.imageUrl) return p.imageUrl;

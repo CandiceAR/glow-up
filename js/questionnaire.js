@@ -643,6 +643,22 @@ const Questionnaire = (() => {
     });
   }
 
+  // Petite vignette (~220px) conservée pour l'afficher dans la routine
+  function _crThumb(dataUrl) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(220 / Math.max(img.naturalWidth, img.naturalHeight), 1);
+        const cv = document.createElement('canvas');
+        cv.width = Math.round(img.naturalWidth * scale); cv.height = Math.round(img.naturalHeight * scale);
+        cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+        resolve(cv.toDataURL('image/jpeg', 0.7));
+      };
+      img.onerror = () => resolve(null);
+      img.src = dataUrl;
+    });
+  }
+
   function crPhoto(input) {
     const file = input.files?.[0];
     if (!file) return;
@@ -652,6 +668,7 @@ const Questionnaire = (() => {
     const reader = new FileReader();
     reader.onload = async (e) => {
       const photo = await _crCompress(e.target.result);
+      const thumb = await _crThumb(e.target.result);
       try {
         const resp = await fetch(apiUrl('/api/identifyProduct'), {
           method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ photo })
@@ -663,7 +680,7 @@ const Questionnaire = (() => {
           crToggleManual();
           return;
         }
-        if (typeof CurrentRoutine !== 'undefined') CurrentRoutine.addManual(data.brand || '', data.name || '', data.category || 'other');
+        if (typeof CurrentRoutine !== 'undefined') CurrentRoutine.addManual(data.brand || '', data.name || '', data.category || 'other', thumb);
         showToast(`✓ ${(data.brand ? data.brand + ' ' : '') + data.name} ajouté`, 'success', 2500);
         _refreshCrList();
       } catch (err) {
@@ -1545,7 +1562,8 @@ const Questionnaire = (() => {
       if (!exists) list.push({
         _key: 'ra_' + Math.random().toString(36).slice(2, 9),
         id: p.id || null, brand: p.brand || '', name: p.name || '',
-        category: p.category || 'other', fromCatalog: !!p.id, loved: true, forceKeep: true
+        category: p.category || 'other', fromCatalog: !!p.id, loved: true, forceKeep: true,
+        photo: p.photo || null   // vignette de la photo prise par l'utilisatrice
       });
     });
   }

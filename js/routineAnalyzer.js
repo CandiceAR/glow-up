@@ -185,6 +185,23 @@ const RoutineAnalyzer = (() => {
     });
   }
 
+  // Petite vignette (~220px) légère, conservée pour l'afficher dans la routine
+  function _thumb(dataUrl) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(220 / Math.max(img.naturalWidth, img.naturalHeight), 1);
+        const cv = document.createElement('canvas');
+        cv.width = Math.round(img.naturalWidth * scale);
+        cv.height = Math.round(img.naturalHeight * scale);
+        cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+        resolve(cv.toDataURL('image/jpeg', 0.7));
+      };
+      img.onerror = () => resolve(null);
+      img.src = dataUrl;
+    });
+  }
+
   function _openManualPrefill(d) {
     const zone = document.getElementById('raManualZone');
     if (zone && zone.dataset.open !== '1') toggleManual();
@@ -204,6 +221,7 @@ const RoutineAnalyzer = (() => {
     const reader = new FileReader();
     reader.onload = async (e) => {
       const photo = await _compress(e.target.result);
+      const thumb = await _thumb(e.target.result);   // petite vignette conservée pour la routine
       try {
         const controller = new AbortController();
         const tid = setTimeout(() => controller.abort(), 25000);
@@ -220,7 +238,7 @@ const RoutineAnalyzer = (() => {
           return;
         }
         S.products.push({ _key: _mkKey(), id: null, brand: data.brand || '', name: data.name || '',
-                          category: data.category || 'other', fromCatalog: false });
+                          category: data.category || 'other', fromCatalog: false, photo: thumb });
         showToast(`✓ ${(data.brand ? data.brand + ' ' : '') + data.name} ajouté`, 'success', 2600);
         _refreshList();
       } catch (err) {
@@ -406,7 +424,8 @@ const RoutineAnalyzer = (() => {
     (result.optimized?.keep || []).forEach(r => refs.add(r));
     (result.products || []).forEach(p => { if (p.verdict === 'adapted') refs.add(p.ref); });
     return [...refs].map(ref => S.products[ref]).filter(Boolean).map(p => ({
-      id: p.id || null, brand: p.brand || '', name: p.name || '', category: p.category || 'other', fromCatalog: !!p.id
+      id: p.id || null, brand: p.brand || '', name: p.name || '', category: p.category || 'other', fromCatalog: !!p.id,
+      photo: p.photo || null   // vignette de la photo prise par l'utilisatrice
     }));
   }
 
