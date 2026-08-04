@@ -657,6 +657,7 @@ ROUTINES SAUVEGARDÉES :
     if (_getPlan() === 'glowplus') _incrementMonthlyCount();
     try { _autoSave(); } catch {}
     _renderMessages();
+    _scrollToLastAnswer();                          // se positionner au DÉBUT de la réponse
   }
 
   function _render() {
@@ -696,6 +697,19 @@ ROUTINES SAUVEGARDÉES :
       const el = document.getElementById('coachMessages');
       if (el) el.scrollTop = el.scrollHeight;
     }, 50);
+  }
+
+  // Positionne le HAUT de la dernière réponse du Coach près du haut de la zone visible
+  function _scrollToLastAnswer() {
+    setTimeout(() => {
+      const el = document.getElementById('coachMessages');
+      if (!el) return;
+      const answers = el.querySelectorAll('.coach-msg--coach');
+      const last = answers[answers.length - 1];
+      if (!last) { el.scrollTop = el.scrollHeight; return; }
+      const delta = last.getBoundingClientRect().top - el.getBoundingClientRect().top;
+      el.scrollTop += delta - 12;   // 12px de marge au-dessus
+    }, 70);
   }
 
   // ══════════════════════════════════════════════════════════════
