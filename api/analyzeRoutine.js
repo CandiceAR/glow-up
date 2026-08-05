@@ -23,10 +23,11 @@ module.exports = async (req, res) => {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(503).json({ error: 'ANTHROPIC_API_KEY manquante' });
 
-  const { products, quiz, skin } = req.body || {};
+  const { products, quiz, skin, moment } = req.body || {};
   if (!Array.isArray(products) || !products.length) {
     return res.status(400).json({ error: 'products manquants' });
   }
+  const momentLabel = moment === 'soir' ? 'du SOIR' : moment === 'matin' ? 'du MATIN' : '';
 
   // Produits compacts, indexés par ref
   const slim = products.slice(0, 20).map((p, i) => ({
@@ -37,8 +38,9 @@ module.exports = async (req, res) => {
   }));
   const validRefs = new Set(slim.map(p => p.ref));
 
-  const prompt = `Tu es une dermo-conseillère experte en skincare. Analyse la routine complète d'une utilisatrice de façon PÉDAGOGIQUE, personnalisée et honnête, comme si tu examinais tout en détail.
+  const prompt = `Tu es une dermo-conseillère experte en skincare. Analyse la routine ${momentLabel} d'une utilisatrice de façon PÉDAGOGIQUE, personnalisée et honnête, comme si tu examinais tout en détail.
 
+${momentLabel ? `IMPORTANT : elle analyse UNIQUEMENT sa routine ${momentLabel}. Reste cohérente avec ce moment : le MATIN → le SPF est indispensable en dernière étape, on évite le rétinol/les exfoliants forts ; le SOIR → c'est le moment du rétinol/exfoliants, PAS de SPF. Ne reproche pas l'absence de SPF le soir, ni l'absence de rétinol le matin.\n` : ''}
 PRODUITS DE SA ROUTINE (référencés par "ref") :
 ${JSON.stringify(slim, null, 0)}
 

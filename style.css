@@ -10063,3 +10063,27 @@ em { font-style: italic; color: var(--nude); }
 .ra-pcard-name { flex: 1; min-width: 120px; }
 .ra-reuse { background: rgba(39,174,96,.08); border: 1px solid rgba(39,174,96,.3); border-radius: var(--radius); padding: 14px 16px; margin: 0 auto 16px; max-width: 340px; }
 .ra-reuse-txt { font-size: 13px; color: var(--charcoal); margin: 0 0 10px; line-height: 1.4; }
+
+/* Choix matin/soir (intro analyse) */
+.ra-moment-q { font-size: 15px; font-weight: 600; color: var(--charcoal); margin: 8px 0 12px; }
+.ra-moment-choice { display: flex; flex-direction: column; gap: 10px; max-width: 340px; margin: 0 auto; }
+
+/* Routine optimisée — cartes produit avec photo + achat */
+.ra-opt-group { border-top: 1px solid var(--sand); padding: 14px 0; }
+.ra-opt-group:first-child { border-top: none; padding-top: 0; }
+.ra-opt-label { font-size: 12px; font-weight: 700; margin-bottom: 8px; }
+.ra-opt-label.ra-opt-keep { color: var(--success); }
+.ra-opt-label.ra-opt-replace { color: var(--orange-deep); }
+.ra-opt-label.ra-opt-add { color: var(--nude); }
+.ra-opt-reason { font-size: 13px; color: var(--charcoal); margin: 6px 0 8px; line-height: 1.4; }
+.ra-opt-reason em { color: var(--muted); font-style: italic; }
+.ra-opt-prod { display: flex; align-items: center; gap: 12px; background: var(--white); border: 1px solid var(--sand); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 8px; }
+.ra-opt-prod--owned { background: rgba(39,174,96,.05); border-color: rgba(39,174,96,.25); }
+.ra-opt-prod-img { width: 48px; height: 48px; object-fit: contain; border-radius: 8px; background: var(--cream); flex-shrink: 0; }
+.ra-opt-prod-noimg { display: flex; align-items: center; justify-content: center; font-size: 22px; }
+.ra-opt-prod-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.ra-opt-prod-brand { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); font-weight: 600; }
+.ra-opt-prod-name { font-size: 14px; color: var(--charcoal); font-weight: 500; overflow: hidden; text-overflow: ellipsis; }
+.ra-opt-prod-price { font-size: 13px; color: var(--charcoal); font-weight: 700; }
+.ra-opt-buy { flex-shrink: 0; background: var(--charcoal); color: var(--white); font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 20px; text-decoration: none; white-space: nowrap; }
+.ra-opt-buy:hover { background: var(--nude); }

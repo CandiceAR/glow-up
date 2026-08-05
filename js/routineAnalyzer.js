@@ -34,10 +34,13 @@ const RoutineAnalyzer = (() => {
 
   // ─── Cycle de vie ─────────────────────────────────────────────
   function initScreen() {
-    S = { view: 'intro', products: [], quiz: { objectives: [], skinDesc: [], bother: [], duration: '', notes: '' },
+    S = { view: 'intro', moment: null, products: [], quiz: { objectives: [], skinDesc: [], bother: [], duration: '', notes: '' },
           faceSummary: null, photo: null, result: null, busy: false };
     render();
   }
+
+  function start(moment) { S.moment = moment; S.view = 'products'; render(); }
+  function _momentLabel() { return S.moment === 'soir' ? 'du soir 🌙' : S.moment === 'matin' ? 'du matin ☀️' : ''; }
 
   function render() {
     const c = document.getElementById('routineAnalyzerContent');
@@ -67,7 +70,11 @@ const RoutineAnalyzer = (() => {
           <div class="ra-step-prev"><span>2</span> Photo + 4 questions</div>
           <div class="ra-step-prev"><span>3</span> Ton analyse</div>
         </div>
-        <button class="btn btn-dark ra-btn-main" onclick="RoutineAnalyzer.go('products')">Commencer ✦</button>
+        <p class="ra-moment-q">Quelle routine veux-tu analyser&nbsp;?</p>
+        <div class="ra-moment-choice">
+          <button class="btn btn-dark ra-btn-main" onclick="RoutineAnalyzer.start('matin')">☀️ Ma routine du matin</button>
+          <button class="btn btn-dark ra-btn-main" onclick="RoutineAnalyzer.start('soir')">🌙 Ma routine du soir</button>
+        </div>
       </div>`;
   }
 
@@ -75,8 +82,8 @@ const RoutineAnalyzer = (() => {
   function _vProducts() {
     return `
       <div class="ra-products">
-        <div class="ra-head"><span class="ra-step-badge">Étape 1/3</span><h2>Ta routine actuelle</h2>
-          <p>Ajoute tes produits : nettoyant, sérum, crème, contour des yeux, SPF, huiles, traitements…</p></div>
+        <div class="ra-head"><span class="ra-step-badge">Étape 1/3 · Routine ${_momentLabel()}</span><h2>Ta routine ${_momentLabel()}</h2>
+          <p>Ajoute les produits que tu utilises ${S.moment === 'soir' ? 'le soir' : 'le matin'} : nettoyant, sérum, crème, contour des yeux${S.moment === 'matin' ? ', SPF' : ''}, traitements…</p></div>
 
         <button type="button" class="btn btn-dark ra-photo-add" onclick="RoutineAnalyzer.pickProductPhoto()">📷 Ajouter un produit en photo</button>
         <div id="raProdIdMsg" class="ra-prodid-msg"></div>
@@ -445,7 +452,7 @@ const RoutineAnalyzer = (() => {
       const tid = setTimeout(() => controller.abort(), 55000);
       const resp = await fetch(apiUrl('/api/analyzeRoutine'), {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ products: payloadProducts, quiz: S.quiz, skin: S.faceSummary }),
+        body: JSON.stringify({ products: payloadProducts, quiz: S.quiz, skin: S.faceSummary, moment: S.moment }),
         signal: controller.signal
       });
       clearTimeout(tid);
@@ -554,7 +561,7 @@ const RoutineAnalyzer = (() => {
     const freeBlock = `
       <div class="ra-result-head">
         <span class="ra-step-badge">Ton analyse</span>
-        <h2>Score de ta routine</h2>
+        <h2>Score de ta routine ${_momentLabel()}</h2>
         ${ring}
       </div>
       ${r.strengths?.length ? `<div class="ra-panel"><h3>💪 Points forts</h3><ul class="ra-ul-ok">${r.strengths.map(x => `<li>${x}</li>`).join('')}</ul></div>` : ''}
@@ -604,6 +611,61 @@ const RoutineAnalyzer = (() => {
     else if (typeof Questionnaire !== 'undefined') Questionnaire.startSkincare();
   }
 
+  // ── Routine optimisée : choisir un vrai produit + le présenter avec photo/achat ──
+  const _CAT_BUCKET = { sunscreen: 'spf', eye_cream: 'eye', nightmask: 'moisturizer', mist: 'toner' };
+  function _catBucket(c) { return _CAT_BUCKET[c] || c; }
+  function _userSkinTypeRA() {
+    return AppState?.face?.skinAnalysis?.skinType?.type
+        || AppState?.questionnaire?.answers?.skinType
+        || S.faceSummary?.skinType || null;
+  }
+  function _pickProductFor(text) {
+    const catalog = AppState.products?.catalog || [];
+    if (!catalog.length) return null;
+    const cat = (typeof CurrentRoutine !== 'undefined') ? CurrentRoutine.inferCategory(text, null) : null;
+    if (!cat || cat === 'other') return null;
+    const b = _catBucket(cat);
+    let pool = catalog.filter(p => _catBucket(p.category) === b && p.name && p.active !== false);
+    if (!pool.length) return null;
+    const st = _userSkinTypeRA();
+    if (st) { const ad = pool.filter(p => !p.skinTypeTags?.length || p.skinTypeTags.includes(st)); if (ad.length) pool = ad; }
+    pool.sort((a, b2) => (b2.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0) || (b2.rating || 0) - (a.rating || 0));
+    return pool[0] || null;
+  }
+  function _amazonSearch(q) { return `https://www.amazon.fr/s?k=${encodeURIComponent((q || '').slice(0, 80))}&tag=kan10ar-21`; }
+
+  function _optProductCard(p, buy) {
+    const url = p.amazonUrl || p.shopUrl || '#';
+    const isAff = !!p.amazonUrl;
+    return `
+      <div class="ra-opt-prod">
+        ${p.imageUrl ? `<img src="${p.imageUrl}" class="ra-opt-prod-img" alt="" loading="lazy" onerror="this.style.display='none'">` : '<div class="ra-opt-prod-img ra-opt-prod-noimg">🧴</div>'}
+        <div class="ra-opt-prod-info">
+          <span class="ra-opt-prod-brand">${p.brand || ''}</span>
+          <span class="ra-opt-prod-name">${p.name || ''}</span>
+          ${p.price != null ? `<span class="ra-opt-prod-price">${p.price.toFixed(2)} €</span>` : ''}
+        </div>
+        ${buy ? `<a class="ra-opt-buy" href="${url}" target="_blank" rel="noopener nofollow${isAff ? ' sponsored' : ''}" ${isAff ? `onclick="if(typeof trackAmazonClick==='function')trackAmazonClick('${p.id}')"` : ''}>Voir →</a>` : ''}
+      </div>`;
+  }
+  function _optSearchCard(text) {
+    return `
+      <div class="ra-opt-prod">
+        <div class="ra-opt-prod-img ra-opt-prod-noimg">🔎</div>
+        <div class="ra-opt-prod-info"><span class="ra-opt-prod-name">${text}</span><span class="ra-opt-prod-brand">Suggestion</span></div>
+        <a class="ra-opt-buy" href="${_amazonSearch(text)}" target="_blank" rel="noopener nofollow sponsored">Voir →</a>
+      </div>`;
+  }
+  function _optOwned(ref) {
+    const e = S.products[ref];
+    const img = e ? _prodImg(e) : null;
+    return `
+      <div class="ra-opt-prod ra-opt-prod--owned">
+        ${img ? `<img src="${img}" class="ra-opt-prod-img" alt="" loading="lazy" onerror="this.style.display='none'">` : '<div class="ra-opt-prod-img ra-opt-prod-noimg">🧴</div>'}
+        <div class="ra-opt-prod-info"><span class="ra-opt-prod-name">${_pName(ref)}</span></div>
+      </div>`;
+  }
+
   function _renderDetail(r) {
     // Cartes produit
     const cards = (r.products || []).map(p => {
@@ -635,13 +697,24 @@ const RoutineAnalyzer = (() => {
       `<p class="ra-coherence">${R.amCoherent ? '✅' : '⚠️'} Matin cohérent&nbsp;·&nbsp;${R.pmCoherent ? '✅' : '⚠️'} Soir cohérent</p>`
     ].join('');
 
-    // Routine optimisée
+    // Routine optimisée — avec photo + bouton d'achat à chaque proposition
     const O = r.optimized || {};
-    const opt = [
-      O.keep?.length ? `<div class="ra-opt-row ra-opt-keep"><span>✅ On garde</span><p>${O.keep.map(_pName).join(' · ')}</p></div>` : '',
-      ...(O.replace || []).map(x => `<div class="ra-opt-row ra-opt-replace"><span>🔄 On remplace</span><p><strong>${_pName(x.ref)}</strong> → ${x.suggestion}${x.reason ? ` <em>(${x.reason})</em>` : ''}</p></div>`),
-      ...(O.add || []).map(x => `<div class="ra-opt-row ra-opt-add"><span>➕ On ajoute</span><p><strong>${x.what}</strong>${x.reason ? ` <em>(${x.reason})</em>` : ''}</p></div>`)
-    ].join('');
+    const optKeep = (O.keep || []).length
+      ? `<div class="ra-opt-group"><div class="ra-opt-label ra-opt-keep">✅ On garde</div>${O.keep.map(_optOwned).join('')}</div>` : '';
+    const optReplace = (O.replace || []).map(x => {
+      const repl = _pickProductFor(x.suggestion);
+      return `<div class="ra-opt-group"><div class="ra-opt-label ra-opt-replace">🔄 On remplace</div>
+        ${_optOwned(x.ref)}
+        <p class="ra-opt-reason">→ ${x.suggestion}${x.reason ? ` <em>(${x.reason})</em>` : ''}</p>
+        ${repl ? _optProductCard(repl, true) : _optSearchCard(x.suggestion)}</div>`;
+    }).join('');
+    const optAdd = (O.add || []).map(x => {
+      const prod = _pickProductFor(x.what);
+      return `<div class="ra-opt-group"><div class="ra-opt-label ra-opt-add">➕ On ajoute</div>
+        <p class="ra-opt-reason"><strong>${x.what}</strong>${x.reason ? ` <em>(${x.reason})</em>` : ''}</p>
+        ${prod ? _optProductCard(prod, true) : _optSearchCard(x.what)}</div>`;
+    }).join('');
+    const opt = optKeep + optReplace + optAdd;
 
     return `
       <div class="ra-panel"><h3>🧴 Produit par produit</h3><div class="ra-pcards">${cards}</div></div>
@@ -654,7 +727,7 @@ const RoutineAnalyzer = (() => {
   function go(view) { S.view = view; render(); }
 
   return {
-    initScreen, render, go,
+    initScreen, render, go, start,
     search, addFromCatalog, toggleManual, addManual, removeProduct, toStep2,
     pickProductPhoto, onProductPhoto,
     pickCam, pickGal, skipPhoto, onPhoto, reuseFace,
