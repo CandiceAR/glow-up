@@ -10087,3 +10087,14 @@ em { font-style: italic; color: var(--nude); }
 .ra-opt-prod-price { font-size: 13px; color: var(--charcoal); font-weight: 700; }
 .ra-opt-buy { flex-shrink: 0; background: var(--charcoal); color: var(--white); font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 20px; text-decoration: none; white-space: nowrap; }
 .ra-opt-buy:hover { background: var(--nude); }
+
+/* Routine complète en étapes (résultats analyse) */
+.ra-btn-alt { width: 100%; max-width: 340px; margin: 10px auto 0; color: var(--nude); font-size: 14px; display: block; }
+.ra-steps-routine { display: flex; flex-direction: column; gap: 4px; }
+.ra-rstep { display: flex; gap: 12px; padding: 12px 0; border-top: 1px solid var(--sand); }
+.ra-rstep:first-child { border-top: none; padding-top: 4px; }
+.ra-rstep-num { font-family: var(--font-serif); font-size: 18px; color: var(--nude); font-weight: 600; flex-shrink: 0; width: 26px; }
+.ra-rstep-body { flex: 1; min-width: 0; }
+.ra-rstep-label { font-size: 13px; font-weight: 700; color: var(--charcoal); text-transform: uppercase; letter-spacing: .03em; margin-bottom: 6px; }
+.ra-step-note { font-size: 12px; color: var(--orange-deep); margin: 0 0 6px; }
+.ra-opt-prod-keep { font-size: 12px; color: var(--success); font-weight: 700; }

@@ -37,6 +37,7 @@ const RoutineAnalyzer = (() => {
     S = { view: 'intro', moment: null, products: [], quiz: { objectives: [], skinDesc: [], bother: [], duration: '', notes: '' },
           faceSummary: null, photo: null, result: null, busy: false };
     render();
+    _loadAnalysisFromCloud();   // recharge la dernière analyse (autre appareil) → affiche "Revoir"
   }
 
   function start(moment) { S.moment = moment; S.view = 'products'; render(); }
@@ -75,6 +76,7 @@ const RoutineAnalyzer = (() => {
           <button class="btn btn-dark ra-btn-main" onclick="RoutineAnalyzer.start('matin')">☀️ Ma routine du matin</button>
           <button class="btn btn-dark ra-btn-main" onclick="RoutineAnalyzer.start('soir')">🌙 Ma routine du soir</button>
         </div>
+        ${_savedAnalysis() ? `<button class="btn btn-ghost ra-btn-alt" onclick="RoutineAnalyzer.reconsult()">📄 Revoir ma dernière analyse</button>` : ''}
       </div>`;
   }
 
@@ -480,17 +482,21 @@ const RoutineAnalyzer = (() => {
   }
 
   function _persistAnalysis(result) {
+    // Produits avec vignette (pour reconsulter l'analyse à l'identique)
+    const productsFull = S.products.map(p => ({ id: p.id || null, brand: p.brand || '', name: p.name || '', category: p.category || 'other', fromCatalog: !!p.id, photo: p.photo || null }));
     const payload = {
       score: result.score,
+      moment: S.moment || null,
+      result,                                                     // analyse complète (pour reconsultation)
       keepProducts: _computeKeep(result),
-      products: S.products.map(p => ({ id: p.id || null, brand: p.brand || '', name: p.name || '', category: p.category || 'other', fromCatalog: !!p.id })),
-      quiz: S.quiz ? JSON.parse(JSON.stringify(S.quiz)) : null,   // réponses du mini-quiz
-      faceAnalysis: S.faceAnalysis || null,                       // analyse peau (photo)
+      products: productsFull,
+      quiz: S.quiz ? JSON.parse(JSON.stringify(S.quiz)) : null,
+      faceAnalysis: S.faceAnalysis || null,
       photo: S.photo || null,
       savedAt: Date.now()
     };
     AppState.routineAnalysis = payload;
-    // localStorage : sans l'image base64 (trop lourde) — l'analyse suffit à la réutilisation
+    // localStorage : sans la grosse photo visage (les vignettes produits restent)
     try { localStorage.setItem('glow_routine_analysis', JSON.stringify({ ...payload, photo: null })); } catch (e) {}
     _saveAnalysisFirestore(result);
   }
@@ -499,13 +505,48 @@ const RoutineAnalyzer = (() => {
     try {
       const uid = AppState?.user?.uid;
       if (!uid || typeof firebase === 'undefined' || !firebase.apps.length) return;
+      const ra = AppState.routineAnalysis || {};
+      // Produits sans vignette pour Firestore (limite de taille du document)
+      const productsLite = (ra.products || []).map(p => ({ id: p.id, brand: p.brand, name: p.name, category: p.category, fromCatalog: p.fromCatalog }));
       await firebase.firestore().collection('users').doc(uid).set({
         routineAnalysis: {
-          score: result.score, keepProducts: AppState.routineAnalysis.keepProducts,
-          updatedAt: new Date().toISOString()
+          score: result.score, moment: ra.moment || null, result, products: productsLite,
+          keepProducts: ra.keepProducts, updatedAt: new Date().toISOString()
         }
       }, { merge: true });
     } catch (err) { console.warn('[RoutineAnalyzer] save analyse Firestore échoué:', err.message); }
+  }
+
+  // Recharge la dernière analyse depuis Firestore (autre appareil / nouvelle connexion)
+  async function _loadAnalysisFromCloud() {
+    try {
+      if (AppState.routineAnalysis) return;
+      const uid = AppState?.user?.uid;
+      if (!uid || typeof firebase === 'undefined' || !firebase.apps.length) return;
+      const doc = await firebase.firestore().collection('users').doc(uid).get();
+      const ra = doc.data()?.routineAnalysis;
+      if (ra && ra.result) {
+        AppState.routineAnalysis = ra;
+        try { localStorage.setItem('glow_routine_analysis', JSON.stringify(ra)); } catch {}
+        if (S.view === 'intro') render();   // rafraîchir pour afficher "Revoir mon analyse"
+      }
+    } catch (err) { console.warn('[RoutineAnalyzer] load cloud échoué:', err.message); }
+  }
+
+  // Reconsulter la dernière analyse enregistrée
+  function _savedAnalysis() {
+    let ra = AppState.routineAnalysis;
+    if (!ra) { try { ra = JSON.parse(localStorage.getItem('glow_routine_analysis') || 'null'); if (ra) AppState.routineAnalysis = ra; } catch {} }
+    return (ra && ra.result) ? ra : null;
+  }
+  function reconsult() {
+    const ra = _savedAnalysis();
+    if (!ra) { showToast('Aucune analyse enregistrée', 'info'); return; }
+    S.result   = ra.result;
+    S.products  = (ra.products || []).map(p => ({ _key: _mkKey(), ...p }));
+    S.moment    = ra.moment || null;
+    S.faceSummary = null;
+    S.view = 'results'; render();
   }
 
   function saveAndRegister() {
@@ -697,37 +738,66 @@ const RoutineAnalyzer = (() => {
       `<p class="ra-coherence">${R.amCoherent ? '✅' : '⚠️'} Matin cohérent&nbsp;·&nbsp;${R.pmCoherent ? '✅' : '⚠️'} Soir cohérent</p>`
     ].join('');
 
-    // Routine optimisée — avec photo + bouton d'achat à chaque proposition
-    const O = r.optimized || {};
-    const optKeep = (O.keep || []).length
-      ? `<div class="ra-opt-group"><div class="ra-opt-label ra-opt-keep">✅ On garde</div>${O.keep.map(_optOwned).join('')}</div>` : '';
-    const optReplace = (O.replace || []).map(x => {
-      const repl = _pickProductFor(x.suggestion);
-      return `<div class="ra-opt-group"><div class="ra-opt-label ra-opt-replace">🔄 On remplace</div>
-        ${_optOwned(x.ref)}
-        <p class="ra-opt-reason">→ ${x.suggestion}${x.reason ? ` <em>(${x.reason})</em>` : ''}</p>
-        ${repl ? _optProductCard(repl, true) : _optSearchCard(x.suggestion)}</div>`;
-    }).join('');
-    const optAdd = (O.add || []).map(x => {
-      const prod = _pickProductFor(x.what);
-      return `<div class="ra-opt-group"><div class="ra-opt-label ra-opt-add">➕ On ajoute</div>
-        <p class="ra-opt-reason"><strong>${x.what}</strong>${x.reason ? ` <em>(${x.reason})</em>` : ''}</p>
-        ${prod ? _optProductCard(prod, true) : _optSearchCard(x.what)}</div>`;
-    }).join('');
-    const opt = optKeep + optReplace + optAdd;
+    // Routine complète optimisée — étapes numérotées, simple et visuelle
+    const steps = _buildSteps(r);
+    const routineHtml = steps.map((s, i) => _renderStep(s, i + 1)).join('');
 
     return `
       <div class="ra-panel"><h3>🧴 Produit par produit</h3><div class="ra-pcards">${cards}</div></div>
       <div class="ra-panel"><h3>⚗️ Cohérence de ta routine</h3><div class="ra-global">${globalRows}</div></div>
-      <div class="ra-panel ra-opt"><h3>✨ Ta routine optimisée</h3>
-        <p class="ra-opt-intro">On garde ce qui te va, on ne change que le nécessaire.</p>${opt}</div>`;
+      <div class="ra-panel ra-routine"><h3>✨ Ta routine ${_momentLabel()} optimisée</h3>
+        <p class="ra-opt-intro">On garde ce qui te va, on complète le reste — prête à l'emploi.</p>
+        <div class="ra-steps-routine">${routineHtml}</div></div>`;
+  }
+
+  // ── Construit la routine complète en étapes (garde les produits adaptés, complète le reste) ──
+  function _buildSteps(r) {
+    const order = S.moment === 'soir'
+      ? [['cleanser', 'Nettoyant', true], ['serum', 'Sérum / Traitement', false], ['eye', 'Contour des yeux', false], ['moisturizer', 'Crème hydratante', true]]
+      : [['cleanser', 'Nettoyant', true], ['serum', 'Sérum / Traitement', false], ['eye', 'Contour des yeux', false], ['moisturizer', 'Crème hydratante', true], ['spf', 'Protection solaire', true]];
+    const vmap = {};
+    (r.products || []).forEach(p => { vmap[p.ref] = p.verdict; });
+    const steps = [];
+    order.forEach(([bucket, label, essential]) => {
+      const idxs = S.products.map((p, i) => ({ p, i })).filter(o => _catBucket(o.p.category) === bucket);
+      const adapted = idxs.find(o => vmap[o.i] === 'adapted');
+      if (adapted) { steps.push({ label, kind: 'keep', ref: adapted.i }); return; }
+      const owned = idxs[0];
+      if (owned) { steps.push({ label, kind: 'replace', ref: owned.i, product: _pickProductFor(label) }); return; }
+      if (essential) {
+        const prod = _pickProductFor(label);
+        steps.push(prod ? { label, kind: 'new', product: prod } : { label, kind: 'new-search', text: label });
+      }
+    });
+    return steps;
+  }
+
+  function _stepOwnedCard(ref) {
+    const e = S.products[ref];
+    const img = e ? _prodImg(e) : null;
+    return `<div class="ra-opt-prod ra-opt-prod--owned">
+      ${img ? `<img src="${img}" class="ra-opt-prod-img" alt="" loading="lazy" onerror="this.style.display='none'">` : '<div class="ra-opt-prod-img ra-opt-prod-noimg">🧴</div>'}
+      <div class="ra-opt-prod-info"><span class="ra-opt-prod-name">${_pName(ref)}</span><span class="ra-opt-prod-keep">✓ Tu la gardes</span></div>
+    </div>`;
+  }
+
+  function _renderStep(step, n) {
+    let card = '';
+    if (step.kind === 'keep')        card = _stepOwnedCard(step.ref);
+    else if (step.kind === 'replace') card = `<p class="ra-step-note">🔄 À la place de ton <strong>${_pName(step.ref)}</strong></p>${step.product ? _optProductCard(step.product, true) : _optSearchCard(step.label)}`;
+    else if (step.kind === 'new')     card = _optProductCard(step.product, true);
+    else                              card = _optSearchCard(step.text);
+    return `<div class="ra-rstep">
+      <span class="ra-rstep-num">${String(n).padStart(2, '0')}</span>
+      <div class="ra-rstep-body"><div class="ra-rstep-label">${step.label}</div>${card}</div>
+    </div>`;
   }
 
   // ─── Navigation ───────────────────────────────────────────────
   function go(view) { S.view = view; render(); }
 
   return {
-    initScreen, render, go, start,
+    initScreen, render, go, start, reconsult,
     search, addFromCatalog, toggleManual, addManual, removeProduct, toStep2,
     pickProductPhoto, onProductPhoto,
     pickCam, pickGal, skipPhoto, onPhoto, reuseFace,
