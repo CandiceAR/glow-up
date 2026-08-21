@@ -83,9 +83,9 @@ const AgeGuard = (() => {
           hit = inName || (inTags && potent);
           break;
         case 'concentration':
-          // restreint si concentration connue > max, sinon seulement si actif VEDETTE
-          if (pct != null && rule.maxConcentration != null) hit = pct > rule.maxConcentration;
-          else hit = inName && potent;
+          // restreint UNIQUEMENT si une concentration élevée est explicitement indiquée
+          // (ex. "Niacinamide 10%"). Sans % connu → bénéfice du doute (dose modérée).
+          hit = (pct != null && rule.maxConcentration != null) ? pct > rule.maxConcentration : false;
           break;
         case 'caution':
           // rincé (nettoyant/tonique) → toléré ; leave-on vedette → restreint
