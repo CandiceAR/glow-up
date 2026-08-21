@@ -263,7 +263,8 @@ async function initApp() {
   await Promise.all([
     ProductCatalog.load(),
     RulesEngine.loadRules(),
-    (typeof SpfEngine !== 'undefined' ? SpfEngine.load() : Promise.resolve())
+    (typeof SpfEngine !== 'undefined' ? SpfEngine.load() : Promise.resolve()),
+    (typeof AgeGuard !== 'undefined' ? AgeGuard.load() : Promise.resolve())
   ]);
 
   console.log(`[GLOW UP] Catalogue chargé : ${AppState.products.catalog.length} produits actifs`);

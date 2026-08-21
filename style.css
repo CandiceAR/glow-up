@@ -10098,3 +10098,6 @@ em { font-style: italic; color: var(--nude); }
 .ra-rstep-label { font-size: 13px; font-weight: 700; color: var(--charcoal); text-transform: uppercase; letter-spacing: .03em; margin-bottom: 6px; }
 .ra-step-note { font-size: 12px; color: var(--orange-deep); margin: 0 0 6px; }
 .ra-opt-prod-keep { font-size: 12px; color: var(--success); font-weight: 700; }
+
+/* Message doux âge (scan dupe) */
+.df-agenote { background: rgba(232,197,191,.18); border: 1px solid var(--rose-deep); border-radius: var(--radius); padding: 14px 16px; font-size: 14px; color: var(--charcoal); line-height: 1.5; margin-bottom: 16px; }

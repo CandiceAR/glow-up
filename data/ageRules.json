@@ -1,0 +1,65 @@
+{
+  "_meta": {
+    "description": "Règles d'adéquation des actifs selon l'âge. Source de vérité unique (AgeGuard). Éditable via l'admin (override Firestore collection 'ageRules').",
+    "youngThreshold": 15,
+    "youngGuidance": "Routine simple : nettoyage doux si nécessaire + hydratation + SPF. Pas de routine longue, pas d'anti-âge, pas d'exfoliants puissants.",
+    "scanMessage": "Ce produit contient un actif que Glow Up ne recommande pas en première intention à ton âge. Je peux te proposer une alternative plus adaptée à ta peau.",
+    "version": 1
+  },
+  "rules": [
+    {
+      "ingredient": "rétinol / rétinoïdes",
+      "aliases": ["retinol", "rétinol", "retinoide", "rétinoïde", "retinal", "retinaldehyde", "retinyl", "tretinoin", "trétinoïne", "adapalene", "adapalène", "granactive retinoid", "bakuchiol"],
+      "minAge": 15,
+      "restriction": "block",
+      "maxConcentration": null,
+      "reason": "Actif anti-âge puissant, non nécessaire et potentiellement irritant sur une peau jeune.",
+      "source": "Consensus dermatologique — pas d'indication anti-âge avant l'âge adulte."
+    },
+    {
+      "ingredient": "AHA fortement dosés / peelings",
+      "aliases": ["aha", "acide glycolique", "glycolic", "acide lactique", "lactic acid", "acide mandélique", "mandelic", "peeling", "glycolique"],
+      "minAge": 15,
+      "restriction": "block",
+      "maxConcentration": 5,
+      "reason": "Exfoliants chimiques forts / peelings inadaptés et fragilisants pour une peau jeune.",
+      "source": "Recommandation d'usage cosmétique — exfoliation douce et ponctuelle uniquement."
+    },
+    {
+      "ingredient": "BHA / acide salicylique (leave-on dosé)",
+      "aliases": ["bha", "acide salicylique", "salicylic", "salicylique"],
+      "minAge": 15,
+      "restriction": "caution",
+      "maxConcentration": 1,
+      "reason": "Salicylique en soin non rincé et fortement dosé à éviter jeune ; toléré en nettoyant rincé à faible dose.",
+      "source": "Bonnes pratiques cosmétiques — privilégier le rincé faible dose."
+    },
+    {
+      "ingredient": "actifs dépigmentants (alpha-arbutine…)",
+      "aliases": ["arbutine", "arbutin", "alpha-arbutin", "alpha-arbutine", "kojique", "kojic", "depigmentant", "dépigmentant", "tranexamique", "tranexamic"],
+      "minAge": 15,
+      "restriction": "block",
+      "maxConcentration": null,
+      "reason": "Actifs dépigmentants non nécessaires et inadaptés à une peau jeune sans problématique pigmentaire installée.",
+      "source": "Usage réservé aux préoccupations pigmentaires de l'adulte."
+    },
+    {
+      "ingredient": "niacinamide fortement dosée (~10 %)",
+      "aliases": ["niacinamide"],
+      "minAge": 15,
+      "restriction": "concentration",
+      "maxConcentration": 5,
+      "reason": "Niacinamide fortement concentrée (~10 %) à éviter jeune ; une faible dose dans une crème est sans problème.",
+      "source": "Tolérance — privilégier faible concentration en formule complète."
+    },
+    {
+      "ingredient": "hydroquinone / substances non cosmétiques",
+      "aliases": ["hydroquinone"],
+      "minAge": 18,
+      "restriction": "block",
+      "maxConcentration": null,
+      "reason": "Substance non adaptée à un usage cosmétique classique, réservée à la prescription.",
+      "source": "Réglementation — usage médical uniquement."
+    }
+  ]
+}

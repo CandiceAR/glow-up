@@ -124,7 +124,8 @@ const Questionnaire = (() => {
       question: 'Dans quelle tranche d\'âge te situes-tu ?',
       required: true, skipIf: null,
       options: [
-        { value: 'moins-20', emoji: '🌸', label: 'Moins de 20 ans', desc: 'Peau jeune, éclat naturel' },
+        { value: 'moins-15', emoji: '🧸', label: 'Moins de 15 ans', desc: 'Peau jeune — routine douce et simple' },
+        { value: 'moins-20', emoji: '🌸', label: '15 – 20 ans',      desc: 'Peau jeune, éclat naturel' },
         { value: '20-25',    emoji: '🌺', label: '20 – 25 ans',     desc: 'Prévention & légèreté' },
         { value: '25-30',    emoji: '🌻', label: '25 – 30 ans',     desc: 'Premiers soins ciblés' },
         { value: '30-40',    emoji: '🌹', label: '30 – 40 ans',     desc: 'Soin actif & hydratation' },

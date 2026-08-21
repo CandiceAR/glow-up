@@ -286,10 +286,25 @@ const DupeFinder = (() => {
       </article>`;
   }
 
+  // Message doux si l'utilisatrice jeune scanne un produit non adapté à son âge
+  function _ageNote() {
+    if (typeof AgeGuard === 'undefined') return '';
+    const id = S.identified || {};
+    const a = AppState.questionnaire?.answers;
+    if (!AgeGuard.isYoung(a)) return '';
+    const check = AgeGuard.isRestricted(
+      { name: id.name || '', category: id.category || 'other', ingredientTags: id.keyActives || [] },
+      AgeGuard.age(a)
+    );
+    if (!check.restricted) return '';
+    return `<div class="df-agenote">💛 ${AgeGuard.scanMessage()}</div>`;
+  }
+
   function _vResults() {
     const id = S.identified || {};
     const left = _left();
     const header = `
+      ${_ageNote()}
       <div class="df-orig">
         ${S.photo ? `<img src="${S.photo}" class="df-orig-img" alt="produit">` : ''}
         <div>
@@ -446,7 +461,10 @@ const DupeFinder = (() => {
       s += (p.rating || 0) * 0.3;
       return { p, s };
     }).sort((a, b) => b.s - a.s).slice(0, 20).map(x => x.p);
-    return scored.map(p => ({
+    // Adéquation à l'âge — ne pas proposer de dupe catalogue non adapté (règle centrale)
+    const _pool = (typeof AgeGuard !== 'undefined')
+      ? AgeGuard.filter(scored, AgeGuard.age(AppState.questionnaire?.answers)) : scored;
+    return _pool.map(p => ({
       id: p.id, brand: p.brand, name: p.name, category: p.category, price: p.price,
       ingredientTags: p.ingredientTags || [], concernTags: p.concernTags || [], description: p.description || ''
     }));
@@ -467,7 +485,8 @@ const DupeFinder = (() => {
       const tid = setTimeout(() => controller.abort(), 40000);
       const resp = await fetch(apiUrl('/api/dupeMatch'), {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ product: id, candidates, userSkin: _userSkin() }),
+        body: JSON.stringify({ product: id, candidates, userSkin: _userSkin(),
+          ageConstraint: (typeof AgeGuard !== 'undefined') ? AgeGuard.aiConstraint(AppState.questionnaire?.answers) : null }),
         signal: controller.signal
       });
       clearTimeout(tid);

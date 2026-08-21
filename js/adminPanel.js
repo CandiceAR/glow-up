@@ -893,7 +893,7 @@ const Admin = (() => {
 
   // ─── Onglets ──────────────────────────────────────────────────
   let currentTab = 'products';
-  const TAB_IDS  = ['products', 'analytics', 'catalogue', 'asin', 'coach', 'referrals', 'scanned'];
+  const TAB_IDS  = ['products', 'analytics', 'catalogue', 'asin', 'coach', 'referrals', 'scanned', 'ageRules'];
 
   function showTab(tab) {
     currentTab = tab;
@@ -909,6 +909,65 @@ const Admin = (() => {
     if (tab === 'referrals')  { loadRewards(); loadReferrals(); }
     if (tab === 'catalogue') renderCatalogueTab();
     if (tab === 'scanned')   loadScanned();
+    if (tab === 'ageRules')  loadAgeRules();
+  }
+
+  // ─── Règles d'âge (adéquation actifs selon l'âge) ─────────────
+  let _ageRules = [];
+  async function loadAgeRules() {
+    const el = document.getElementById('ageRulesList');
+    if (el) el.innerHTML = '<p style="color:var(--muted)">Chargement…</p>';
+    _ageRules = [];
+    try {
+      const res = await fetch('data/ageRules.json?v=' + Date.now());
+      const d = await res.json();
+      _ageRules = (d.rules || []).map(r => ({ ...r }));
+      if (typeof firebase !== 'undefined' && firebase.apps?.length) {
+        const snap = await firebase.firestore().collection('ageRules').get();
+        if (!snap.empty) { const ov = []; snap.forEach(dc => ov.push(dc.data())); if (ov.length) _ageRules = ov; }
+      }
+      renderAgeRules();
+    } catch (e) { if (el) el.innerHTML = '<p style="color:var(--error)">Erreur : ' + e.message + '</p>'; }
+  }
+  function renderAgeRules() {
+    const el = document.getElementById('ageRulesList');
+    if (!el) return;
+    el.innerHTML = `<p style="color:var(--muted);margin-bottom:12px">Ces règles pilotent TOUTE l'app (routine, reco, scan, dupes, analyse, Coach) via AgeGuard. Enregistrer écrit dans Firestore (override du JSON).</p>` +
+      _ageRules.map((r, i) => `
+      <div class="analytics-card" style="margin-bottom:12px">
+        <strong>${r.ingredient || 'Règle ' + (i + 1)}</strong>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;align-items:flex-end">
+          <label style="font-size:.8rem">Âge min<br><input type="number" id="ar_min_${i}" value="${r.minAge != null ? r.minAge : 15}" style="width:70px"></label>
+          <label style="font-size:.8rem">Restriction<br>
+            <select id="ar_res_${i}">${['block', 'concentration', 'caution'].map(o => `<option value="${o}" ${r.restriction === o ? 'selected' : ''}>${o}</option>`).join('')}</select></label>
+          <label style="font-size:.8rem">Conc. max %<br><input type="number" step="0.5" id="ar_conc_${i}" value="${r.maxConcentration != null ? r.maxConcentration : ''}" style="width:70px"></label>
+        </div>
+        <textarea id="ar_reason_${i}" rows="2" style="width:100%;margin-top:8px;font-size:.82rem" placeholder="Raison">${r.reason || ''}</textarea>
+        <input type="text" id="ar_src_${i}" value="${(r.source || '').replace(/"/g, '&quot;')}" placeholder="Source" style="width:100%;margin-top:6px;font-size:.82rem">
+        <button class="btn-sm btn-dark" style="margin-top:8px" onclick="Admin.saveAgeRules(${i})">💾 Enregistrer</button>
+      </div>`).join('');
+  }
+  async function saveAgeRules(i) {
+    const r = _ageRules[i];
+    if (r) {
+      r.minAge = parseInt(document.getElementById('ar_min_' + i).value, 10) || 15;
+      r.restriction = document.getElementById('ar_res_' + i).value;
+      const c = document.getElementById('ar_conc_' + i).value;
+      r.maxConcentration = c === '' ? null : parseFloat(c);
+      r.reason = document.getElementById('ar_reason_' + i).value;
+      r.source = document.getElementById('ar_src_' + i).value;
+    }
+    try {
+      if (typeof firebase === 'undefined' || !firebase.apps?.length) { toast('Firebase indisponible', 'error'); return; }
+      const db = firebase.firestore();
+      const batch = db.batch();
+      _ageRules.forEach((rule, idx) => {
+        const id = (rule.ingredient || ('rule' + idx)).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '_').slice(0, 60) || ('rule' + idx);
+        batch.set(db.collection('ageRules').doc(id), rule);
+      });
+      await batch.commit();
+      toast('Règles d\'âge enregistrées ✓', 'success');
+    } catch (e) { toast('Erreur : ' + e.message, 'error'); }
   }
 
   // ─── Produits scannés par les utilisatrices (à valider) ───────
@@ -1483,7 +1542,8 @@ const Admin = (() => {
     openImagePicker, closeImagePicker, selectImage, renderImagePicker,
     uploadImageFile,
     loadRewards, markRewardSent,
-    loadScanned, addScannedToCatalog, dismissScanned
+    loadScanned, addScannedToCatalog, dismissScanned,
+    loadAgeRules, saveAgeRules
   };
 
   // ─── Récompenses (cartes cadeaux à envoyer) ──────────────────

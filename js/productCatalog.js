@@ -138,7 +138,7 @@ const ProductCatalog = (() => {
   // ─── Détecter la maturité peau à partir des réponses ─────────
   function getMaturityPreference(answers) {
     const { ageGroup, skinMaturity } = answers || {};
-    if (ageGroup === 'moins-20') return 'teen';
+    if (ageGroup === 'moins-15' || ageGroup === 'moins-20') return 'teen';
     if (ageGroup === '40+' || skinMaturity === 'ridules') return 'mature';
     if (ageGroup === '20-25' && skinMaturity === 'lisse') return 'jeune';
     return 'all';
@@ -169,6 +169,11 @@ const ProductCatalog = (() => {
         p.skinTypeTags.includes(skinType)
       );
       if (filtered.length >= 4) pool = filtered;
+    }
+
+    // Adéquation à l'âge — règle CENTRALE (AgeGuard). Ne jamais recommander un actif non adapté.
+    if (typeof AgeGuard !== 'undefined') {
+      pool = AgeGuard.filter(pool, AgeGuard.age(answers));
     }
 
     // Filtrer par maturité peau (soft preference — ne jamais vider)

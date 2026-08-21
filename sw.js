@@ -1,4 +1,4 @@
-const CACHE_NAME = 'glowup-v152';
+const CACHE_NAME = 'glowup-v153';
 
 const STATIC_ASSETS = [
   '/',
@@ -8,6 +8,7 @@ const STATIC_ASSETS = [
   '/glow-up-icon.jpg',
   '/js/app.js',
   '/js/auth.js',
+  '/js/ageGuard.js',
   '/js/productCatalog.js',
   '/js/currentRoutine.js',
   '/js/dupeFinder.js',

@@ -26,8 +26,11 @@ module.exports = async (req, res) => {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(503).json({ error: 'ANTHROPIC_API_KEY manquante' });
 
-  const { product, candidates, userSkin } = req.body || {};
+  const { product, candidates, userSkin, ageConstraint } = req.body || {};
   if (!product) return res.status(400).json({ error: 'product manquant' });
+  const ageBlock = (ageConstraint && ageConstraint.age)
+    ? `\n\nRÈGLE ÂGE (PRIORITAIRE) : utilisatrice de ${ageConstraint.age} ans (moins de 15). ${ageConstraint.guidance || ''} Ne propose JAMAIS, ni en dupe catalogue ni en dupe externe, un produit dont l'actif vedette est : ${(ageConstraint.restricted || []).join(', ')}. Privilégie des produits doux adaptés à une peau jeune.`
+    : '';
   const cands = Array.isArray(candidates) ? candidates : [];
 
   // Limiter la charge : max 25 candidats, champs compacts
@@ -55,7 +58,7 @@ ${JSON.stringify(userSkin || {}, null, 0)}
 CANDIDATS DE NOTRE CATALOGUE (choisis les dupes UNIQUEMENT parmi ceux-ci, via leur "id") :
 ${JSON.stringify(slim, null, 0)}
 
-Ta mission : trouver le VRAI dupe du produit photographié — un produit qui offre une expérience, une composition et un résultat très proches, pour un prix nettement inférieur.
+Ta mission : trouver le VRAI dupe du produit photographié — un produit qui offre une expérience, une composition et un résultat très proches, pour un prix nettement inférieur.${ageBlock}
 
 RÈGLES IMPÉRATIVES :
 - Un dupe n'est PAS juste "moins cher" : il doit réellement RESSEMBLER (catégorie, fonction, actifs principaux, texture, fini, couvrance/tenue pour le maquillage, résultat, teinte/sous-ton).

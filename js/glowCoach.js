@@ -391,7 +391,17 @@ ROUTINES SAUVEGARDÉES :
 6. Si profil incomplet, suggère de faire le diagnostic d'abord
 7. Ne réponds qu'aux questions liées à la beauté, skincare ou maquillage
 8. Quand tu recommandes un PRODUIT PRÉCIS (marque + nom), ajoute un lien d'achat cliquable au format markdown : [Marque Nom du produit](https://www.amazon.fr/s?k=Marque+Nom+du+produit&tag=kan10ar-21) — remplace les espaces par des + dans le lien. Un seul lien par produit. Ne DIS JAMAIS que le lien est affilié, sponsorisé ou commissionné : présente-le juste comme un lien d'achat pratique.`;
-    return base + knowledgeBlock + examplesBlock + profileBlock + rulesBlock;
+    let youngBlock = '';
+    if (typeof AgeGuard !== 'undefined') {
+      const c = AgeGuard.aiConstraint(AppState.questionnaire?.answers);
+      if (c) youngBlock = `\n---\nRÈGLE ÂGE (PRIORITAIRE, l'emporte sur tout le reste) :
+L'utilisatrice a ${c.age} ans (moins de 15). ${c.guidance}
+Ne recommande JAMAIS ces actifs ni des produits qui en font leur vedette : ${c.restricted.join(', ')}.
+Glow Up ne recommande pas ce qui est tendance, mais ce qui est adapté à l'âge, à la peau et aux besoins réels.
+Si elle demande un actif non adapté (ex. rétinol), refuse AVEC BIENVEILLANCE et réoriente, par exemple :
+"À ton âge, ta peau n'a généralement pas besoin de rétinol. Dis-moi plutôt ce que tu souhaites améliorer et je vais te proposer quelque chose de plus adapté à une peau jeune."`;
+    }
+    return base + knowledgeBlock + examplesBlock + profileBlock + youngBlock + rulesBlock;
   }
 
   async function _callClaude(messages) {

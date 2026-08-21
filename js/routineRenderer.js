@@ -227,6 +227,11 @@ const RoutineRenderer = (() => {
       if (filtered.length > 0) pool = filtered;
     }
 
+    // Adéquation à l'âge — règle CENTRALE (AgeGuard)
+    if (typeof AgeGuard !== 'undefined') {
+      pool = AgeGuard.filter(pool, AgeGuard.age(AppState.questionnaire?.answers));
+    }
+
     // Scorer : skinType match +20, rating ×10, isFeatured +10 (réduit pour ne pas dominer)
     pool = pool.map(p => {
       let score = (p.rating || 0) * 10;

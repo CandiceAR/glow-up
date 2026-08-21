@@ -23,11 +23,14 @@ module.exports = async (req, res) => {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(503).json({ error: 'ANTHROPIC_API_KEY manquante' });
 
-  const { products, quiz, skin, moment } = req.body || {};
+  const { products, quiz, skin, moment, ageConstraint } = req.body || {};
   if (!Array.isArray(products) || !products.length) {
     return res.status(400).json({ error: 'products manquants' });
   }
   const momentLabel = moment === 'soir' ? 'du SOIR' : moment === 'matin' ? 'du MATIN' : '';
+  const ageBlock = (ageConstraint && ageConstraint.age)
+    ? `\nRÈGLE ÂGE (PRIORITAIRE) : utilisatrice de ${ageConstraint.age} ans (moins de 15). ${ageConstraint.guidance || ''} Ne recommande JAMAIS ces actifs : ${(ageConstraint.restricted || []).join(', ')}. Si un produit qu'elle utilise contient un tel actif vedette, marque-le "weak"/"discouraged" avec un ton BIENVEILLANT (jamais "danger") et propose une alternative douce. La routine optimisée doit rester simple (nettoyage doux + hydratation + SPF).\n`
+    : '';
 
   // Produits compacts, indexés par ref
   const slim = products.slice(0, 20).map((p, i) => ({
@@ -40,7 +43,7 @@ module.exports = async (req, res) => {
 
   const prompt = `Tu es une dermo-conseillère experte en skincare. Analyse la routine ${momentLabel} d'une utilisatrice de façon PÉDAGOGIQUE, personnalisée et honnête, comme si tu examinais tout en détail.
 
-${momentLabel ? `IMPORTANT : elle analyse UNIQUEMENT sa routine ${momentLabel}. Reste cohérente avec ce moment : le MATIN → le SPF est indispensable en dernière étape, on évite le rétinol/les exfoliants forts ; le SOIR → c'est le moment du rétinol/exfoliants, PAS de SPF. Ne reproche pas l'absence de SPF le soir, ni l'absence de rétinol le matin.\n` : ''}
+${momentLabel ? `IMPORTANT : elle analyse UNIQUEMENT sa routine ${momentLabel}. Reste cohérente avec ce moment : le MATIN → le SPF est indispensable en dernière étape, on évite le rétinol/les exfoliants forts ; le SOIR → c'est le moment du rétinol/exfoliants, PAS de SPF. Ne reproche pas l'absence de SPF le soir, ni l'absence de rétinol le matin.\n` : ''}${ageBlock}
 PRODUITS DE SA ROUTINE (référencés par "ref") :
 ${JSON.stringify(slim, null, 0)}
 

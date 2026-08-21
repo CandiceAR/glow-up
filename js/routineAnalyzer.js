@@ -454,7 +454,8 @@ const RoutineAnalyzer = (() => {
       const tid = setTimeout(() => controller.abort(), 55000);
       const resp = await fetch(apiUrl('/api/analyzeRoutine'), {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ products: payloadProducts, quiz: S.quiz, skin: S.faceSummary, moment: S.moment }),
+        body: JSON.stringify({ products: payloadProducts, quiz: S.quiz, skin: S.faceSummary, moment: S.moment,
+          ageConstraint: (typeof AgeGuard !== 'undefined') ? AgeGuard.aiConstraint(AppState.questionnaire?.answers) : null }),
         signal: controller.signal
       });
       clearTimeout(tid);
@@ -670,6 +671,8 @@ const RoutineAnalyzer = (() => {
     if (!pool.length) return null;
     const st = _userSkinTypeRA();
     if (st) { const ad = pool.filter(p => !p.skinTypeTags?.length || p.skinTypeTags.includes(st)); if (ad.length) pool = ad; }
+    // Adéquation à l'âge — règle CENTRALE (AgeGuard)
+    if (typeof AgeGuard !== 'undefined') pool = AgeGuard.filter(pool, AgeGuard.age(AppState.questionnaire?.answers));
     pool.sort((a, b2) => (b2.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0) || (b2.rating || 0) - (a.rating || 0));
     return pool[0] || null;
   }
