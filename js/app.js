@@ -69,6 +69,11 @@ if (typeof window !== 'undefined') window.apiUrl = apiUrl;
 
 // ─── Nav « Routine » : la routine générée, sinon on la crée ───
 function goToRoutine() {
+  // Ne pas redemander le questionnaire si une routine a déjà été générée → la restaurer
+  if (!(AppState.routine && AppState.routine.ruleApplied)
+      && typeof RoutineSaver !== 'undefined' && RoutineSaver.restoreProfile) {
+    try { RoutineSaver.restoreProfile(); } catch (e) {}
+  }
   if (AppState.routine && AppState.routine.ruleApplied) { showScreen('results'); return; }
   if (AppState.routineChoice === 'makeup' && AppState.makeupQuiz) { showScreen('makeup'); return; }
   goToSkincare();

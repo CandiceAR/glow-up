@@ -10,7 +10,23 @@ const Profil = (() => {
   let _tab = 'overview';          // overview | peau | produits | evolution | dupe
   let _moment = 'matin';
 
-  function initScreen() { _tab = 'overview'; render(); }
+  function initScreen() {
+    _tab = 'overview';
+    _ensureProfileLoaded();   // ne pas reproposer le questionnaire s'il est déjà fait
+    render();
+  }
+
+  // Si le profil est déjà complété (sauvegardé) mais pas chargé en mémoire → le restaurer
+  function _ensureProfileLoaded() {
+    try {
+      const loaded = AppState?.questionnaire?.answers?.skinType || AppState?.routine?.ruleApplied;
+      if (loaded) return;
+      if (typeof RoutineSaver !== 'undefined' && RoutineSaver.hasCompletedProfile && RoutineSaver.hasCompletedProfile()
+          && RoutineSaver.restoreProfile) {
+        RoutineSaver.restoreProfile();
+      }
+    } catch (e) {}
+  }
   function setTab(t)   { _tab = t; render(); }
   function setMoment(m){ _moment = m; render(); }
 
