@@ -6,7 +6,7 @@
   <title>Glow Up — Skincare & Maquillage Virtuel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=235">
+  <link rel="stylesheet" href="style.css?v=236">
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#C9A98A">
@@ -40,6 +40,7 @@
     <div class="nav-right">
       <nav class="nav-links" id="navLinks">
         <a class="nav-link active"          data-screen="home"          href="#" onclick="showScreen('home'); return false;">Accueil</a>
+        <a class="nav-link nav-link-primary" data-screen="profil"       href="#" onclick="showScreen('profil'); return false;">Mon Profil 👤</a>
         <a class="nav-link"                 data-screen="shop"          href="#" onclick="showScreen('shop'); return false;">Boutique</a>
         <a class="nav-link" id="navSkinJourney" data-screen="journey"   href="#" onclick="goToSkinJourney(); return false;" style="display:none">Skin Journey</a>
         <a class="nav-link nav-link-primary" data-screen="questionnaire" href="#" onclick="goToSkincare(); return false;">Skincare</a>
@@ -547,6 +548,12 @@
       </div>
     </div><!-- /screen-routine-analyzer -->
 
+    <div class="screen" id="screen-profil">
+      <div id="profilContent">
+        <p class="loading-placeholder">Chargement…</p>
+      </div>
+    </div><!-- /screen-profil -->
+
   </div><!-- /app -->
 
   <!-- ===== FAB scan (mobile) — menu 2 choix ===== -->
@@ -564,7 +571,7 @@
     </button>
   </div>
 
-  <!-- ===== MOBILE BOTTOM NAV ===== -->
+  <!-- ===== MOBILE BOTTOM NAV (4 onglets) ===== -->
   <nav class="mobile-nav" id="mobileNav">
     <button class="mobile-nav-item active" data-screen="home" onclick="showScreen('home')">
       <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -573,32 +580,23 @@
       </svg>
       <span>Accueil</span>
     </button>
-    <button class="mobile-nav-item mobile-nav-primary" data-screen="questionnaire" onclick="goToSkincare()">
+    <button class="mobile-nav-item" data-screen="profil" onclick="showScreen('profil')">
       <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M12 22C12 22 3 17 3 10a9 9 0 0 1 18 0c0 7-9 12-9 12z"/>
-        <circle cx="12" cy="10" r="3"/>
+        <circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>
       </svg>
-      <span>Skincare</span>
+      <span>Profil</span>
     </button>
-    <button class="mobile-nav-item mobile-nav-primary" data-screen="makeup" onclick="goToMakeup()">
+    <button class="mobile-nav-item" data-screen="results" onclick="goToRoutine()">
       <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M12 2a4 4 0 0 1 4 4c0 2.5-4 8-4 8S8 8.5 8 6a4 4 0 0 1 4-4z"/>
-        <path d="M12 14c0 4-2 6-2 6h4s-2-2-2-6z"/>
+        <rect x="7" y="9" width="10" height="12" rx="2"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/>
       </svg>
-      <span>Make-up</span>
+      <span>Routine</span>
     </button>
-    <button class="mobile-nav-item mobile-nav-coach" data-screen="coach" onclick="showScreen('coach')">
+    <button class="mobile-nav-item" data-screen="more" onclick="openMoreMenu()">
       <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M12 2a7 7 0 0 1 7 7c0 4-3 7-7 9-4-2-7-5-7-9a7 7 0 0 1 7-7z"/>
-        <path d="M12 8v4M12 16h.01"/>
+        <circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>
       </svg>
-      <span>Coach ✦</span>
-    </button>
-    <button class="mobile-nav-item mobile-nav-primary" data-screen="premium" onclick="showScreen('premium')">
-      <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-      </svg>
-      <span>Offres</span>
+      <span>Plus</span>
     </button>
   </nav>
 
@@ -653,7 +651,7 @@
   <script src="js/spfEngine.js?v=200"></script>
   <script src="js/currentRoutine.js?v=4"></script>
   <script src="js/questionnaire.js?v=216"></script>
-  <script src="js/routineRenderer.js?v=223"></script>
+  <script src="js/routineRenderer.js?v=224"></script>
   <script src="js/tryOn.js?v=192"></script>
   <script src="js/auth.js?v=197"></script>
   <script src="js/cookieConsent.js?v=193"></script>
@@ -669,7 +667,8 @@
   <script src="js/routineSaver.js?v=192"></script>
   <script src="js/dupeFinder.js?v=5"></script>
   <script src="js/routineAnalyzer.js?v=13"></script>
-  <script src="js/app.js?v=209"></script>
+  <script src="js/profil.js?v=1"></script>
+  <script src="js/app.js?v=210"></script>
 
   <!-- Bandeau navigateur in-app (Instagram, TikTok…) : Google Sign-In y est bloqué -->
   <script>

@@ -67,6 +67,31 @@ function apiUrl(path) {
 }
 if (typeof window !== 'undefined') window.apiUrl = apiUrl;
 
+// ─── Nav « Routine » : la routine générée, sinon on la crée ───
+function goToRoutine() {
+  if (AppState.routine && AppState.routine.ruleApplied) { showScreen('results'); return; }
+  if (AppState.routineChoice === 'makeup' && AppState.makeupQuiz) { showScreen('makeup'); return; }
+  goToSkincare();
+}
+
+// ─── Menu « Plus » (nav du bas) : tout le reste ───────────────
+function openMoreMenu() {
+  const item = (label, emoji, action) => `<button class="more-item" onclick="closeModal(); ${action}"><span class="more-emoji">${emoji}</span> <span>${label}</span></button>`;
+  const html = `
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="more-menu">
+      <h2 class="more-title">Plus</h2>
+      ${item('Coach IA', '⭐', "showScreen('coach')")}
+      ${item('Trouver son dupe', '🔍', "showScreen('dupe-finder')")}
+      ${item('Analyser ma routine', '🔬', "showScreen('routine-analyzer')")}
+      ${item('Boutique', '🛍️', "showScreen('shop')")}
+      ${item('Skinpedia', '📚', "showScreen('skinpedia')")}
+      ${item('Offres Premium', '✦', "showScreen('premium')")}
+      ${item('Mon compte', '👤', "if(typeof Auth!=='undefined'&&Auth.openProfileMenu)Auth.openProfileMenu()")}
+    </div>`;
+  if (typeof openModal === 'function') openModal(html);
+}
+
 // ─── FAB scan (menu 2 choix : dupe / analyse routine) ─────────
 function toggleFabMenu(e) {
   if (e) e.stopPropagation();
@@ -144,6 +169,7 @@ function showScreen(name) {
   if (name === 'premium')         { if (typeof Subscription !== 'undefined') Subscription.renderPremiumPage(); }
   if (name === 'dupe-finder')     { if (typeof DupeFinder !== 'undefined') DupeFinder.initScreen(); }
   if (name === 'routine-analyzer'){ if (typeof RoutineAnalyzer !== 'undefined') RoutineAnalyzer.initScreen(); }
+  if (name === 'profil')          { if (typeof Profil !== 'undefined') Profil.initScreen(); }
 
   // ─── Écrans avec gating ───────────────────────────────────────
   if (name === 'makeup') {

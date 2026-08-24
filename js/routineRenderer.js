@@ -1450,6 +1450,6 @@ const RoutineRenderer = (() => {
     return html;
   }
 
-  return { renderResults, renderConversionBlocksMakeup, saveRoutineNow };
+  return { renderResults, renderConversionBlocksMakeup, saveRoutineNow, findBestProductForStep };
 
 })();

@@ -10116,3 +10116,82 @@ em { font-style: italic; color: var(--nude); }
 .ap-continue-sub { display: block; width: 100%; background: none; border: none; color: var(--muted); font-size: 13px; font-weight: 500; margin-top: 8px; cursor: pointer; padding: 6px; text-decoration: underline; }
 .ap-back { background: none; border: none; color: var(--nude); font-size: 14px; font-weight: 600; cursor: pointer; padding: 4px 0; margin-bottom: 6px; }
 .ap-header--diag { text-align: left; }
+
+/* ============================================================
+   Mon Profil — tableau de bord (profil.js)
+   ============================================================ */
+#screen-profil #profilContent { max-width: 620px; margin: 0 auto; padding: 20px 18px 150px; }
+
+/* En-tête */
+.pf-header { margin-bottom: 20px; }
+.pf-hello h1 { font-family: var(--font-serif); font-size: 30px; color: var(--charcoal); margin: 0 0 4px; }
+.pf-today { display: flex; justify-content: space-between; align-items: baseline; color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+.pf-date { font-weight: 600; letter-spacing: .03em; }
+
+/* 3 mesures */
+.pf-metrics { display: flex; gap: 10px; background: var(--white); border: 1px solid var(--sand); border-radius: var(--radius); padding: 18px 14px; box-shadow: var(--shadow-sm); }
+.pf-metric { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.pf-metric-ic { font-size: 22px; }
+.pf-metric-label { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); font-weight: 600; }
+.pf-metric-val { font-family: var(--font-serif); font-size: 26px; color: var(--charcoal); line-height: 1; margin: 2px 0 4px; }
+.pf-bar { width: 100%; height: 5px; background: var(--sand); border-radius: 5px; overflow: hidden; }
+.pf-bar-fill { height: 100%; border-radius: 5px; }
+.pf-metrics-empty { background: var(--cream); border: 1px dashed var(--nude); border-radius: var(--radius); padding: 18px; text-align: center; font-size: 14px; color: var(--nude); font-weight: 600; cursor: pointer; }
+
+/* Corps + sections */
+.pf-body { min-height: 40vh; }
+.pf-section { background: var(--white); border: 1px solid var(--sand); border-radius: var(--radius); padding: 18px; margin-bottom: 14px; box-shadow: var(--shadow-sm); }
+.pf-h2 { font-family: var(--font-serif); font-size: 21px; color: var(--charcoal); margin: 0 0 12px; }
+.pf-muted { font-size: 13px; color: var(--muted); margin: 0; }
+.pf-sub { font-size: 13px; color: var(--muted); margin: 0 0 12px; }
+.pf-cta { width: 100%; margin-top: 14px; }
+
+/* Routine actuelle */
+.pf-moment { display: inline-flex; background: var(--cream); border-radius: 22px; padding: 3px; margin-bottom: 14px; }
+.pf-moment-btn { border: none; background: none; padding: 7px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; font-family: var(--font-sans); }
+.pf-moment-btn.active { background: var(--orange); color: var(--white); }
+.pf-routine-prods { display: flex; gap: 10px; }
+.pf-rprod { flex: 1; aspect-ratio: 1; background: var(--cream); border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.pf-rprod img { width: 100%; height: 100%; object-fit: contain; }
+.pf-rprod-ph { font-size: 24px; }
+
+/* Évolution teaser */
+.pf-evo { cursor: pointer; }
+.pf-evo-head { display: flex; justify-content: space-between; align-items: center; }
+.pf-evo-head .pf-h2 { margin: 0; }
+.pf-evo-arrow { font-size: 20px; color: var(--nude); }
+
+/* Ta peau : lignes */
+.pf-row { display: flex; justify-content: space-between; gap: 12px; padding: 11px 0; border-top: 1px solid var(--sand); font-size: 14px; }
+.pf-row:first-of-type { border-top: none; }
+.pf-row-l { color: var(--muted); flex-shrink: 0; }
+.pf-row-v { color: var(--charcoal); font-weight: 600; text-align: right; }
+
+/* Produits */
+.pf-prod-list { display: flex; flex-direction: column; gap: 8px; }
+.pf-prod { display: flex; align-items: center; gap: 12px; }
+.pf-prod img, .pf-prod-ph { width: 44px; height: 44px; border-radius: 10px; background: var(--cream); flex-shrink: 0; object-fit: contain; }
+.pf-prod-ph { display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.pf-prod-name { font-size: 14px; color: var(--charcoal); }
+
+/* États vides */
+.pf-empty { text-align: center; padding: 20px 10px; color: var(--muted); font-size: 14px; line-height: 1.5; }
+.pf-empty p { margin: 0 0 14px; }
+.pf-empty-ic { font-size: 30px; display: block; margin-bottom: 8px; }
+.pf-empty .btn { display: inline-block; }
+
+/* Sous-onglets (barre fixe au-dessus de la nav du bas) */
+.pf-tabs { position: fixed; left: 0; right: 0; bottom: 0; display: flex; gap: 6px; padding: 8px 10px; background: var(--cream); border-top: 1px solid var(--sand); z-index: 45; }
+@media (max-width: 860px) { .pf-tabs { bottom: 58px; } }
+.pf-tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; background: var(--white); border: 1px solid var(--sand); border-radius: 12px; padding: 8px 4px; cursor: pointer; font-family: var(--font-sans); }
+.pf-tab-ic { font-size: 17px; }
+.pf-tab-l { font-size: 10px; font-weight: 600; color: var(--muted); text-align: center; line-height: 1.1; }
+.pf-tab.active { border-color: var(--orange); background: var(--orange-light); }
+.pf-tab.active .pf-tab-l { color: var(--orange-deep); }
+
+/* Menu « Plus » */
+.more-menu { padding: 8px 4px; }
+.more-title { font-family: var(--font-serif); font-size: 24px; color: var(--charcoal); margin: 0 0 14px; }
+.more-item { display: flex; align-items: center; gap: 14px; width: 100%; background: none; border: none; border-bottom: 1px solid var(--sand); padding: 15px 4px; font-size: 15px; color: var(--charcoal); cursor: pointer; font-family: var(--font-sans); text-align: left; }
+.more-item:last-child { border-bottom: none; }
+.more-emoji { font-size: 20px; width: 24px; text-align: center; }
