@@ -9899,6 +9899,1063 @@
       "dupeStar": true,
       "isFeatured": false,
       "active": true
+    },
+    {
+      "id": "m430",
+      "name": "Clarins Double Sérum Traitement Complet Anti-Âge",
+      "brand": "Clarins",
+      "category": "serum",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Double%20S%C3%A9rum%20Traitement%20Complet%20Anti-%C3%82ge&tag=kan10ar-21",
+      "price": 92,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "anti_age",
+        "eclat",
+        "ridules"
+      ],
+      "active": true,
+      "_priceIndicatif": true
+    },
+    {
+      "id": "m431",
+      "name": "Clarins Double Sérum Light Texture",
+      "brand": "Clarins",
+      "category": "serum",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Double%20S%C3%A9rum%20Light%20Texture&tag=kan10ar-21",
+      "price": 92,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "anti_age",
+        "eclat"
+      ],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "grasse",
+        "mixte"
+      ]
+    },
+    {
+      "id": "m432",
+      "name": "Clarins Hydra-Essentiel Crème Désaltérante",
+      "brand": "Clarins",
+      "category": "moisturizer",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Hydra-Essentiel%20Cr%C3%A8me%20D%C3%A9salt%C3%A9rante&tag=kan10ar-21",
+      "price": 48,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [
+        "acide-hyaluronique"
+      ],
+      "concernTags": [
+        "hydratation"
+      ],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "normale",
+        "seche",
+        "mixte"
+      ]
+    },
+    {
+      "id": "m433",
+      "name": "Clarins Hydra-Essentiel [HA²] Sérum Bain de Jouvence",
+      "brand": "Clarins",
+      "category": "serum",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Hydra-Essentiel%20%5BHA%C2%B2%5D%20S%C3%A9rum%20Bain%20de%20Jouvence&tag=kan10ar-21",
+      "price": 60,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [
+        "acide-hyaluronique"
+      ],
+      "concernTags": [
+        "hydratation",
+        "eclat"
+      ],
+      "active": true,
+      "_priceIndicatif": true
+    },
+    {
+      "id": "m434",
+      "name": "Clarins Hydra-Essentiel Baume Réhydratant Intense",
+      "brand": "Clarins",
+      "category": "moisturizer",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Hydra-Essentiel%20Baume%20R%C3%A9hydratant%20Intense&tag=kan10ar-21",
+      "price": 50,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [
+        "acide-hyaluronique"
+      ],
+      "concernTags": [
+        "hydratation",
+        "secheresse"
+      ],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "seche"
+      ]
+    },
+    {
+      "id": "m435",
+      "name": "Clarins Hydra-Essentiel Gel Fondant Désaltérant",
+      "brand": "Clarins",
+      "category": "moisturizer",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Hydra-Essentiel%20Gel%20Fondant%20D%C3%A9salt%C3%A9rant&tag=kan10ar-21",
+      "price": 48,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [
+        "acide-hyaluronique"
+      ],
+      "concernTags": [
+        "hydratation"
+      ],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "grasse",
+        "mixte"
+      ]
+    },
+    {
+      "id": "m436",
+      "name": "Clarins Baume Beauté Éclair",
+      "brand": "Clarins",
+      "category": "primer",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Baume%20Beaut%C3%A9%20%C3%89clair&tag=kan10ar-21",
+      "price": 45,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "eclat"
+      ],
+      "active": true,
+      "_priceIndicatif": true
+    },
+    {
+      "id": "m437",
+      "name": "Clarins Lait Démaquillant Velours",
+      "brand": "Clarins",
+      "category": "cleanser",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Lait%20D%C3%A9maquillant%20Velours&tag=kan10ar-21",
+      "price": 32,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "hydratation"
+      ],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "seche",
+        "sensible"
+      ]
+    },
+    {
+      "id": "m438",
+      "name": "Clarins Eau Micellaire Douceur Démaquillante",
+      "brand": "Clarins",
+      "category": "cleanser",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Eau%20Micellaire%20Douceur%20D%C3%A9maquillante&tag=kan10ar-21",
+      "price": 30,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "sensible",
+        "normale"
+      ]
+    },
+    {
+      "id": "m439",
+      "name": "Clarins Mousse Nettoyante Hydratante",
+      "brand": "Clarins",
+      "category": "cleanser",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Mousse%20Nettoyante%20Hydratante&tag=kan10ar-21",
+      "price": 32,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "hydratation"
+      ],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "normale",
+        "seche"
+      ]
+    },
+    {
+      "id": "m440",
+      "name": "Clarins Gel Nettoyant Moussant Purifiant",
+      "brand": "Clarins",
+      "category": "cleanser",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Gel%20Nettoyant%20Moussant%20Purifiant&tag=kan10ar-21",
+      "price": 30,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "pores"
+      ],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "grasse",
+        "mixte"
+      ]
+    },
+    {
+      "id": "m441",
+      "name": "Clarins Tonic Lotion Purifiante",
+      "brand": "Clarins",
+      "category": "toner",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Tonic%20Lotion%20Purifiante&tag=kan10ar-21",
+      "price": 32,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "pores"
+      ],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "grasse",
+        "mixte"
+      ]
+    },
+    {
+      "id": "m442",
+      "name": "Clarins Lotion Tonique Douceur",
+      "brand": "Clarins",
+      "category": "toner",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Lotion%20Tonique%20Douceur&tag=kan10ar-21",
+      "price": 32,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "seche",
+        "sensible"
+      ]
+    },
+    {
+      "id": "m443",
+      "name": "Clarins Gel Exfoliant Doux Purifiant",
+      "brand": "Clarins",
+      "category": "exfoliant",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Gel%20Exfoliant%20Doux%20Purifiant&tag=kan10ar-21",
+      "price": 34,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "pores",
+        "eclat"
+      ],
+      "active": true,
+      "_priceIndicatif": true
+    },
+    {
+      "id": "m444",
+      "name": "Clarins Crème Gommante Douceur",
+      "brand": "Clarins",
+      "category": "exfoliant",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Cr%C3%A8me%20Gommante%20Douceur&tag=kan10ar-21",
+      "price": 34,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "eclat"
+      ],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "normale",
+        "seche"
+      ]
+    },
+    {
+      "id": "m445",
+      "name": "Clarins Total Eye Lift Soin Contour des Yeux",
+      "brand": "Clarins",
+      "category": "eye",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Total%20Eye%20Lift%20Soin%20Contour%20des%20Yeux&tag=kan10ar-21",
+      "price": 74,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "anti_age",
+        "ridules"
+      ],
+      "active": true,
+      "_priceIndicatif": true
+    },
+    {
+      "id": "m446",
+      "name": "Clarins Total Eye Hydrate",
+      "brand": "Clarins",
+      "category": "eye",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Total%20Eye%20Hydrate&tag=kan10ar-21",
+      "price": 52,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [
+        "acide-hyaluronique"
+      ],
+      "concernTags": [
+        "hydratation",
+        "cernes"
+      ],
+      "active": true,
+      "_priceIndicatif": true
+    },
+    {
+      "id": "m447",
+      "name": "Clarins Total Eye Revive Anti-Fatigue",
+      "brand": "Clarins",
+      "category": "eye",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Total%20Eye%20Revive%20Anti-Fatigue&tag=kan10ar-21",
+      "price": 52,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "cernes"
+      ],
+      "active": true,
+      "_priceIndicatif": true
+    },
+    {
+      "id": "m448",
+      "name": "Clarins Extra-Firming Crème Jour Fermeté",
+      "brand": "Clarins",
+      "category": "moisturizer",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Extra-Firming%20Cr%C3%A8me%20Jour%20Fermet%C3%A9&tag=kan10ar-21",
+      "price": 88,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "anti_age",
+        "fermete"
+      ],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "normale",
+        "seche"
+      ]
+    },
+    {
+      "id": "m449",
+      "name": "Clarins Extra-Firming Crème Nuit",
+      "brand": "Clarins",
+      "category": "nightmask",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Extra-Firming%20Cr%C3%A8me%20Nuit&tag=kan10ar-21",
+      "price": 92,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "anti_age",
+        "fermete"
+      ],
+      "active": true,
+      "_priceIndicatif": true
+    },
+    {
+      "id": "m450",
+      "name": "Clarins Extra-Firming Sérum Fermeté",
+      "brand": "Clarins",
+      "category": "serum",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Extra-Firming%20S%C3%A9rum%20Fermet%C3%A9&tag=kan10ar-21",
+      "price": 95,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "anti_age",
+        "fermete"
+      ],
+      "active": true,
+      "_priceIndicatif": true
+    },
+    {
+      "id": "m451",
+      "name": "Clarins Extra-Firming Yeux Contour",
+      "brand": "Clarins",
+      "category": "eye",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Extra-Firming%20Yeux%20Contour&tag=kan10ar-21",
+      "price": 70,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "anti_age",
+        "fermete"
+      ],
+      "active": true,
+      "_priceIndicatif": true
+    },
+    {
+      "id": "m452",
+      "name": "Clarins Multi-Active Crème Jour Anti-Ridules",
+      "brand": "Clarins",
+      "category": "moisturizer",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Multi-Active%20Cr%C3%A8me%20Jour%20Anti-Ridules&tag=kan10ar-21",
+      "price": 58,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "ridules",
+        "eclat"
+      ],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "normale"
+      ]
+    },
+    {
+      "id": "m453",
+      "name": "Clarins Multi-Active Crème Nuit",
+      "brand": "Clarins",
+      "category": "nightmask",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Multi-Active%20Cr%C3%A8me%20Nuit&tag=kan10ar-21",
+      "price": 60,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "ridules"
+      ],
+      "active": true,
+      "_priceIndicatif": true
+    },
+    {
+      "id": "m454",
+      "name": "Clarins Multi-Active Sérum Jeunesse",
+      "brand": "Clarins",
+      "category": "serum",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Multi-Active%20S%C3%A9rum%20Jeunesse&tag=kan10ar-21",
+      "price": 70,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "ridules",
+        "eclat"
+      ],
+      "active": true,
+      "_priceIndicatif": true
+    },
+    {
+      "id": "m455",
+      "name": "Clarins Nutri-Lumière Crème Jour Revitalisante",
+      "brand": "Clarins",
+      "category": "moisturizer",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Nutri-Lumi%C3%A8re%20Cr%C3%A8me%20Jour%20Revitalisante&tag=kan10ar-21",
+      "price": 110,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "anti_age",
+        "eclat"
+      ],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "seche",
+        "mature"
+      ]
+    },
+    {
+      "id": "m456",
+      "name": "Clarins Super Restorative Crème Multi-Intensive",
+      "brand": "Clarins",
+      "category": "moisturizer",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Super%20Restorative%20Cr%C3%A8me%20Multi-Intensive&tag=kan10ar-21",
+      "price": 135,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "anti_age",
+        "fermete"
+      ],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "mature"
+      ]
+    },
+    {
+      "id": "m457",
+      "name": "Clarins Huile Orchidée Bleue Soin Visage",
+      "brand": "Clarins",
+      "category": "oil",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Huile%20Orchid%C3%A9e%20Bleue%20Soin%20Visage&tag=kan10ar-21",
+      "price": 52,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "hydratation",
+        "eclat"
+      ],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "deshydratee",
+        "normale"
+      ]
+    },
+    {
+      "id": "m458",
+      "name": "Clarins Huile Santal Soin Visage",
+      "brand": "Clarins",
+      "category": "oil",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Huile%20Santal%20Soin%20Visage&tag=kan10ar-21",
+      "price": 52,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "secheresse"
+      ],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "seche"
+      ]
+    },
+    {
+      "id": "m459",
+      "name": "Clarins Huile Lotus Soin Visage",
+      "brand": "Clarins",
+      "category": "oil",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Huile%20Lotus%20Soin%20Visage&tag=kan10ar-21",
+      "price": 52,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "pores",
+        "sebum"
+      ],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "grasse",
+        "mixte"
+      ]
+    },
+    {
+      "id": "m460",
+      "name": "Clarins Masque SOS Hydra Hydratant",
+      "brand": "Clarins",
+      "category": "mask",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Masque%20SOS%20Hydra%20Hydratant&tag=kan10ar-21",
+      "price": 36,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [
+        "acide-hyaluronique"
+      ],
+      "concernTags": [
+        "hydratation"
+      ],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "seche",
+        "normale"
+      ]
+    },
+    {
+      "id": "m461",
+      "name": "Clarins Masque SOS Pure Purifiant à l’Argile",
+      "brand": "Clarins",
+      "category": "mask",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Masque%20SOS%20Pure%20Purifiant%20%C3%A0%20l%E2%80%99Argile&tag=kan10ar-21",
+      "price": 36,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [
+        "argile"
+      ],
+      "concernTags": [
+        "pores"
+      ],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "grasse",
+        "mixte"
+      ]
+    },
+    {
+      "id": "m462",
+      "name": "Clarins Masque SOS Confort Nourrissant",
+      "brand": "Clarins",
+      "category": "mask",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Masque%20SOS%20Confort%20Nourrissant&tag=kan10ar-21",
+      "price": 36,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "secheresse"
+      ],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "seche"
+      ]
+    },
+    {
+      "id": "m463",
+      "name": "Clarins Bright Plus Sérum Anti-Taches Éclat",
+      "brand": "Clarins",
+      "category": "serum",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Bright%20Plus%20S%C3%A9rum%20Anti-Taches%20%C3%89clat&tag=kan10ar-21",
+      "price": 65,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [
+        "vitaminec"
+      ],
+      "concernTags": [
+        "taches",
+        "eclat"
+      ],
+      "active": true,
+      "_priceIndicatif": true
+    },
+    {
+      "id": "m464",
+      "name": "Clarins Bright Plus Crème Éclat Anti-Taches",
+      "brand": "Clarins",
+      "category": "moisturizer",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Bright%20Plus%20Cr%C3%A8me%20%C3%89clat%20Anti-Taches&tag=kan10ar-21",
+      "price": 55,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [
+        "vitaminec"
+      ],
+      "concernTags": [
+        "taches",
+        "eclat"
+      ],
+      "active": true,
+      "_priceIndicatif": true
+    },
+    {
+      "id": "m465",
+      "name": "Clarins UV Plus [5P] Anti-Pollution SPF50",
+      "brand": "Clarins",
+      "category": "spf",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20UV%20Plus%20%5B5P%5D%20Anti-Pollution%20SPF50&tag=kan10ar-21",
+      "price": 42,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [
+        "SPF"
+      ],
+      "concernTags": [
+        "protection-solaire"
+      ],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "normale",
+        "mixte"
+      ]
+    },
+    {
+      "id": "m466",
+      "name": "Clarins UV Plus [5P] Anti-Pollution SPF50 Teinté",
+      "brand": "Clarins",
+      "category": "spf",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20UV%20Plus%20%5B5P%5D%20Anti-Pollution%20SPF50%20Teint%C3%A9&tag=kan10ar-21",
+      "price": 42,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [
+        "SPF"
+      ],
+      "concernTags": [
+        "protection-solaire",
+        "eclat"
+      ],
+      "active": true,
+      "_priceIndicatif": true
+    },
+    {
+      "id": "m467",
+      "name": "Clarins My Clarins RE-BOOST Crème Hydratante Vitalité",
+      "brand": "Clarins",
+      "category": "moisturizer",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20My%20Clarins%20RE-BOOST%20Cr%C3%A8me%20Hydratante%20Vitalit%C3%A9&tag=kan10ar-21",
+      "price": 28,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "hydratation",
+        "eclat"
+      ],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "normale",
+        "mixte"
+      ]
+    },
+    {
+      "id": "m468",
+      "name": "Clarins My Clarins RE-MOVE Eau Micellaire",
+      "brand": "Clarins",
+      "category": "cleanser",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20My%20Clarins%20RE-MOVE%20Eau%20Micellaire&tag=kan10ar-21",
+      "price": 22,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "sensible",
+        "normale"
+      ]
+    },
+    {
+      "id": "m469",
+      "name": "Clarins My Clarins RE-MOVE Gel Nettoyant Purifiant",
+      "brand": "Clarins",
+      "category": "cleanser",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20My%20Clarins%20RE-MOVE%20Gel%20Nettoyant%20Purifiant&tag=kan10ar-21",
+      "price": 22,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "pores"
+      ],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "grasse",
+        "mixte"
+      ]
+    },
+    {
+      "id": "m470",
+      "name": "Clarins My Clarins CLEAR-OUT Cible Anti-Imperfections",
+      "brand": "Clarins",
+      "category": "serum",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20My%20Clarins%20CLEAR-OUT%20Cible%20Anti-Imperfections&tag=kan10ar-21",
+      "price": 24,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "acne",
+        "pores"
+      ],
+      "active": true,
+      "_priceIndicatif": true,
+      "skinTypes": [
+        "grasse",
+        "mixte"
+      ]
+    },
+    {
+      "id": "m471",
+      "name": "Clarins My Clarins RE-FRESH Masque Nuit Hydratant",
+      "brand": "Clarins",
+      "category": "mask",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20My%20Clarins%20RE-FRESH%20Masque%20Nuit%20Hydratant&tag=kan10ar-21",
+      "price": 26,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "hydratation"
+      ],
+      "active": true,
+      "_priceIndicatif": true
+    },
+    {
+      "id": "m472",
+      "name": "Clarins Lip Comfort Oil Huile Confort Lèvres",
+      "brand": "Clarins",
+      "category": "lipgloss",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Lip%20Comfort%20Oil%20Huile%20Confort%20L%C3%A8vres&tag=kan10ar-21",
+      "price": 27,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [],
+      "active": true,
+      "_priceIndicatif": true
+    },
+    {
+      "id": "m473",
+      "name": "Clarins Instant Light Natural Lip Perfector",
+      "brand": "Clarins",
+      "category": "lipgloss",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Instant%20Light%20Natural%20Lip%20Perfector&tag=kan10ar-21",
+      "price": 27,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [],
+      "active": true,
+      "_priceIndicatif": true
+    },
+    {
+      "id": "m474",
+      "name": "Clarins Joli Rouge Rouge à Lèvres Hydratant",
+      "brand": "Clarins",
+      "category": "lipstick",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Joli%20Rouge%20Rouge%20%C3%A0%20L%C3%A8vres%20Hydratant&tag=kan10ar-21",
+      "price": 30,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [],
+      "active": true,
+      "_priceIndicatif": true
+    },
+    {
+      "id": "m475",
+      "name": "Clarins Wonder Perfect Mascara 4D",
+      "brand": "Clarins",
+      "category": "mascara",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Wonder%20Perfect%20Mascara%204D&tag=kan10ar-21",
+      "price": 29,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [],
+      "active": true,
+      "_priceIndicatif": true
+    },
+    {
+      "id": "m476",
+      "name": "Clarins Skin Illusion Fond de Teint Naturel Éclat",
+      "brand": "Clarins",
+      "category": "foundation",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Skin%20Illusion%20Fond%20de%20Teint%20Naturel%20%C3%89clat&tag=kan10ar-21",
+      "price": 40,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [],
+      "active": true,
+      "_priceIndicatif": true
+    },
+    {
+      "id": "m477",
+      "name": "Clarins Everlasting Fond de Teint Longue Tenue",
+      "brand": "Clarins",
+      "category": "foundation",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Everlasting%20Fond%20de%20Teint%20Longue%20Tenue&tag=kan10ar-21",
+      "price": 42,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [],
+      "active": true,
+      "_priceIndicatif": true
+    },
+    {
+      "id": "m478",
+      "name": "Clarins Instant Concealer Correcteur Anti-Cernes",
+      "brand": "Clarins",
+      "category": "concealer",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Instant%20Concealer%20Correcteur%20Anti-Cernes&tag=kan10ar-21",
+      "price": 28,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [
+        "cernes"
+      ],
+      "active": true,
+      "_priceIndicatif": true
+    },
+    {
+      "id": "m479",
+      "name": "Clarins Fix’ Make-Up Brume Fixatrice",
+      "brand": "Clarins",
+      "category": "set",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Fix%E2%80%99%20Make-Up%20Brume%20Fixatrice&tag=kan10ar-21",
+      "price": 30,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [],
+      "active": true,
+      "_priceIndicatif": true
+    },
+    {
+      "id": "m480",
+      "name": "Clarins Ombre Skin Fard à Paupières",
+      "brand": "Clarins",
+      "category": "eyeshadow",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Ombre%20Skin%20Fard%20%C3%A0%20Paupi%C3%A8res&tag=kan10ar-21",
+      "price": 27,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [],
+      "active": true,
+      "_priceIndicatif": true
+    },
+    {
+      "id": "m481",
+      "name": "Clarins Blush Prodige Fard à Joues",
+      "brand": "Clarins",
+      "category": "blush",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Blush%20Prodige%20Fard%20%C3%A0%20Joues&tag=kan10ar-21",
+      "price": 34,
+      "rating": 4.5,
+      "reviews": 0,
+      "description": "",
+      "ingredientTags": [],
+      "concernTags": [],
+      "active": true,
+      "_priceIndicatif": true
     }
   ]
 }
