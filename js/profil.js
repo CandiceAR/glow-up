@@ -67,7 +67,7 @@ const Profil = (() => {
     return `<div class="pf-metrics">
       ${card('💧', 'Hydratation', m.hydra, '#4a90d9')}
       ${card('☀️', 'Éclat', m.eclat, 'var(--orange)')}
-      ${card('◍', 'Texture', m.texture, 'var(--success)')}
+      ${card('◍', 'Lissé', m.texture, 'var(--success)')}
     </div>`;
   }
 
