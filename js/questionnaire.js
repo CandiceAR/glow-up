@@ -964,129 +964,122 @@ const Questionnaire = (() => {
     </div>`;
   }
 
-  function _renderPhotoMiniResult(photo) {
-    const photoSrc = AppState.face?.photo;
-    const overlayDiv = photoSrc
-      ? `<div id="q-face-overlay-target"></div>`
-      : `<div style="font-size:3rem;margin-bottom:12px;">📸</div>`;
+  let _skinDiagView = false;   // false = analyse compacte · true = diagnostic détaillé
 
-    // Priorités dynamiques (remplace le score) — cartes premium
+  function _renderPhotoMiniResult(photo) {
+    return _skinDiagView ? _renderSkinDiagnostic(photo) : _renderSkinMain(photo);
+  }
+
+  // 5 caractéristiques MAX, personnalisées (les plus marquantes pour CE visage)
+  function _buildCharacteristics(photo) {
+    const z = photo.zones || {};
+    const lvl = s => s >= 0.6 ? 'Marqué' : s >= 0.33 ? 'Modéré' : 'Léger';
+    const stLabel = { normale: 'Normale', grasse: 'Grasse', seche: 'Sèche', mixte: 'Mixte', sensible: 'Sensible' };
+    const list = [];
+    // Type de peau : toujours en tête
+    if (photo.skinType?.type) list.push({ emoji: '🧴', label: 'Type de peau', value: stLabel[photo.skinType.type] || photo.skinType.type, score: 2, fixed: true });
+    const push = (emoji, label, score) => list.push({ emoji, label, value: lvl(score), score });
+    const deshy = Math.min(1, (photo.skinType?.type === 'seche' ? 0.65 : 0.15) + (z.glow != null ? (1 - z.glow) * 0.35 : 0));
+    push('💧', 'Déshydratation', deshy);
+    const red = z.redness != null ? z.redness : (photo.rougeurs?.niveau === 'prononcées' ? 0.8 : photo.rougeurs?.niveau === 'légères' ? 0.4 : 0.1);
+    push('🌿', 'Rougeurs', red);
+    const pores = z.pores != null ? z.pores : (photo.skinType?.type === 'grasse' ? 0.7 : photo.skinType?.type === 'mixte' ? 0.5 : 0.25);
+    push('🔬', 'Pores visibles', pores);
+    const dull = z.glow != null ? (1 - z.glow) : (photo.eclat === 'très_terne' ? 0.9 : photo.eclat === 'terne' ? 0.65 : 0.3);
+    push('✨', 'Éclat à booster', dull);
+    const cernes = photo.cernes?.detected ? (photo.cernes.intensite === 'marqués' ? 0.8 : 0.5) : 0.1;
+    push('🌙', 'Cernes', cernes);
+    const taches = photo.taches === 'nombreuses' ? 0.9 : photo.taches === 'visibles' ? 0.6 : photo.taches === 'légères' ? 0.35 : 0.1;
+    push('☀️', 'Taches', taches);
+    const texture = photo.texture === 'irrégulière' ? 0.7 : photo.texture === 'légèrement_irrégulière' ? 0.4 : 0.15;
+    push('🫧', 'Grain de peau', texture);
+    const sebum = photo.skinType?.type === 'grasse' ? 0.75 : photo.skinType?.type === 'mixte' ? 0.45 : 0.2;
+    push('💫', 'Brillance / sébum', sebum);
+    // Type de peau en 1er, puis les 4 plus marquantes → 5 max, personnalisées
+    const fixed = list.filter(x => x.fixed);
+    const rest  = list.filter(x => !x.fixed).sort((a, b) => b.score - a.score);
+    return [...fixed, ...rest].slice(0, 5);
+  }
+
+  // ── Vue 1 : analyse compacte (photo réduite + 5 caractéristiques + 3 priorités + valorisation) ──
+  function _renderSkinMain(photo) {
+    const photoSrc = AppState.face?.photo;
+    const overlayDiv = photoSrc ? `<div id="q-face-overlay-target"></div>` : `<div style="font-size:2.2rem;margin-bottom:6px;">📸</div>`;
+
+    const chars = _buildCharacteristics(photo);
+    const charsHtml = `<div class="ap-chars">${chars.map(c => `
+      <div class="ap-char">
+        <span class="ap-char-emoji">${c.emoji}</span>
+        <span class="ap-char-label">${c.label}</span>
+        <span class="ap-char-value">${c.value}</span>
+      </div>`).join('')}</div>`;
+
     const priorities = (typeof SkinAnalysis !== 'undefined' && SkinAnalysis.buildPriorities)
-      ? SkinAnalysis.buildPriorities(photo, AppState.questionnaire?.answers || {}) : [];
+      ? SkinAnalysis.buildPriorities(photo, AppState.questionnaire?.answers || {}).slice(0, 3) : [];
     const prioritiesHtml = priorities.length ? `
-      <section class="ap-section">
-        <h2 class="ap-section-title">${priorities.length} priorités identifiées pour ta peau</h2>
-        <p class="ap-section-sub">Ce sur quoi Glow Up va concentrer ta routine.</p>
+      <section class="ap-section ap-section--tight">
+        <h2 class="ap-section-title">Tes ${priorities.length} priorités</h2>
         <div class="ap-priority-cards">
           ${priorities.map(p => `
             <div class="ap-priority-card">
               <span class="ap-priority-emoji">${p.emoji}</span>
-              <div class="ap-priority-text">
-                <span class="ap-priority-label">${p.label}</span>
-                ${p.desc ? `<span class="ap-priority-desc">${p.desc}</span>` : ''}
-              </div>
+              <div class="ap-priority-text"><span class="ap-priority-label">${p.label}</span></div>
             </div>`).join('')}
         </div>
       </section>` : '';
 
-    const INSIGHT_EMOJI = {
-      redness: '🌿', sebum: '✨', taches: '☀️', terne: '💫', texture: '🫧', cernes: '🌙', positive: '🌸'
-    };
-
-    const insights = (typeof SkinAnalysis !== 'undefined' && SkinAnalysis.getTopInsights)
-      ? SkinAnalysis.getTopInsights(photo) : [];
-
-    // Points forts — valorisation élégante (base ~300 commentaires, pondérée par les données)
     const portrait = (typeof SkinAnalysis !== 'undefined' && SkinAnalysis.buildBeautyPortrait)
-      ? SkinAnalysis.buildBeautyPortrait(photo, AppState.questionnaire?.answers || {}) : [];
+      ? SkinAnalysis.buildBeautyPortrait(photo, AppState.questionnaire?.answers || {}).slice(0, 3) : [];
     const portraitHtml = portrait.length ? `
-      <section class="ap-section ap-strengths">
-        <h2 class="ap-section-title">✨ Ce qui te met naturellement en valeur</h2>
-        <ul class="ap-strengths-list">
-          ${portrait.map(l => `<li>🤍 ${l}</li>`).join('')}
-        </ul>
+      <section class="ap-section ap-strengths ap-section--tight">
+        <h2 class="ap-section-title">✨ Ce qui te met en valeur</h2>
+        <ul class="ap-strengths-list">${portrait.map(l => `<li>🤍 ${l}</li>`).join('')}</ul>
       </section>` : '';
 
-    // 🎨 Analyse colorimétrique — la feature vedette
-    const colo = (typeof SkinAnalysis !== 'undefined' && SkinAnalysis.buildColorimetry)
-      ? SkinAnalysis.buildColorimetry(photo) : null;
-    const swatches = (arr, cls) => `<div class="colo-swatches">${arr.map(([n, hex]) =>
-      `<div class="colo-sw ${cls || ''}"><span class="colo-dot" style="background:${hex}"></span><span class="colo-name">${n}</span></div>`).join('')}</div>`;
-    const coloHtml = colo ? `
-      <section class="ap-section colo-section">
-        <div class="colo-header">
-          <span class="colo-eyebrow">✦ Ton analyse colorimétrique</span>
-          <h2 class="colo-season">${colo.emoji} ${colo.label}</h2>
-          <p class="colo-desc">${colo.desc}</p>
-        </div>
-        <div class="colo-block">
-          <h3 class="colo-block-title">🎨 Tes couleurs</h3>
-          ${swatches(colo.palette)}
-        </div>
-        <div class="colo-block">
-          <h3 class="colo-block-title">💄 Ton maquillage</h3>
-          ${swatches(colo.makeup)}
-        </div>
-        <div class="colo-block">
-          <h3 class="colo-block-title">💇‍♀️ Tes couleurs de cheveux</h3>
-          ${swatches(colo.hair)}
-        </div>
-        <div class="colo-block colo-block--avoid">
-          <h3 class="colo-block-title">🚫 À éviter</h3>
-          ${swatches(colo.avoid, 'colo-sw--avoid')}
-        </div>
-        <button class="btn-orange-cta colo-share-btn" onclick="Questionnaire.shareColorimetry()">
-          📲 Partager ma saison
-        </button>
-      </section>` : '';
+    return `<div class="q-photo-step analysis-premium ap-compact">
+      <div class="ap-photo ap-photo--sm">${overlayDiv}</div>
+      ${charsHtml}
+      ${prioritiesHtml}
+      ${portraitHtml}
+      <div class="ap-actions">
+        <button class="btn-orange-cta ap-continue" onclick="Questionnaire.showSkinDiagnostic()">Voir mon diagnostic de peau →</button>
+        <button class="ap-continue-sub" onclick="Questionnaire.next()">Continuer vers ma routine →</button>
+      </div>
+    </div>`;
+  }
 
-    const insightsHtml = insights.length ? `
-      <section class="ap-section q-insights">
-        <h2 class="ap-section-title">✦ Ton diagnostic de peau</h2>
-        ${insights.map(({ key, pillLabel, sentence, advice, rank }) => {
+  // ── Vue 2 : diagnostic de peau détaillé ──
+  function _renderSkinDiagnostic(photo) {
+    const INSIGHT_EMOJI = { redness: '🌿', sebum: '✨', taches: '☀️', terne: '💫', texture: '🫧', cernes: '🌙', positive: '🌸' };
+    const insights = (typeof SkinAnalysis !== 'undefined' && SkinAnalysis.getTopInsights) ? SkinAnalysis.getTopInsights(photo) : [];
+    const insightsHtml = insights.length
+      ? insights.map(({ key, pillLabel, sentence, advice, rank }) => {
           const emoji = INSIGHT_EMOJI[key] || '◆';
-          const isPri = rank === 0;
-          return `<div class="q-insight-item${isPri ? ' q-insight-primary' : ''}" data-insight-key="${key}">
+          return `<div class="q-insight-item${rank === 0 ? ' q-insight-primary' : ''}" data-insight-key="${key}">
             <span class="q-insight-emoji">${emoji}</span>
             <div class="q-insight-body">
               <div class="q-insight-name">${pillLabel || key}</div>
               <div class="q-insight-sentence">${sentence || ''}</div>
               <div class="q-insight-advice">${advice || ''}</div>
-            </div>
-          </div>`;
-        }).join('')}
-        <div class="q-insight-synthese" style="display:none"></div>
-      </section>` : '';
-
-    const skinLabel = { normale:'Normale', grasse:'Grasse', seche:'Sèche', mixte:'Mixte', sensible:'Sensible' };
-    const chips = [];
-    if (photo.skinType?.type)   chips.push(`${skinLabel[photo.skinType.type] || photo.skinType.type}`);
-    if (photo.undertone?.label) chips.push(`${photo.undertone.label}`);
-    if (photo.carnation?.label) chips.push(`${photo.carnation.label}`);
-    const chipsHtml = chips.length
-      ? `<div class="ap-chips">${chips.map(c => `<span class="ap-chip">${c}</span>`).join('')}</div>`
-      : '';
+            </div></div>`;
+        }).join('') + `<div class="q-insight-synthese" style="display:none"></div>`
+      : `<p class="ap-section-sub">Diagnostic en cours…</p>`;
 
     return `<div class="q-photo-step analysis-premium">
-      <div class="ap-header">
-        <span class="ap-eyebrow">Étape 2 · Analyse de ta peau ✨</span>
+      <div class="ap-header ap-header--diag">
+        <button class="ap-back" onclick="Questionnaire.hideSkinDiagnostic()">← Retour</button>
+        <h2 class="ap-section-title">✦ Ton diagnostic de peau détaillé</h2>
       </div>
-      <div class="ap-photo">${overlayDiv}</div>
-      ${chipsHtml}
-      ${coloHtml}
-      ${prioritiesHtml}
-      ${portraitHtml}
-      ${insightsHtml}
+      <section class="ap-section q-insights">${insightsHtml}</section>
       <div class="ap-actions">
-        <button class="btn-orange-cta ap-continue" onclick="Questionnaire.next()">
-          Continuer vers ma routine →
-        </button>
-        <button class="ap-retake" onclick="Questionnaire.retakePhoto()">
-          Refaire l'analyse photo
-        </button>
+        <button class="btn-orange-cta ap-continue" onclick="Questionnaire.next()">Continuer vers ma routine →</button>
+        <button class="ap-continue-sub" onclick="Questionnaire.retakePhoto()">Refaire l'analyse photo</button>
       </div>
     </div>`;
   }
+
+  function showSkinDiagnostic() { _skinDiagView = true; _showPhotoResult(); }
+  function hideSkinDiagnostic() { _skinDiagView = false; _showPhotoResult(); }
 
   function _renderTextarea(q) {
     const val = AppState.questionnaire.answers[q.key] || '';
@@ -1182,6 +1175,7 @@ const Questionnaire = (() => {
   }
 
   function retakePhoto() {
+    _skinDiagView = false;   // revenir à la vue analyse pour la prochaine photo
     // Efface l'analyse existante et relance la capture
     if (AppState.face) {
       AppState.face.photo        = null;
@@ -1194,6 +1188,7 @@ const Questionnaire = (() => {
   function uploadPhoto(input) {
     const file = input.files?.[0];
     if (!file) return;
+    _skinDiagView = false;   // nouvelle photo → vue analyse
     const reader = new FileReader();
     reader.onload = async (e) => {
       AppState.face = AppState.face || {};
@@ -1294,8 +1289,11 @@ const Questionnaire = (() => {
         AppState.face?.skinAnalysis
       );
     }
-    // Enrichissement IA async — n'attend pas, affiche le template en attendant
-    _enrichWithAI();
+    // Enrichissement IA async — une seule fois par analyse (pas à chaque bascule de vue)
+    if (!AppState.face?.skinAnalysis?._enrichTried) {
+      if (AppState.face?.skinAnalysis) AppState.face.skinAnalysis._enrichTried = true;
+      _enrichWithAI();
+    }
   }
 
   // ─── IA enrichissement — génère des insights personnalisés via Haiku ──
@@ -2042,7 +2040,7 @@ const Questionnaire = (() => {
     takePhoto, retakePhoto, uploadPhoto, skipPhoto, resumeFromPhoto,
     continueFromAnalysis,
     next, prev, submit,
-    shareColorimetry,
+    shareColorimetry, showSkinDiagnostic, hideSkinDiagnostic,
     crSearch, crAdd, crToggleManual, crAddManual, crToggleLove, crRemove, crPickPhoto, crPhoto,
     QUESTIONS, MAKEUP_QUESTIONS
   };

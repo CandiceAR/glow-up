@@ -10101,3 +10101,18 @@ em { font-style: italic; color: var(--nude); }
 
 /* Message doux âge (scan dupe) */
 .df-agenote { background: rgba(232,197,191,.18); border: 1px solid var(--rose-deep); border-radius: var(--radius); padding: 14px 16px; font-size: 14px; color: var(--charcoal); line-height: 1.5; margin-bottom: 16px; }
+
+/* Analyse visuelle compacte (2 vues) */
+.ap-compact .ap-header { margin-bottom: 6px; }
+.ap-photo--sm { max-width: 190px; margin: 0 auto 12px; }
+.ap-photo--sm canvas, .ap-photo--sm img { width: 100% !important; height: auto !important; border-radius: 16px; }
+.ap-chars { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 16px; }
+.ap-char { flex: 1 1 28%; min-width: 92px; max-width: 150px; background: var(--white); border: 1px solid var(--sand); border-radius: 12px; padding: 8px 6px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.ap-char-emoji { font-size: 20px; }
+.ap-char-label { font-size: 11px; color: var(--muted); line-height: 1.15; }
+.ap-char-value { font-size: 12px; font-weight: 700; color: var(--charcoal); }
+.ap-section--tight { margin: 14px 0; }
+.ap-section--tight .ap-section-title { font-size: 18px; margin-bottom: 8px; }
+.ap-continue-sub { display: block; width: 100%; background: none; border: none; color: var(--muted); font-size: 13px; font-weight: 500; margin-top: 8px; cursor: pointer; padding: 6px; text-decoration: underline; }
+.ap-back { background: none; border: none; color: var(--nude); font-size: 14px; font-weight: 600; cursor: pointer; padding: 4px 0; margin-bottom: 6px; }
+.ap-header--diag { text-align: left; }
