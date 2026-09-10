@@ -133,6 +133,7 @@ function showScreen(name) {
   AppState.screen = name;
   window.scrollTo(0, 0);
   if (typeof Tracker !== 'undefined') Tracker.trackScreen(name);
+  if (window.Track && Track.screen) Track.screen(name);
 
   // Le FAB scan ne s'affiche que sur les écrans de navigation (accueil, boutique).
   // Ailleurs il se superposait aux boutons "Continuer" en bas à droite (questionnaire, scans…).

@@ -550,6 +550,7 @@ const Auth = (() => {
       if (typeof firebase !== 'undefined' && typeof firebase.analytics === 'function') {
         firebase.analytics();
         _analyticsOn = true;
+        window._glowAnalyticsOn = true;   // signal pour js/analytics.js (envoi des events clics/écrans)
         console.log('[Auth] Google Analytics activé (consentement OK)');
       }
     } catch (e) { console.warn('[Auth] Analytics non initialisé:', e.message); }
