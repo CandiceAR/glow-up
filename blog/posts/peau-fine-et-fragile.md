@@ -37,7 +37,7 @@ Trois mécanismes principaux expliquent ce changement :
 
 Une peau fine et fragile ne supporte plus les mêmes agressions qu'avant : gommages physiques trop appuyés, actifs concentrés (rétinol, acides) utilisés sans progressivité, ou changements de routine trop fréquents. L'objectif n'est plus de « traiter fort », mais de **renforcer la barrière cutanée avant tout** — une peau dont la barrière est solide redevient naturellement plus tolérante avec le temps.
 
-C'est exactement le point de départ de la routine qu'on détaille dans le prochain article : une routine matin/soir pensée pour ce type de peau, étape par étape.
+C'est exactement le point de départ de la routine qu'on détaille dans [le prochain article : une routine matin/soir pensée pour ce type de peau](/blog/routine-skincare-peau-fine-35-45-ans/), étape par étape.
 
 ---
 
