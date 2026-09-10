@@ -1349,17 +1349,12 @@ const RoutineRenderer = (() => {
   function renderSkinJourneyTeaser() {
     const plan         = typeof Subscription !== 'undefined' ? Subscription.getPlan() : 'free';
     const isSubscriber = plan === 'glow' || plan === 'glowplus';
-    const journeyActive = isSubscriber && typeof SkinJourney !== 'undefined' && SkinJourney.isActive();
-    const currentDay    = journeyActive
-      ? (() => {
-          try {
-            const d = JSON.parse(localStorage.getItem('glowup_journey_v1') || 'null');
-            if (!d) return 1;
-            return Math.min(30, Math.floor((new Date() - new Date(d.startDate)) / 86400000) + 1);
-          } catch { return 1; }
-        })()
-      : 1;
-    const progress = Math.round((currentDay / 30) * 100);
+    const sj            = (typeof SkinJourney !== 'undefined') ? SkinJourney : null;
+    const journeyActive = isSubscriber && sj && sj.isActive();
+    const summary       = (isSubscriber && sj && sj.summary) ? sj.summary() : null;
+    const g             = summary ? summary._global : null;
+    const gTxt          = g != null ? ((g >= 0 ? '+' : '') + g + '%') : null;
+    const gColor        = (g != null && g < 0) ? '#c47a68' : 'var(--success)';
 
     return `
       <div class="journey-teaser">
@@ -1371,18 +1366,13 @@ const RoutineRenderer = (() => {
           <p class="journey-teaser-sub">Suis la transformation de ta peau dans le temps</p>
 
           ${isSubscriber ? `
-          <div class="journey-teaser-day">
-            <span class="journey-teaser-day-num">Jour ${currentDay}</span>
-            <span class="journey-teaser-day-total">/ 30</span>
-          </div>
-          <div class="journey-teaser-bar-track">
-            <div class="journey-teaser-bar-fill" style="width:${progress}%"></div>
-          </div>
-          <p class="journey-teaser-progress-label">${journeyActive ? `${progress}% du programme complété` : 'Programme non démarré'}</p>
+          ${gTxt
+            ? `<p class="journey-teaser-progress-label">Ta peau&nbsp;: <strong style="color:${gColor}">${gTxt} depuis J0</strong></p>`
+            : `<p class="journey-teaser-progress-label">${journeyActive ? 'Prête pour ta prochaine photo' : 'Suivi non démarré'}</p>`}
           <button class="btn btn-dark journey-teaser-btn" onclick="goToSkinJourney()">
             ${journeyActive ? '▶ Reprendre mon suivi' : 'Commencer mon suivi ✦'}
           </button>` : `
-          <p class="journey-teaser-desc-free">Historique de vos analyses · Évolution de vos indicateurs peau · Comparaison avant/après</p>
+          <p class="journey-teaser-desc-free">Photo tous les 4 jours · 4 critères suivis · Comparaison avant/après</p>
           <button class="btn-orange-cta journey-teaser-btn" onclick="Subscription.showSkinJourneyDetail()">
             Découvrir Skin Journey →
           </button>`}
@@ -1391,23 +1381,15 @@ const RoutineRenderer = (() => {
 
         <div class="journey-teaser-right" aria-hidden="true">
           <div class="journey-teaser-circle">
-            <svg viewBox="0 0 80 80">
-              <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(201,169,138,0.2)" stroke-width="6"/>
-              <circle cx="40" cy="40" r="34" fill="none" stroke="var(--nude)" stroke-width="6"
-                stroke-dasharray="${2 * Math.PI * 34}"
-                stroke-dashoffset="${2 * Math.PI * 34 * (1 - progress / 100)}"
-                stroke-linecap="round" transform="rotate(-90 40 40)"/>
-            </svg>
             <div class="journey-teaser-circle-inner">
-              <span class="journey-teaser-pct">${progress}%</span>
-              <span class="journey-teaser-pct-label">complété</span>
+              <span class="journey-teaser-pct">${gTxt || '✨'}</span>
+              <span class="journey-teaser-pct-label">${gTxt ? 'depuis J0' : 'ta peau'}</span>
             </div>
           </div>
           <div class="journey-teaser-perks">
-            <div class="journey-teaser-perk">📅 30 jours</div>
-            <div class="journey-teaser-perk">☑️ Check-in quotidien</div>
-            <div class="journey-teaser-perk">📸 Avant / Après</div>
-            <div class="journey-teaser-perk">🏆 Badges & Points</div>
+            <div class="journey-teaser-perk">📷 Photo tous les 4 jours</div>
+            <div class="journey-teaser-perk">📈 4 critères suivis</div>
+            <div class="journey-teaser-perk">🔀 Comparaison avant/après</div>
           </div>
         </div>
       </div>`;

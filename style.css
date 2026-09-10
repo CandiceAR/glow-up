@@ -326,20 +326,14 @@ em { font-style: italic; color: var(--nude); }
   margin: 0 auto;
   text-align: center;
 }
-/* Logo G transparent du hero — halo orange rétroéclairé */
+/* Logo « g. glow up » du hero — image transparente (lueur déjà intégrée) */
 .hero-logo {
   display: block;
-  width: 150px;
+  width: 240px;
   height: auto;
   margin: 0 auto 24px;
-  filter: drop-shadow(0 0 18px rgba(240,145,63,0.5))
-          drop-shadow(0 8px 26px rgba(240,145,63,0.32));
-  animation: heroLogoGlow 4s ease-in-out infinite;
 }
-@keyframes heroLogoGlow {
-  0%, 100% { filter: drop-shadow(0 0 16px rgba(240,145,63,0.42)) drop-shadow(0 8px 26px rgba(240,145,63,0.28)); }
-  50%      { filter: drop-shadow(0 0 24px rgba(240,145,63,0.6))  drop-shadow(0 8px 30px rgba(240,145,63,0.4)); }
-}
+@media (max-width: 600px) { .hero-logo { width: 190px; } }
 .eyebrow {
   display: block;
   font-size: 0.75rem;
@@ -10195,3 +10189,166 @@ em { font-style: italic; color: var(--nude); }
 .more-item { display: flex; align-items: center; gap: 14px; width: 100%; background: none; border: none; border-bottom: 1px solid var(--sand); padding: 15px 4px; font-size: 15px; color: var(--charcoal); cursor: pointer; font-family: var(--font-sans); text-align: left; }
 .more-item:last-child { border-bottom: none; }
 .more-emoji { font-size: 20px; width: 24px; text-align: center; }
+
+/* ============================================================
+   Skin Journey — Évolution de ta peau (skinJourney.js)
+   ============================================================ */
+#screen-journey .journey-container { max-width: 560px; margin: 0 auto; }
+.sj-wrap { max-width: 560px; margin: 0 auto; padding: 18px 18px 120px; }
+
+/* En-tête */
+.sj-head { text-align: center; margin: 6px 0 20px; }
+.sj-head-title { font-family: var(--font-serif); font-size: 22px; letter-spacing: .08em; color: var(--charcoal); }
+.sj-head-sub { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--nude); font-weight: 600; margin-top: 2px; }
+.sj-head--back { display: flex; align-items: center; gap: 12px; text-align: left; }
+.sj-head--back > div { text-align: left; }
+.sj-back { flex-shrink: 0; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--sand); background: var(--white); font-size: 22px; line-height: 1; color: var(--charcoal); cursor: pointer; }
+
+/* Couleurs d'évolution */
+.sj-pos { color: var(--success, #5a9e6f); }
+.sj-neg { color: #c47a68; }
+
+/* États (J0, sablier, appareil photo, confirmation) */
+.sj-state { text-align: center; padding: 22px 10px 8px; }
+.sj-state-ic { font-size: 46px; display: block; margin-bottom: 14px; }
+.sj-j0-photo { width: 150px; height: 150px; object-fit: cover; border-radius: 50%; margin: 0 auto 16px; display: block; border: 4px solid var(--white); box-shadow: var(--shadow-sm); }
+.sj-badge { display: inline-block; background: var(--cream); color: var(--nude); font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; margin-bottom: 12px; }
+.sj-state-title { font-family: var(--font-serif); font-size: 25px; color: var(--charcoal); margin: 0 0 10px; line-height: 1.2; }
+.sj-state-sub { font-size: 14px; color: var(--muted); line-height: 1.5; margin: 0 auto 20px; max-width: 340px; }
+.sj-state .btn { min-width: 220px; }
+.sj-tip { font-size: 12.5px; color: var(--nude); margin-top: 14px; cursor: pointer; text-decoration: underline; }
+
+/* Bannière prochaine analyse */
+.sj-cta-banner { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-radius: var(--radius); padding: 12px 14px; margin-bottom: 16px; font-size: 13px; }
+.sj-cta-banner.sj-ready { background: var(--orange-light); border: 1px solid var(--nude); }
+.sj-cta-banner.sj-ready strong { display: block; color: var(--charcoal); font-size: 14px; }
+.sj-cta-banner.sj-ready span { color: var(--muted); font-size: 12.5px; }
+.sj-cta-banner.sj-waiting { background: var(--cream); color: var(--muted); justify-content: center; }
+.btn-sm { padding: 8px 16px !important; font-size: 13px !important; min-width: 0 !important; }
+
+/* Hero résumé */
+.sj-hero { text-align: center; margin-bottom: 18px; }
+.sj-hero-label { font-family: var(--font-serif); font-size: 19px; color: var(--charcoal); margin: 0 0 4px; }
+.sj-hero-num { font-family: var(--font-serif); font-size: 52px; line-height: 1; font-weight: 600; }
+.sj-hero-sub { font-size: 12px; color: var(--muted); margin: 4px 0 0; }
+
+/* Cartes 4 critères */
+.sj-mcards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+.sj-mcard { background: var(--white); border: 1px solid var(--sand); border-radius: 14px; padding: 12px 6px; text-align: center; box-shadow: var(--shadow-sm); }
+.sj-mcard-ic { font-size: 20px; display: block; }
+.sj-mcard-label { font-size: 10px; text-transform: uppercase; letter-spacing: .03em; color: var(--muted); font-weight: 600; display: block; margin: 5px 0 3px; }
+.sj-mcard-val { font-family: var(--font-serif); font-size: 18px; }
+@media (max-width: 380px) { .sj-mcards { grid-template-columns: repeat(2, 1fr); } }
+
+/* Carte générique + graphique */
+.sj-card { background: var(--white); border: 1px solid var(--sand); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; box-shadow: var(--shadow-sm); }
+.sj-chart { overflow: visible; }
+.sj-chart-note { font-size: 12px; color: var(--muted); text-align: center; margin: 8px 0 0; }
+
+/* Actions */
+.sj-actions { display: flex; gap: 10px; margin-bottom: 12px; }
+.sj-actions .btn { flex: 1; min-width: 0; }
+.sj-full { width: 100%; }
+.sj-links { display: flex; gap: 10px; }
+.sj-link { flex: 1; background: var(--cream); border: none; border-radius: 12px; padding: 12px 8px; font-size: 12.5px; font-weight: 600; color: var(--charcoal); cursor: pointer; font-family: var(--font-sans); }
+
+/* Pills (critères / dates) */
+.sj-pills { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 16px; -webkit-overflow-scrolling: touch; }
+.sj-pill { flex-shrink: 0; background: var(--cream); border: 1px solid transparent; border-radius: 20px; padding: 7px 15px; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; font-family: var(--font-sans); }
+.sj-pill.active { background: var(--orange); color: var(--white); }
+
+/* Détail par critère */
+.sj-detail-hero { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+.sj-detail-ic { font-size: 42px; }
+.sj-detail-name { font-size: 15px; color: var(--muted); margin: 0; font-weight: 600; }
+.sj-detail-num { font-family: var(--font-serif); font-size: 40px; line-height: 1; }
+.sj-interpret { background: var(--cream); border-radius: 14px; padding: 14px 16px; font-size: 13.5px; color: var(--charcoal); line-height: 1.5; text-align: center; }
+
+/* Comparaison photos */
+.sj-cmp { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.sj-cmp-slot { flex: 1; position: relative; }
+.sj-cmp-slot img { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 14px; display: block; }
+.sj-cmp-ph { width: 100%; aspect-ratio: 3/4; border-radius: 14px; background: var(--cream); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; font-size: 26px; color: var(--nude); }
+.sj-cmp-ph span { font-size: 11px; }
+.sj-cmp-day { position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,.55); color: #fff; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 12px; }
+.sj-cmp-arrow { color: var(--nude); font-size: 20px; flex-shrink: 0; }
+.sj-cmp-metrics, .sj-recap { padding: 6px 16px; }
+.sj-cmp-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-top: 1px solid var(--sand); font-size: 14px; color: var(--charcoal); }
+.sj-cmp-row:first-child { border-top: none; }
+.sj-cmp-row strong { font-family: var(--font-serif); font-size: 17px; }
+.sj-recap-title { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--nude); font-weight: 600; margin: 6px 0 2px; }
+
+/* Timeline */
+.sj-timeline { display: flex; align-items: center; margin-bottom: 18px; padding: 0 4px; }
+.sj-tl-dot { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; font-family: var(--font-sans); flex-shrink: 0; }
+.sj-tl-mark { font-size: 18px; color: var(--nude); line-height: 1; }
+.sj-tl-dot.active .sj-tl-mark { color: var(--orange); }
+.sj-tl-lab { font-size: 10.5px; font-weight: 600; color: var(--muted); }
+.sj-tl-dot.active .sj-tl-lab { color: var(--orange-deep); }
+.sj-tl-line { flex: 1; height: 2px; background: var(--sand); margin: 0 2px 16px; min-width: 12px; }
+.sj-tl-date { font-family: var(--font-serif); font-size: 16px; color: var(--charcoal); margin: 0 0 6px; }
+
+/* ── Profil : 4 mesures + teaser évolution ── */
+.pf-metrics-4 { gap: 6px; padding: 16px 10px; }
+.pf-metrics-4 .pf-metric-ic { font-size: 19px; }
+.pf-metrics-4 .pf-metric-label { font-size: 9.5px; }
+.pf-metrics-4 .pf-metric-val { font-size: 20px; }
+@media (max-width: 380px) {
+  .pf-metrics-4 { flex-wrap: wrap; }
+  .pf-metrics-4 .pf-metric { flex: 1 1 40%; }
+}
+.pf-evo-badge { display: inline-block; font-family: var(--font-serif); font-size: 18px; font-weight: 600; margin-top: 2px; }
+.pf-evo-global { font-family: var(--font-serif); font-size: 34px; font-weight: 600; margin-bottom: 12px; }
+.pf-evo-global span { font-family: var(--font-sans); font-size: 12px; color: var(--muted); font-weight: 400; }
+.pf-evo-minis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
+.pf-evo-mini { display: flex; align-items: center; gap: 8px; background: var(--cream); border-radius: 12px; padding: 10px 12px; }
+.pf-evo-mini-ic { font-size: 16px; }
+.pf-evo-mini-l { flex: 1; font-size: 12.5px; color: var(--muted); }
+.pf-evo-mini strong { font-family: var(--font-serif); font-size: 16px; }
+
+/* ============================================================
+   Refonte page d'accueil — éditorial Anton + logo texte + blog
+   ============================================================ */
+.nav-logo-word{
+  font-family:'Fraunces',var(--font-serif);
+  font-weight:600; font-size:26px; line-height:1; color:#B4482E; letter-spacing:-.01em;
+}
+@media (max-width:600px){ .nav-logo-word{ font-size:22px; } }
+
+/* Titres éditoriaux Anton — uniquement sur l'accueil */
+#screen-home .hero-title{
+  font-family:'Anton',Impact,sans-serif; font-weight:400; text-transform:uppercase;
+  letter-spacing:.01em; line-height:.94; color:var(--charcoal,#3A2318);
+  font-size:clamp(40px,7.2vw,86px);
+}
+#screen-home .hero-title em{ font-style:normal; color:#B4482E; }
+#screen-home .section-head h2{
+  font-family:'Anton',Impact,sans-serif; font-weight:400; text-transform:uppercase;
+  letter-spacing:.01em; line-height:.98; font-size:clamp(28px,4.6vw,52px);
+}
+#screen-home .eyebrow{ color:#B4482E; }
+
+/* Pastilles hero */
+.hero-pills{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:26px 0 4px; }
+.hero-pill{
+  background:var(--white,#FCF8F1); border:1px solid var(--sand,#E3D3BE); border-radius:30px;
+  padding:9px 16px; font-size:13px; font-weight:600; color:var(--charcoal,#3A2318);
+}
+
+/* Section « Nos derniers conseils » */
+.home-blog-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+.home-blog-loading{ color:var(--muted,#8A6E58); font-size:14px; grid-column:1/-1; text-align:center; }
+.home-art{
+  display:flex; flex-direction:column; background:var(--white,#FCF8F1);
+  border:1px solid var(--sand,#E3D3BE); border-radius:18px; overflow:hidden;
+  text-decoration:none; color:inherit; transition:transform .18s ease, box-shadow .18s ease;
+}
+.home-art:hover{ transform:translateY(-4px); box-shadow:0 16px 34px rgba(58,35,24,.10); }
+.home-art-cover{ aspect-ratio:16/10; background:linear-gradient(140deg,#E7C7A6,#D89B72); }
+.home-art-cover img{ width:100%; height:100%; object-fit:cover; display:block; }
+.home-art-body{ padding:16px 18px; display:flex; flex-direction:column; gap:7px; flex:1; }
+.home-art-date{ font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted,#8A6E58); }
+.home-art-body h3{ font-family:'Fraunces',var(--font-serif); font-weight:600; font-size:19px; line-height:1.25; color:var(--charcoal,#3A2318); }
+.home-art-body p{ font-size:14px; color:var(--muted,#8A6E58); margin:0; }
+.home-art-more{ margin-top:auto; color:#B4482E; font-weight:600; font-size:14px; }
+@media (max-width:860px){ .home-blog-grid{ grid-template-columns:1fr; } }

@@ -440,7 +440,6 @@ const TryOn = (() => {
         const reader = new FileReader();
         reader.onload = ev => {
           AppState.face.photo = ev.target.result;
-          if (typeof SkinJourney !== 'undefined') SkinJourney.onPhotoReady();
           if (typeof handleCaptureNext === 'function') {
             handleCaptureNext();
           } else {
@@ -466,7 +465,6 @@ const TryOn = (() => {
         tempCanvas.getContext('2d').drawImage(cameraStream, 0, 0);
         const dataUrl = tempCanvas.toDataURL('image/jpeg', 0.92);
         AppState.face.photo = dataUrl;
-        if (typeof SkinJourney !== 'undefined') SkinJourney.onPhotoReady();
 
         _activeStream.getTracks().forEach(t => t.stop());
         _activeStream = null;

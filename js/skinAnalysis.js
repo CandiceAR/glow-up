@@ -1276,8 +1276,8 @@ const SkinAnalysis = (() => {
       //   content.appendChild(aiEl);
       //   try { window.MakeupAI.generate(aiEl, AppState.face.sourceCanvas, AppState.face.landmarks, result); } catch(e) { console.error('[MakeupAI]', e); }
       // }
-      if (typeof SkinJourney !== 'undefined' && SkinJourney.isActive()) {
-        SkinJourney.addAnalysis();
+      if (typeof SkinJourney !== 'undefined' && SkinJourney.captureAnalysis) {
+        SkinJourney.captureAnalysis();
       }
     } catch (err) {
       console.error('[SkinAnalysis] Erreur analyse:', err);

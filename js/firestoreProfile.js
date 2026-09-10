@@ -44,6 +44,30 @@ const FirestoreProfile = (() => {
     }
   }
 
-  return { init, save, load };
+  // ─── Skin Journey (suivi d'évolution) ────────────────────────
+  async function saveJourney(uid, journey) {
+    if (!db || !uid) return;
+    try {
+      await db.collection('users').doc(uid).set({
+        skinJourney: journey,
+        updatedAt:   firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+    } catch (e) {
+      console.warn('[FirestoreProfile] Erreur saveJourney:', e.message);
+    }
+  }
+
+  async function loadJourney(uid) {
+    if (!db || !uid) return null;
+    try {
+      const doc = await db.collection('users').doc(uid).get();
+      return (doc.exists && doc.data().skinJourney) ? doc.data().skinJourney : null;
+    } catch (e) {
+      console.warn('[FirestoreProfile] Erreur loadJourney:', e.message);
+      return null;
+    }
+  }
+
+  return { init, save, load, saveJourney, loadJourney };
 
 })();

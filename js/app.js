@@ -347,11 +347,36 @@ function setupGlobalListeners() {
 function renderFeaturedHome() {
   const grid = document.getElementById('featuredGrid');
   if (!grid) return;
-  const featured = AppState.products.catalog.filter(p => p.isFeatured).slice(0, 4);
-  if (featured.length === 0) {
+  const cat = AppState.products.catalog || [];
+
+  // Pool éligible : bien notés (4,5+) ou tagués vedette, actifs. On privilégie ceux avec image.
+  const eligible = cat.filter(p => (p.active !== false) && (((p.rating || 0) >= 4.5) || p.isFeatured));
+  const withImg  = eligible.filter(p => p.imageUrl);
+  let pool = withImg.length >= 4 ? withImg : (eligible.length ? eligible : cat.filter(p => p.isFeatured));
+
+  if (!pool.length) {
     grid.innerHTML = '<p class="empty-state">Aucun produit vedette pour le moment.</p>';
     return;
   }
+
+  // Rotation automatique chaque semaine (déterministe pour tous, variée & multi-marques)
+  const week = Math.floor(Date.now() / (7 * 24 * 3600 * 1000)); // n° de semaine depuis 1970
+  const hash = s => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0; return h; };
+  const mix  = x => { x = (x ^ (x >>> 16)) >>> 0; x = Math.imul(x, 2246822507) >>> 0; x = (x ^ (x >>> 13)) >>> 0; x = Math.imul(x, 3266489909) >>> 0; return (x ^ (x >>> 16)) >>> 0; };
+  const wmask = mix(week);
+  const scored = pool.map(p => ({ p, h: mix(hash(String(p.id)) ^ wmask) })).sort((a, b) => a.h - b.h);
+
+  const featured = [], brands = new Set();
+  for (const { p } of scored) {                       // 1er passage : max 1 produit par marque
+    const b = (p.brand || '').toLowerCase();
+    if (b && brands.has(b)) continue;
+    featured.push(p); brands.add(b);
+    if (featured.length >= 4) break;
+  }
+  if (featured.length < 4) {                           // complète si peu de marques
+    for (const { p } of scored) { if (!featured.includes(p)) { featured.push(p); if (featured.length >= 4) break; } }
+  }
+
   grid.innerHTML = featured.map(p => ProductCatalog.renderCard(p)).join('');
 }
 
@@ -827,20 +852,6 @@ function goToSkinJourney() {
     Subscription.showPaywall('routine_second');
     return;
   }
-  // Vérifier si au moins 2 analyses disponibles
-  try {
-    const data = JSON.parse(localStorage.getItem('glowup_journey_v1') || 'null');
-    const analyses = data?.analyses || [];
-    if (analyses.length < 2 && !data) {
-      // Pas encore de Journey démarré → lancer normalement
-      showScreen('journey');
-      return;
-    }
-    if (analyses.length < 2) {
-      showToast('Votre Skin Journey commencera après votre prochaine analyse.', 'info', 4000);
-      return;
-    }
-  } catch {}
   showScreen('journey');
 }
 

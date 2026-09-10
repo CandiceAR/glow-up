@@ -1,126 +1,85 @@
 /* ============================================================
-   skinJourney.js — Suivi de progression de la peau sur 30 jours
-   • 100% local — localStorage, aucune donnée envoyée
-   • 100% gratuit — pas derrière le paywall
+   skinJourney.js — « Skin Journey · Évolution de ta peau »
+   Suivi simple : une photo de référence (J0), puis une nouvelle
+   analyse tous les 4 jours. On compare 4 critères dans le temps.
+   • Données stockées sur le compte (Firestore) + cache local
+   • 4 vues : Résumé · Détail · Comparaison photos · Timeline
    ============================================================ */
 
 'use strict';
 
 const SkinJourney = (() => {
 
-  const STORAGE_KEY  = 'glowup_journey_v1';
-  const PROGRAM_DAYS = 30;
+  const STORAGE_KEY = 'glowup_journey_v2';
+  const CADENCE     = 4;      // jours entre deux analyses
+  const MAX_THUMBS  = 8;      // nb max de photos conservées
 
-  const POINTS = {
-    checkin_matin: 5,
-    checkin_soir:  5,
-    full_day:      3,   // bonus matin + soir le même jour
-    new_analysis:  10,
-    photo_taken:   5
-  };
-
-  const BADGES = [
-    {
-      id: 'first_step', icon: '🌟', name: 'Premier Pas',
-      desc: 'Premier check-in effectué',
-      condition: d => d.totalCheckins >= 1
-    },
-    {
-      id: 'streak_3', icon: '🔥', name: '3 Jours de Suite',
-      desc: '3 jours consécutifs de routine',
-      condition: d => d.maxStreak >= 3
-    },
-    {
-      id: 'streak_7', icon: '💪', name: 'Routine Master',
-      desc: '7 jours consécutifs de routine',
-      condition: d => d.maxStreak >= 7
-    },
-    {
-      id: 'photo_compare', icon: '📸', name: 'Avant / Après',
-      desc: 'Première comparaison photo enregistrée',
-      condition: d => d.photos.length >= 2
-    },
-    {
-      id: 'score_80', icon: '✨', name: 'Glow Score',
-      desc: 'Skin Score ≥ 80 / 100',
-      condition: d => d.skinScore >= 80
-    },
-    {
-      id: 'full_program', icon: '🏆', name: 'Skin Transformation',
-      desc: '30 jours de programme accomplis',
-      condition: d => getCurrentDay(d) >= 30
-    }
+  // 4 critères suivis (tous 0-100, + = amélioration)
+  const METRICS = [
+    { key: 'hydratation', label: 'Hydratation', icon: '💧', color: '#4a90d9' },
+    { key: 'rougeurs',    label: 'Rougeurs',    icon: '🌸', color: '#cf7b6b' },
+    { key: 'texture',     label: 'Texture',     icon: '◍',  color: '#7a9e7e' },
+    { key: 'eclat',       label: 'Éclat',       icon: '☀️', color: '#e0a04d' }
   ];
 
-  // ─── Persistance localStorage ──────────────────────────────────
+  let _view      = 'resume';   // resume | detail | compare | timeline
+  let _metricKey = 'hydratation';
+  let _selIdx    = -1;         // entrée sélectionnée (compare/timeline) ; -1 = dernière
+  let _justRecorded = false;
 
-  function load() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : null;
-    } catch { return null; }
-  }
-
-  function save(data) {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    } catch (e) {
-      console.warn('[SkinJourney] localStorage plein:', e);
-    }
-  }
-
-  function getToday() {
-    return new Date().toISOString().split('T')[0];
-  }
-
-  function daysBetween(d1, d2) {
-    return Math.floor((new Date(d2) - new Date(d1)) / 86400000);
-  }
-
-  function getCurrentDay(data) {
-    return Math.min(PROGRAM_DAYS, daysBetween(data.startDate, getToday()) + 1);
-  }
-
-  // ─── Démarrer le programme ────────────────────────────────────
-
-  function startJourney() {
-    const today = getToday();
-    const data = {
-      startDate:      today,
-      totalPoints:    0,
-      totalCheckins:  0,
-      currentStreak:  0,
-      maxStreak:      0,
-      lastCheckinDate: null,
-      skinScore:      50,
-      checkins:       {},
-      photos:         [],
-      analyses:       []
+  // ─── Dérivation des 4 critères depuis une analyse de peau ──────
+  // (source unique — réutilisée par profil.js)
+  function metricsFromAnalysis(r) {
+    const zv = Object.values(r?.zones || {});
+    if (!zv.length) return null;
+    const n = zv.length;
+    const m = k => zv.reduce((s, z) => s + (z[k] != null ? z[k] : 60), 0) / n;
+    const clamp = v => Math.max(20, Math.min(98, Math.round(v)));
+    const eclat   = m('eclat');
+    const pores   = m('pores');
+    const texture = m('texture');
+    const redness = m('redness');
+    const st = r?.skinType?.type || 'normale';
+    const hydraBase = { seche: 52, sensible: 60, normale: 70, mixte: 66, grasse: 76 }[st] || 68;
+    return {
+      hydratation: clamp(hydraBase * 0.6 + eclat * 0.25 + (100 - redness) * 0.15),
+      rougeurs:    clamp(100 - redness),          // moins de rougeurs = mieux
+      texture:     clamp((pores + texture) / 2),
+      eclat:       clamp(eclat)
     };
-
-    if (AppState.face.skinAnalysis) {
-      data.skinScore = Math.max(50, AppState.face.skinAnalysis.globalScore || 50);
-      data.analyses.push({
-        day: 1, date: today,
-        globalScore: AppState.face.skinAnalysis.globalScore,
-        skinType: AppState.face.skinAnalysis.skinType?.type
-      });
-    }
-
-    if (AppState.face.photo) {
-      compressPhoto(AppState.face.photo, thumb => {
-        data.photos.push({ day: 1, date: today, thumb });
-        save(data);
-      });
-    }
-
-    save(data);
-    return data;
   }
 
-  // ─── Compression photo avant stockage (320px, JPEG 50%) ───────
+  // ─── Persistance (local + Firestore) ──────────────────────────
+  function load() {
+    try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : null; }
+    catch { return null; }
+  }
+  function save(data) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+    catch (e) { console.warn('[SkinJourney] localStorage:', e.message); }
+    try {
+      const uid = AppState?.user?.uid;
+      if (uid && !AppState.user.isGuest && typeof FirestoreProfile !== 'undefined' && FirestoreProfile.saveJourney) {
+        FirestoreProfile.saveJourney(uid, data);
+      }
+    } catch (e) {}
+  }
+  function _eligible() { return !!(AppState?.user && !AppState.user.isGuest); }
 
-  function compressPhoto(dataUrl, callback) {
+  // ─── Dates ────────────────────────────────────────────────────
+  function getToday() { return new Date().toISOString().split('T')[0]; }
+  function daysBetween(d1, d2) { return Math.max(0, Math.round((new Date(d2) - new Date(d1)) / 86400000)); }
+  function _daysSinceLast(data) {
+    const last = data.entries.at(-1);
+    return last ? daysBetween(last.date, getToday()) : 0;
+  }
+  function _dayLabel(day) { return day === 0 ? 'J0' : 'J+' + day; }
+  function _prettyDate(d) {
+    return new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  // ─── Compression photo (320px, JPEG 55%) ─────────────────────
+  function compressPhoto(dataUrl, cb) {
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement('canvas');
@@ -128,719 +87,412 @@ const SkinJourney = (() => {
       canvas.width  = Math.round(img.width  * scale);
       canvas.height = Math.round(img.height * scale);
       canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-      callback(canvas.toDataURL('image/jpeg', 0.5));
+      cb(canvas.toDataURL('image/jpeg', 0.55));
     };
-    img.onerror = () => callback(null);
+    img.onerror = () => cb(null);
     img.src = dataUrl;
   }
 
-  // ─── Étapes de routine (depuis AppState ou fallback) ──────────
+  // ─── Enregistrement d'une analyse (appelé après chaque analyse) ─
+  // opts.silent : amorçage discret de J0 (pas de toast ni d'écran de confirmation)
+  function captureAnalysis(opts = {}) {
+    if (!_eligible()) return;                       // besoin d'un compte
+    const r = AppState?.face?.skinAnalysis;
+    if (!r) return;
+    const metrics = metricsFromAnalysis(r);
+    if (!metrics) return;
 
-  function getRoutineSteps() {
-    const matin = AppState.routine?.matin || [];
-    const soir  = AppState.routine?.soir  || [];
-
-    const defaultMatin = [
-      { step: 'cleanser',    label: 'Nettoyant' },
-      { step: 'serum',       label: 'Sérum Vitamine C' },
-      { step: 'moisturizer', label: 'Crème hydratante' },
-      { step: 'spf',         label: 'SPF 50' }
-    ];
-    const defaultSoir = [
-      { step: 'cleanser',    label: 'Nettoyant' },
-      { step: 'treatment',   label: 'Sérum actif de nuit' },
-      { step: 'moisturizer', label: 'Crème de nuit' }
-    ];
-
-    return {
-      matin: matin.length ? matin : defaultMatin,
-      soir:  soir.length  ? soir  : defaultSoir
-    };
-  }
-
-  // ─── Check-in ─────────────────────────────────────────────────
-
-  function getTodayCheckin(data) {
-    return data.checkins[getToday()] || { matin: [], soir: [], matinDone: false, soirDone: false, points: 0 };
-  }
-
-  function toggleStep(period, stepId) {
-    const data  = load();
-    if (!data) return;
+    let data = load() || { startDate: getToday(), entries: [] };
     const today = getToday();
-    if (!data.checkins[today]) {
-      data.checkins[today] = { matin: [], soir: [], matinDone: false, soirDone: false, points: 0 };
-    }
-    const arr = data.checkins[today][period];
-    const idx = arr.indexOf(stepId);
-    if (idx >= 0) arr.splice(idx, 1);
-    else arr.push(stepId);
+
+    data.entries = (data.entries || []).filter(e => e.date !== today);   // dédup jour
+    data.entries.push({ date: today, ts: Date.now(), day: 0, metrics, globalScore: r.globalScore || null, thumb: null });
+    data.entries.sort((a, b) => new Date(a.date) - new Date(b.date));
+    data.startDate = data.entries[0].date;
+    data.entries.forEach(e => { e.day = daysBetween(data.startDate, e.date); });
+    _capEntries(data);
     save(data);
-    refreshCheckinBlock(data);
-  }
+    if (!opts.silent) _justRecorded = true;
 
-  function completeCheckin(period) {
-    const data  = load();
-    if (!data) return;
-    const today = getToday();
-    if (!data.checkins[today]) {
-      data.checkins[today] = { matin: [], soir: [], matinDone: false, soirDone: false, points: 0 };
-    }
-    const c = data.checkins[today];
-    if (c[`${period}Done`]) return; // déjà validé
-
-    const { matin, soir } = getRoutineSteps();
-    c[period] = (period === 'matin' ? matin : soir).map(s => s.step);
-    c[`${period}Done`] = true;
-
-    let pts = POINTS[`checkin_${period}`];
-    if (c.matinDone && c.soirDone) pts += POINTS.full_day;
-    c.points = (c.points || 0) + pts;
-    data.totalPoints += pts;
-    data.totalCheckins++;
-
-    // Streak
-    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-    if (data.lastCheckinDate !== today) {
-      data.currentStreak = data.lastCheckinDate === yesterday ? data.currentStreak + 1 : 1;
-      data.maxStreak     = Math.max(data.maxStreak, data.currentStreak);
-      data.lastCheckinDate = today;
-    }
-
-    data.skinScore = computeSkinScore(data);
-    save(data);
-    showToast(`+${pts} points Glow ✨`);
-    renderJourneyScreen();
-  }
-
-  // ─── Skin Score ───────────────────────────────────────────────
-
-  function computeSkinScore(data) {
-    let score = 50;
-    const daysWithCheckin = Object.values(data.checkins)
-      .filter(c => c.matinDone || c.soirDone).length;
-    score += Math.min(20, daysWithCheckin * 2);
-    score += Math.min(10, data.currentStreak);
-    if (data.analyses.length >= 2) {
-      const delta = (data.analyses.at(-1).globalScore || 50) - (data.analyses[0].globalScore || 50);
-      score += Math.min(20, Math.max(0, delta));
-    } else if (data.analyses.length === 1) {
-      score += Math.min(10, Math.max(0, (data.analyses[0].globalScore || 50) - 40));
-    }
-    return Math.min(100, Math.max(10, Math.round(score)));
-  }
-
-  // ─── Nouvelle analyse ─────────────────────────────────────────
-
-  function addNewAnalysis() {
-    const data = load();
-    if (!data || !AppState.face.skinAnalysis) return;
-    const day   = getCurrentDay(data);
-    const today = getToday();
-
-    data.analyses.push({
-      day, date: today,
-      globalScore: AppState.face.skinAnalysis.globalScore,
-      skinType:    AppState.face.skinAnalysis.skinType?.type
+    const photo = AppState?.face?.photo;
+    if (photo) compressPhoto(photo, thumb => {
+      if (!thumb) return;
+      const d = load(); if (!d) return;
+      const e = d.entries.find(x => x.date === today);
+      if (!e) return;
+      e.thumb = thumb;
+      _capThumbs(d);
+      save(d);
+      if (AppState.screen === 'journey') render();
     });
-    data.totalPoints += POINTS.new_analysis;
-    data.skinScore    = computeSkinScore(data);
-    save(data);
 
-    if (AppState.face.photo) {
-      compressPhoto(AppState.face.photo, thumb => {
-        if (!thumb) return;
-        data.photos = data.photos.filter(p => p.day !== day);
-        if (data.photos.length >= 5) data.photos.shift();
-        data.photos.push({ day, date: today, thumb });
-        data.totalPoints += POINTS.photo_taken;
-        save(data);
-        if (AppState.screen === 'journey') renderJourneyScreen();
-      });
-    }
-
-    showToast('+10 points Glow — Analyse enregistrée ! 📊');
-    if (AppState.screen === 'journey') renderJourneyScreen();
+    if (!opts.silent) showToast('Analyse enregistrée dans ton Skin Journey ✨');
   }
 
-  // ─── Toast feedback ───────────────────────────────────────────
+  // Garde J0 + les analyses récentes (métriques légères, on peut en garder beaucoup)
+  function _capEntries(data) {
+    const MAX = 30;
+    if (data.entries.length > MAX) {
+      const first = data.entries[0];
+      data.entries = [first, ...data.entries.slice(-(MAX - 1))];
+    }
+  }
+  // Limite le nombre de photos stockées (J0 + plus récentes)
+  function _capThumbs(data) {
+    const withThumb = data.entries.filter(e => e.thumb);
+    if (withThumb.length <= MAX_THUMBS) return;
+    const keep = new Set([withThumb[0], ...withThumb.slice(-(MAX_THUMBS - 1))]);
+    data.entries.forEach(e => { if (e.thumb && !keep.has(e)) e.thumb = null; });
+  }
 
+  // ─── Calculs ──────────────────────────────────────────────────
+  function _deltas(data) {
+    const first = data.entries[0].metrics, last = data.entries.at(-1).metrics;
+    const d = {};
+    METRICS.forEach(m => { d[m.key] = Math.round((last[m.key] || 0) - (first[m.key] || 0)); });
+    d._global = Math.round(METRICS.reduce((s, m) => s + d[m.key], 0) / METRICS.length);
+    return d;
+  }
+  function _avgMetric(entry) {
+    return Math.round(METRICS.reduce((s, m) => s + (entry.metrics[m.key] || 0), 0) / METRICS.length);
+  }
+  function _sign(n) { return (n >= 0 ? '+' : '') + n; }
+
+  // ─── Graphique SVG (ligne) ────────────────────────────────────
+  function _chart(values, labels, color, big) {
+    const w = 320, h = big ? 150 : 66;
+    const padT = big ? 10 : 8, padB = big ? 20 : 8, padL = big ? 26 : 6, padR = 8;
+    const n = values.length;
+    const x = i => padL + (i * (w - padL - padR) / Math.max(1, n - 1));
+    const y = v => padT + (h - padT - padB) * (1 - v / 100);
+    const pts  = values.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+    const dots = values.map((v, i) => `<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="${big ? 3.5 : 2.8}" fill="${color}"/>`).join('');
+    const grid = big ? [0, 25, 50, 75, 100].map(g =>
+      `<line x1="${padL}" x2="${w - padR}" y1="${y(g).toFixed(1)}" y2="${y(g).toFixed(1)}" stroke="var(--sand)" stroke-width="1"/>
+       <text x="0" y="${(y(g) + 3).toFixed(1)}" font-size="8" fill="var(--muted)">${g}</text>`).join('') : '';
+    const xlab = big ? labels.map((l, i) =>
+      `<text x="${x(i).toFixed(1)}" y="${h - 4}" font-size="8.5" fill="var(--muted)" text-anchor="middle">${l}</text>`).join('') : '';
+    return `<svg class="sj-chart" viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block">
+      ${grid}
+      <polyline fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${pts}"/>
+      ${dots}${xlab}
+    </svg>`;
+  }
+
+  // ─── Rendu principal / routeur d'états ────────────────────────
+  async function initScreen() {
+    const content = document.getElementById('skinJourneyContent');
+    if (!content) return;
+    content.innerHTML = `<p class="loading-placeholder">Chargement…</p>`;
+    await _ensureLoaded();
+    // Amorçage J0 depuis une analyse d'onboarding existante
+    if (!load() && _eligible() && AppState?.face?.skinAnalysis) {
+      captureAnalysis({ silent: true });
+    }
+    render();
+  }
+  async function _ensureLoaded() {
+    if (load()) return;
+    const uid = AppState?.user?.uid;
+    if (uid && !AppState.user?.isGuest && typeof FirestoreProfile !== 'undefined' && FirestoreProfile.loadJourney) {
+      try {
+        const remote = await FirestoreProfile.loadJourney(uid);
+        if (remote && Array.isArray(remote.entries)) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(remote));
+        }
+      } catch (e) {}
+    }
+  }
+
+  function render() {
+    const content = document.getElementById('skinJourneyContent');
+    if (!content) return;
+    const data = load();
+    const entries = data?.entries || [];
+
+    if (_justRecorded && entries.length) { _justRecorded = false; content.innerHTML = _vRecorded(data); return; }
+    if (!entries.length)     { content.innerHTML = _vEmpty();       return; }
+    if (entries.length === 1){ content.innerHTML = _vStarted(data); return; }
+
+    let html;
+    switch (_view) {
+      case 'detail':   html = _vDetail(data);   break;
+      case 'compare':  html = _vCompare(data);  break;
+      case 'timeline': html = _vTimeline(data); break;
+      default:         html = _vResume(data);
+    }
+    content.innerHTML = html;
+  }
+
+  // ─── En-tête commun ───────────────────────────────────────────
+  function _head(sub) {
+    return `<header class="sj-head">
+      <div class="sj-head-title">SKIN JOURNEY</div>
+      <div class="sj-head-sub">${sub || 'Évolution de ta peau'}</div>
+    </header>`;
+  }
+
+  // ─── État : aucune analyse encore ─────────────────────────────
+  function _vEmpty() {
+    return `<div class="sj-wrap">
+      ${_head()}
+      <div class="sj-state">
+        <div class="sj-state-ic">📷</div>
+        <h1 class="sj-state-title">Commence ton Skin Journey</h1>
+        <p class="sj-state-sub">Ta première analyse photo devient ton point de départ. On suivra l'évolution de ta peau au fil du temps ✦</p>
+        <button class="btn btn-dark" onclick="SkinJourney.takePhoto()">Faire ma première analyse →</button>
+      </div>
+    </div>`;
+  }
+
+  // ─── État : J0 enregistré, pas encore de 2ᵉ analyse ───────────
+  function _vStarted(data) {
+    const j0 = data.entries[0];
+    const ready = _daysSinceLast(data) >= CADENCE;
+    return `<div class="sj-wrap">
+      ${_head()}
+      <div class="sj-state">
+        ${j0.thumb ? `<img class="sj-j0-photo" src="${j0.thumb}" alt="J0">` : `<div class="sj-state-ic">⏳</div>`}
+        <div class="sj-badge">J0 · ta photo de référence</div>
+        ${ready ? `
+          <h1 class="sj-state-title">Il est temps d'une nouvelle photo 📷</h1>
+          <p class="sj-state-sub">Reprends une photo dans les mêmes conditions pour voir ta première évolution.</p>
+          <button class="btn btn-dark" onclick="SkinJourney.takePhoto()">Prendre une photo →</button>
+          <p class="sj-tip" onclick="showScreen('capture')">Comment prendre une bonne photo ?</p>
+        ` : `
+          <h1 class="sj-state-title">Ton suivi a commencé ✨</h1>
+          <p class="sj-state-sub">Prochaine analyse disponible à <strong>J+${CADENCE}</strong> (${_prettyDate(_nextDate(data))}).<br>Reviens bientôt pour reprendre une photo.</p>
+        `}
+      </div>
+    </div>`;
+  }
+  function _nextDate(data) {
+    const last = new Date(data.entries.at(-1).date);
+    last.setDate(last.getDate() + CADENCE);
+    return last.toISOString().split('T')[0];
+  }
+
+  // ─── Bannière (waiting / ready) en tête de résumé ─────────────
+  function _banner(data) {
+    if (_daysSinceLast(data) >= CADENCE) {
+      return `<div class="sj-cta-banner sj-ready">
+        <div><strong>Il est temps d'une nouvelle photo 📷</strong><span>Vois comment ta peau a évolué.</span></div>
+        <button class="btn btn-dark btn-sm" onclick="SkinJourney.takePhoto()">Prendre</button>
+      </div>`;
+    }
+    return `<div class="sj-cta-banner sj-waiting">
+      <span>⏳ Prochaine analyse à J+${data.entries.at(-1).day + CADENCE} · ${_prettyDate(_nextDate(data))}</span>
+    </div>`;
+  }
+
+  // ─── Vue A : Résumé ───────────────────────────────────────────
+  function _vResume(data) {
+    const d = _deltas(data);
+    const g = d._global;
+    const title = g >= 3 ? 'Ta peau s\'améliore ✨' : g <= -3 ? 'Ta peau demande un peu d\'attention' : 'Ta peau se stabilise';
+    const values = data.entries.map(_avgMetric);
+    const labels = data.entries.map(e => _dayLabel(e.day));
+    const cards = METRICS.map(m => `
+      <div class="sj-mcard">
+        <span class="sj-mcard-ic" style="color:${m.color}">${m.icon}</span>
+        <span class="sj-mcard-label">${m.label}</span>
+        <strong class="sj-mcard-val ${d[m.key] >= 0 ? 'sj-pos' : 'sj-neg'}">${_sign(d[m.key])}%</strong>
+      </div>`).join('');
+    return `<div class="sj-wrap">
+      ${_head()}
+      ${_banner(data)}
+      <div class="sj-hero">
+        <p class="sj-hero-label">${title}</p>
+        <div class="sj-hero-num ${g >= 0 ? 'sj-pos' : 'sj-neg'}">${_sign(g)}%</div>
+        <p class="sj-hero-sub">depuis J0</p>
+      </div>
+      <div class="sj-mcards">${cards}</div>
+      <div class="sj-card">
+        ${_chart(values, labels, 'var(--orange)', false)}
+        <p class="sj-chart-note">Score global · ${data.entries.length} analyses</p>
+      </div>
+      <div class="sj-actions">
+        <button class="btn btn-outline" onclick="SkinJourney.setView('detail')">Voir le détail</button>
+        <button class="btn btn-dark" onclick="SkinJourney.takePhoto()">Prendre une photo</button>
+      </div>
+      <div class="sj-links">
+        <button class="sj-link" onclick="SkinJourney.setView('compare')">📸 Comparer les photos</button>
+        <button class="sj-link" onclick="SkinJourney.setView('timeline')">📋 Toutes mes analyses</button>
+      </div>
+    </div>`;
+  }
+
+  // ─── Vue B : Détail par critère ───────────────────────────────
+  function _vDetail(data) {
+    const m = METRICS.find(x => x.key === _metricKey) || METRICS[0];
+    const d = _deltas(data);
+    const delta = d[m.key];
+    const values = data.entries.map(e => e.metrics[m.key] || 0);
+    const labels = data.entries.map(e => _dayLabel(e.day));
+    const tabs = METRICS.map(x =>
+      `<button class="sj-pill${x.key === m.key ? ' active' : ''}" onclick="SkinJourney.setMetric('${x.key}')">${x.label}</button>`).join('');
+    return `<div class="sj-wrap">
+      ${_backHead('Détail')}
+      <div class="sj-pills">${tabs}</div>
+      <div class="sj-detail-hero">
+        <span class="sj-detail-ic" style="color:${m.color}">${m.icon}</span>
+        <div>
+          <p class="sj-detail-name">${m.label}</p>
+          <div class="sj-detail-num ${delta >= 0 ? 'sj-pos' : 'sj-neg'}">${_sign(delta)}%</div>
+          <p class="sj-hero-sub">depuis J0</p>
+        </div>
+      </div>
+      <div class="sj-card">${_chart(values, labels, m.color, true)}</div>
+      <p class="sj-interpret">${_interpret(m.key, delta)}</p>
+    </div>`;
+  }
+  function _interpret(key, delta) {
+    if (key === 'rougeurs') {
+      if (delta >= 8) return 'Tes rougeurs diminuent nettement — ta peau est visiblement plus apaisée ✨';
+      if (delta >= 2) return 'Tes rougeurs s\'atténuent doucement. Continue sur cette lancée.';
+      if (delta > -2) return 'Tes rougeurs restent stables pour le moment.';
+      return 'Tes rougeurs demandent un peu d\'attention en ce moment — on pourra ajuster ta routine.';
+    }
+    const name = { hydratation: 'Ton hydratation', texture: 'Ta texture', eclat: 'Ton éclat' }[key] || 'Ce critère';
+    if (delta >= 8) return `${name} progresse nettement. Ta routine semble bien adaptée ✨`;
+    if (delta >= 2) return `${name} s'améliore doucement. Continue comme ça.`;
+    if (delta > -2) return `${name} reste stable pour le moment.`;
+    return `${name} demande un peu d'attention en ce moment — on pourra ajuster ta routine.`;
+  }
+
+  // ─── Vue C : Comparaison photos ───────────────────────────────
+  function _vCompare(data) {
+    const withThumb = data.entries.filter(e => e.thumb);
+    const j0 = data.entries[0];
+    let sel = _selEntry(data);
+    if (sel === j0) sel = data.entries.at(-1);   // toujours comparer J0 ↔ une analyse ultérieure
+    const tabs = data.entries.slice(1).map((e, i) => {
+      const idx = i + 1;
+      return `<button class="sj-pill${e === sel ? ' active' : ''}" onclick="SkinJourney.setSel(${idx})">${_dayLabel(e.day)}</button>`;
+    }).join('');
+    const deltaRows = METRICS.map(m => {
+      const val = Math.round((sel.metrics[m.key] || 0) - (j0.metrics[m.key] || 0));
+      return `<div class="sj-cmp-row">
+        <span>${m.icon} ${m.label}</span>
+        <strong class="${val >= 0 ? 'sj-pos' : 'sj-neg'}">${_sign(val)}%</strong>
+      </div>`;
+    }).join('');
+    const slot = (e, tag) => `<div class="sj-cmp-slot">
+      ${e.thumb ? `<img src="${e.thumb}" alt="${tag}">` : `<div class="sj-cmp-ph">📷<span>pas de photo</span></div>`}
+      <span class="sj-cmp-day">${_dayLabel(e.day)}</span>
+    </div>`;
+    return `<div class="sj-wrap">
+      ${_backHead('Comparaison')}
+      ${data.entries.length > 2 ? `<div class="sj-pills">${tabs}</div>` : ''}
+      <div class="sj-cmp">
+        ${slot(j0, 'J0')}
+        <div class="sj-cmp-arrow">→</div>
+        ${slot(sel, 'sel')}
+      </div>
+      <div class="sj-card sj-cmp-metrics">${deltaRows}</div>
+      ${withThumb.length < 2 ? `<p class="sj-chart-note">Reprends une photo pour enrichir ta comparaison.</p>` : ''}
+    </div>`;
+  }
+  function _selEntry(data) {
+    if (_selIdx >= 0 && _selIdx < data.entries.length) return data.entries[_selIdx];
+    return data.entries.at(-1);
+  }
+
+  // ─── Vue D : Timeline ─────────────────────────────────────────
+  function _vTimeline(data) {
+    const sel = _selEntry(data);
+    const dots = data.entries.map((e, i) => {
+      const active = e === sel;
+      return `<button class="sj-tl-dot${active ? ' active' : ''}" onclick="SkinJourney.setSel(${i})">
+        <span class="sj-tl-mark">${active ? '◉' : '○'}</span>
+        <span class="sj-tl-lab">${_dayLabel(e.day)}</span>
+      </button>`;
+    }).join('<span class="sj-tl-line"></span>');
+    const j0 = data.entries[0];
+    const rows = METRICS.map(m => {
+      const val = Math.round((sel.metrics[m.key] || 0) - (j0.metrics[m.key] || 0));
+      return `<div class="sj-cmp-row"><span>${m.icon} ${m.label}</span><strong class="${val >= 0 ? 'sj-pos' : 'sj-neg'}">${_sign(val)}%</strong></div>`;
+    }).join('');
+    return `<div class="sj-wrap">
+      ${_backHead('Mes analyses')}
+      <div class="sj-timeline">${dots}</div>
+      <div class="sj-card">
+        <p class="sj-tl-date">Analyse du ${_prettyDate(sel.date)}</p>
+        ${sel === j0 ? `<p class="sj-chart-note">Ton point de départ.</p>` : rows}
+      </div>
+      ${sel !== j0 ? `<button class="btn btn-outline sj-full" onclick="SkinJourney.setView('compare')">Voir la comparaison →</button>` : ''}
+    </div>`;
+  }
+
+  // ─── Confirmation (après nouvelle analyse) ────────────────────
+  function _vRecorded(data) {
+    const last = data.entries.at(-1);
+    const hasEvo = data.entries.length >= 2;
+    const d = hasEvo ? _deltas(data) : null;
+    const recap = hasEvo ? `
+      <div class="sj-card sj-recap">
+        <p class="sj-recap-title">Résumé de ton évolution</p>
+        ${METRICS.map(m => `<div class="sj-cmp-row"><span>${m.icon} ${m.label}</span><strong class="${d[m.key] >= 0 ? 'sj-pos' : 'sj-neg'}">${_sign(d[m.key])}%</strong></div>`).join('')}
+      </div>
+      <button class="btn btn-dark sj-full" onclick="SkinJourney.setView('resume')">Voir mon évolution →</button>` :
+      `<button class="btn btn-dark sj-full" onclick="SkinJourney.initScreen()">Continuer</button>`;
+    return `<div class="sj-wrap">
+      ${_head()}
+      <div class="sj-state">
+        <div class="sj-state-ic">✨</div>
+        <h1 class="sj-state-title">Nouvelle analyse enregistrée !</h1>
+        <p class="sj-state-sub">${_dayLabel(last.day)} ajouté à ton Skin Journey.</p>
+      </div>
+      ${recap}
+    </div>`;
+  }
+
+  function _backHead(sub) {
+    return `<header class="sj-head sj-head--back">
+      <button class="sj-back" onclick="SkinJourney.setView('resume')" aria-label="Retour">‹</button>
+      <div><div class="sj-head-title">SKIN JOURNEY</div><div class="sj-head-sub">${sub}</div></div>
+    </header>`;
+  }
+
+  // ─── Toast ────────────────────────────────────────────────────
   function showToast(msg) {
+    if (typeof window.showToast === 'function' && window.showToast !== showToast) { window.showToast(msg); return; }
     const el = document.createElement('div');
     el.className = 'glow-toast';
     el.textContent = msg;
     document.body.appendChild(el);
     requestAnimationFrame(() => el.classList.add('visible'));
-    setTimeout(() => {
-      el.classList.remove('visible');
-      setTimeout(() => el.remove(), 400);
-    }, 2600);
+    setTimeout(() => { el.classList.remove('visible'); setTimeout(() => el.remove(), 400); }, 2600);
   }
 
-  // ─── Notifications ────────────────────────────────────────────
-
-  function requestAndSchedule(hour, msg) {
-    if (!('Notification' in window)) {
-      showToast('Notifications non supportées sur ce navigateur');
-      return;
-    }
-    Notification.requestPermission().then(perm => {
-      if (perm === 'granted') {
-        const key = `glowup_reminder_${hour}`;
-        localStorage.setItem(key, msg);
-        showToast('Rappel activé ! 🔔');
-      } else {
-        showToast('Permission refusée — active les notifications dans ton navigateur');
-      }
-    });
-  }
-
-  function checkReminders() {
-    if (!('Notification' in window) || Notification.permission !== 'granted') return;
-    const data = load();
-    if (!data) return;
-    const hour    = new Date().getHours();
-    const dateKey = 'glowup_shown_' + getToday();
-    if (localStorage.getItem(dateKey + '_' + hour)) return;
-
-    [8, 21].forEach(h => {
-      if (Math.abs(hour - h) <= 1) {
-        const msg = localStorage.getItem(`glowup_reminder_${h}`);
-        if (msg) {
-          const day = getCurrentDay(data);
-          new Notification('GLOW UP ✨', {
-            body: msg.replace('{day}', day),
-            icon: 'assets/icon-192.png'
-          });
-          localStorage.setItem(dateKey + '_' + hour, '1');
-        }
-      }
-    });
-  }
-
-  // ─── Rendu principal ──────────────────────────────────────────
-
-  function initScreen() {
-    const content = document.getElementById('skinJourneyContent');
-    if (!content) return;
-    const data = load();
-    if (!data) {
-      renderStartScreen(content);
-    } else if (getCurrentDay(data) >= PROGRAM_DAYS) {
-      renderEndOfProgram(data);
-    } else {
-      renderJourneyScreen();
-    }
-    checkReminders();
-  }
-
-  function renderStartScreen(content) {
-    const hasAnalysis = !!AppState.face.skinAnalysis;
-    content.innerHTML = `
-      <div class="journey-start">
-        <div class="journey-start-badge">✦ 100% Gratuit</div>
-        <h1>Ton Programme<br><em>Glow Up 30 jours</em></h1>
-        <p class="journey-start-sub">Un coach beauté personnalisé qui suit l'évolution de ta peau et t'encourage chaque jour.</p>
-
-        <div class="journey-perks">
-          <div class="journey-perk"><span class="jp-icon">📅</span><div><strong>30 jours</strong><span>Programme complet guidé</span></div></div>
-          <div class="journey-perk"><span class="jp-icon">☑️</span><div><strong>Check-in quotidien</strong><span>Valide tes étapes de routine</span></div></div>
-          <div class="journey-perk"><span class="jp-icon">📊</span><div><strong>Skin Score</strong><span>Suivi d'évolution de ta peau</span></div></div>
-          <div class="journey-perk"><span class="jp-icon">📸</span><div><strong>Avant / Après</strong><span>Comparaison photo tous les 7 jours</span></div></div>
-          <div class="journey-perk"><span class="jp-icon">🏆</span><div><strong>Badges & Points</strong><span>Gamification pour rester motivée</span></div></div>
-        </div>
-
-        ${!hasAnalysis ? `
-          <div class="journey-start-tip">
-            💡 Effectue d'abord ton <strong>analyse de peau</strong> pour un suivi ultra-personnalisé.
-            <button class="btn btn-outline" style="margin-top:12px" onclick="startGlowUp()">
-              Faire mon analyse →
-            </button>
-          </div>` : `
-          <div class="journey-start-tip journey-start-tip--green">
-            ✓ Analyse de peau détectée — ton programme sera personnalisé à ton profil.
-          </div>`}
-
-        <button class="btn btn-dark journey-start-btn" onclick="SkinJourney.start()">
-          Démarrer mon programme ✦
-        </button>
-        <p class="journey-free-note">Aucun compte requis · Données stockées localement</p>
-      </div>`;
-  }
-
-  function renderJourneyScreen() {
-    const content = document.getElementById('skinJourneyContent');
-    if (!content) return;
-    const data = load();
-    if (!data) { renderStartScreen(content); return; }
-
-    const currentDay = getCurrentDay(data);
-    const progress   = Math.round((currentDay / PROGRAM_DAYS) * 100);
-    const checkin    = getTodayCheckin(data);
-    const { matin, soir } = getRoutineSteps();
-    const earnedBadges    = BADGES.filter(b => b.condition(data));
-    const needsNewPhoto   = currentDay > 1 && currentDay % 7 === 0 && !data.photos.find(p => p.day === currentDay);
-
-    content.innerHTML = `
-      <div class="journey-screen">
-
-        <!-- Header -->
-        <div class="journey-header">
-          <span class="section-tag">Skin Journey · ${currentDay === 1 ? 'Jour de démarrage' : `Jour ${currentDay} sur ${PROGRAM_DAYS}`}</span>
-          <h1>Ton Programme Glow Up</h1>
-          <div class="journey-progress-wrap">
-            <div class="journey-progress-track">
-              <div class="journey-progress-fill" style="width:${progress}%"></div>
-            </div>
-            <div class="journey-progress-labels">
-              <span>Jour 1</span>
-              <span class="journey-day-badge">Jour ${currentDay} / ${PROGRAM_DAYS}</span>
-              <span>Jour 30</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Stats -->
-        <div class="journey-stats-row">
-          <div class="journey-stat-card journey-stat-score">
-            <div class="journey-score-ring">
-              <svg viewBox="0 0 56 56">
-                <circle cx="28" cy="28" r="24" fill="none" stroke="var(--sand)" stroke-width="5"/>
-                <circle cx="28" cy="28" r="24" fill="none" stroke="var(--nude)" stroke-width="5"
-                  stroke-dasharray="${2 * Math.PI * 24}"
-                  stroke-dashoffset="${2 * Math.PI * 24 * (1 - data.skinScore / 100)}"
-                  stroke-linecap="round" transform="rotate(-90 28 28)"/>
-              </svg>
-              <div class="journey-score-num">${data.skinScore}</div>
-            </div>
-            <div class="journey-stat-label">Skin Score</div>
-            <div class="journey-stat-sub">/ 100</div>
-          </div>
-          <div class="journey-stat-card">
-            <div class="journey-stat-val">${data.totalPoints}</div>
-            <div class="journey-stat-label">Points Glow</div>
-            <div class="journey-stat-sub">✨ cumulés</div>
-          </div>
-          <div class="journey-stat-card">
-            <div class="journey-stat-val">${data.currentStreak}</div>
-            <div class="journey-stat-label">Jours de suite</div>
-            <div class="journey-stat-sub">🔥 streak actuel</div>
-          </div>
-        </div>
-
-        ${needsNewPhoto ? `
-          <div class="journey-photo-alert">
-            📸 <strong>C'est le jour ${currentDay} !</strong> Prends ta photo de comparaison et vois les progrès de ta peau.
-            <button class="btn btn-dark" style="margin-top:12px" onclick="SkinJourney.goTakePhoto()">
-              Prendre ma photo →
-            </button>
-          </div>` : ''}
-
-        <!-- Check-in -->
-        <div class="journey-checkin-section" id="journeyCheckinSection">
-          ${buildCheckinHTML(checkin, matin, soir, currentDay)}
-        </div>
-
-        <!-- Comparaison photos -->
-        ${buildPhotoCompareHTML(data, currentDay)}
-
-        <!-- Évolution Skin Score -->
-        ${buildScoreEvolutionHTML(data)}
-
-        <!-- Badges -->
-        ${buildBadgesHTML(earnedBadges)}
-
-        <!-- Rappels -->
-        <div class="journey-reminders-section">
-          <h2 class="journey-section-title">🔔 Rappels quotidiens</h2>
-          <p>Ne rate plus jamais ta routine — active les rappels.</p>
-          <div class="journey-reminder-btns">
-            <button class="btn btn-outline" onclick="SkinJourney.reminder(8, '☀️ Routine du matin — Jour {day} de ton Glow Up ! Ta peau te remerciera.')">
-              ☀️ Matin (8h00)
-            </button>
-            <button class="btn btn-outline" onclick="SkinJourney.reminder(21, '🌙 Il est l\\'heure de ta routine du soir. Ta peau mérite ce moment.')">
-              🌙 Soir (21h00)
-            </button>
-          </div>
-        </div>
-
-        <!-- Reset -->
-        <div style="text-align:center; margin-top:48px;">
-          <button class="btn-ghost" onclick="SkinJourney.resetConfirm()" style="font-size:0.75rem; color:var(--muted);">
-            Recommencer le programme
-          </button>
-        </div>
-
-      </div>`;
-  }
-
-  // ─── Check-in HTML ────────────────────────────────────────────
-
-  function buildCheckinHTML(checkin, matin, soir, currentDay) {
-    const buildSteps = (steps, period, done) =>
-      steps.map(s => {
-        const checked = done || checkin[period]?.includes(s.step);
-        return `
-          <label class="journey-step-row ${checked ? 'is-checked' : ''}"
-                 onclick="SkinJourney.toggle('${period}','${s.step}')">
-            <span class="journey-checkbox">${checked ? '☑' : '☐'}</span>
-            <span class="journey-step-label">${s.label || s.step}</span>
-          </label>`;
-      }).join('');
-
-    return `
-      <h2 class="journey-section-title">☑️ Routine du jour ${currentDay}</h2>
-
-      <div class="journey-period-block ${checkin.matinDone ? 'is-done' : ''}">
-        <div class="journey-period-header">
-          <span>🌅 Routine du matin</span>
-          ${checkin.matinDone ? '<span class="journey-done-pill">✓ Validée</span>' : '<span class="journey-pending-pill">En attente</span>'}
-        </div>
-        <div class="journey-steps">${buildSteps(matin, 'matin', checkin.matinDone)}</div>
-        ${checkin.matinDone
-          ? `<p class="journey-validated-msg">Super ! +5 points Glow ✨</p>`
-          : `<button class="btn btn-dark journey-validate-btn" onclick="SkinJourney.complete('matin')">
-               Valider ma routine du matin &nbsp;→&nbsp; +5 pts
-             </button>`}
-      </div>
-
-      <div class="journey-period-block ${checkin.soirDone ? 'is-done' : ''}">
-        <div class="journey-period-header">
-          <span>🌙 Routine du soir</span>
-          ${checkin.soirDone ? '<span class="journey-done-pill">✓ Validée</span>' : '<span class="journey-pending-pill">En attente</span>'}
-        </div>
-        <div class="journey-steps">${buildSteps(soir, 'soir', checkin.soirDone)}</div>
-        ${checkin.soirDone
-          ? `<p class="journey-validated-msg">Parfait ! +5 points Glow ✨</p>`
-          : `<button class="btn btn-dark journey-validate-btn" onclick="SkinJourney.complete('soir')">
-               Valider ma routine du soir &nbsp;→&nbsp; +5 pts
-             </button>`}
-      </div>`;
-  }
-
-  function refreshCheckin() {
-    const el   = document.getElementById('journeyCheckinSection');
-    if (!el) return;
-    const data = load();
-    if (!data) return;
-    const { matin, soir } = getRoutineSteps();
-    el.innerHTML = buildCheckinHTML(getTodayCheckin(data), matin, soir, getCurrentDay(data));
-  }
-
-  // ─── Photos Avant/Après ───────────────────────────────────────
-
-  function buildPhotoCompareHTML(data, currentDay) {
-    if (data.photos.length === 0) {
-      return `
-        <div class="journey-photos-section">
-          <h2 class="journey-section-title">📸 Comparaison Avant / Après</h2>
-          <div class="journey-photos-empty">
-            <p>Prends ta première photo pour démarrer le suivi visuel de ta peau.</p>
-            <button class="btn btn-outline" onclick="SkinJourney.goTakePhoto()">
-              📸 Prendre ma photo Jour 1
-            </button>
-          </div>
-        </div>`;
-    }
-
-    const first = data.photos[0];
-    const last  = data.photos.at(-1);
-    const sameDay = first.day === last.day;
-
-    return `
-      <div class="journey-photos-section">
-        <h2 class="journey-section-title">📸 Comparaison Avant / Après</h2>
-        ${sameDay
-          ? `<p class="journey-photos-hint">Reviens le Jour 7 pour ta première comparaison !</p>`
-          : ''}
-        <div class="journey-photo-compare">
-          <div class="journey-photo-slot">
-            <img src="${first.thumb}" alt="Jour ${first.day}">
-            <span class="journey-photo-day">Jour ${first.day}</span>
-          </div>
-          <div class="journey-photo-arrow">→</div>
-          <div class="journey-photo-slot">
-            <img src="${last.thumb}" alt="Jour ${last.day}">
-            <span class="journey-photo-day">Jour ${last.day}</span>
-          </div>
-        </div>
-        ${!sameDay && data.analyses.length >= 2 ? buildProgressInsights(data) : ''}
-        ${currentDay % 7 === 0 ? `
-          <button class="btn btn-outline" style="margin-top:16px" onclick="SkinJourney.goTakePhoto()">
-            📸 Enregistrer ma photo Jour ${currentDay}
-          </button>` : `
-          <p class="journey-photos-hint" style="margin-top:12px;">
-            Prochaine photo recommandée : Jour ${Math.ceil(currentDay / 7) * 7}
-          </p>`}
-      </div>`;
-  }
-
-  function buildProgressInsights(data) {
-    const first = data.analyses[0];
-    const last  = data.analyses.at(-1);
-    const delta = (last.globalScore || 50) - (first.globalScore || 50);
-    const insights = [];
-    if (delta > 5)  insights.push('✨ Éclat amélioré');
-    if (delta > 10) insights.push('💧 Hydratation renforcée');
-    if (delta > 15) insights.push('🌟 Texture affinée');
-    if (!insights.length && delta >= 0) insights.push('◇ Peau stabilisée — continue la routine !');
-    if (delta < 0) insights.push('○ Skin Score en cours — la régularité paie après 2 semaines');
-
-    return `
-      <div class="journey-insights">
-        <h4>Changements détectés</h4>
-        ${insights.map(i => `<div class="journey-insight-item">${i}</div>`).join('')}
-      </div>`;
-  }
-
-  // ─── Évolution Skin Score ─────────────────────────────────────
-
-  function buildScoreEvolutionHTML(data) {
-    if (data.analyses.length < 2) return '';
-    const points = data.analyses.slice(-5); // 5 derniers max
-    const max    = 100;
-    const barH   = 60;
-
-    const bars = points.map(p => {
-      const h = Math.round((p.globalScore / max) * barH);
-      return `
-        <div class="journey-chart-bar-wrap">
-          <div class="journey-chart-bar" style="height:${h}px" title="${p.globalScore}/100"></div>
-          <span class="journey-chart-label">J${p.day}</span>
-        </div>`;
-    }).join('');
-
-    return `
-      <div class="journey-score-evolution">
-        <h2 class="journey-section-title">📈 Évolution de ta peau</h2>
-        <div class="journey-chart">${bars}</div>
-        <p class="journey-chart-note">Score global · analyses successives</p>
-        <button class="btn btn-outline" style="margin-top:16px" onclick="SkinJourney.goAnalyze()">
-          Faire une nouvelle analyse →
-        </button>
-      </div>`;
-  }
-
-  // ─── Badges ───────────────────────────────────────────────────
-
-  function buildBadgesHTML(earnedBadges) {
-    const items = BADGES.map(b => {
-      const earned = earnedBadges.find(e => e.id === b.id);
-      return `
-        <div class="journey-badge ${earned ? 'is-earned' : 'is-locked'}">
-          <div class="journey-badge-icon">${earned ? b.icon : '🔒'}</div>
-          <div class="journey-badge-name">${b.name}</div>
-          <div class="journey-badge-desc">${b.desc}</div>
-        </div>`;
-    }).join('');
-
-    return `
-      <div class="journey-badges-section">
-        <h2 class="journey-section-title">🏆 Badges & Récompenses</h2>
-        <div class="journey-badges-grid">${items}</div>
-      </div>`;
-  }
-
-  // ─── Actions publiques ────────────────────────────────────────
-
-  function goTakePhoto() {
-    _pendingPhoto = true;
-    showScreen('capture');
-  }
-
-  function goAnalyze() {
-    _pendingAnalysis = true;
-    showScreen('capture');
-  }
-
+  // ─── Actions ──────────────────────────────────────────────────
+  function setView(v)  { _view = v; _justRecorded = false; render(); }
+  function setMetric(k){ _metricKey = k; render(); }
+  function setSel(i)   { _selIdx = i; render(); }
+  function takePhoto() { showScreen('capture'); }
   function resetConfirm() {
-    if (confirm('Recommencer le programme Glow Up ? Toutes tes données de suivi seront effacées.')) {
+    if (confirm('Effacer tout ton Skin Journey ? Cette action est définitive.')) {
       localStorage.removeItem(STORAGE_KEY);
+      const data = { startDate: getToday(), entries: [] };
+      save(data); localStorage.removeItem(STORAGE_KEY);
+      _view = 'resume'; _selIdx = -1;
       initScreen();
     }
   }
 
-  // ─── Flags pour capter retour depuis capture ──────────────────
-
-  let _pendingPhoto    = false;
-  let _pendingAnalysis = false;
-
-  function onPhotoReady() {
-    if (!_pendingPhoto && !_pendingAnalysis) return;
-    const data = load();
-    if (!data) return;
-
-    if (AppState.face.photo) {
-      const day   = getCurrentDay(data);
-      const today = getToday();
-      compressPhoto(AppState.face.photo, thumb => {
-        if (!thumb) return;
-        data.photos = data.photos.filter(p => p.day !== day);
-        if (data.photos.length >= 5) data.photos.shift();
-        data.photos.push({ day, date: today, thumb });
-        data.totalPoints += POINTS.photo_taken;
-        data.skinScore    = computeSkinScore(data);
-        save(data);
-        showToast('+5 points Glow — Photo enregistrée ! 📸');
-        if (AppState.screen === 'journey') renderJourneyScreen();
-      });
-    }
-
-    _pendingPhoto    = false;
-    _pendingAnalysis = false;
-  }
-
-  // ─── Démarrage avec vérification auth ────────────────────────
-
-  function startWithAuthCheck() {
-    // Si déjà un programme en cours → aller directement
-    if (load()) { showScreen('journey'); return; }
-
-    // Vérifier connexion
-    if (!AppState.user.isGuest) {
-      // Connecté → démarrer directement
-      startJourney();
-      showScreen('journey');
-      return;
-    }
-
-    // Invité → modal auth spécifique Journey
-    if (typeof Auth !== 'undefined') {
-      Auth.openJourneyAuthModal(() => {
-        startJourney();
-        showScreen('journey');
-      });
-    } else {
-      // Fallback sans Firebase
-      startJourney();
-      showScreen('journey');
-    }
-  }
-
-  // ─── Bilan fin de programme (Jour 30) ─────────────────────────
-
-  function renderEndOfProgram(data) {
-    const content = document.getElementById('skinJourneyContent');
-    if (!content) return;
-
-    const badge = BADGES.find(b => b.id === 'full_program');
-    const bilan = buildFinalBilan(data);
-    const hasPhotos = data.photos.length >= 2;
-    const first = hasPhotos ? data.photos[0]     : null;
-    const last  = hasPhotos ? data.photos.at(-1) : null;
-
-    content.innerHTML = `
-      <div class="journey-end">
-
-        <!-- Badge Skin Transformation -->
-        <div class="journey-end-badge-wrap">
-          <div class="journey-end-badge-icon">${badge.icon}</div>
-          <div class="journey-end-badge-name">${badge.name}</div>
-          <p class="journey-end-badge-desc">Tu as complété 30 jours de programme — félicitations !</p>
-        </div>
-
-        <!-- Stats finales -->
-        <div class="journey-end-stats">
-          <div class="journey-end-stat">
-            <div class="journey-end-stat-val">${data.skinScore}</div>
-            <div class="journey-end-stat-label">Skin Score final</div>
-          </div>
-          <div class="journey-end-stat">
-            <div class="journey-end-stat-val">${data.totalPoints}</div>
-            <div class="journey-end-stat-label">Points Glow ✨</div>
-          </div>
-          <div class="journey-end-stat">
-            <div class="journey-end-stat-val">${data.maxStreak}</div>
-            <div class="journey-end-stat-label">Meilleur streak 🔥</div>
-          </div>
-        </div>
-
-        <!-- Bilan -->
-        <div class="journey-end-bilan">
-          <h2 class="journey-section-title" style="text-align:center">📊 Bilan de ta transformation</h2>
-          <p class="journey-end-bilan-text">${bilan}</p>
-        </div>
-
-        <!-- Avant / Après -->
-        ${hasPhotos ? `
-          <div class="journey-end-photos">
-            <h3 class="journey-end-photos-title">Avant → Après</h3>
-            <div class="journey-photo-compare">
-              <div class="journey-photo-slot">
-                <img src="${first.thumb}" alt="Avant">
-                <span class="journey-photo-day">Jour ${first.day}</span>
-              </div>
-              <div class="journey-photo-arrow">→</div>
-              <div class="journey-photo-slot">
-                <img src="${last.thumb}" alt="Après">
-                <span class="journey-photo-day">Jour ${last.day}</span>
-              </div>
-            </div>
-          </div>` : ''}
-
-        <!-- CTA -->
-        <div class="journey-end-cta">
-          <button class="btn btn-dark" onclick="SkinJourney.resetConfirm()">
-            Recommencer un nouveau programme ✦
-          </button>
-          <button class="btn btn-outline" onclick="showScreen('shop')" style="margin-top:12px">
-            Voir la boutique →
-          </button>
-        </div>
-
-      </div>`;
-  }
-
-  function buildFinalBilan(data) {
-    const daysChecked = Object.values(data.checkins).filter(c => c.matinDone || c.soirDone).length;
-    const regularity  = Math.round((daysChecked / 30) * 100);
-    const hasAnalysis = data.analyses.length >= 2;
-    const scoreDelta  = hasAnalysis
-      ? (data.analyses.at(-1).globalScore || 50) - (data.analyses[0].globalScore || 50)
-      : 0;
-
-    const parts = [];
-
-    // Régularité
-    if (regularity >= 80) {
-      parts.push(`Tu as suivi ta routine ${regularity}% du temps — une régularité exemplaire qui se ressent sur la qualité de ta peau.`);
-    } else if (regularity >= 50) {
-      parts.push(`Tu as complété ta routine ${daysChecked} jours sur 30 — chaque geste compte et les effets s'accumulent dans le temps.`);
-    } else {
-      parts.push(`Tu as démarré ton programme Glow Up — les vrais résultats se construisent avec la régularité, continue !`);
-    }
-
-    // Améliorations détectées
-    if (scoreDelta >= 15) {
-      parts.push(`L'analyse de ta peau montre une nette amélioration : teint plus lumineux, hydratation renforcée et texture affinée.`);
-    } else if (scoreDelta >= 5) {
-      parts.push(`Ta peau est plus hydratée et ton teint plus uniforme — les actifs de ta routine commencent à agir en profondeur.`);
-    } else if (data.skinScore >= 70) {
-      parts.push(`Ton Skin Score atteint ${data.skinScore}/100 — ta peau est équilibrée et bien entretenue.`);
-    }
-
-    // Encouragement final
-    if (data.maxStreak >= 7) {
-      parts.push(`Avec un streak de ${data.maxStreak} jours consécutifs, tu as prouvé que la régularité est ta plus grande force beauté.`);
-    }
-
-    return parts.slice(0, 3).join(' ');
-  }
-
-  // ─── API publique ─────────────────────────────────────────────
-
   return {
     initScreen,
-    start:         startWithAuthCheck,
-    toggle:        toggleStep,
-    complete:      completeCheckin,
-    reminder:      requestAndSchedule,
-    addAnalysis:   addNewAnalysis,
-    goTakePhoto,
-    goAnalyze,
-    onPhotoReady,
+    metricsFromAnalysis,
+    captureAnalysis,
+    setView, setMetric, setSel, takePhoto,
     resetConfirm,
-    isActive:      () => !!load()
+    render,
+    isActive: () => { const d = load(); return !!(d && d.entries && d.entries.length); },
+    hasEvolution: () => { const d = load(); return !!(d && d.entries && d.entries.length >= 2); },
+    summary: () => { const d = load(); return (d && d.entries && d.entries.length >= 2) ? _deltas(d) : null; },
+    METRICS
   };
 
 })();
+
+if (typeof window !== 'undefined') window.SkinJourney = SkinJourney;

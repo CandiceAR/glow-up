@@ -43,31 +43,36 @@ const Profil = (() => {
     return new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
   }
 
-  // ─── 3 mesures (estimées depuis l'analyse photo) ──────────────
+  // ─── 4 critères (source unique : SkinJourney.metricsFromAnalysis) ─
+  const _METRIC_DEFS = [
+    { key: 'hydratation', label: 'Hydratation', icon: '💧', color: '#4a90d9' },
+    { key: 'rougeurs',    label: 'Rougeurs',    icon: '🌸', color: '#cf7b6b' },
+    { key: 'texture',     label: 'Texture',     icon: '◍',  color: '#7a9e7e' },
+    { key: 'eclat',       label: 'Éclat',       icon: '☀️', color: '#e0a04d' }
+  ];
+  function _metricDefs() {
+    return (typeof SkinJourney !== 'undefined' && SkinJourney.METRICS) ? SkinJourney.METRICS : _METRIC_DEFS;
+  }
   function _metrics() {
     const f = _face();
     if (!f) return null;
-    const z = f.zones || {};
-    const cl = v => Math.max(20, Math.min(98, Math.round(v)));
-    const eclat   = cl((z.glow != null ? z.glow : (f.eclat === 'très_terne' ? 0.4 : f.eclat === 'terne' ? 0.55 : 0.7)) * 100);
-    const texture = cl((f.texture === 'irrégulière' ? 0.55 : f.texture === 'légèrement_irrégulière' ? 0.7 : 0.85) * 100 - (z.pores || 0) * 15);
-    const hydra   = cl((f.skinType?.type === 'seche' ? 62 : f.skinType?.type === 'grasse' ? 80 : 74) - (z.redness || 0) * 10);
-    return { hydra, eclat, texture };
+    if (typeof SkinJourney !== 'undefined' && SkinJourney.metricsFromAnalysis) {
+      return SkinJourney.metricsFromAnalysis(f);
+    }
+    return null;
   }
   function _renderMetrics() {
     const m = _metrics();
     if (!m) return `<div class="pf-metrics-empty" onclick="startGlowUp()">📸 Fais ton analyse de peau pour voir tes indicateurs →</div>`;
     const card = (ic, label, val, color) => `
       <div class="pf-metric">
-        <span class="pf-metric-ic">${ic}</span>
+        <span class="pf-metric-ic" style="color:${color}">${ic}</span>
         <span class="pf-metric-label">${label}</span>
         <strong class="pf-metric-val">${val}%</strong>
         <div class="pf-bar"><div class="pf-bar-fill" style="width:${val}%;background:${color}"></div></div>
       </div>`;
-    return `<div class="pf-metrics">
-      ${card('💧', 'Hydratation', m.hydra, '#4a90d9')}
-      ${card('☀️', 'Éclat', m.eclat, 'var(--orange)')}
-      ${card('◍', 'Lissé', m.texture, 'var(--success)')}
+    return `<div class="pf-metrics pf-metrics-4">
+      ${_metricDefs().map(d => card(d.icon, d.label, m[d.key], d.color)).join('')}
     </div>`;
   }
 
@@ -118,9 +123,13 @@ const Profil = (() => {
   }
 
   function _evolutionTeaser() {
+    const s = (typeof SkinJourney !== 'undefined' && SkinJourney.summary) ? SkinJourney.summary() : null;
+    const sub = s
+      ? `<span class="pf-evo-badge ${s._global >= 0 ? 'sj-pos' : 'sj-neg'}">${(s._global >= 0 ? '+' : '') + s._global}% depuis J0</span>`
+      : `<p class="pf-muted">Suis ta progression dans le temps.</p>`;
     return `<section class="pf-section pf-evo" onclick="Profil.setTab('evolution')" role="button" tabindex="0">
       <div class="pf-evo-head"><h2 class="pf-h2">Évolution de ta peau</h2><span class="pf-evo-arrow">→</span></div>
-      <p class="pf-muted">Suis ta progression dans le temps.</p>
+      ${sub}
     </section>`;
   }
 
@@ -164,10 +173,26 @@ const Profil = (() => {
   }
 
   function _cEvolution() {
+    const s = (typeof SkinJourney !== 'undefined' && SkinJourney.summary) ? SkinJourney.summary() : null;
+    if (s) {
+      const g = s._global;
+      const minis = _metricDefs().map(m =>
+        `<div class="pf-evo-mini">
+           <span class="pf-evo-mini-ic" style="color:${m.color}">${m.icon}</span>
+           <span class="pf-evo-mini-l">${m.label}</span>
+           <strong class="${s[m.key] >= 0 ? 'sj-pos' : 'sj-neg'}">${(s[m.key] >= 0 ? '+' : '') + s[m.key]}%</strong>
+         </div>`).join('');
+      return `<section class="pf-section">
+        <h2 class="pf-h2">Évolution de ta peau</h2>
+        <div class="pf-evo-global ${g >= 0 ? 'sj-pos' : 'sj-neg'}">${(g >= 0 ? '+' : '') + g}% <span>depuis J0</span></div>
+        <div class="pf-evo-minis">${minis}</div>
+        <button class="btn btn-dark pf-cta" onclick="goToSkinJourney()">Voir mon Skin Journey →</button>
+      </section>`;
+    }
     return `<section class="pf-section"><h2 class="pf-h2">Évolution de ta peau</h2>
       <div class="pf-empty"><span class="pf-empty-ic">📈</span>
-        <p>Ta courbe de progression apparaîtra ici après plusieurs analyses. Reviens dans quelques semaines pour voir ta peau évoluer ✦</p>
-        ${typeof goToSkinJourney === 'function' ? `<button class="btn btn-outline" onclick="goToSkinJourney()">Mon Skin Journey →</button>` : ''}
+        <p>Reprends une photo tous les 4 jours pour suivre les progrès de ta peau. Ta courbe apparaîtra ici ✦</p>
+        <button class="btn btn-dark" onclick="goToSkinJourney()">Démarrer mon suivi →</button>
       </div></section>`;
   }
 
