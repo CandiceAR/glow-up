@@ -11,9 +11,9 @@ workflows:
     max_build_duration: 60
 
     integrations:
-      # Nom de la clé API App Store Connect telle que configurée dans
-      # Codemagic (Teams → Integrations → App Store Connect). À adapter si besoin.
-      app_store_connect: codemagic
+      # Nom EXACT de la clé API App Store Connect enregistrée dans Codemagic
+      # (Teams → Integrations → App Store Connect).
+      app_store_connect: "Codemagic Glow Up"
 
     environment:
       ios_signing:
