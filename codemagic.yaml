@@ -80,5 +80,5 @@ workflows:
     publishing:
       app_store_connect:
         auth: integration
-        submit_to_testflight: true      # envoi vers TestFlight
+        submit_to_testflight: false     # upload seul (test interne) — pas de soumission bêta externe
         submit_to_app_store: false      # PAS de soumission auto à l'App Store
