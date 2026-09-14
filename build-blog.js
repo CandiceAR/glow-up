@@ -129,7 +129,7 @@ const NAV = `<nav class="bnav"><div class="wrap">
 
 const FOOT = `<footer class="foot"><div class="wrap">
 <div class="fb">glow up</div>
-<div class="fl"><a href="/">Accueil</a><a href="/blog/">Conseils</a><a href="https://www.instagram.com/">Instagram</a></div>
+<div class="fl"><a href="/">Accueil</a><a href="/blog/">Conseils</a><a href="/confidentialite/">Confidentialité</a><a href="https://www.instagram.com/">Instagram</a></div>
 <div class="copy">© ${new Date().getFullYear()} Glow Up · Ton agent IA skincare</div>
 </div></footer></body></html>`;
 
