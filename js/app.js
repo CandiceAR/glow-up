@@ -91,7 +91,7 @@ function openMoreMenu() {
       ${item('Analyser ma routine', '🔬', "showScreen('routine-analyzer')")}
       ${item('Boutique', '🛍️', "showScreen('shop')")}
       ${item('Skinpedia', '📚', "showScreen('skinpedia')")}
-      ${item('Offres Premium', '✦', "showScreen('premium')")}
+      ${item('Conseils', '📝', "window.location.href='/blog/'")}
       ${item('Mon compte', '👤', "if(typeof Auth!=='undefined'&&Auth.openProfileMenu)Auth.openProfileMenu()")}
     </div>`;
   if (typeof openModal === 'function') openModal(html);
@@ -119,6 +119,11 @@ function showScreen(name) {
       Auth.openRequiredAuthModal(() => showScreen(name));
       return;
     }
+  }
+
+  // Lancement 100% gratuit : aucun écran tarifaire n'est accessible
+  if ((name === 'premium' || name === 'plans') && typeof Subscription !== 'undefined' && Subscription.MONETIZATION_ENABLED === false) {
+    name = 'home';
   }
 
   // Stopper l'analyse live caméra si on quitte la capture

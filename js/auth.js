@@ -140,6 +140,52 @@ const Auth = (() => {
     }
   }
 
+  // ─── Se connecter avec Apple (exigé par Apple si Google est proposé) ──
+  async function signInWithApple() {
+    if (!auth) { closeModal(); _runAuthFlowCallback(); return; }
+    try {
+      const provider = new firebase.auth.OAuthProvider('apple.com');
+      provider.addScope('email'); provider.addScope('name');
+      await auth.signInWithPopup(provider);
+      closeModal();
+      showToast('Connexion réussie !', 'success');
+      _runAuthFlowCallback();
+    } catch (err) {
+      console.error('[Auth] Apple sign-in error:', err);
+      showToast('Erreur de connexion Apple', 'error');
+    }
+  }
+
+  // ─── Suppression définitive du compte + données (exigé par Apple) ────
+  async function deleteAccount() {
+    const user = auth && auth.currentUser;
+    if (!user) { showToast('Tu dois être connectée pour supprimer ton compte', 'warning'); return; }
+    if (!confirm('Supprimer définitivement ton compte et toutes tes données ? Cette action est irréversible.')) return;
+    const uid = user.uid;
+    try {
+      try {
+        if (typeof firebase !== 'undefined' && firebase.firestore) {
+          await firebase.firestore().collection('users').doc(uid).delete();
+        }
+      } catch (e) { console.warn('[Auth] suppression Firestore:', e.message); }
+      await user.delete();
+      try { localStorage.clear(); } catch (e) {}
+      closeModal();
+      showToast('Ton compte et tes données ont été supprimés. À bientôt 🤍', 'info', 4000);
+      if (typeof showScreen === 'function') showScreen('home');
+      setTimeout(() => location.reload(), 900);
+    } catch (err) {
+      if (err && err.code === 'auth/requires-recent-login') {
+        showToast('Pour ta sécurité, reconnecte-toi puis relance la suppression.', 'warning', 5000);
+        try { await auth.signOut(); } catch (e) {}
+        openAuthModal('login', () => deleteAccount());
+      } else {
+        console.error('[Auth] suppression compte:', err);
+        showToast('Erreur lors de la suppression du compte', 'error');
+      }
+    }
+  }
+
   async function signInWithEmail(email, password) {
     if (!auth) { closeModal(); _runAuthFlowCallback(); return; }
     try {
@@ -193,12 +239,15 @@ const Auth = (() => {
       <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
     </svg>`;
 
+    const appleSVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.05 12.04c-.03-2.9 2.37-4.29 2.48-4.36-1.35-1.98-3.45-2.25-4.2-2.28-1.79-.18-3.49 1.05-4.4 1.05-.9 0-2.3-1.03-3.79-1-1.95.03-3.75 1.13-4.75 2.88-2.02 3.51-.52 8.7 1.45 11.55.96 1.4 2.11 2.96 3.61 2.9 1.45-.06 2-.94 3.75-.94 1.74 0 2.24.94 3.77.91 1.56-.03 2.54-1.42 3.5-2.82 1.1-1.62 1.56-3.19 1.58-3.27-.03-.02-3.03-1.17-3.06-4.62zM14.2 4.38c.8-.97 1.34-2.31 1.19-3.65-1.15.05-2.55.77-3.38 1.73-.74.85-1.39 2.22-1.22 3.53 1.29.1 2.6-.65 3.41-1.61z"/></svg>`;
+
     // Navigateur intégré (Instagram…) : la connexion Google est bloquée par
     // Google (disallowed_useragent). On masque le bouton et on guide vers l'email.
     const inApp = (typeof InAppBrowser !== 'undefined' && InAppBrowser.isInApp());
     const googleBlock = inApp
       ? `<p class="auth-inapp-note">✉️ Crée ton compte par email ci-dessous.<br>La connexion Google fonctionne en ouvrant Glow Up dans Safari ou Chrome.</p>`
-      : `<button class="btn btn-google" onclick="Auth.signInWithGoogle()">${googleSVG} Continuer avec Google</button>
+      : `<button class="btn btn-apple" onclick="Auth.signInWithApple()">${appleSVG} Continuer avec Apple</button>
+         <button class="btn btn-google" onclick="Auth.signInWithGoogle()">${googleSVG} Continuer avec Google</button>
          <div class="auth-divider"><span>ou par email</span></div>`;
 
     // On récupère l'email déjà saisi pour le reporter (pas de re-saisie)
@@ -357,6 +406,9 @@ const Auth = (() => {
         <button class="btn btn-outline full-width" style="margin-top:16px" onclick="Auth.signOut(); closeModal();">
           Se déconnecter
         </button>
+        <button class="btn-ghost full-width auth-delete-account" onclick="Auth.deleteAccount();">
+          Supprimer mon compte et mes données
+        </button>
       </div>`;
     openModal(html);
   }
@@ -372,6 +424,10 @@ const Auth = (() => {
           Crée ton compte gratuit pour enregistrer ta progression et suivre l'évolution de ta peau jour après jour.
         </p>
 
+        <button class="btn btn-apple" onclick="Auth.journeyApple()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.05 12.04c-.03-2.9 2.37-4.29 2.48-4.36-1.35-1.98-3.45-2.25-4.2-2.28-1.79-.18-3.49 1.05-4.4 1.05-.9 0-2.3-1.03-3.79-1-1.95.03-3.75 1.13-4.75 2.88-2.02 3.51-.52 8.7 1.45 11.55.96 1.4 2.11 2.96 3.61 2.9 1.45-.06 2-.94 3.75-.94 1.74 0 2.24.94 3.77.91 1.56-.03 2.54-1.42 3.5-2.82 1.1-1.62 1.56-3.19 1.58-3.27-.03-.02-3.03-1.17-3.06-4.62zM14.2 4.38c.8-.97 1.34-2.31 1.19-3.65-1.15.05-2.55.77-3.38 1.73-.74.85-1.39 2.22-1.22 3.53 1.29.1 2.6-.65 3.41-1.61z"/></svg>
+          Continuer avec Apple
+        </button>
         <button class="btn btn-google" onclick="Auth.journeyGoogle()">
           <svg width="18" height="18" viewBox="0 0 24 24">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -430,6 +486,22 @@ const Auth = (() => {
     } catch (err) {
       console.error('[Auth] Google sign-in error:', err);
       showToast('Erreur de connexion Google', 'error');
+    }
+  }
+
+  async function journeyApple() {
+    if (!auth) { _runJourneyCallback(); return; }
+    try {
+      const provider = new firebase.auth.OAuthProvider('apple.com');
+      provider.addScope('email'); provider.addScope('name');
+      await auth.signInWithPopup(provider);
+      closeModal();
+      _saveReminderPrefs();
+      showToast('Compte créé ! Bienvenue sur Glow Up ✦', 'success');
+      _runJourneyCallback();
+    } catch (err) {
+      console.error('[Auth] Apple sign-in error:', err);
+      showToast('Erreur de connexion Apple', 'error');
     }
   }
 
@@ -556,7 +628,7 @@ const Auth = (() => {
     } catch (e) { console.warn('[Auth] Analytics non initialisé:', e.message); }
   }
 
-  return { init, signInWithGoogle, signInWithEmail, signOut, openAuthModal, continueFlow, submitEmail, submitLogin, submitRegister, submitReset, openProfileMenu, openJourneyAuthModal, journeyGoogle, submitJourney, startJourneyGuest, openRequiredAuthModal, _getFlowCallback, enableAnalytics };
+  return { init, signInWithGoogle, signInWithApple, deleteAccount, signInWithEmail, signOut, openAuthModal, continueFlow, submitEmail, submitLogin, submitRegister, submitReset, openProfileMenu, openJourneyAuthModal, journeyGoogle, journeyApple, submitJourney, startJourneyGuest, openRequiredAuthModal, _getFlowCallback, enableAnalytics };
 
 })();
 

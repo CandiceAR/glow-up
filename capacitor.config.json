@@ -1,0 +1,21 @@
+{
+  "appId": "app.glowupskin",
+  "appName": "Glow Up",
+  "webDir": "www",
+  "server": {
+    "url": "https://www.glowupskin.app",
+    "cleartext": false
+  },
+  "ios": {
+    "contentInset": "always",
+    "backgroundColor": "#F5ECE0",
+    "limitsNavigationsToAppBoundDomains": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "backgroundColor": "#F5ECE0",
+      "showSpinner": false
+    }
+  }
+}

@@ -26,3 +26,8 @@ recapitulatif_*.pdf
 # Claude Code (local only)
 .claude/settings.local.json
 .claude/worktrees/
+
+# Mobile (Capacitor) — projets natifs générés + bundle web (régénérés au build)
+ios/
+android/
+www/

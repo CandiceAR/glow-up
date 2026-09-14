@@ -1360,7 +1360,7 @@ const RoutineRenderer = (() => {
       <div class="journey-teaser">
         <div class="journey-teaser-left">
           <div class="journey-teaser-tag">
-            <span class="journey-free-pill">${isSubscriber ? '✦ Inclus dans ton abonnement' : '✨ Fonctionnalité Glow'}</span>
+            <span class="journey-free-pill">${isSubscriber ? '✦ Suivi de ta peau' : '✨ Fonctionnalité Glow'}</span>
           </div>
           <h2 class="journey-teaser-title">SKIN JOURNEY</h2>
           <p class="journey-teaser-sub">Suis la transformation de ta peau dans le temps</p>
@@ -1376,7 +1376,7 @@ const RoutineRenderer = (() => {
           <button class="btn-orange-cta journey-teaser-btn" onclick="Subscription.showSkinJourneyDetail()">
             Découvrir Skin Journey →
           </button>`}
-          <p class="journey-teaser-note">${isSubscriber ? 'Inclus dans Glow Up Premium' : 'Inclus dans Glow Up Premium · dès 2,49 €/mois'}</p>
+          <p class="journey-teaser-note">${isSubscriber ? 'Gratuit · suis l\'évolution de ta peau' : 'Inclus dans Glow Up Premium · dès 2,49 €/mois'}</p>
         </div>
 
         <div class="journey-teaser-right" aria-hidden="true">

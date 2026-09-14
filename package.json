@@ -5,5 +5,19 @@
   "dependencies": {
     "stripe": "^14.0.0",
     "firebase-admin": "^12.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.2",
+    "@capacitor/core": "^6.1.2",
+    "@capacitor/ios": "^6.1.2",
+    "@capacitor/camera": "^6.1.2",
+    "@capacitor/splash-screen": "^6.0.3",
+    "@capacitor/status-bar": "^6.0.2",
+    "marked": "^12.0.2"
+  },
+  "scripts": {
+    "build:web": "node scripts/build-web.js",
+    "build:blog": "node build-blog.js",
+    "ios:prepare": "node scripts/build-web.js && npx cap sync ios"
   }
 }

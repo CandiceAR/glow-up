@@ -10352,3 +10352,19 @@ em { font-style: italic; color: var(--nude); }
 .home-art-body p{ font-size:14px; color:var(--muted,#8A6E58); margin:0; }
 .home-art-more{ margin-top:auto; color:#B4482E; font-weight:600; font-size:14px; }
 @media (max-width:860px){ .home-blog-grid{ grid-template-columns:1fr; } }
+
+/* ── Bouton « Se connecter avec Apple » (conforme HIG) ── */
+.btn-apple {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 13px 18px; margin-bottom: 10px;
+  background: #000; color: #fff; border: none; border-radius: 12px;
+  font-family: var(--font-sans); font-size: 15px; font-weight: 600; cursor: pointer;
+}
+.btn-apple svg { flex: none; }
+.btn-apple:hover { background: #1a1a1a; }
+
+/* Lien de suppression de compte (discret, dans Mon profil) */
+.auth-delete-account {
+  margin-top: 10px; font-size: 13px; color: #b23b2e; opacity: .85;
+}
+.auth-delete-account:hover { opacity: 1; text-decoration: underline; }

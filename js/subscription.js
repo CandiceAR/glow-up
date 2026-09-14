@@ -22,8 +22,16 @@ const Subscription = (() => {
     }
   };
 
+  // ─── Monétisation (feature flag) ──────────────────────────────
+  // LANCEMENT 100% GRATUIT : monétisation désactivée. L'infrastructure Stripe
+  // reste en place et propre, mais AUCUN parcours payant n'est exposé
+  // (ni paywall, ni écran tarifaire, ni bouton d'abonnement, ni Checkout).
+  // Repasser cette constante à true pour réactiver la monétisation plus tard.
+  const MONETIZATION_ENABLED = false;
+
   // ─── Plan courant ─────────────────────────────────────────────
   function getPlan() {
+    if (!MONETIZATION_ENABLED) return 'glowplus';   // tout débloqué gratuitement
     return AppState?.user?.plan || 'free';
   }
 
@@ -178,6 +186,7 @@ const Subscription = (() => {
 
   // Affiche le bon blocage selon le plan (free → Premium · Premium → Coach)
   function showRoutineLimit() {
+    if (!MONETIZATION_ENABLED) return;   // pas de limite au lancement
     if (getPlan() === 'glow') {
       const html = `
         <button class="modal-close" onclick="closeModal()">×</button>
@@ -203,6 +212,7 @@ const Subscription = (() => {
 
   // ─── Vérifier accès à une fonctionnalité ─────────────────────
   function canAccess(feature) {
+    if (!MONETIZATION_ENABLED) return true;   // tout accessible gratuitement
     const plan = getPlan();
     const rules = {
       'routine_second':       plan === 'glow' || plan === 'glowplus',
@@ -215,6 +225,7 @@ const Subscription = (() => {
 
   // ─── Ouvrir Stripe Checkout ───────────────────────────────────
   async function openCheckout(priceKey) {
+    if (!MONETIZATION_ENABLED) return;   // aucun paiement Stripe exposé
     const uid   = AppState?.user?.uid;
     const email = AppState?.user?.email;
 
@@ -244,6 +255,7 @@ const Subscription = (() => {
 
   // ─── Modal paywall ────────────────────────────────────────────
   function showPaywall(feature) {
+    if (!MONETIZATION_ENABLED) return;   // aucun paywall au lancement (100% gratuit)
     const CFG = {
       routine_second:      { tier:'premium', tag:'Offre complète',      title:'Ta deuxième routine<br>t\'attend.',    desc:'Skincare + Make-up · Profil cross-device · Historique de ta peau' },
       routine_regenerate:  { tier:'premium', tag:'Plus de routines', title:'Envie d\'une nouvelle<br>routine ?',   desc:'Ta 1ʳᵉ routine est offerte. Avec Premium, génère jusqu\'à 3 routines par mois — à chaque changement de peau, de saison ou d\'envie.' },
@@ -337,6 +349,7 @@ const Subscription = (() => {
 
   // ─── Page abonnements ─────────────────────────────────────────
   function renderPlansPage() {
+    if (!MONETIZATION_ENABLED) { if (typeof showScreen === 'function') showScreen('home'); return; }
     const container = document.getElementById('plansContent');
     if (!container) return;
 
@@ -441,6 +454,7 @@ const Subscription = (() => {
 
   // ─── Skin Journey — modal de détail ─────────────────────────
   function showSkinJourneyDetail() {
+    if (!MONETIZATION_ENABLED) { if (typeof goToSkinJourney === 'function') goToSkinJourney(); return; }
     const plan = getPlan();
     const isSubscriber = plan === 'glow' || plan === 'glowplus';
     const cta = isSubscriber
@@ -471,6 +485,7 @@ const Subscription = (() => {
 
   // ─── Parrainage — afficher le dashboard ──────────────────────
   async function showReferralDashboard() {
+    if (!MONETIZATION_ENABLED) return;   // programme parrainage (monétisation) désactivé
     const uid  = AppState?.user?.uid;
     const plan = getPlan();
     if (!uid || (plan !== 'glowplus')) {
@@ -557,6 +572,7 @@ const Subscription = (() => {
   }
 
   function renderPremiumPage() {
+    if (!MONETIZATION_ENABLED) { if (typeof showScreen === 'function') showScreen('home'); return; }
     const container = document.getElementById('premiumContent');
     if (!container) return;
     const P     = PRICING.premium;
@@ -745,6 +761,7 @@ const Subscription = (() => {
     dupe:               { icon: '💸', title: 'Débloque les dupes à petit prix',               text: 'Le jumeau moins cher de chaque produit — même résultat, tu économises sur chaque achat.' },
   };
   function lockCard(opts = {}) {
+    if (!MONETIZATION_ENABLED) return;   // rien n'est verrouillé (tout gratuit)
     const P = PRICING.premium;
     const preset = LOCK_PRESETS[opts.preset] || {};
     const icon  = opts.icon  || preset.icon  || '🔒';
@@ -769,10 +786,11 @@ const Subscription = (() => {
 
   // Ouvre le composant lock dans une modale (ex : alternatives floutées cliquées)
   function openLock(preset) {
+    if (!MONETIZATION_ENABLED) return;
     if (typeof openModal !== 'function') return;
     openModal(`<button class="modal-close" onclick="closeModal()">×</button><div class="lock-modal-wrap">${lockCard({ preset })}</div>`);
   }
 
-  return { getPlan, isPlan, canAccess, canGenerateRoutine, hasUsedFreeRoutine, routinesLeftThisMonth, markRoutineGenerated, showRoutineLimit, lockCard, openLock, loadPlan, openCheckout, showPaywall, updateGatingUI, handleCheckoutReturn, renderPlansPage, renderPremiumPage, _exitPremiumPublic, loadFoundersData, showSkinJourneyDetail, showReferralDashboard };
+  return { MONETIZATION_ENABLED, getPlan, isPlan, canAccess, canGenerateRoutine, hasUsedFreeRoutine, routinesLeftThisMonth, markRoutineGenerated, showRoutineLimit, lockCard, openLock, loadPlan, openCheckout, showPaywall, updateGatingUI, handleCheckoutReturn, renderPlansPage, renderPremiumPage, _exitPremiumPublic, loadFoundersData, showSkinJourneyDetail, showReferralDashboard };
 
 })();
