@@ -1,0 +1,84 @@
+# ============================================================
+# Codemagic — Build iOS Glow Up (Capacitor) → TestFlight
+# Bundle ID : app.glowupskin
+# Aucun secret ici : la clé API App Store Connect et la signature
+# sont gérées dans l'interface Codemagic (Integrations), jamais dans le repo.
+# ============================================================
+workflows:
+  ios-testflight:
+    name: Glow Up · iOS TestFlight
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+
+    integrations:
+      # Nom de la clé API App Store Connect telle que configurée dans
+      # Codemagic (Teams → Integrations → App Store Connect). À adapter si besoin.
+      app_store_connect: codemagic
+
+    environment:
+      ios_signing:
+        distribution_type: app_store          # signature de distribution (TestFlight/App Store)
+        bundle_identifier: app.glowupskin     # doit exister dans Apple Developer
+      vars:
+        XCODE_WORKSPACE: "ios/App/App.xcworkspace"
+        XCODE_SCHEME: "App"
+      node: 20
+      xcode: latest
+      cocoapods: default
+
+    scripts:
+      - name: Installer les dépendances npm
+        script: npm install
+
+      - name: Générer le dossier web (www/)
+        script: npm run build:web
+
+      - name: Créer / synchroniser le projet iOS (ne recrée que si absent)
+        script: |
+          if [ -d "ios" ]; then
+            npx cap sync ios
+          else
+            npx cap add ios
+            npx cap sync ios
+          fi
+
+      - name: Générer icônes + splash (depuis resources/)
+        script: |
+          npx @capacitor/assets generate --ios \
+            --iconBackgroundColor '#F5ECE0' \
+            --splashBackgroundColor '#F5ECE0' || true
+          npx cap sync ios
+
+      - name: Ajouter les autorisations caméra / photos (Info.plist, FR)
+        script: |
+          PLIST="ios/App/App/Info.plist"
+          set_key () {
+            /usr/libexec/PlistBuddy -c "Set :$1 $2" "$PLIST" 2>/dev/null \
+              || /usr/libexec/PlistBuddy -c "Add :$1 string $2" "$PLIST"
+          }
+          set_key NSCameraUsageDescription "Glow Up utilise l'appareil photo pour analyser ta peau et scanner tes produits."
+          set_key NSPhotoLibraryUsageDescription "Glow Up accède à tes photos pour analyser ta peau et reconnaître tes produits."
+          set_key NSPhotoLibraryAddUsageDescription "Glow Up peut enregistrer une photo de ton analyse dans ta photothèque."
+
+      - name: Installer les pods
+        script: |
+          cd ios/App && pod install
+
+      - name: Configurer la signature (profils Codemagic)
+        script: xcode-project use-profiles
+
+      - name: Compiler l'IPA
+        script: |
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true      # envoi vers TestFlight
+        submit_to_app_store: false      # PAS de soumission auto à l'App Store
