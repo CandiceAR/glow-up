@@ -28,11 +28,11 @@ npx @capacitor/assets generate --iconBackgroundColor '#F5ECE0' --splashBackgroun
 > À insérer après `cap add ios` (ou via un script de post-build Codemagic).
 ```xml
 <key>NSCameraUsageDescription</key>
-<string>Glow Up utilise l'appareil photo pour analyser ta peau et scanner tes produits.</string>
+<string>Glow Up utilise l'appareil photo pour analyser votre peau et personnaliser votre routine.</string>
 <key>NSPhotoLibraryUsageDescription</key>
-<string>Glow Up accède à tes photos pour analyser ta peau et reconnaître tes produits.</string>
+<string>Glow Up accède à vos photos pour vous permettre de sélectionner une photo pour votre analyse.</string>
 <key>NSPhotoLibraryAddUsageDescription</key>
-<string>Glow Up peut enregistrer une photo de ton analyse dans ta photothèque.</string>
+<string>Glow Up peut enregistrer une photo prise dans l'application si vous le choisissez.</string>
 ```
 
 ## Sign in with Apple (OBLIGATOIRE — la connexion Google est proposée)
