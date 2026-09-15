@@ -650,10 +650,9 @@ const RoutineRenderer = (() => {
               ${_renderApplyMeta(step, stepIndex, isMatin)}
             ` : `
               ${replaced ? `<div class="cr-replace-note">🔄 À la place de ton <strong>${(replaced.brand ? replaced.brand + ' ' : '') + replaced.name}</strong> — ${CurrentRoutine.evaluate(replaced).reason}</div>` : ''}
-              ${product ? `<div class="cg-step-card">${_renderPremiumProductCard(product)}</div>` : ''}
+              ${product ? `<div class="cg-step-card">${_renderPremiumProductCard(product, step)}</div>` : ''}
+              ${product ? _renderDupeCompact(product) : ''}
               ${product ? _renderApplyMeta(step, stepIndex, isMatin) : ''}
-              ${product ? _renderWhyProduct(step, product) : ''}
-              ${product && typeof ProductCatalog !== 'undefined' ? ProductCatalog.renderDupe(product) : ''}
               ${product ? _renderAlternatives(step, product) : ''}
               ${spfExtras}
             `}
@@ -681,15 +680,21 @@ const RoutineRenderer = (() => {
   }
 
   // ─── Carte produit premium (même rendu que la routine make-up) ──
-  function _renderPremiumProductCard(product) {
+  function _renderPremiumProductCard(product, step) {
     if (!product) return '';
     const { id, name, brand, imageUrl, amazonUrl, shopUrl, price, description, rating } = product;
     const url = amazonUrl || shopUrl || '#';
     const isAffiliate = !!amazonUrl;
     const canCompare = (typeof ProductCatalog !== 'undefined') ? ProductCatalog.isComparable(product) : true;
     const compareUrl = `https://www.google.com/search?q=${encodeURIComponent((brand || '') + ' ' + (name || ''))}&tbm=shop`;
+    // Carte compacte (page Routine). La phrase affichée EST la justification
+    // personnalisée « pourquoi ce produit » (fusion → plus de bloc séparé).
+    // Repli sur la description si le step n'est pas fourni.
+    let sentence = '';
+    try { sentence = step ? (buildProductReason(step, product).why || '') : ''; } catch (e) {}
+    if (!sentence) sentence = description || '';
     return `
-      <article class="premium-card" data-product-id="${id}">
+      <article class="premium-card premium-card--compact" data-product-id="${id}">
         <a href="${url}" target="_blank" rel="noopener nofollow${isAffiliate ? ' sponsored' : ''}" class="premium-card-link"
            ${isAffiliate ? `onclick="trackAmazonClick('${id}')"` : ''}>
           <div class="premium-card-image-wrap">
@@ -699,16 +704,33 @@ const RoutineRenderer = (() => {
           <div class="premium-card-content">
             <span class="premium-card-brand">${brand || ''}</span>
             <h3 class="premium-card-name">${name || ''}</h3>
-            ${description ? `<p class="premium-card-desc">${description}</p>` : ''}
-            ${rating ? `<div class="premium-card-rating">★ ${rating}</div>` : ''}
-            <div class="premium-card-price-row">
-              <span class="premium-card-price">${price != null ? price.toFixed(2) + ' €' : '—'}</span>
+            ${sentence ? `<p class="premium-card-desc">💡 ${sentence}</p>` : ''}
+            <div class="premium-card-meta">
+              ${rating ? `<span class="pc-rating">★ ${String(rating).replace('.', ',')}</span>` : ''}
+              ${price != null ? `<span class="pc-price">${rating ? '· ' : ''}Dès ${price.toFixed(2).replace('.', ',')} €</span>` : ''}
             </div>
-            ${canCompare ? '<p class="pc-value">✨ Compare les prix du marché en 1 clic</p>' : ''}
           </div>
         </a>
-        ${_renderCardCtas(url, compareUrl, isAffiliate, id, canCompare)}
+        <div class="premium-card-ctas">
+          ${canCompare ? `<a class="pc-cta pc-cta--compare" href="${compareUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Comparer les prix</a>` : ''}
+          <a class="pc-cta pc-cta--buy" href="${url}" target="_blank" rel="noopener nofollow${isAffiliate ? ' sponsored' : ''}"
+             onclick="event.stopPropagation();${isAffiliate ? ` trackAmazonClick('${id}')` : ''}">${isAffiliate ? 'Acheter maintenant →' : 'Voir le produit →'}</a>
+        </div>
       </article>`;
+  }
+
+  // ─── CTA dupe compact (page Routine) — 💸 Dupe · −X% · Y € économisés ──
+  function _renderDupeCompact(product) {
+    if (typeof ProductCatalog === 'undefined' || !ProductCatalog.findDupe) return '';
+    let r; try { r = ProductCatalog.findDupe(product); } catch (e) { return ''; }
+    if (!r || r.status !== 'found' || !r.dupe) return '';
+    const d = r.dupe;
+    const url = d.amazonUrl || d.shopUrl || '#';
+    return `<a class="dupe-cta" href="${url}" target="_blank" rel="noopener nofollow" onclick="event.stopPropagation()">
+      <span class="dupe-cta-badge">💸 Dupe</span>
+      <span class="dupe-cta-txt">−${r.pct}% · ${r.savings} € économisés</span>
+      <span class="dupe-cta-arrow">→</span>
+    </a>`;
   }
 
   // ─── CTA partagés : Comparer (principal) + Acheter (secondaire) ─
@@ -826,32 +848,27 @@ const RoutineRenderer = (() => {
 
   // ─── « Comment l'appliquer » — quantité · moment · fréquence · étape ──
   const STEP_APPLY_META = {
-    cleanser:    { qty: 'Noisette',       freq: 'Chaque jour' },
-    toner:       { qty: 'Qq gouttes',     freq: 'Chaque jour' },
-    serum:       { qty: '3-4 gouttes',    freq: 'Chaque jour' },
-    treatment:   { qty: 'Fine couche',    freq: 'Selon tolérance' },
-    exfoliant:   { qty: 'Fine couche',    freq: '2×/semaine' },
-    eye:         { qty: '1 point/œil',    freq: 'Chaque jour' },
-    eyepatch:    { qty: '1 paire',        freq: '2-3×/sem.' },
-    moisturizer: { qty: 'Noisette',       freq: 'Chaque jour' },
-    oil:         { qty: '2-3 gouttes',    freq: 'Le soir' },
-    spf:         { qty: '≈ ¼ c. à café',  freq: 'Chaque matin' },
-    lipbalm:     { qty: 'Au besoin',      freq: 'Au besoin' },
+    cleanser:    { qty: 'Noisette',       freq: 'Chaque jour',      how: 'Masser 30 s sur peau humide, puis rincer à l\'eau tiède.' },
+    toner:       { qty: 'Qq gouttes',     freq: 'Chaque jour',      how: 'Tapoter sur peau propre avec les mains, sans rincer.' },
+    serum:       { qty: '3-4 gouttes',    freq: 'Chaque jour',      how: 'Appliquer sur peau propre, avant la crème hydratante.' },
+    treatment:   { qty: 'Fine couche',    freq: 'Selon tolérance',  how: 'Sur les zones ciblées le soir, augmenter progressivement.' },
+    exfoliant:   { qty: 'Fine couche',    freq: '2×/semaine',       how: 'Sur peau sèche le soir, éviter le contour des yeux.' },
+    eye:         { qty: '1 point/œil',    freq: 'Chaque jour',      how: 'Tapoter délicatement du bout de l\'annulaire.' },
+    eyepatch:    { qty: '1 paire',        freq: '2-3×/sem.',        how: 'Poser 15-20 min sous les yeux, puis tapoter l\'excédent.' },
+    moisturizer: { qty: 'Noisette',       freq: 'Chaque jour',      how: 'Masser en dernière étape, matin et soir.' },
+    oil:         { qty: '2-3 gouttes',    freq: 'Le soir',          how: 'Réchauffer entre les mains, presser sur le visage en dernier.' },
+    spf:         { qty: '≈ ¼ c. à café',  freq: 'Chaque matin',     how: 'En dernière étape, renouveler dans la journée si exposition.' },
+    lipbalm:     { qty: 'Au besoin',      freq: 'Au besoin',        how: 'Appliquer sur les lèvres dès une sensation de sécheresse.' },
   };
   function _renderApplyMeta(step, order, isMatin) {
     const m = STEP_APPLY_META[step.step];
     if (!m) return '';
-    const moment = step.step === 'spf' ? 'Matin' : (isMatin ? 'Matin' : 'Soir');
-    return `
-      <div class="apply-meta">
-        <div class="apply-meta-head">🧴 Comment l'appliquer</div>
-        <div class="apply-meta-chips">
-          <span class="apply-chip"><b>Quantité</b>${m.qty}</span>
-          <span class="apply-chip"><b>Moment</b>${moment}</span>
-          <span class="apply-chip"><b>Fréquence</b>${m.freq}</span>
-          <span class="apply-chip"><b>Étape</b>${String(order).padStart(2, '0')}</span>
-        </div>
-      </div>`;
+    // Compact & méthodique : ligne 1 « quantité · fréquence » + ligne 2 « comment ».
+    // On ne répète ni « Moment » (section Matin/Soir) ni « Étape » (numéro au-dessus).
+    return `<div class="apply-meta apply-meta--compact">
+      <div class="apply-meta-line"><span class="apply-meta-ic">🧴</span> ${m.qty} · ${m.freq}</div>
+      ${m.how ? `<div class="apply-meta-how">${m.how}</div>` : ''}
+    </div>`;
   }
 
   // ─── « Pourquoi ce produit ? » — explication personnalisée ────
@@ -918,12 +935,13 @@ const RoutineRenderer = (() => {
 
   function _renderWhyProduct(step, product) {
     if (!product) return '';
-    const { why, vs } = buildProductReason(step, product);
+    // Compact : une seule justification personnalisée (2 lignes max).
+    // On retire la 2ᵉ formulation « Pourquoi celui-ci plutôt qu'un autre ? »
+    // (elle répétait l'explication). Le texte reste généré, on l'affiche moins.
+    const { why } = buildProductReason(step, product);
     return `
-      <div class="why-product">
-        <div class="why-product-head"><span class="why-product-i">💡</span> Pourquoi ce produit ?</div>
-        <p class="why-product-text">${why}</p>
-        ${vs ? `<p class="why-product-vs"><strong>Pourquoi celui-ci plutôt qu'un autre&nbsp;?</strong> ${vs}</p>` : ''}
+      <div class="why-product why-product--compact">
+        <p class="why-product-text"><span class="why-product-i">💡</span> ${why}</p>
       </div>`;
   }
 

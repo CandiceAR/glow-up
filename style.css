@@ -10368,3 +10368,64 @@ em { font-style: italic; color: var(--nude); }
   margin-top: 10px; font-size: 13px; color: #b23b2e; opacity: .85;
 }
 .auth-delete-account:hover { opacity: 1; text-decoration: underline; }
+
+/* ============================================================
+   Page Routine — présentation produit COMPACTE (~-50% de hauteur)
+   Scopé à .cg-step + modificateurs --compact → n'affecte PAS make-up
+   ni les autres écrans. Aucune donnée modifiée (on affiche moins).
+   ============================================================ */
+/* Carte produit principale (compacte) */
+.cg-step .premium-card--compact .premium-card-desc {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  font-size: 13px; line-height: 1.35; margin: 4px 0 6px; color: var(--muted,#8A6E58);
+}
+.cg-step .premium-card--compact .premium-card-meta {
+  display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; margin-top: 2px;
+}
+.cg-step .premium-card--compact .pc-rating { color: #E0A24E; font-weight: 700; font-size: 14px; }
+.cg-step .premium-card--compact .pc-price  { color: var(--charcoal,#3A2318); font-weight: 700; font-size: 14px; }
+.cg-step .premium-card--compact .premium-card-ctas { margin-top: 8px; }
+.cg-step .premium-card--compact .pc-cta--compare { width: 100%; }
+
+/* « Comment l'appliquer » — compact & méthodique (2 lignes) */
+.cg-step .apply-meta--compact {
+  font-size: 13px; background: var(--cream,#F5ECE0);
+  border-radius: 10px; padding: 8px 12px; margin-top: 8px;
+}
+.cg-step .apply-meta--compact .apply-meta-line { display: flex; align-items: center; gap: 6px; color: var(--charcoal,#3A2318); font-weight: 600; }
+.cg-step .apply-meta--compact .apply-meta-ic { font-size: 14px; }
+.cg-step .apply-meta--compact .apply-meta-how { margin-top: 2px; font-size: 12.5px; color: var(--muted,#8A6E58); line-height: 1.35; }
+
+/* Bouton « Acheter maintenant » — terracotta légèrement orangé (→ Amazon) */
+.cg-step .premium-card--compact .pc-cta--buy {
+  width: 100%; background: #C25A2E; color: #fff;
+}
+.cg-step .premium-card--compact .pc-cta--buy:hover { background: #b04f27; }
+
+/* CTA dupe compact — sous les boutons */
+.cg-step .dupe-cta {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+  margin-top: 8px; padding: 10px 14px; border-radius: 12px;
+  background: #FBEEE9; border: 1px solid #EAC9BC; text-decoration: none;
+}
+.cg-step .dupe-cta .dupe-cta-badge { font-weight: 700; font-size: 13px; color: var(--terra,#B4482E); white-space: nowrap; }
+.cg-step .dupe-cta .dupe-cta-txt { font-size: 13px; font-weight: 600; color: var(--charcoal,#3A2318); flex: 1; }
+.cg-step .dupe-cta .dupe-cta-arrow { color: var(--terra,#B4482E); font-weight: 700; }
+
+/* « Pourquoi ce produit ? » — compact, 2 lignes max */
+.cg-step .why-product--compact {
+  margin-top: 8px; padding: 10px 12px; background: var(--cream,#F5ECE0); border-radius: 10px;
+}
+.cg-step .why-product--compact .why-product-text {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  font-size: 13px; line-height: 1.4; color: var(--charcoal,#3A2318); margin: 0;
+}
+.cg-step .why-product--compact .why-product-i { margin-right: 4px; }
+
+/* Dupe — on masque la longue phrase de raison (le %/économie reste visible) */
+.cg-step .dupe-block .dupe-reason { display: none; }
+
+/* Alternatives — noms sur 2 lignes max, pas de description longue */
+.cg-step .alt-card-name {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.25;
+}
