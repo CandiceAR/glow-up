@@ -209,6 +209,13 @@ const DupeFinder = (() => {
     return '<span class="df-tier df-tier-ok">≈ Alternative fonctionnelle</span>';
   }
 
+  // Niveau de confiance du résultat (section 13) — basé sur la dispo des INCI
+  function _confTag(conf) {
+    const map = { high: ['✅', 'Confiance élevée'], medium: ['◐', 'Confiance moyenne'], low: ['○', 'Confiance à confirmer'] };
+    const m = map[conf];
+    return m ? `<span class="df-conf df-conf-${conf}">${m[0]} ${m[1]}</span>` : '';
+  }
+
   function _catalogProduct(id) { return (AppState.products.catalog || []).find(p => p.id === id); }
   function _compareUrl(p) { return `https://www.google.com/search?q=${encodeURIComponent((p.brand || '') + ' ' + (p.name || ''))}&tbm=shop`; }
   function _amazonSearch(brand, name) { return `https://www.amazon.fr/s?k=${encodeURIComponent(((brand || '') + ' ' + (name || '')).trim())}&tag=kan10ar-21`; }
@@ -221,7 +228,7 @@ const DupeFinder = (() => {
     const buyUrl = _amazonSearch(r.brand, r.name);
     return `
       <article class="df-result df-result--ext">
-        <div class="df-result-role">${ROLE_LABEL[r.role] || ROLE_LABEL.closest} <span class="df-ext-tag">hors catalogue</span> ${_tier(r.similarity)}</div>
+        <div class="df-result-role">${ROLE_LABEL[r.role] || ROLE_LABEL.closest} <span class="df-ext-tag">hors catalogue</span> ${_tier(r.similarity)} ${_confTag(r.confidence)}</div>
         <div class="df-result-top">
           <div class="df-result-img-wrap">
             <div class="df-result-noimg">🔎</div>
@@ -273,7 +280,7 @@ const DupeFinder = (() => {
     }
     return `
       <article class="df-result">
-        <div class="df-result-role">${ROLE_LABEL[r.role] || ROLE_LABEL.closest} ${_tier(r.similarity)}</div>
+        <div class="df-result-role">${ROLE_LABEL[r.role] || ROLE_LABEL.closest} ${_tier(r.similarity)} ${_confTag(r.confidence)}</div>
         <div class="df-result-top">
           <div class="df-result-img-wrap">
             ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" class="df-result-img" loading="lazy" onerror="this.style.display='none'">` : '<div class="df-result-noimg">🧴</div>'}

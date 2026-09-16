@@ -10452,3 +10452,9 @@ em { font-style: italic; color: var(--nude); }
 /* Trouver son dupe — prix à volume égal (section 11) */
 .df-vol { font-size: 12px; color: var(--muted,#8A6E58); margin-top: 4px; }
 .df-vol strong { color: var(--charcoal,#3A2318); }
+
+/* Trouver son dupe — niveau de confiance par résultat (section 13) */
+.df-conf { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 12px; margin-left: 4px; }
+.df-conf-high { background: #E7F3EA; color: #2f7a46; }
+.df-conf-medium { background: #FBF3E3; color: #9a6b12; }
+.df-conf-low { background: #F0EAE2; color: #7E6552; }

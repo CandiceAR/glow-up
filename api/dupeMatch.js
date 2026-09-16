@@ -18,6 +18,53 @@ const CORS = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS'
 };
 
+// ─── INCI candidats + recouvrement de composition (B-3, déterministe) ──
+const OBF_UA = 'GlowUp/1.0 (dupe finder)';
+// Ingrédients ultra-courants (base/technique) : ne comptent PAS dans le recouvrement
+const COMMON_INCI = new Set([
+  'water','glycerin','phenoxyethanol','parfum','fragrance','citric acid','sodium hydroxide',
+  'tocopherol','disodium edta','tetrasodium edta','ethylhexylglycerin','xanthan gum','caprylyl glycol',
+  'sodium benzoate','potassium sorbate','sodium chloride','butylene glycol','pentylene glycol','propanediol',
+  '1,2-hexanediol','sodium citrate','benzyl alcohol','dehydroacetic acid','chlorphenesin','carbomer',
+  'triethanolamine','tromethamine','polysorbate 20','polysorbate 60','peg-40 hydrogenated castor oil'
+]);
+function _canon(x) {
+  x = (x || '').toLowerCase().trim();
+  const syn = { 'aqua':'water','eau':'water','aqua/water':'water','aqua/water/eau':'water','water/aqua':'water',
+    'aoua/water/eau':'water','glycerine':'glycerin' };
+  return syn[x] || x;
+}
+async function _fetchCandInci(barcode) {
+  try {
+    const code = (barcode || '').replace(/\D/g, '');
+    if (code.length < 8) return null;
+    const r = await fetch(`https://world.openbeautyfacts.org/api/v2/product/${code}.json?fields=ingredients_text,ingredients_text_fr`, { headers: { 'User-Agent': OBF_UA } });
+    if (!r.ok) return null;
+    const d = await r.json().catch(() => null);
+    const p = d && d.product;
+    const t = p ? ((p.ingredients_text_fr || '').trim() || (p.ingredients_text || '').trim()) : '';
+    if (!t) return null;
+    return t.replace(/\([^)]*\)/g, ' ').replace(/['’‘]/g, ',').split(/[,•\n;]+/)
+      .map(s => _canon(s.replace(/\.$/, '').replace(/\s{2,}/g, ' ')))
+      .filter(s => s.length > 1 && s.length < 60).slice(0, 80);
+  } catch (e) { return null; }
+}
+// Recouvrement pondéré par le rang INCI (les 1ers ingrédients pèsent plus), hors base/technique
+function _overlap(refList, candList) {
+  if (!refList || !refList.length || !candList || !candList.length) return null;
+  const cand = new Set(candList.map(_canon));
+  let num = 0, den = 0;
+  refList.forEach((raw, i) => {
+    const ing = _canon(raw);
+    if (COMMON_INCI.has(ing)) return;
+    const w = 1 / Math.sqrt(i + 1);
+    den += w;
+    if (cand.has(ing)) num += w;
+  });
+  if (den <= 0) return null;
+  return Math.round(num / den * 100);
+}
+
 module.exports = async (req, res) => {
   Object.entries(CORS).forEach(([k, v]) => res.setHeader(k, v));
   if (req.method === 'OPTIONS') return res.status(200).end();
@@ -46,6 +93,20 @@ module.exports = async (req, res) => {
     concerns: (c.concernTags || []).slice(0, 8),
     desc: (c.description || '').slice(0, 160)
   }));
+  // B-3 : récupérer l'INCI réel des candidats ayant un code-barres (max 12) → recouvrement objectif
+  const refCanon = refInciList.map(_canon);
+  if (refCanon.length) {
+    const withBar = cands.filter(c => c.barcode).slice(0, 12);
+    await Promise.allSettled(withBar.map(async c => {
+      const ci = await _fetchCandInci(c.barcode);
+      if (ci && ci.length) {
+        const s = slim.find(x => x.id === c.id);
+        if (s) { s.inciTop = ci.slice(0, 20); s.overlapINCI = _overlap(refCanon, ci); }
+      }
+    }));
+  }
+  const inciMap = {}; slim.forEach(s => { inciMap[s.id] = (s.overlapINCI != null); });
+
   const validIds = new Set(slim.map(c => c.id));
 
   const prompt = `Tu es une experte cosmétique spécialisée dans les DUPES (équivalents beaucoup moins chers).
@@ -72,6 +133,7 @@ RÈGLES IMPÉRATIVES :
 - Un dupe n'est PAS juste "moins cher" : il doit réellement RESSEMBLER (catégorie, fonction, actifs principaux, texture, fini, couvrance/tenue pour le maquillage, résultat, teinte/sous-ton).
 - Si la COMPOSITION INCI de la référence est fournie, base ta comparaison SUR ELLE en priorité : compare les actifs RÉELLEMENT présents, en pondérant par l'ordre INCI (un ingrédient en début de liste pèse beaucoup plus qu'un extrait cité en fin de liste). Ne considère JAMAIS un ingrédient "marketing" (extrait végétal en bas de liste) comme actif principal. Un simple bénéfice/promesse commun ("anti-âge", "éclat", "hydrate") ne suffit JAMAIS à faire un dupe : il faut des actifs principaux et un mécanisme réellement communs.
 - CRITÈRE ÉLIMINATOIRE (actifs centraux) : détermine la FAMILLE d'actif CENTRAL de la référence. Si un candidat a pour actif CENTRAL une famille PUISSANTE qui est ABSENTE de la référence — en particulier vitamine C (ascorbic acid, ascorbyl…), rétinol/rétinoïdes, AHA/BHA (acide glycolique, lactique, salicylique), arbutine/dépigmentants — alors ce candidat N'EST PAS un dupe : plafonne sa similarité à 20 et NE l'inclus PAS dans les résultats. Exemple : référence = sérum botanique/huileux SANS vitamine C → un sérum vitamine C (type "C-VIT", "C-VIT liposomal") n'est PAS un dupe. Inversement, un sérum botanique nourrissant PEUT être un dupe d'un sérum botanique nourrissant.
+- Certains candidats ont un champ "overlapINCI" (recouvrement RÉEL de composition avec la référence, en %, calculé sur leurs vraies listes INCI hors ingrédients de base) et "inciTop" (leurs vrais ingrédients). Quand "overlapINCI" est présent, base la similarité de CE candidat PRINCIPALEMENT dessus (mesure objective de formule commune) : overlapINCI élevé → forte similarité ; overlapINCI faible → ce n'est PAS un dupe, même en cas de promesse commune.
 - Le prix est essentiel : un vrai dupe est significativement MOINS CHER que le produit d'origine.
 - PRIORITÉ ABSOLUE au catalogue ("results" via id). N'utilise "externalResults" QUE si le catalogue ne contient PAS de vrai dupe convaincant (aucun candidat avec une similarité ≥ 70).
 - "externalResults" : dupes RÉELS et connus que tu proposes hors de notre catalogue (ex: The Ordinary, e.l.f., Inkey List, Revolution…). Donne marque + nom exact + prix public approximatif en euros. N'invente jamais un produit qui n'existe pas.
@@ -161,7 +223,8 @@ Donne au maximum 3 résultats au total (catalogue + externes confondus), du plus
         role:         ROLES.includes(r.role) ? r.role : 'closest',
         skinFit:      FITS.includes(r.skinFit) ? r.skinFit : 'caution',
         skinNote:     typeof r.skinNote === 'string' ? r.skinNote.slice(0, 200) : '',
-        source:       'catalog'
+        source:       'catalog',
+        confidence:   (inciMap[r.id] && refInciList.length) ? 'high' : (refInciList.length ? 'medium' : 'low')
       })) : [];
 
     // Dupes hors catalogue (repli quand le catalogue ne couvre pas)
@@ -179,7 +242,8 @@ Donne au maximum 3 résultats au total (catalogue + externes confondus), du plus
         role:         ROLES.includes(r.role) ? r.role : 'closest',
         skinFit:      FITS.includes(r.skinFit) ? r.skinFit : 'caution',
         skinNote:     typeof r.skinNote === 'string' ? r.skinNote.slice(0, 200) : '',
-        source:       'external'
+        source:       'external',
+        confidence:   'low'
       })) : [];
 
     // Seuil minimum : en dessous, ce n'est pas un vrai dupe → on ne le propose pas
