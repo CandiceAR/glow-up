@@ -76,6 +76,9 @@ const DupeFinder = (() => {
       case 'notfound':  html = _vNotFound(); break;
       case 'searching': html = _vLoading('✨ Recherche du meilleur dupe…', 'On compare composition, texture, fini et prix'); break;
       case 'results':   html = _vResults(); break;
+      case 'nodupe':    html = _vResults(); break;   // aucun dupe fiable (branche dédiée dans _vResults)
+      case 'error':     html = _vError(); break;     // erreur technique + Réessayer
+      case 'insufficient': html = _vInsufficient(); break; // infos produit insuffisantes
       case 'barcode':   html = _vBarcode(); break;
       case 'blocked':   html = _vBlocked(); break;
       default:          html = _vHome();
@@ -325,7 +328,7 @@ const DupeFinder = (() => {
           ${header}
           <div class="df-nodupe">
             <span class="df-hero-emoji">💡</span>
-            <p>${S.noDupeMsg || "Nous n'avons pas trouvé de véritable dupe pour ce produit."}</p>
+            <p>${S.noDupeMsg || "Nous n'avons pas trouvé de dupe suffisamment proche de ce produit. Nous préférons ne pas te proposer une alternative peu pertinente."}</p>
           </div>
           ${alt ? `<p class="df-alt-h">Une alternative similaire, adaptée à ta peau :</p>${_resultCard({ id: alt.id, similarity: 0, role: 'value', skinFit: 'adapted', commonPoints: [], differences: [], why: '', skinNote: '' }, 0)}` : ''}
           ${_footer(left)}
@@ -370,6 +373,39 @@ const DupeFinder = (() => {
     return `${quota}<button class="btn btn-outline df-btn" onclick="DupeFinder.goHome()">📸 Scanner un autre produit</button>`;
   }
 
+  // ── État ERREUR TECHNIQUE (≠ absence de dupe) — avec bouton Réessayer ──
+  function _vError() {
+    return `
+      <div class="df-results">
+        <div class="df-state df-state--error">
+          <span class="df-hero-emoji">⚠️</span>
+          <h2>Recherche momentanément indisponible</h2>
+          <p>Nous n'avons pas pu rechercher les dupes pour le moment. Vérifie ta connexion puis réessaie.</p>
+          <div class="df-state-ctas">
+            <button class="btn btn-dark df-btn-main" onclick="DupeFinder.retry()">🔄 Réessayer</button>
+            <button class="btn btn-outline df-btn" onclick="DupeFinder.goHome()">← Retour</button>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  // ── État INFOS INSUFFISANTES sur le produit ──
+  function _vInsufficient() {
+    return `
+      <div class="df-results">
+        <div class="df-state df-state--insufficient">
+          <span class="df-hero-emoji">🔍</span>
+          <h2>Produit pas assez identifié</h2>
+          <p>Nous n'avons pas assez d'informations sur ce produit pour trouver un dupe fiable. Reprends une photo nette de la face avant, scanne le code-barres, ou saisis le produit à la main.</p>
+          <div class="df-state-ctas">
+            <button class="btn btn-dark df-btn-main" onclick="DupeFinder.goHome()">📸 Reprendre une photo</button>
+            <button class="btn btn-outline df-btn" onclick="DupeFinder.goBarcode()">📊 Scanner le code-barres</button>
+            <button class="btn btn-ghost df-btn-alt" onclick="DupeFinder.goManual(true)">⌨️ Saisir à la main</button>
+          </div>
+        </div>
+      </div>`;
+  }
+
   // ─── Navigation UI ────────────────────────────────────────────
   function goHome()   { S.view = 'home'; _stopBarcode(); render(); }
   function goManual(prefill) { if (!prefill) S.identified = null; S.view = 'manual'; render(); }
@@ -412,24 +448,36 @@ const DupeFinder = (() => {
 
   async function _identify(photo) {
     S.view = 'analyzing'; render();
+    console.info('[DupeFinder] identify: envoi de la photo…');
     try {
       const controller = new AbortController();
       const tid = setTimeout(() => controller.abort(), 25000);
+      const t0  = Date.now();
       const resp = await fetch(apiUrl('/api/identifyProduct'), {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ photo }), signal: controller.signal
       });
       clearTimeout(tid);
+      console.info('[DupeFinder] identify HTTP', resp.status, '·', (Date.now() - t0) + 'ms');
+      // Erreur serveur/technique → état ERREUR (pas « non identifié »)
+      if (resp.status >= 500) { S.lastError = 'HTTP ' + resp.status; S.view = 'error'; render(); return; }
       const data = await resp.json().catch(() => null);
-      if (!resp.ok || !data || (!data.brand && !data.name)) { S.view = 'notfound'; render(); return; }
+      if (!resp.ok || !data || (!data.brand && !data.name)) {
+        console.warn('[DupeFinder] identify: produit non reconnu');
+        S.view = 'notfound'; render(); return;
+      }
       // Corriger la catégorie à partir du nom (l'IA se trompe parfois)
       if (typeof CurrentRoutine !== 'undefined') data.category = CurrentRoutine.inferCategory(data.name, data.category);
       S.identified = data;
+      console.info('[DupeFinder] identify OK:', { brand: data.brand, name: data.name, recognized: data.recognized });
       S.view = data.recognized ? 'confirm' : 'notfound';
       render();
     } catch (err) {
-      console.warn('[DupeFinder] identify échoué:', err.message);
-      S.view = 'notfound'; render();
+      // Réseau / timeout → état ERREUR technique (avec Réessayer via reprise photo)
+      const kind = (err.name === 'AbortError') ? 'timeout (25s)' : (err.message || 'réseau');
+      console.error('[DupeFinder] ECHEC technique identify:', err.name || '', '·', kind);
+      S.lastError = kind;
+      S.view = 'error'; render();
     }
   }
 
@@ -471,39 +519,68 @@ const DupeFinder = (() => {
   }
 
   async function startSearch() {
-    if (_left() <= 0) { S.view = 'blocked'; render(); return; }
     const id = S.identified;
+    console.info('[DupeFinder] startSearch', id ? { brand: id.brand, name: id.name, category: id.category, confidence: id.confidence } : 'null');
     if (!id) { S.view = 'home'; render(); return; }
 
-    S.view = 'searching'; render();
+    // État « infos insuffisantes » : sans nom ni marque, impossible de chercher un dupe fiable
+    const hasName  = (id.name  || '').trim().length >= 2;
+    const hasBrand = (id.brand || '').trim().length >= 2;
+    if (!hasName && !hasBrand) {
+      console.warn('[DupeFinder] infos insuffisantes (ni nom ni marque) -> etat insufficient');
+      S.view = 'insufficient'; render(); return;
+    }
+
+    if (_left() <= 0) { S.view = 'blocked'; render(); return; }  // inerte tant que l'app est gratuite
+
+    S.view = 'searching'; S.lastError = null; render();
+
     // Pré-filtre catalogue ; même vide, l'IA peut proposer un dupe hors catalogue
     const candidates = _shortlist(id);
+    console.info('[DupeFinder] shortlist:', candidates.length, 'candidat(s) catalogue');
     _saveScan(id, candidates.length > 0);
 
+    let resp, data;
     try {
       const controller = new AbortController();
       const tid = setTimeout(() => controller.abort(), 40000);
-      const resp = await fetch(apiUrl('/api/dupeMatch'), {
+      const t0  = Date.now();
+      resp = await fetch(apiUrl('/api/dupeMatch'), {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ product: id, candidates, userSkin: _userSkin(),
           ageConstraint: (typeof AgeGuard !== 'undefined') ? AgeGuard.aiConstraint(AppState.questionnaire?.answers) : null }),
         signal: controller.signal
       });
       clearTimeout(tid);
-      const data = await resp.json().catch(() => null);
-      if (!resp.ok || !data) throw new Error('réponse invalide');
-      S.trueDupe        = !!data.trueDupeExists;
-      S.results         = data.results || [];
-      S.externalResults = data.externalResults || [];
-      S.noDupeMsg       = data.noDupeMessage || '';
-      S.bestAltId       = data.bestSkinAlternativeId || null;
-      _inc();
-      S.view = 'results'; render();
+      console.info('[DupeFinder] dupeMatch HTTP', resp.status, '·', (Date.now() - t0) + 'ms');
+      data = await resp.json().catch(() => null);
+      if (!resp.ok || !data) throw new Error('HTTP ' + resp.status + (data && data.error ? ' · ' + data.error : ' · reponse illisible'));
     } catch (err) {
-      console.warn('[DupeFinder] dupeMatch échoué:', err.message);
-      showToast('La recherche a échoué, réessaie dans un instant', 'error');
-      S.view = 'confirm'; render();
+      // ── ÉTAT ERREUR TECHNIQUE (réseau / timeout / serveur) — distinct de « aucun dupe » ──
+      const kind = (err.name === 'AbortError') ? 'timeout (40s)' : (err.message || 'réseau');
+      console.error('[DupeFinder] ECHEC technique dupeMatch:', err.name || '', '·', kind);
+      S.lastError = kind;
+      S.view = 'error'; render();
+      return;
     }
+
+    // ── SUCCÈS HTTP : distinguer « résultats » vs « aucun dupe fiable » ──
+    S.trueDupe        = !!data.trueDupeExists;
+    S.results         = Array.isArray(data.results) ? data.results : [];
+    S.externalResults = Array.isArray(data.externalResults) ? data.externalResults : [];
+    S.noDupeMsg       = data.noDupeMessage || '';
+    S.bestAltId       = data.bestSkinAlternativeId || null;
+    _inc();
+
+    const hasResults = S.trueDupe && (S.results.length > 0 || S.externalResults.length > 0);
+    if (hasResults) {
+      console.info('[DupeFinder] resultats:', S.results.length, 'catalogue +', S.externalResults.length, 'externe(s)');
+      S.view = 'results';
+    } else {
+      console.info('[DupeFinder] aucun dupe fiable (trueDupe=' + S.trueDupe + ')');
+      S.view = 'nodupe';
+    }
+    render();
   }
 
   // ─── Sauvegarde des scans (enrichissement catalogue / admin) ──
@@ -584,9 +661,17 @@ const DupeFinder = (() => {
     }
   }
 
+  // Réessayer contextuel : relance la recherche si un produit est identifié,
+  // sinon renvoie à l'accueil pour reprendre une photo.
+  function retry() {
+    console.info('[DupeFinder] retry (identified=' + !!S.identified + ')');
+    if (S.identified) startSearch();
+    else goHome();
+  }
+
   return {
     initScreen, render, goHome, goManual, goBarcode,
-    pickCamera, pickGallery, onPhoto, submitManual, startSearch
+    pickCamera, pickGallery, onPhoto, submitManual, startSearch, retry
   };
 })();
 
