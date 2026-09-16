@@ -328,6 +328,50 @@ const Admin = (() => {
     document.getElementById('productFormWrap').scrollIntoView({ behavior: 'smooth' });
   }
 
+  // ─── Scan du code-barres (remplit #fBarcode) ─────────────────
+  async function scanBarcode() {
+    if (!('BarcodeDetector' in window)) {
+      alert("Le scan n'est pas supporté par ce navigateur. Saisis le numéro à la main (13 chiffres sous les barres).");
+      return;
+    }
+    let stream;
+    try { stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); }
+    catch (e) { alert("Accès caméra impossible : " + (e.message || e.name)); return; }
+
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px;';
+    const hint = document.createElement('p');
+    hint.textContent = 'Vise le code-barres du produit';
+    hint.style.cssText = 'color:#fff;font-family:sans-serif;font-size:15px;margin:0;';
+    const video = document.createElement('video');
+    video.autoplay = true; video.playsInline = true; video.muted = true; video.srcObject = stream;
+    video.style.cssText = 'max-width:92%;max-height:66%;border-radius:14px;';
+    const closeBtn = document.createElement('button');
+    closeBtn.textContent = 'Fermer';
+    closeBtn.style.cssText = 'background:#B4482E;color:#fff;border:none;border-radius:24px;padding:12px 30px;font-size:15px;';
+    overlay.append(hint, video, closeBtn);
+    document.body.appendChild(overlay);
+
+    const detector = new window.BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e'] });
+    let stopped = false;
+    const cleanup = () => { stopped = true; try { stream.getTracks().forEach(t => t.stop()); } catch (e) {} overlay.remove(); };
+    closeBtn.onclick = cleanup;
+
+    const loop = async () => {
+      if (stopped) return;
+      try {
+        const codes = await detector.detect(video);
+        if (codes && codes.length && codes[0].rawValue) {
+          document.getElementById('fBarcode').value = codes[0].rawValue.replace(/\s+/g, '');
+          cleanup();
+          return;
+        }
+      } catch (e) {}
+      requestAnimationFrame(loop);
+    };
+    video.addEventListener('loadedmetadata', () => loop(), { once: true });
+  }
+
   function editProduct(id) {
     const p = products.find(x => x.id === id);
     if (!p) return;
@@ -346,6 +390,7 @@ const Admin = (() => {
     document.getElementById('fPrice').value       = p.price != null ? p.price : '';
     document.getElementById('fRating').value      = p.rating != null ? p.rating : '';
     document.getElementById('fReviews').value     = p.reviews != null ? p.reviews : '';
+    document.getElementById('fBarcode').value     = p.barcode || '';
     document.getElementById('fActive').checked    = p.active !== false;
     document.getElementById('fFeatured').checked  = p.isFeatured === true;
     document.getElementById('fKorean').checked    = p.isKorean === true;
@@ -411,7 +456,7 @@ const Admin = (() => {
   }
 
   function clearForm() {
-    ['fId', 'fAsin', 'fName', 'fBrand', 'fAmazonUrl', 'fImageUrl', 'fDescription', 'fPrice', 'fRating', 'fReviews', 'fColorHexText', 'fShadeName'].forEach(id => {
+    ['fId', 'fAsin', 'fName', 'fBrand', 'fAmazonUrl', 'fImageUrl', 'fDescription', 'fPrice', 'fRating', 'fReviews', 'fBarcode', 'fColorHexText', 'fShadeName'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
@@ -464,6 +509,7 @@ const Admin = (() => {
     const price      = priceRaw   ? parseFloat(priceRaw)   : null;
     const rating     = ratingRaw  ? parseFloat(ratingRaw)  : null;
     const reviews    = reviewsRaw ? parseInt(reviewsRaw, 10) : null;
+    const barcode    = document.getElementById('fBarcode').value.trim().replace(/\s+/g, '');
     const isActive   = document.getElementById('fActive').checked;
     const isFeatured = document.getElementById('fFeatured').checked;
     const isKorean   = document.getElementById('fKorean').checked;
@@ -543,6 +589,7 @@ const Admin = (() => {
         price,
         rating,
         reviews,
+        barcode: barcode || null,
         active: isActive,
         isFeatured,
         isKorean: isKorean || false,
@@ -577,6 +624,7 @@ const Admin = (() => {
         currency: 'EUR',
         rating,
         reviews,
+        barcode: barcode || null,
         colorHex:  colorHex  || null,
         shadeName: shadeName || null,
         undertone: undertone || null,
@@ -768,6 +816,7 @@ const Admin = (() => {
     document.getElementById('fPrice').value       = p.price != null ? p.price : '';
     document.getElementById('fRating').value      = p.rating != null ? p.rating : '';
     document.getElementById('fReviews').value     = p.reviews != null ? p.reviews : '';
+    document.getElementById('fBarcode').value     = p.barcode || '';
     document.getElementById('fActive').checked    = p.active !== false;
     document.getElementById('fFeatured').checked  = false;
     document.getElementById('fColorHex').value    = p.colorHex || '#ffffff';
@@ -1530,7 +1579,7 @@ const Admin = (() => {
 
   return {
     login, logout,
-    showAddForm, editProduct, duplicateProduct, cancelForm, saveProduct, toggleMultiUsageZones,
+    showAddForm, editProduct, duplicateProduct, cancelForm, saveProduct, scanBarcode, toggleMultiUsageZones,
     onCategoryChange, autoTagAll,
     toggleActive, toggleFeatured, deleteProduct,
     search, filterCat, filterIngredient, filterConcern, toggleNoPhotoFilter, patchSkincareTags, importNewFromJSON, forceSyncAllFromJSON, showTab, checkMissingPhotos,

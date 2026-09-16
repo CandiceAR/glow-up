@@ -468,6 +468,13 @@
                 <label class="form-label">💬 Nombre d'avis</label>
                 <input type="number" id="fReviews" class="form-input" placeholder="1200" min="0" step="1">
               </div>
+              <div class="form-group full">
+                <label class="form-label">🏷️ Code-barres (EAN) <span style="color:#999;font-weight:400">— sert à récupérer l'INCI (facultatif)</span></label>
+                <div style="display:flex; gap:8px;">
+                  <input type="text" id="fBarcode" class="form-input" placeholder="3380810045680" inputmode="numeric" style="flex:1">
+                  <button type="button" class="btn" onclick="Admin.scanBarcode()" style="white-space:nowrap">📷 Scanner</button>
+                </div>
+              </div>
 
               <!-- Couleur / Teinte -->
               <div class="form-group">
@@ -1019,6 +1026,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <script src="js/firestoreProducts.js"></script>
   <script src="js/tracker.js"></script>
-  <script src="js/adminPanel.js"></script>
+  <script src="js/adminPanel.js?v=2"></script>
 </body>
 </html>
