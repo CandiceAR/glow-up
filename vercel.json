@@ -42,6 +42,9 @@
     "api/dupeMatch.js": {
       "maxDuration": 45
     },
+    "api/inci.js": {
+      "maxDuration": 20
+    },
     "api/analyzeRoutine.js": {
       "maxDuration": 60
     },

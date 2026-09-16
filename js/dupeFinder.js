@@ -303,6 +303,19 @@ const DupeFinder = (() => {
     return `<div class="df-agenote">💛 ${AgeGuard.scanMessage()}</div>`;
   }
 
+  // Badge « niveau de confiance de la composition » (INCI Open Beauty Facts)
+  function _inciBadge(id) {
+    if (!id || !id.inciConfidence || id.inciConfidence === 'none') return '';
+    const map = {
+      high:   ['✅', 'Composition vérifiée (Open Beauty Facts)'],
+      medium: ['✅', 'Composition récupérée'],
+      low:    ['⚠️', 'Composition à confirmer']
+    };
+    const m = map[id.inciConfidence];
+    if (!m) return '';
+    return `<span class="df-inci-badge df-inci-${id.inciConfidence}">${m[0]} ${m[1]}</span>`;
+  }
+
   function _vResults() {
     const id = S.identified || {};
     const left = _left();
@@ -314,6 +327,7 @@ const DupeFinder = (() => {
           <span class="df-orig-label">Ton produit</span>
           <h2 class="df-orig-name">${(id.brand ? id.brand + ' ' : '') + (id.name || '')}</h2>
           ${id.estPrice > 0 ? `<span class="df-orig-price">~${id.estPrice.toFixed(2)} €</span>` : ''}
+          ${_inciBadge(id)}
         </div>
       </div>`;
 
@@ -481,6 +495,22 @@ const DupeFinder = (() => {
     }
   }
 
+  // ─── INCI réel via Open Beauty Facts (best-effort, non bloquant) ──
+  async function _fetchInci(id) {
+    try {
+      const controller = new AbortController();
+      const tid = setTimeout(() => controller.abort(), 12000);
+      const resp = await fetch(apiUrl('/api/inci'), {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ barcode: id.barcode || '', brand: id.brand || '', name: id.name || '' }),
+        signal: controller.signal
+      });
+      clearTimeout(tid);
+      if (!resp.ok) return null;
+      return await resp.json().catch(() => null);
+    } catch (e) { console.warn('[DupeFinder] INCI fetch échoué:', e.message); return null; }
+  }
+
   // ─── Saisie manuelle ──────────────────────────────────────────
   function submitManual() {
     const brand = document.getElementById('dfBrand')?.value?.trim() || '';
@@ -514,6 +544,7 @@ const DupeFinder = (() => {
       ? AgeGuard.filter(scored, AgeGuard.age(AppState.questionnaire?.answers)) : scored;
     return _pool.map(p => ({
       id: p.id, brand: p.brand, name: p.name, category: p.category, price: p.price,
+      barcode: p.barcode || '',
       ingredientTags: p.ingredientTags || [], concernTags: p.concernTags || [], description: p.description || ''
     }));
   }
@@ -534,6 +565,17 @@ const DupeFinder = (() => {
     if (_left() <= 0) { S.view = 'blocked'; render(); return; }  // inerte tant que l'app est gratuite
 
     S.view = 'searching'; S.lastError = null; render();
+
+    // Récupérer l'INCI réel de la référence (Open Beauty Facts) — non bloquant
+    const inci = await _fetchInci(id);
+    if (inci && inci.found) {
+      id.inci = inci.inci; id.inciList = inci.inciList || [];
+      id.inciSource = inci.source; id.inciConfidence = inci.confidence;
+      console.info('[DupeFinder] INCI référence:', inci.confidence, '·', (inci.inciList || []).length, 'ingrédients');
+    } else {
+      id.inciConfidence = 'none';
+      console.info('[DupeFinder] INCI référence: non trouvé');
+    }
 
     // Pré-filtre catalogue ; même vide, l'IA peut proposer un dupe hors catalogue
     const candidates = _shortlist(id);

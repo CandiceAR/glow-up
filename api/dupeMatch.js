@@ -33,6 +33,12 @@ module.exports = async (req, res) => {
     : '';
   const cands = Array.isArray(candidates) ? candidates : [];
 
+  // Composition INCI réelle de la référence (Open Beauty Facts), si disponible
+  const refInciList = Array.isArray(product.inciList) ? product.inciList.slice(0, 40) : [];
+  const refInci = refInciList.length
+    ? `COMPOSITION RÉELLE (INCI) DE LA RÉFÉRENCE — source Open Beauty Facts (FIABLE, à privilégier), listée du plus concentré au moins concentré :\n${refInciList.join(', ')}`
+    : `COMPOSITION INCI de la référence NON disponible — raisonne prudemment, ne suppose aucun ingrédient non listé.`;
+
   // Limiter la charge : max 25 candidats, champs compacts
   const slim = cands.slice(0, 25).map(c => ({
     id: c.id, brand: c.brand, name: c.name, category: c.category,
@@ -52,6 +58,8 @@ ${JSON.stringify({
     prixEstime: product.estPrice
   }, null, 0)}
 
+${refInci}
+
 PROFIL DE PEAU DE L'UTILISATRICE (info complémentaire uniquement) :
 ${JSON.stringify(userSkin || {}, null, 0)}
 
@@ -62,6 +70,7 @@ Ta mission : trouver le VRAI dupe du produit photographié — un produit qui of
 
 RÈGLES IMPÉRATIVES :
 - Un dupe n'est PAS juste "moins cher" : il doit réellement RESSEMBLER (catégorie, fonction, actifs principaux, texture, fini, couvrance/tenue pour le maquillage, résultat, teinte/sous-ton).
+- Si la COMPOSITION INCI de la référence est fournie, base ta comparaison SUR ELLE en priorité : compare les actifs RÉELLEMENT présents, en pondérant par l'ordre INCI (un ingrédient en début de liste pèse beaucoup plus qu'un extrait cité en fin de liste). Ne considère JAMAIS un ingrédient "marketing" (extrait végétal en bas de liste) comme actif principal. Un simple bénéfice/promesse commun ("anti-âge", "éclat", "hydrate") ne suffit JAMAIS à faire un dupe : il faut des actifs principaux et un mécanisme réellement communs.
 - Le prix est essentiel : un vrai dupe est significativement MOINS CHER que le produit d'origine.
 - PRIORITÉ ABSOLUE au catalogue ("results" via id). N'utilise "externalResults" QUE si le catalogue ne contient PAS de vrai dupe convaincant (aucun candidat avec une similarité ≥ 70).
 - "externalResults" : dupes RÉELS et connus que tu proposes hors de notre catalogue (ex: The Ordinary, e.l.f., Inkey List, Revolution…). Donne marque + nom exact + prix public approximatif en euros. N'invente jamais un produit qui n'existe pas.

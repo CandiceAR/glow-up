@@ -10437,3 +10437,8 @@ em { font-style: italic; color: var(--nude); }
 .df-state p { color: var(--muted,#8A6E58); font-size: 14.5px; line-height: 1.5; max-width: 40ch; margin: 0 auto 18px; }
 .df-state-ctas { display: flex; flex-direction: column; gap: 10px; max-width: 320px; margin: 0 auto; }
 .df-state--error h2 { color: #b23b2e; }
+
+/* Trouver son dupe — badge confiance composition (INCI) */
+.df-inci-badge { display: inline-block; margin-top: 6px; font-size: 11.5px; font-weight: 600; padding: 3px 10px; border-radius: 14px; }
+.df-inci-high, .df-inci-medium { background: #E7F3EA; color: #2f7a46; }
+.df-inci-low { background: #FBEEE9; color: #b23b2e; }
