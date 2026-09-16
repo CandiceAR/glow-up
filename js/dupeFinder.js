@@ -258,10 +258,19 @@ const DupeFinder = (() => {
     const p = _catalogProduct(r.id);
     if (!p) return '';
     const est = S.identified?.estPrice || 0;
-    const savings = (est > 0 && p.price != null && p.price < est) ? (est - p.price) : 0;
+    let savings = (est > 0 && p.price != null && p.price < est) ? (est - p.price) : 0;
     const fit = FIT[r.skinFit] || FIT.caution;
     const buyUrl = p.amazonUrl || p.shopUrl || '#';
     const isAff = !!p.amazonUrl;
+    // Prix à volume égal (section 11) — uniquement si les 2 contenances sont connues
+    const refVol  = (S.identified && S.identified.volumeMl) || 0;
+    const candVol = p.volumeMl || 0;
+    let volLine = '';
+    if (refVol > 0 && candVol > 0 && p.price != null) {
+      const normCand = p.price / candVol * refVol;
+      volLine = `<div class="df-vol">${p.price.toFixed(2)} € / ${candVol} ml → ≈ <strong>${normCand.toFixed(2)} €</strong> pour ${refVol} ml</div>`;
+      if (est > 0 && normCand < est) savings = est - normCand;
+    }
     return `
       <article class="df-result">
         <div class="df-result-role">${ROLE_LABEL[r.role] || ROLE_LABEL.closest} ${_tier(r.similarity)}</div>
@@ -275,8 +284,9 @@ const DupeFinder = (() => {
             <h3 class="df-result-name">${p.name || ''}</h3>
             <div class="df-result-price">
               <strong>${p.price != null ? p.price.toFixed(2) + ' €' : '—'}</strong>
-              ${savings > 0 ? `<span class="df-save">Tu économises ${savings.toFixed(2)} €</span>` : ''}
+              ${savings > 0 ? `<span class="df-save">Tu économises ${savings.toFixed(2)} €${volLine ? ' (à volume égal)' : ''}</span>` : ''}
             </div>
+            ${volLine}
             <div class="df-fit ${fit.cls}">${fit.icon} ${fit.label}</div>
           </div>
         </div>
@@ -579,6 +589,7 @@ const DupeFinder = (() => {
     if (inci && inci.found) {
       id.inci = inci.inci; id.inciList = inci.inciList || [];
       id.inciSource = inci.source; id.inciConfidence = inci.confidence;
+      if (inci.volumeMl) id.volumeMl = inci.volumeMl;
       console.info('[DupeFinder] INCI référence:', inci.confidence, '·', (inci.inciList || []).length, 'ingrédients');
     } else {
       id.inciConfidence = 'none';

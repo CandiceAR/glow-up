@@ -391,6 +391,7 @@ const Admin = (() => {
     document.getElementById('fRating').value      = p.rating != null ? p.rating : '';
     document.getElementById('fReviews').value     = p.reviews != null ? p.reviews : '';
     document.getElementById('fBarcode').value     = p.barcode || '';
+    document.getElementById('fVolume').value      = p.volumeMl != null ? p.volumeMl : '';
     document.getElementById('fActive').checked    = p.active !== false;
     document.getElementById('fFeatured').checked  = p.isFeatured === true;
     document.getElementById('fKorean').checked    = p.isKorean === true;
@@ -456,7 +457,7 @@ const Admin = (() => {
   }
 
   function clearForm() {
-    ['fId', 'fAsin', 'fName', 'fBrand', 'fAmazonUrl', 'fImageUrl', 'fDescription', 'fPrice', 'fRating', 'fReviews', 'fBarcode', 'fColorHexText', 'fShadeName'].forEach(id => {
+    ['fId', 'fAsin', 'fName', 'fBrand', 'fAmazonUrl', 'fImageUrl', 'fDescription', 'fPrice', 'fRating', 'fReviews', 'fBarcode', 'fVolume', 'fColorHexText', 'fShadeName'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
@@ -510,6 +511,8 @@ const Admin = (() => {
     const rating     = ratingRaw  ? parseFloat(ratingRaw)  : null;
     const reviews    = reviewsRaw ? parseInt(reviewsRaw, 10) : null;
     const barcode    = document.getElementById('fBarcode').value.trim().replace(/\s+/g, '');
+    const volumeRaw  = document.getElementById('fVolume').value.trim();
+    const volumeMl   = volumeRaw ? parseFloat(volumeRaw) : null;
     const isActive   = document.getElementById('fActive').checked;
     const isFeatured = document.getElementById('fFeatured').checked;
     const isKorean   = document.getElementById('fKorean').checked;
@@ -590,6 +593,7 @@ const Admin = (() => {
         rating,
         reviews,
         barcode: barcode || null,
+        volumeMl: volumeMl,
         active: isActive,
         isFeatured,
         isKorean: isKorean || false,
@@ -625,6 +629,7 @@ const Admin = (() => {
         rating,
         reviews,
         barcode: barcode || null,
+        volumeMl: volumeMl,
         colorHex:  colorHex  || null,
         shadeName: shadeName || null,
         undertone: undertone || null,
@@ -817,6 +822,7 @@ const Admin = (() => {
     document.getElementById('fRating').value      = p.rating != null ? p.rating : '';
     document.getElementById('fReviews').value     = p.reviews != null ? p.reviews : '';
     document.getElementById('fBarcode').value     = p.barcode || '';
+    document.getElementById('fVolume').value      = p.volumeMl != null ? p.volumeMl : '';
     document.getElementById('fActive').checked    = p.active !== false;
     document.getElementById('fFeatured').checked  = false;
     document.getElementById('fColorHex').value    = p.colorHex || '#ffffff';

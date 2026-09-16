@@ -20,7 +20,17 @@ const CORS = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS'
 };
 const OBF_UA = 'GlowUp/1.0 (skincare dupe finder; contact@glowupskin.app)';
-const FIELDS = 'code,product_name,brands,ingredients_text,ingredients_text_fr';
+const FIELDS = 'code,product_name,brands,ingredients_text,ingredients_text_fr,quantity';
+
+// Contenance -> ml (gère ml / cl / l). null si non exprimé en volume (ex. g, oz).
+function _parseMl(q) {
+  if (!q || typeof q !== 'string') return null;
+  const m = q.toLowerCase().replace(',', '.').match(/([\d.]+)\s*(ml|cl|l)\b/);
+  if (!m) return null;
+  const n = parseFloat(m[1]);
+  if (!isFinite(n) || n <= 0) return null;
+  return m[2] === 'l' ? Math.round(n * 1000) : m[2] === 'cl' ? Math.round(n * 10) : Math.round(n);
+}
 
 function _normList(text) {
   if (!text || typeof text !== 'string') return [];
@@ -61,7 +71,7 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST')    return res.status(405).json({ error: 'Method Not Allowed' });
 
   const { barcode, brand, name } = req.body || {};
-  const empty = { found: false, inci: '', inciList: [], source: null, confidence: 'none', matchedName: '', barcode: '' };
+  const empty = { found: false, inci: '', inciList: [], source: null, confidence: 'none', matchedName: '', barcode: '', quantity: '', volumeMl: null };
 
   try {
     // 1) Par code-barres (fiable)
@@ -74,7 +84,8 @@ module.exports = async (req, res) => {
         return res.status(200).json({
           found: true, inci: text, inciList: _normList(text),
           source: 'openbeautyfacts', confidence: 'high',
-          matchedName: p.product_name || '', barcode: code
+          matchedName: p.product_name || '', barcode: code,
+          quantity: p.quantity || '', volumeMl: _parseMl(p.quantity)
         });
       }
     }
@@ -92,7 +103,8 @@ module.exports = async (req, res) => {
           return res.status(200).json({
             found: true, inci: text, inciList: _normList(text),
             source: 'openbeautyfacts', confidence: 'medium',
-            matchedName: p.product_name || '', barcode: p.code || ''
+            matchedName: p.product_name || '', barcode: p.code || '',
+            quantity: p.quantity || '', volumeMl: _parseMl(p.quantity)
           });
         }
       }
@@ -103,7 +115,8 @@ module.exports = async (req, res) => {
         return res.status(200).json({
           found: true, inci: text, inciList: _normList(text),
           source: 'openbeautyfacts', confidence: 'low',
-          matchedName: weak.product_name || '', barcode: weak.code || ''
+          matchedName: weak.product_name || '', barcode: weak.code || '',
+          quantity: weak.quantity || '', volumeMl: _parseMl(weak.quantity)
         });
       }
     }
