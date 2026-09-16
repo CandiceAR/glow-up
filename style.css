@@ -10442,3 +10442,9 @@ em { font-style: italic; color: var(--nude); }
 .df-inci-badge { display: inline-block; margin-top: 6px; font-size: 11.5px; font-weight: 600; padding: 3px 10px; border-radius: 14px; }
 .df-inci-high, .df-inci-medium { background: #E7F3EA; color: #2f7a46; }
 .df-inci-low { background: #FBEEE9; color: #b23b2e; }
+
+/* Trouver son dupe — paliers de qualité (section 12) */
+.df-tier { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 12px; margin-left: 4px; }
+.df-tier-top  { background: #E7F3EA; color: #2f7a46; }
+.df-tier-good { background: #FBF3E3; color: #9a6b12; }
+.df-tier-ok   { background: #F0EAE2; color: #7E6552; }

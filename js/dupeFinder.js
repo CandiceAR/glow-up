@@ -201,6 +201,14 @@ const DupeFinder = (() => {
   };
   const ROLE_LABEL = { closest: '🎯 Le dupe le plus proche', value: '💛 Meilleur rapport qualité-prix', cheapest: '🌱 L\'alternative la moins chère' };
 
+  // Palier de qualité selon la similarité estimée (section 12)
+  function _tier(sim) {
+    if (!sim || sim <= 0) return '';
+    if (sim >= 80) return '<span class="df-tier df-tier-top">✨ Dupe très proche</span>';
+    if (sim >= 70) return '<span class="df-tier df-tier-good">✅ Bonne alternative</span>';
+    return '<span class="df-tier df-tier-ok">≈ Alternative fonctionnelle</span>';
+  }
+
   function _catalogProduct(id) { return (AppState.products.catalog || []).find(p => p.id === id); }
   function _compareUrl(p) { return `https://www.google.com/search?q=${encodeURIComponent((p.brand || '') + ' ' + (p.name || ''))}&tbm=shop`; }
   function _amazonSearch(brand, name) { return `https://www.amazon.fr/s?k=${encodeURIComponent(((brand || '') + ' ' + (name || '')).trim())}&tag=kan10ar-21`; }
@@ -213,7 +221,7 @@ const DupeFinder = (() => {
     const buyUrl = _amazonSearch(r.brand, r.name);
     return `
       <article class="df-result df-result--ext">
-        <div class="df-result-role">${ROLE_LABEL[r.role] || ROLE_LABEL.closest} <span class="df-ext-tag">hors catalogue</span></div>
+        <div class="df-result-role">${ROLE_LABEL[r.role] || ROLE_LABEL.closest} <span class="df-ext-tag">hors catalogue</span> ${_tier(r.similarity)}</div>
         <div class="df-result-top">
           <div class="df-result-img-wrap">
             <div class="df-result-noimg">🔎</div>
@@ -256,7 +264,7 @@ const DupeFinder = (() => {
     const isAff = !!p.amazonUrl;
     return `
       <article class="df-result">
-        <div class="df-result-role">${ROLE_LABEL[r.role] || ROLE_LABEL.closest}</div>
+        <div class="df-result-role">${ROLE_LABEL[r.role] || ROLE_LABEL.closest} ${_tier(r.similarity)}</div>
         <div class="df-result-top">
           <div class="df-result-img-wrap">
             ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" class="df-result-img" loading="lazy" onerror="this.style.display='none'">` : '<div class="df-result-noimg">🧴</div>'}
