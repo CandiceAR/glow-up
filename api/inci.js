@@ -27,6 +27,7 @@ function _normList(text) {
   return text
     .replace(/\([^)]*\)/g, ' ')          // retire (parenthèses / %)
     .replace(/\[[^\]]*\]/g, ' ')
+    .replace(/['’‘]/g, ',')              // certaines fiches OBF utilisent ' comme séparateur
     .split(/[,•\n;]+/)
     .map(s => s.trim().toLowerCase().replace(/\.$/, '').replace(/\s{2,}/g, ' '))
     .filter(s => s.length > 1 && s.length < 60)
