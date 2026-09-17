@@ -842,13 +842,12 @@ const RoutineRenderer = (() => {
     const isSub = plan === 'glow' || plan === 'glowplus';
     const items = actives.map(a => `<div class="molecule-item"><strong>${a.label}</strong><span>${a.benefit}</span></div>`).join('');
     if (isSub) {
-      return `
-        <section class="molecules-block">
-          <div class="molecules-head">🧪 Molécules clés pour ta peau</div>
-          <p class="molecules-sub">Les actifs sélectionnés selon ton diagnostic — et pourquoi.</p>
-          <div class="molecules-list">${items}</div>
-          <button class="btn-ghost molecules-more" onclick="showScreen('skinpedia')">En savoir plus sur ces actifs →</button>
-        </section>`;
+      const n = actives.length;
+      const inner = `
+        <div class="molecules-list">${items}</div>
+        <button class="btn-ghost molecules-more" onclick="showScreen('skinpedia')">En savoir plus sur ces actifs →</button>`;
+      return _accordion('🧪', 'Molécules clés pour ta peau',
+        `${n} actif${n > 1 ? 's' : ''} sélectionné${n > 1 ? 's' : ''} selon ton diagnostic`, inner);
     }
     return `
       <section class="molecules-block molecules-block--locked" onclick="Subscription.openLock('molecules')" role="button" tabindex="0">
@@ -895,11 +894,8 @@ const RoutineRenderer = (() => {
       ${g.warn.length ? `<div class="assoc-group assoc-group--warn"><div class="assoc-group-title">⚠️ Précautions</div>${g.warn.map(t => `<p class="assoc-line">${t}</p>`).join('')}</div>` : ''}
       ${g.good.length ? `<div class="assoc-group assoc-group--good"><div class="assoc-group-title">✅ Bonnes associations</div>${g.good.map(t => `<p class="assoc-line">${t}</p>`).join('')}</div>` : ''}`;
     if (isSub) {
-      return `<section class="assoc-block">
-        <div class="assoc-head">⚗️ Associations & précautions</div>
-        <p class="assoc-sub">Comment combiner tes actifs sans risque d'irritation.</p>
-        ${body}
-      </section>`;
+      return _accordion('🛡️', 'Associations & précautions',
+        'Comment utiliser tes actifs sans irriter ta peau', body, { warn: true });
     }
     return `<section class="assoc-block assoc-block--locked" onclick="Subscription.openLock('associations')" role="button" tabindex="0">
       <div class="assoc-head">⚗️ Associations & précautions</div>
@@ -1397,6 +1393,54 @@ const RoutineRenderer = (() => {
   }
 
   // ─── Avertissements ───────────────────────────────────────────
+  // ─── Accordéons compacts (fermés par défaut) ─────────────────
+  let _accSeq = 0;
+  function _accordion(icon, title, subtitle, innerHTML, opts = {}) {
+    if (!innerHTML || !innerHTML.trim()) return '';
+    const bid = 'acc-body-' + (++_accSeq);
+    return `
+      <div class="acc-card${opts.warn ? ' acc-card--warn' : ''}">
+        <button type="button" class="acc-head" aria-expanded="false" aria-controls="${bid}"
+                onclick="RoutineRenderer.toggleAccordion(this)">
+          <span class="acc-head-txt">
+            <span class="acc-title">${icon} ${title}</span>
+            <span class="acc-sub">${subtitle}</span>
+          </span>
+          <svg class="acc-chevron" viewBox="0 0 24 24" width="20" height="20" fill="none"
+               stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="acc-body" id="${bid}" role="region">
+          <div class="acc-body-inner">${innerHTML}</div>
+        </div>
+      </div>`;
+  }
+  function _accExpand(el) {
+    el.style.maxHeight = el.scrollHeight + 'px';
+    const done = () => { el.style.maxHeight = 'none'; el.removeEventListener('transitionend', done); };
+    el.addEventListener('transitionend', done);
+  }
+  function _accCollapse(el) {
+    el.style.maxHeight = el.scrollHeight + 'px';
+    requestAnimationFrame(() => { el.style.maxHeight = '0px'; });
+  }
+  function toggleAccordion(btn) {
+    const card = btn.closest('.acc-card');
+    const body = document.getElementById(btn.getAttribute('aria-controls'));
+    const isOpen = btn.getAttribute('aria-expanded') === 'true';
+    if (!isOpen && card && card.parentElement) {
+      // une seule section ouverte à la fois
+      card.parentElement.querySelectorAll('.acc-head[aria-expanded="true"]').forEach(b => {
+        if (b === btn) return;
+        b.setAttribute('aria-expanded', 'false');
+        const c = b.closest('.acc-card'); if (c) c.classList.remove('acc-card--open');
+        const bb = document.getElementById(b.getAttribute('aria-controls')); if (bb) _accCollapse(bb);
+      });
+    }
+    btn.setAttribute('aria-expanded', String(!isOpen));
+    if (card) card.classList.toggle('acc-card--open', !isOpen);
+    if (body) { isOpen ? _accCollapse(body) : _accExpand(body); }
+  }
+
   function renderWarnings(warnings, hasRetinol) {
     if (!warnings || warnings.length === 0) return '';
     const filtered = hasRetinol
@@ -1406,13 +1450,11 @@ const RoutineRenderer = (() => {
           return !lc.includes('rétinol') && !lc.includes('retinol');
         });
     if (filtered.length === 0) return '';
-    return `
-      <div class="routine-warnings">
-        <h3>⚠️ Points importants</h3>
-        <ul>
-          ${filtered.map(w => `<li>${w}</li>`).join('')}
-        </ul>
-      </div>`;
+    const n = filtered.length;
+    const inner = `<ul class="routine-warnings-list">${filtered.map(w => `<li>${w}</li>`).join('')}</ul>`;
+    return _accordion('⚠️', 'Points importants',
+      `${n} conseil${n > 1 ? 's' : ''} essentiel${n > 1 ? 's' : ''} à connaître`,
+      inner, { warn: true });
   }
 
   // ─── Pont discret vers Make-up (depuis les résultats Skincare) ─
@@ -1523,6 +1565,6 @@ const RoutineRenderer = (() => {
     return html;
   }
 
-  return { renderResults, renderConversionBlocksMakeup, saveRoutineNow, findBestProductForStep };
+  return { renderResults, renderConversionBlocksMakeup, saveRoutineNow, findBestProductForStep, toggleAccordion };
 
 })();
