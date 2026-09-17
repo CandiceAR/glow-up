@@ -157,6 +157,50 @@ const RoutineRenderer = (() => {
     lipbalm:     ['lipbalm']
   };
 
+  // ─── Cohérence libellé ↔ produit : l'actif promis dans le libellé de l'étape
+  //     (issu de rules.json, ex. « Crème hydratante + Peptides ») doit être présent
+  //     dans le produit choisi. Sinon le produit sur-promet. ────────────────────
+  const LABEL_ACTIVE_MAP = [
+    [/peptide/i, 'peptide'], [/collag[eè]/i, 'peptide'],
+    [/niacinamide/i, 'niacinamide'],
+    [/vitamine?\s*c|vit\.?\s*c|ascorb/i, 'vitaminec'],
+    [/r[ée]tino/i, 'retinoid'],
+    [/c[ée]ramide/i, 'ceramide'],
+    [/hyaluron/i, 'hyaluronic'],
+    [/squalane/i, 'squalane'],
+    [/az[ée]la/i, 'azelaic'],
+    [/arbutin/i, 'arbutin'],
+    [/centella|\bcica\b/i, 'centella'],
+    [/panth[ée]nol/i, 'panthenol'],
+    [/caf[ée]ine/i, 'caffeine'],
+  ];
+  const ACTIVE_MATCH = {
+    peptide:    /peptide|matrixyl|argireline|hexapeptide|polypeptide|collag/i,
+    niacinamide:/niacinamide/i,
+    vitaminec:  /ascorb|vitaminec|vitamine?\s*c/i,
+    retinoid:   /retinol|retinal|retinyl|retinoate|retinoid|bakuchiol/i,
+    ceramide:   /ceramide|phytosphingosine/i,
+    hyaluronic: /hyaluron/i,
+    squalane:   /squalane/i,
+    azelaic:    /az[ée]la/i,
+    arbutin:    /arbutin/i,
+    centella:   /centella|\bcica\b|madecass|asiatic|houttuynia/i,
+    panthenol:  /panthenol/i,
+    caffeine:   /caffeine|caf[ée]ine/i,
+  };
+  function _stepRequiredActives(step) {
+    if (!step) return [];
+    const hay = (step.label || '') + ' ' + (step.note || '');
+    const out = new Set();
+    LABEL_ACTIVE_MAP.forEach(([re, a]) => { if (re.test(hay)) out.add(a); });
+    return [...out];
+  }
+  function _productText(p) {
+    return ((p.ingredientTags || []).join(' ') + ' ' + (p.inciNormalized || []).join(' ')
+          + ' ' + (p.name || '') + ' ' + (p.concernTags || []).join(' ')).toLowerCase();
+  }
+  function _productHasActive(p, a) { const re = ACTIVE_MATCH[a]; return re ? re.test(_productText(p)) : false; }
+
   // ─── Budget utilisateur ───────────────────────────────────────
   // Normalise les valeurs de budget (questionnaire: low/medium/high, ancien: petits-prix/bon-rapport/premium)
   function _normBudget() {
@@ -180,9 +224,10 @@ const RoutineRenderer = (() => {
 
   // ─── Trouver le meilleur produit pour une étape ───────────────
   // excludeIds : Set de product.id déjà utilisés dans la même section (évite les doublons)
-  function findBestProductForStep(stepType, excludeIds = null) {
+  function findBestProductForStep(stepType, excludeIds = null, stepMeta = null) {
     const catalog  = AppState.products.catalog || [];
     if (!catalog.length) return null;
+    const reqActives = _stepRequiredActives(stepMeta);   // actifs promis par le libellé
 
     // ── SPF : sélection intelligente via la base SPF dédiée ──
     if (stepType === 'spf') {
@@ -240,11 +285,20 @@ const RoutineRenderer = (() => {
       pool = AgeGuard.filter(pool, AgeGuard.age(AppState.questionnaire?.answers));
     }
 
+    // Cohérence libellé : si le libellé promet un actif (peptides, vit C…), ne garder
+    // que les produits qui le contiennent réellement (sinon on sur-promet).
+    if (reqActives.length) {
+      const matching = pool.filter(p => reqActives.some(a => _productHasActive(p, a)));
+      if (matching.length) pool = matching;   // fallback : si aucun ne matche, on garde le pool
+    }
+
     // Scorer : skinType match +20, rating ×10, isFeatured +10 (réduit pour ne pas dominer)
     pool = pool.map(p => {
       let score = (p.rating || 0) * 10;
       if (p.isFeatured) score += 10;
       if (p.skinTypeTags && skinType && p.skinTypeTags.includes(skinType)) score += 20;
+      // Bonus fort par actif promis réellement présent (cohérence libellé ↔ produit)
+      score += reqActives.filter(a => _productHasActive(p, a)).length * 40;
       if (_isLowBudget() && p.price > 0) score += (20 - Math.min(20, p.price)) * 2;
       if (_isBudgetUnder40() && stepType === 'moisturizer' && p.includesSPF) score += 60;
       // Variance DÉTERMINISTE (seed de la routine) — stable au re-rendu
@@ -348,7 +402,7 @@ const RoutineRenderer = (() => {
     const usedIds = new Set();   // dédup pour le choix (même logique que renderRoutineSection)
 
     for (const step of allSteps) {
-      const p = findBestProductForStep(step.step, usedIds);
+      const p = findBestProductForStep(step.step, usedIds, step);
       if (p) {
         usedIds.add(p.id);
         if (p.price && !seen.has(p.id)) {
@@ -618,7 +672,7 @@ const RoutineRenderer = (() => {
       if (kept) {
         usedKept.add(kept._key);
       } else {
-        product = findBestProductForStep(step.step, usedProductIds);
+        product = findBestProductForStep(step.step, usedProductIds, step);
         if (product) usedProductIds.add(product.id);
         // Produit actuel non adapté sur cette étape → note « à la place de… »
         if (hasCR) {
@@ -992,10 +1046,16 @@ const RoutineRenderer = (() => {
       if (clean.length) pool = clean;
     }
     pool = pool.filter(p => p.id !== chosen.id);
+    const altReq = _stepRequiredActives(step);
+    if (altReq.length) {
+      const matching = pool.filter(p => altReq.some(a => _productHasActive(p, a)));
+      if (matching.length) pool = matching;
+    }
     if (!pool.length) return [];
     pool = pool.map(p => {
       let s = (p.rating || 0) * 10;
       if (skinType && p.skinTypeTags?.includes(skinType)) s += 20;
+      s += altReq.filter(a => _productHasActive(p, a)).length * 40;
       s += _seededRandom('alt_' + step.step + '_' + p.id) * 6;   // stable via le seed
       return { p, s };
     }).sort((a, b) => b.s - a.s);
