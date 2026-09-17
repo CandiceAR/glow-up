@@ -11156,18 +11156,392 @@
       "name": "Clarins Total Eye Revive Anti-Fatigue",
       "brand": "Clarins",
       "category": "eye",
-      "imageUrl": "",
+      "imageUrl": "assets/products/m447.jpg",
       "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Total%20Eye%20Revive%20Anti-Fatigue&tag=kan10ar-21",
       "price": 52,
       "rating": 4.5,
       "reviews": 0,
-      "description": "",
+      "description": "Contour des yeux Clarins anti-fatigue — défatigue le regard, réduit l’aspect des cernes et poches, lisse les ridules.",
       "ingredientTags": [],
       "concernTags": [
-        "cernes"
+        "cernes",
+        "poches",
+        "yeux",
+        "ridules",
+        "eclat"
       ],
       "active": true,
-      "_priceIndicatif": true
+      "_priceIndicatif": true,
+      "inciRaw": "Aqua/Water/Eau, Dimethicone, Butylene Glycol, Betaine, PPG-5-Ceteth-20, Dimethicone/Vinyl Dimethicone Crosspolymer, Propanediol, Ammonium Acryloyldimethyltaurate/VP Copolymer, Cellulose, Glycerin, Caffeine, Dipsacus Sylvestris Extract, Hydroxyethyl Acrylate/Sodium Acryloyldimethyl Taurate Copolymer, Phenoxyethanol, Ci 77891/Titanium Dioxide, Synthetic Fluorphlogopite, Ethylhexylglycerin, Tocopheryl Acetate, Disodium EDTA, Avena Sativa (Oat) Kernel Extract, Escin, Parfum/Fragrance, Diospyros Mespiliformis Leaf Extract, Maltodextrin, Tromethamine, Sanicula Europaea Extract, Myrothamnus Flabellifolia Leaf/Stem Extract, Sodium Benzoate, Citric Acid, Furcellaria Lumbricalis Extract, Sodium Citrate, Potassium Sorbate, Ascorbic Acid, Glycolic Acid, Lactic Acid, Maris Sal/Sea Salt/Sel Marin, Polyvinyl Alcohol, Copper Palmitoyl Heptapeptide-14, Palmitoyl Hexapeptide-15",
+      "inciNormalized": [
+        "aqua/water/eau",
+        "dimethicone",
+        "butylene glycol",
+        "betaine",
+        "ppg-5-ceteth-20",
+        "dimethicone/vinyl dimethicone crosspolymer",
+        "propanediol",
+        "ammonium acryloyldimethyltaurate/vp copolymer",
+        "cellulose",
+        "glycerin",
+        "caffeine",
+        "dipsacus sylvestris extract",
+        "hydroxyethyl acrylate/sodium acryloyldimethyl taurate copolymer",
+        "phenoxyethanol",
+        "ci 77891/titanium dioxide",
+        "synthetic fluorphlogopite",
+        "ethylhexylglycerin",
+        "tocopheryl acetate",
+        "disodium edta",
+        "avena sativa kernel extract",
+        "escin",
+        "parfum/fragrance",
+        "diospyros mespiliformis leaf extract",
+        "maltodextrin",
+        "tromethamine",
+        "sanicula europaea extract",
+        "myrothamnus flabellifolia leaf/stem extract",
+        "sodium benzoate",
+        "citric acid",
+        "furcellaria lumbricalis extract",
+        "sodium citrate",
+        "potassium sorbate",
+        "ascorbic acid",
+        "glycolic acid",
+        "lactic acid",
+        "maris sal/sea salt/sel marin",
+        "polyvinyl alcohol",
+        "copper palmitoyl heptapeptide-14",
+        "palmitoyl hexapeptide-15"
+      ],
+      "inciStructured": [
+        {
+          "inci": "Aqua/Water/Eau",
+          "normalized": "aqua/water/eau",
+          "position": 1,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Dimethicone",
+          "normalized": "dimethicone",
+          "position": 2,
+          "family": "occlusive",
+          "function": "occlusif",
+          "isActive": false
+        },
+        {
+          "inci": "Butylene Glycol",
+          "normalized": "butylene glycol",
+          "position": 3,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Betaine",
+          "normalized": "betaine",
+          "position": 4,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "PPG-5-Ceteth-20",
+          "normalized": "ppg-5-ceteth-20",
+          "position": 5,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Dimethicone/Vinyl Dimethicone Crosspolymer",
+          "normalized": "dimethicone/vinyl dimethicone crosspolymer",
+          "position": 6,
+          "family": "occlusive",
+          "function": "occlusif",
+          "isActive": false
+        },
+        {
+          "inci": "Propanediol",
+          "normalized": "propanediol",
+          "position": 7,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Ammonium Acryloyldimethyltaurate/VP Copolymer",
+          "normalized": "ammonium acryloyldimethyltaurate/vp copolymer",
+          "position": 8,
+          "family": "texture",
+          "function": "texture",
+          "isActive": false
+        },
+        {
+          "inci": "Cellulose",
+          "normalized": "cellulose",
+          "position": 9,
+          "family": "texture",
+          "function": "texture",
+          "isActive": false
+        },
+        {
+          "inci": "Glycerin",
+          "normalized": "glycerin",
+          "position": 10,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Caffeine",
+          "normalized": "caffeine",
+          "position": 11,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Dipsacus Sylvestris Extract",
+          "normalized": "dipsacus sylvestris extract",
+          "position": 12,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Hydroxyethyl Acrylate/Sodium Acryloyldimethyl Taurate Copolymer",
+          "normalized": "hydroxyethyl acrylate/sodium acryloyldimethyl taurate copolymer",
+          "position": 13,
+          "family": "texture",
+          "function": "texture",
+          "isActive": false
+        },
+        {
+          "inci": "Phenoxyethanol",
+          "normalized": "phenoxyethanol",
+          "position": 14,
+          "family": "preservative",
+          "function": "conservateur",
+          "isActive": false
+        },
+        {
+          "inci": "Ci 77891/Titanium Dioxide",
+          "normalized": "ci 77891/titanium dioxide",
+          "position": 15,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Synthetic Fluorphlogopite",
+          "normalized": "synthetic fluorphlogopite",
+          "position": 16,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Ethylhexylglycerin",
+          "normalized": "ethylhexylglycerin",
+          "position": 17,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Tocopheryl Acetate",
+          "normalized": "tocopheryl acetate",
+          "position": 18,
+          "family": "antioxidant",
+          "function": "antioxydant",
+          "isActive": true
+        },
+        {
+          "inci": "Disodium EDTA",
+          "normalized": "disodium edta",
+          "position": 19,
+          "family": "chelator",
+          "function": "stabilisant",
+          "isActive": false
+        },
+        {
+          "inci": "Avena Sativa Kernel Extract",
+          "normalized": "avena sativa kernel extract",
+          "position": 20,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Escin",
+          "normalized": "escin",
+          "position": 21,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Parfum/Fragrance",
+          "normalized": "parfum/fragrance",
+          "position": 22,
+          "family": "fragrance",
+          "function": "parfum",
+          "isActive": false
+        },
+        {
+          "inci": "Diospyros Mespiliformis Leaf Extract",
+          "normalized": "diospyros mespiliformis leaf extract",
+          "position": 23,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Maltodextrin",
+          "normalized": "maltodextrin",
+          "position": 24,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Tromethamine",
+          "normalized": "tromethamine",
+          "position": 25,
+          "family": "ph",
+          "function": "pH",
+          "isActive": false
+        },
+        {
+          "inci": "Sanicula Europaea Extract",
+          "normalized": "sanicula europaea extract",
+          "position": 26,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Myrothamnus Flabellifolia Leaf/Stem Extract",
+          "normalized": "myrothamnus flabellifolia leaf/stem extract",
+          "position": 27,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Sodium Benzoate",
+          "normalized": "sodium benzoate",
+          "position": 28,
+          "family": "preservative",
+          "function": "conservateur",
+          "isActive": false
+        },
+        {
+          "inci": "Citric Acid",
+          "normalized": "citric acid",
+          "position": 29,
+          "family": "aha",
+          "function": "exfoliant AHA",
+          "isActive": true
+        },
+        {
+          "inci": "Furcellaria Lumbricalis Extract",
+          "normalized": "furcellaria lumbricalis extract",
+          "position": 30,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Sodium Citrate",
+          "normalized": "sodium citrate",
+          "position": 31,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Potassium Sorbate",
+          "normalized": "potassium sorbate",
+          "position": 32,
+          "family": "preservative",
+          "function": "conservateur",
+          "isActive": false
+        },
+        {
+          "inci": "Ascorbic Acid",
+          "normalized": "ascorbic acid",
+          "position": 33,
+          "family": "vitc",
+          "function": "vitamine C",
+          "isActive": true
+        },
+        {
+          "inci": "Glycolic Acid",
+          "normalized": "glycolic acid",
+          "position": 34,
+          "family": "aha",
+          "function": "exfoliant AHA",
+          "isActive": true
+        },
+        {
+          "inci": "Lactic Acid",
+          "normalized": "lactic acid",
+          "position": 35,
+          "family": "aha",
+          "function": "exfoliant AHA",
+          "isActive": true
+        },
+        {
+          "inci": "Maris Sal/Sea Salt/Sel Marin",
+          "normalized": "maris sal/sea salt/sel marin",
+          "position": 36,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Polyvinyl Alcohol",
+          "normalized": "polyvinyl alcohol",
+          "position": 37,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Copper Palmitoyl Heptapeptide-14",
+          "normalized": "copper palmitoyl heptapeptide-14",
+          "position": 38,
+          "family": "peptide",
+          "function": "peptide",
+          "isActive": true
+        },
+        {
+          "inci": "Palmitoyl Hexapeptide-15",
+          "normalized": "palmitoyl hexapeptide-15",
+          "position": 39,
+          "family": "peptide",
+          "function": "peptide",
+          "isActive": true
+        }
+      ],
+      "actives": [
+        "Tocopheryl Acetate",
+        "Citric Acid",
+        "Ascorbic Acid",
+        "Glycolic Acid",
+        "Lactic Acid",
+        "Copper Palmitoyl Heptapeptide-14",
+        "Palmitoyl Hexapeptide-15"
+      ],
+      "inciSourceUrl": "https://incidecoder.com/products/clarins-total-eye-revive",
+      "inciLastVerifiedAt": "2026-09-17",
+      "inciVerificationStatus": "verified",
+      "dupeEligible": true,
+      "needsReview": false
     },
     {
       "id": "m448",
@@ -11246,8 +11620,10 @@
         "anti_age",
         "fermete"
       ],
-      "active": true,
-      "_priceIndicatif": true
+      "active": false,
+      "_priceIndicatif": true,
+      "needsReview": true,
+      "needsReviewReason": "Lien d’achat menant au mauvais produit — désactivé en attendant un ASIN vérifié"
     },
     {
       "id": "m452",
@@ -11604,7 +11980,7 @@
       "name": "Clarins My Clarins RE-MOVE Eau Micellaire",
       "brand": "Clarins",
       "category": "cleanser",
-      "imageUrl": "",
+      "imageUrl": "assets/products/m468.jpg",
       "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20My%20Clarins%20RE-MOVE%20Eau%20Micellaire&tag=kan10ar-21",
       "price": 22,
       "rating": 4.5,
@@ -11617,14 +11993,180 @@
       "skinTypes": [
         "sensible",
         "normale"
-      ]
+      ],
+      "inciRaw": "Aqua/Water/Eau, Propanediol, Poloxamer 184, Sodium Methyl Cocoyl Taurate, Methylpropanediol, PPG-26-Buteth-26, Ethylhexylglycerin, PEG-40 Hydrogenated Castor Oil, Parfum/Fragrance, Caprylyl Glycol, Disodium EDTA, Phenylpropanol, Sodium Citrate, Gentiana Lutea Extract, Citric Acid, Maltodextrin, Moringa Oleifera Seed Extract",
+      "inciNormalized": [
+        "aqua/water/eau",
+        "propanediol",
+        "poloxamer 184",
+        "sodium methyl cocoyl taurate",
+        "methylpropanediol",
+        "ppg-26-buteth-26",
+        "ethylhexylglycerin",
+        "peg-40 hydrogenated castor oil",
+        "parfum/fragrance",
+        "caprylyl glycol",
+        "disodium edta",
+        "phenylpropanol",
+        "sodium citrate",
+        "gentiana lutea extract",
+        "citric acid",
+        "maltodextrin",
+        "moringa oleifera seed extract"
+      ],
+      "inciStructured": [
+        {
+          "inci": "Aqua/Water/Eau",
+          "normalized": "aqua/water/eau",
+          "position": 1,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Propanediol",
+          "normalized": "propanediol",
+          "position": 2,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Poloxamer 184",
+          "normalized": "poloxamer 184",
+          "position": 3,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Sodium Methyl Cocoyl Taurate",
+          "normalized": "sodium methyl cocoyl taurate",
+          "position": 4,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Methylpropanediol",
+          "normalized": "methylpropanediol",
+          "position": 5,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "PPG-26-Buteth-26",
+          "normalized": "ppg-26-buteth-26",
+          "position": 6,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Ethylhexylglycerin",
+          "normalized": "ethylhexylglycerin",
+          "position": 7,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "PEG-40 Hydrogenated Castor Oil",
+          "normalized": "peg-40 hydrogenated castor oil",
+          "position": 8,
+          "family": "emollient",
+          "function": "émollient",
+          "isActive": false
+        },
+        {
+          "inci": "Parfum/Fragrance",
+          "normalized": "parfum/fragrance",
+          "position": 9,
+          "family": "fragrance",
+          "function": "parfum",
+          "isActive": false
+        },
+        {
+          "inci": "Caprylyl Glycol",
+          "normalized": "caprylyl glycol",
+          "position": 10,
+          "family": "emollient",
+          "function": "émollient",
+          "isActive": false
+        },
+        {
+          "inci": "Disodium EDTA",
+          "normalized": "disodium edta",
+          "position": 11,
+          "family": "chelator",
+          "function": "stabilisant",
+          "isActive": false
+        },
+        {
+          "inci": "Phenylpropanol",
+          "normalized": "phenylpropanol",
+          "position": 12,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Sodium Citrate",
+          "normalized": "sodium citrate",
+          "position": 13,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Gentiana Lutea Extract",
+          "normalized": "gentiana lutea extract",
+          "position": 14,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Citric Acid",
+          "normalized": "citric acid",
+          "position": 15,
+          "family": "aha",
+          "function": "exfoliant AHA",
+          "isActive": true
+        },
+        {
+          "inci": "Maltodextrin",
+          "normalized": "maltodextrin",
+          "position": 16,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Moringa Oleifera Seed Extract",
+          "normalized": "moringa oleifera seed extract",
+          "position": 17,
+          "family": "",
+          "function": "",
+          "isActive": false
+        }
+      ],
+      "actives": [
+        "Citric Acid"
+      ],
+      "inciSourceUrl": "https://incidecoder.com/products/clarins-my-clarins-re-move-micellar-cleansing-water",
+      "inciLastVerifiedAt": "2026-09-17",
+      "inciVerificationStatus": "verified",
+      "dupeEligible": true,
+      "needsReview": false
     },
     {
       "id": "m469",
       "name": "Clarins My Clarins RE-MOVE Gel Nettoyant Purifiant",
       "brand": "Clarins",
       "category": "cleanser",
-      "imageUrl": "",
+      "imageUrl": "assets/products/m469.jpg",
       "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20My%20Clarins%20RE-MOVE%20Gel%20Nettoyant%20Purifiant&tag=kan10ar-21",
       "price": 22,
       "rating": 4.5,
@@ -11639,7 +12181,245 @@
       "skinTypes": [
         "grasse",
         "mixte"
-      ]
+      ],
+      "inciRaw": "Aqua/Water/Eau, Glycerin, Sodium Lauryl Glucose Carboxylate, Sodium Cocoyl Amino Acids, Lauryl Glucoside, Decyl Glucoside, Acrylates/C10-30 Alkyl Acrylate Crosspolymer, Cocamidopropyl Betaine, Citrus Aurantium Amara (Bitter Orange) Flower Water, Butylene Glycol, Hexylene Glycol, Parfum/Fragrance, Citric Acid, Sodium Benzoate, Disodium EDTA, Sorbic Acid, Synthetic Fluorphlogopite, Tetrasodium Glutamate Diacetate, Ci 77891/Titanium Dioxide, Maltodextrin, Moringa Oleifera Seed Extract, Spiraea Ulmaria Extract, Potassium Sorbate, Tin Oxide, Cl 42090/Blue 1",
+      "inciNormalized": [
+        "aqua/water/eau",
+        "glycerin",
+        "sodium lauryl glucose carboxylate",
+        "sodium cocoyl amino acids",
+        "lauryl glucoside",
+        "decyl glucoside",
+        "acrylates/c10-30 alkyl acrylate crosspolymer",
+        "cocamidopropyl betaine",
+        "citrus aurantium amara flower water",
+        "butylene glycol",
+        "hexylene glycol",
+        "parfum/fragrance",
+        "citric acid",
+        "sodium benzoate",
+        "disodium edta",
+        "sorbic acid",
+        "synthetic fluorphlogopite",
+        "tetrasodium glutamate diacetate",
+        "ci 77891/titanium dioxide",
+        "maltodextrin",
+        "moringa oleifera seed extract",
+        "spiraea ulmaria extract",
+        "potassium sorbate",
+        "tin oxide",
+        "cl 42090/blue 1"
+      ],
+      "inciStructured": [
+        {
+          "inci": "Aqua/Water/Eau",
+          "normalized": "aqua/water/eau",
+          "position": 1,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Glycerin",
+          "normalized": "glycerin",
+          "position": 2,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Sodium Lauryl Glucose Carboxylate",
+          "normalized": "sodium lauryl glucose carboxylate",
+          "position": 3,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Sodium Cocoyl Amino Acids",
+          "normalized": "sodium cocoyl amino acids",
+          "position": 4,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Lauryl Glucoside",
+          "normalized": "lauryl glucoside",
+          "position": 5,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Decyl Glucoside",
+          "normalized": "decyl glucoside",
+          "position": 6,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Acrylates/C10-30 Alkyl Acrylate Crosspolymer",
+          "normalized": "acrylates/c10-30 alkyl acrylate crosspolymer",
+          "position": 7,
+          "family": "texture",
+          "function": "texture",
+          "isActive": false
+        },
+        {
+          "inci": "Cocamidopropyl Betaine",
+          "normalized": "cocamidopropyl betaine",
+          "position": 8,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Citrus Aurantium Amara Flower Water",
+          "normalized": "citrus aurantium amara flower water",
+          "position": 9,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Butylene Glycol",
+          "normalized": "butylene glycol",
+          "position": 10,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Hexylene Glycol",
+          "normalized": "hexylene glycol",
+          "position": 11,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Parfum/Fragrance",
+          "normalized": "parfum/fragrance",
+          "position": 12,
+          "family": "fragrance",
+          "function": "parfum",
+          "isActive": false
+        },
+        {
+          "inci": "Citric Acid",
+          "normalized": "citric acid",
+          "position": 13,
+          "family": "aha",
+          "function": "exfoliant AHA",
+          "isActive": true
+        },
+        {
+          "inci": "Sodium Benzoate",
+          "normalized": "sodium benzoate",
+          "position": 14,
+          "family": "preservative",
+          "function": "conservateur",
+          "isActive": false
+        },
+        {
+          "inci": "Disodium EDTA",
+          "normalized": "disodium edta",
+          "position": 15,
+          "family": "chelator",
+          "function": "stabilisant",
+          "isActive": false
+        },
+        {
+          "inci": "Sorbic Acid",
+          "normalized": "sorbic acid",
+          "position": 16,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Synthetic Fluorphlogopite",
+          "normalized": "synthetic fluorphlogopite",
+          "position": 17,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Tetrasodium Glutamate Diacetate",
+          "normalized": "tetrasodium glutamate diacetate",
+          "position": 18,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Ci 77891/Titanium Dioxide",
+          "normalized": "ci 77891/titanium dioxide",
+          "position": 19,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Maltodextrin",
+          "normalized": "maltodextrin",
+          "position": 20,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Moringa Oleifera Seed Extract",
+          "normalized": "moringa oleifera seed extract",
+          "position": 21,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Spiraea Ulmaria Extract",
+          "normalized": "spiraea ulmaria extract",
+          "position": 22,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Potassium Sorbate",
+          "normalized": "potassium sorbate",
+          "position": 23,
+          "family": "preservative",
+          "function": "conservateur",
+          "isActive": false
+        },
+        {
+          "inci": "Tin Oxide",
+          "normalized": "tin oxide",
+          "position": 24,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Cl 42090/Blue 1",
+          "normalized": "cl 42090/blue 1",
+          "position": 25,
+          "family": "",
+          "function": "",
+          "isActive": false
+        }
+      ],
+      "actives": [
+        "Citric Acid"
+      ],
+      "inciSourceUrl": "https://incidecoder.com/products/my-clarins-re-move-purifying-cleansing-gel",
+      "inciLastVerifiedAt": "2026-09-17",
+      "inciVerificationStatus": "verified",
+      "dupeEligible": true,
+      "needsReview": false
     },
     {
       "id": "m470",
