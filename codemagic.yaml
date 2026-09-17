@@ -70,6 +70,14 @@ workflows:
             echo "OK $K = $V"
           done
 
+      - name: Numéro de build unique et croissant (accepté par TestFlight)
+        script: |
+          # Basé sur la date/heure → toujours supérieur au build précédent, jamais de collision.
+          cd "$CM_BUILD_DIR/ios/App"
+          BN="$(date +%Y%m%d%H%M)"
+          agvtool new-version -all "$BN"
+          echo "CFBundleVersion → $BN"
+
       - name: Installer les pods
         script: |
           cd ios/App && pod install
