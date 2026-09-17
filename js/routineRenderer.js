@@ -205,6 +205,14 @@ const RoutineRenderer = (() => {
     }
     if (!pool.length) return null;
 
+    // Garde-fou anti mauvaise catégorie : un produit dont le NOM indique un masque,
+    // un nettoyant ou un démaquillant ne doit jamais servir de crème/sérum/etc.
+    if (!['mask', 'nightmask', 'cleanser'].includes(stepType)) {
+      const misfit = /masque|(^|[^a-z])mask([^a-z]|$)|nettoyant|cleanser|d[ée]maquillant|makeup remover|lait d[ée]maquillant/i;
+      const clean = pool.filter(p => !misfit.test(p.name || ''));
+      if (clean.length) pool = clean;
+    }
+
     // Exclure les produits déjà assignés à d'autres étapes (évite les doublons)
     if (excludeIds && excludeIds.size > 0) {
       const deduped = pool.filter(p => !excludeIds.has(p.id));
@@ -978,6 +986,11 @@ const RoutineRenderer = (() => {
                   || AppState.questionnaire.answers?.skinType || null;
     let pool = [];
     for (const c of cats) { const f = catalog.filter(p => p.category === c); if (f.length) { pool = f; break; } }
+    if (!['mask', 'nightmask', 'cleanser'].includes(step.step)) {
+      const misfit = /masque|(^|[^a-z])mask([^a-z]|$)|nettoyant|cleanser|d[ée]maquillant|makeup remover/i;
+      const clean = pool.filter(p => !misfit.test(p.name || ''));
+      if (clean.length) pool = clean;
+    }
     pool = pool.filter(p => p.id !== chosen.id);
     if (!pool.length) return [];
     pool = pool.map(p => {
