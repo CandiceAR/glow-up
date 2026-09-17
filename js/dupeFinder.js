@@ -570,6 +570,10 @@ const DupeFinder = (() => {
     return _pool.map(p => ({
       id: p.id, brand: p.brand, name: p.name, category: p.category, price: p.price,
       barcode: p.barcode || '',
+      // INCI structuré du catalogue → similarité de FORMULE côté serveur (fait autorité)
+      inciNormalized: Array.isArray(p.inciNormalized) ? p.inciNormalized.slice(0, 45) : undefined,
+      inciVerificationStatus: p.inciVerificationStatus || undefined,
+      dupeEligible: p.dupeEligible === true ? true : undefined,
       ingredientTags: p.ingredientTags || [], concernTags: p.concernTags || [], description: p.description || ''
     }));
   }

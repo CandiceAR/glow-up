@@ -18,6 +18,10 @@ const CORS = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS'
 };
 
+// Similarité de FORMULE déterministe (familles d'actifs, dérivés, position, concentration,
+// règle éliminatoire) — utilisée quand l'INCI structuré du candidat est disponible.
+const { similarity: _formulaSim } = require('../lib/inciSim.js');
+
 // ─── INCI candidats + recouvrement de composition (B-3, déterministe) ──
 const OBF_UA = 'GlowUp/1.0 (dupe finder)';
 // Ingrédients ultra-courants (base/technique) : ne comptent PAS dans le recouvrement
@@ -93,10 +97,31 @@ module.exports = async (req, res) => {
     concerns: (c.concernTags || []).slice(0, 8),
     desc: (c.description || '').slice(0, 160)
   }));
-  // B-3 : récupérer l'INCI réel des candidats ayant un code-barres (max 12) → recouvrement objectif
+  // ── Similarité de FORMULE (déterministe) pour les candidats dont l'INCI structuré
+  //    est en catalogue (les 50 K-beauty et suivants). Fait autorité quand présent. ──
+  const formulaMap = {};   // id -> { sim, status, eliminated }
+  if (refInciList.length) {
+    cands.forEach(c => {
+      const cInci = Array.isArray(c.inciNormalized) ? c.inciNormalized : null;
+      if (!cInci || !cInci.length) return;
+      const r = _formulaSim(refInciList, cInci);
+      if (r.score == null) return;
+      const s = slim.find(x => x.id === c.id);
+      if (!s) return;
+      s.formulaSim     = r.score;
+      s.sharedActives  = r.shared.slice(0, 6);
+      s.missingActives = r.missing.slice(0, 4);
+      if (r.derivMismatch.length) s.derivMismatch = r.derivMismatch.slice(0, 3);
+      if (r.extraHero.length || r.extraPotent.length) s.differentHero = [...r.extraPotent, ...r.extraHero].slice(0, 3);
+      s.inciStatus = c.inciVerificationStatus || 'verified';
+      formulaMap[c.id] = { sim: r.score, status: s.inciStatus, eliminated: r.extraPotent.length > 0 };
+    });
+  }
+
+  // B-3 : à défaut d'INCI catalogue, récupérer l'INCI réel des candidats ayant un code-barres (OBF)
   const refCanon = refInciList.map(_canon);
   if (refCanon.length) {
-    const withBar = cands.filter(c => c.barcode).slice(0, 12);
+    const withBar = cands.filter(c => c.barcode && !formulaMap[c.id]).slice(0, 12);
     await Promise.allSettled(withBar.map(async c => {
       const ci = await _fetchCandInci(c.barcode);
       if (ci && ci.length) {
@@ -105,7 +130,7 @@ module.exports = async (req, res) => {
       }
     }));
   }
-  const inciMap = {}; slim.forEach(s => { inciMap[s.id] = (s.overlapINCI != null); });
+  const inciMap = {}; slim.forEach(s => { inciMap[s.id] = (s.overlapINCI != null || s.formulaSim != null); });
 
   const validIds = new Set(slim.map(c => c.id));
 
@@ -133,7 +158,8 @@ RÈGLES IMPÉRATIVES :
 - Un dupe n'est PAS juste "moins cher" : il doit réellement RESSEMBLER (catégorie, fonction, actifs principaux, texture, fini, couvrance/tenue pour le maquillage, résultat, teinte/sous-ton).
 - Si la COMPOSITION INCI de la référence est fournie, base ta comparaison SUR ELLE en priorité : compare les actifs RÉELLEMENT présents, en pondérant par l'ordre INCI (un ingrédient en début de liste pèse beaucoup plus qu'un extrait cité en fin de liste). Ne considère JAMAIS un ingrédient "marketing" (extrait végétal en bas de liste) comme actif principal. Un simple bénéfice/promesse commun ("anti-âge", "éclat", "hydrate") ne suffit JAMAIS à faire un dupe : il faut des actifs principaux et un mécanisme réellement communs.
 - CRITÈRE ÉLIMINATOIRE (actifs centraux) : détermine la FAMILLE d'actif CENTRAL de la référence. Si un candidat a pour actif CENTRAL une famille PUISSANTE qui est ABSENTE de la référence — en particulier vitamine C (ascorbic acid, ascorbyl…), rétinol/rétinoïdes, AHA/BHA (acide glycolique, lactique, salicylique), arbutine/dépigmentants — alors ce candidat N'EST PAS un dupe : plafonne sa similarité à 20 et NE l'inclus PAS dans les résultats. Exemple : référence = sérum botanique/huileux SANS vitamine C → un sérum vitamine C (type "C-VIT", "C-VIT liposomal") n'est PAS un dupe. Inversement, un sérum botanique nourrissant PEUT être un dupe d'un sérum botanique nourrissant.
-- Certains candidats ont un champ "overlapINCI" (recouvrement RÉEL de composition avec la référence, en %, calculé sur leurs vraies listes INCI hors ingrédients de base) et "inciTop" (leurs vrais ingrédients). Quand "overlapINCI" est présent, base la similarité de CE candidat PRINCIPALEMENT dessus (mesure objective de formule commune) : overlapINCI élevé → forte similarité ; overlapINCI faible → ce n'est PAS un dupe, même en cas de promesse commune.
+- PRIORITÉ ABSOLUE : certains candidats ont un champ "formulaSim" (0-100) — c'est la similarité de FORMULE calculée sur les vrais INCI structurés (familles d'actifs, dérivés distincts rétinal≠rétinol≠rétinyl / formes de vit C / peptides / AHA-BHA-PHA, position dans la liste, concentration officielle, règle éliminatoire). Elle FAIT AUTORITÉ : quand "formulaSim" est présent, la "similarity" que tu donnes à CE candidat doit rester PROCHE (±8) de formulaSim, et jamais la dépasser de plus de 8. Les champs "sharedActives" (actifs réellement communs), "missingActives" (actifs de la référence absents du candidat), "derivMismatch" (même famille mais dérivé différent → PAS équivalent) et "differentHero" (le candidat est défini par un actif absent de la référence → ce N'EST PAS un dupe) te servent à rédiger commonPoints/differences. Si "differentHero" est renseigné, plafonne la similarité à 40 au maximum.
+- Certains candidats ont un champ "overlapINCI" (recouvrement RÉEL de composition avec la référence, en %) et "inciTop" (leurs vrais ingrédients). Quand "overlapINCI" est présent (et pas "formulaSim"), base la similarité de CE candidat PRINCIPALEMENT dessus : overlapINCI élevé → forte similarité ; overlapINCI faible → ce n'est PAS un dupe, même en cas de promesse commune.
 - Le prix est essentiel : un vrai dupe est significativement MOINS CHER que le produit d'origine.
 - PRIORITÉ ABSOLUE au catalogue ("results" via id). N'utilise "externalResults" QUE si le catalogue ne contient PAS de vrai dupe convaincant (aucun candidat avec une similarité ≥ 70).
 - "externalResults" : dupes RÉELS et connus que tu proposes hors de notre catalogue (ex: The Ordinary, e.l.f., Inkey List, Revolution…). Donne marque + nom exact + prix public approximatif en euros. N'invente jamais un produit qui n'existe pas.
@@ -211,21 +237,41 @@ Donne au maximum 3 résultats au total (catalogue + externes confondus), du plus
     const FITS = ['adapted', 'caution', 'unfit'];
     const ROLES = ['closest', 'value', 'cheapest'];
 
+    // Réconcilie la similarité de l'IA avec la similarité de FORMULE déterministe (fait autorité)
+    const _reconcile = (id, aiSim) => {
+      const f = formulaMap[id];
+      if (!f) return { sim: aiSim, conf: refInciList.length ? 'medium' : 'low' };
+      if (f.eliminated) return { sim: Math.min(aiSim, 20), conf: 'high' };   // éliminatoire objectif
+      // la formule sert de PLAFOND : elle empêche l'IA de sur-noter (biais marketing),
+      // mais l'IA peut noter PLUS BAS si le contexte (nom, catégorie) le justifie.
+      let sim = Math.min(aiSim, f.sim + 8);
+      // gating fiabilité INCI (spec) : INCI non "verified" ne doit jamais donner un score élevé
+      if (f.status === 'partial') sim = Math.min(sim, 70);
+      else if (f.status !== 'verified') sim = Math.min(sim, 50);
+      const conf = f.status === 'verified' ? 'high' : f.status === 'partial' ? 'medium' : 'low';
+      return { sim: Math.max(0, Math.min(100, sim)), conf };
+    };
+
     const results = Array.isArray(parsed.results) ? parsed.results
       .filter(r => r && validIds.has(r.id))
       .slice(0, 3)
-      .map(r => ({
-        id:           r.id,
-        similarity:   Math.max(0, Math.min(100, parseInt(r.similarity, 10) || 0)),
-        commonPoints: strArr(r.commonPoints),
-        differences:  strArr(r.differences),
-        why:          typeof r.why === 'string' ? r.why.slice(0, 200) : '',
-        role:         ROLES.includes(r.role) ? r.role : 'closest',
-        skinFit:      FITS.includes(r.skinFit) ? r.skinFit : 'caution',
-        skinNote:     typeof r.skinNote === 'string' ? r.skinNote.slice(0, 200) : '',
-        source:       'catalog',
-        confidence:   (inciMap[r.id] && refInciList.length) ? 'high' : (refInciList.length ? 'medium' : 'low')
-      })) : [];
+      .map(r => {
+        const rec = _reconcile(r.id, Math.max(0, Math.min(100, parseInt(r.similarity, 10) || 0)));
+        return {
+          id:           r.id,
+          similarity:   rec.sim,
+          commonPoints: strArr(r.commonPoints),
+          differences:  strArr(r.differences),
+          why:          typeof r.why === 'string' ? r.why.slice(0, 200) : '',
+          role:         ROLES.includes(r.role) ? r.role : 'closest',
+          skinFit:      FITS.includes(r.skinFit) ? r.skinFit : 'caution',
+          skinNote:     typeof r.skinNote === 'string' ? r.skinNote.slice(0, 200) : '',
+          source:       'catalog',
+          confidence:   formulaMap[r.id] ? rec.conf : ((inciMap[r.id] && refInciList.length) ? 'high' : (refInciList.length ? 'medium' : 'low'))
+        };
+      }) : [];
+
+    results.sort((a, b) => b.similarity - a.similarity);   // le plus proche d'abord après réconciliation
 
     // Dupes hors catalogue (repli quand le catalogue ne couvre pas)
     const externalResults = Array.isArray(parsed.externalResults) ? parsed.externalResults
