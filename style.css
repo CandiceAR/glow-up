@@ -10120,7 +10120,12 @@ em { font-style: italic; color: var(--nude); }
    ============================================================ */
 #screen-profil #profilContent {
   max-width: 620px; margin: 0 auto;
-  padding: 20px 18px calc(var(--mobile-nav-h, 70px) + var(--safe-bottom, 0px) + 40px);
+  /* Dégager la nav globale (70px) + la barre d'onglets Profil (~64px) + safe-area */
+  padding: 20px 18px calc(var(--mobile-nav-h, 70px) + var(--safe-bottom, 0px) + 92px);
+}
+@media (min-width: 861px) {
+  /* Desktop : pas de nav mobile, seule la barre d'onglets Profil (bottom:0) reste à dégager */
+  #screen-profil #profilContent { padding-bottom: 88px; }
 }
 
 /* En-tête */
@@ -10182,8 +10187,9 @@ em { font-style: italic; color: var(--nude); }
 .pf-empty .btn { display: inline-block; }
 
 /* Sous-onglets (barre fixe au-dessus de la nav du bas) */
-.pf-tabs { position: fixed; left: 0; right: 0; bottom: 0; display: flex; gap: 6px; padding: 8px 10px; background: var(--cream); border-top: 1px solid var(--sand); z-index: 45; }
-@media (max-width: 860px) { .pf-tabs { bottom: 58px; } }
+.pf-tabs { position: fixed; left: 0; right: 0; bottom: 0; display: flex; gap: 6px; padding: 8px 10px; background: var(--cream); border-top: 1px solid var(--sand); z-index: 940; }
+/* Sur mobile, la barre d'onglets Profil se place JUSTE au-dessus de la nav globale (hauteur réelle + safe-area) */
+@media (max-width: 860px) { .pf-tabs { bottom: calc(var(--mobile-nav-h, 70px) + var(--safe-bottom, 0px)); } }
 .pf-tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; background: var(--white); border: 1px solid var(--sand); border-radius: 12px; padding: 8px 4px; cursor: pointer; font-family: var(--font-sans); }
 .pf-tab-ic { font-size: 17px; }
 .pf-tab-l { font-size: 10px; font-weight: 600; color: var(--muted); text-align: center; line-height: 1.1; }
