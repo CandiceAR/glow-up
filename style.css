@@ -32,7 +32,7 @@
   --radius-sm:  8px;
   --radius-lg:  24px;
 
-  --nav-h: 78px;
+  --nav-h: 58px;
   --transition: 0.25s ease;
 }
 
@@ -82,30 +82,24 @@ em { font-style: italic; color: var(--nude); }
 }
 .nav-left  { display: flex; align-items: center; justify-content: flex-start; }
 .nav-right { display: flex; align-items: center; justify-content: flex-end; gap: 16px; }
+/* Logo horizontal « G.low up » : le symbole officiel « g. » sert d'initiale du mot */
 .nav-logo {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 2px;
   padding: 0 12px;
+  text-decoration: none;
 }
-.nav-logo img {
-  height: 62px;
+/* Symbole « g. » officiel (halo lumineux conservé) */
+.nav-logo-g {
+  height: 36px;
   width: auto;
-  max-width: 260px;
+  display: block;
   object-fit: contain;
+  filter: drop-shadow(0 0 6px rgba(240,145,63,0.45));
 }
-.nav-logo-g    { display: none; }   /* G transparent : mobile uniquement */
-.nav-logo-full { display: block; }  /* logo complet transparent : desktop */
-/* Logos transparents → halo orange CSS (rétroéclairé) */
-.nav-logo-g    { filter: drop-shadow(0 0 10px rgba(240,145,63,0.45)); }
-.nav-logo-full { filter: drop-shadow(0 0 9px rgba(240,145,63,0.4)); }
-.nav-logo-text {
-  font-family: var(--font-serif);
-  font-size: 1.5rem;
-  font-weight: 600;
-  letter-spacing: 0.15em;
-  color: var(--charcoal);
-}
+/* « low up » : complété par le grand G. → se lit « glow up ». Sans halo (plus net). */
 .nav-links {
   display: flex;
   gap: 20px;
@@ -211,7 +205,7 @@ em { font-style: italic; color: var(--nude); }
 
 /* ─── Screens (SPA) ──────────────────────────────────────────── */
 #app {
-  padding-top: var(--nav-h);
+  padding-top: calc(var(--nav-h) + var(--safe-top, 0px));
   min-height: 100vh;
   min-height: 100dvh;
 }
@@ -5970,10 +5964,8 @@ em { font-style: italic; color: var(--nude); }
     padding-top: var(--safe-top);
   }
 
-  /* Mobile : afficher le G premium, masquer le logo complet */
-  .nav-logo-g    { display: block; }
-  .nav-logo-full { display: none; }
-  .nav-logo img  { height: 52px; max-width: 64px; }
+  /* Mobile : symbole g. + « low up » légèrement réduits (jamais de chevauchement avec Profil) */
+  .nav-logo-g { height: 32px; }
 
   .hamburger {
     display: none; /* Not needed with bottom nav */
@@ -10324,7 +10316,7 @@ em { font-style: italic; color: var(--nude); }
    ============================================================ */
 .nav-logo-word{
   font-family:'Fraunces',var(--font-serif);
-  font-weight:600; font-size:26px; line-height:1; color:#B4482E; letter-spacing:-.01em;
+  font-weight:600; font-size:24px; line-height:1; color:#B4482E; letter-spacing:-.01em;
 }
 @media (max-width:600px){ .nav-logo-word{ font-size:22px; } }
 
