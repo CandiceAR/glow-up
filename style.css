@@ -32,7 +32,7 @@
   --radius-sm:  8px;
   --radius-lg:  24px;
 
-  --nav-h: 58px;
+  --nav-h: 64px;
   --transition: 0.25s ease;
 }
 
@@ -93,7 +93,7 @@ em { font-style: italic; color: var(--nude); }
 }
 /* Symbole « g. » officiel (halo lumineux conservé) */
 .nav-logo-g {
-  height: 36px;
+  height: 42px;
   width: auto;
   display: block;
   object-fit: contain;
@@ -5965,7 +5965,7 @@ em { font-style: italic; color: var(--nude); }
   }
 
   /* Mobile : symbole g. + « low up » légèrement réduits (jamais de chevauchement avec Profil) */
-  .nav-logo-g { height: 32px; }
+  .nav-logo-g { height: 38px; }
 
   .hamburger {
     display: none; /* Not needed with bottom nav */
@@ -10316,9 +10316,9 @@ em { font-style: italic; color: var(--nude); }
    ============================================================ */
 .nav-logo-word{
   font-family:'Fraunces',var(--font-serif);
-  font-weight:600; font-size:24px; line-height:1; color:#B4482E; letter-spacing:-.01em;
+  font-weight:600; font-size:28px; line-height:1; color:#B4482E; letter-spacing:-.01em;
 }
-@media (max-width:600px){ .nav-logo-word{ font-size:22px; } }
+@media (max-width:600px){ .nav-logo-word{ font-size:26px; } }
 
 /* Titres éditoriaux Anton — uniquement sur l'accueil */
 #screen-home .hero-title{
