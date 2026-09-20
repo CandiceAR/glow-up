@@ -10325,15 +10325,16 @@ em { font-style: italic; color: var(--label); }
 @media (max-width:600px){ .nav-logo-word{ font-size:26px; } }
 
 /* Titres éditoriaux Anton — uniquement sur l'accueil */
+/* Direction A — éditorial épuré : titres accueil en Fraunces serif */
 #screen-home .hero-title{
-  font-family:'Anton',Impact,sans-serif; font-weight:400; text-transform:uppercase;
-  letter-spacing:.01em; line-height:.94; color:var(--charcoal,#3A2318);
-  font-size:clamp(40px,7.2vw,86px);
+  font-family:'Fraunces',var(--font-serif); font-weight:600; text-transform:none;
+  letter-spacing:-.01em; line-height:1.06; color:var(--charcoal);
+  font-size:clamp(34px,6vw,60px); text-wrap:balance;
 }
-#screen-home .hero-title em{ font-style:normal; color:#B4482E; }
+#screen-home .hero-title em{ font-style:italic; color:#C25A2E; }
 #screen-home .section-head h2{
-  font-family:'Anton',Impact,sans-serif; font-weight:400; text-transform:uppercase;
-  letter-spacing:.01em; line-height:.98; font-size:clamp(28px,4.6vw,52px);
+  font-family:'Fraunces',var(--font-serif); font-weight:600; text-transform:none;
+  letter-spacing:-.01em; line-height:1.12; font-size:clamp(26px,4vw,40px);
 }
 #screen-home .eyebrow{ color:#B4482E; }
 
@@ -10620,3 +10621,22 @@ body.drawer-open{ overflow: hidden; }   /* blocage du défilement arrière-plan 
 .drawer-foot-link:hover{ color: var(--link); }
 .drawer-foot-link.is-soon{ color: var(--muted); cursor: default; display: flex; align-items: center; justify-content: space-between; }
 .drawer-foot-link.is-soon:hover{ color: var(--muted); }
+
+/* ═══════ Refonte accueil — Direction A (éditorial épuré) ═══════ */
+/* Hero : phrase de réassurance + CTA seul « Créer ma routine skincare » + « après 30 ans » en italique dessous */
+.hero-reassure{ font-size: 15px; line-height: 1.6; color: var(--muted); max-width: 30rem; margin: 0 auto 26px; }
+.hero-reassure em{ font-style: italic; color: var(--terra); font-weight: 600; }
+.hero-cta-wrap{ display: flex; flex-direction: column; align-items: center; gap: 7px; margin-bottom: 8px; }
+.hero-cta-caption{ font-family: 'Cormorant Garamond', var(--font-serif); font-style: italic; font-size: 16px; color: var(--label); letter-spacing: .01em; }
+
+/* 3 actions harmonisées : cartes claires encadrées (au lieu des cartes foncées) */
+#screen-home .df-home-cta{
+  background: var(--white); color: var(--charcoal); border: 1px solid var(--sand);
+  box-shadow: 0 6px 18px rgba(120,80,50,.06);
+}
+#screen-home .df-home-cta:hover{ border-color: var(--nude); transform: translateY(-1px); }
+#screen-home .df-home-cta-txt h3{ color: var(--charcoal); }
+#screen-home .df-home-cta-txt p{ color: var(--muted); }
+#screen-home .df-home-cta-arrow{ color: var(--terra); }
+#screen-home .df-home-cta--main{ background: linear-gradient(135deg, #FDE7D6, #FBDCC2); border-color: #F0C9AC; }
+#screen-home .df-home-cta--main .df-home-cta-txt h3{ color: var(--terra); }

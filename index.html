@@ -6,7 +6,7 @@
   <title>Glow Up — Skincare & Maquillage Virtuel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=254">
+  <link rel="stylesheet" href="style.css?v=255">
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#C9A98A">
@@ -171,57 +171,55 @@
       <section class="hero">
         <div class="hero-bg"></div>
         <div class="hero-content">
-          <span class="eyebrow">Ton agent IA skincare</span>
-          <h1 class="hero-title">Analyse ta peau.<br><em>Trouve ta routine.</em></h1>
-          <p class="hero-sub">Glow Up analyse ta peau, crée une routine faite pour toi, et compare les prix pour que tu paies le juste prix.</p>
-          <p class="hero-tagline">
-            <span class="hero-tagline-item">Routine personnalisée</span>
-            <span class="hero-tagline-sep" aria-hidden="true">◆</span>
-            <span class="hero-tagline-item">Prix comparés</span>
-            <span class="hero-tagline-sep" aria-hidden="true">◆</span>
-            <span class="hero-tagline-item">Recommandations neutres</span>
-          </p>
-          <div class="hero-actions">
-            <button class="btn btn-hero" onclick="startGlowUp()">Faire mon analyse ✦</button>
-            <button class="btn btn-outline" onclick="showScreen('shop')">Voir la boutique</button>
+          <span class="eyebrow">Skincare après 30 ans</span>
+          <h1 class="hero-title">La bonne routine,<br>pour <em>ta</em> peau.</h1>
+          <p class="hero-reassure">Sans commission ni partenariat — on cherche <em>ce qui te convient</em>, pas la marque du moment.</p>
+          <div class="hero-cta-wrap">
+            <button class="btn btn-hero" onclick="startGlowUp()">Créer ma routine skincare</button>
+            <span class="hero-cta-caption">après 30 ans</span>
           </div>
           <p class="hero-login-hint" id="heroLoginHint">
-            Déjà un compte ? <a href="#" onclick="openAuthModal(); return false;">Connecte-toi</a> pour retrouver ton analyse et ta progression.
+            Déjà un compte ? <a href="#" onclick="openAuthModal(); return false;">Connecte-toi</a> pour retrouver ton analyse.
           </p>
         </div>
       </section>
 
-      <!-- Fonctionnalités phares — entrées mises en avant -->
+      <!-- 3 actions harmonisées -->
       <section class="section df-home-cta-wrap">
+        <div class="df-home-cta df-home-cta--main" onclick="startGlowUp()" role="button" tabindex="0">
+          <span class="df-home-cta-emoji">✦</span>
+          <div class="df-home-cta-txt">
+            <h3>Créer ma routine skincare</h3>
+            <p>Ton analyse de peau + ta routine sur-mesure, après 30 ans.</p>
+          </div>
+          <span class="df-home-cta-arrow">→</span>
+        </div>
         <div class="df-home-cta" onclick="showScreen('dupe-finder')" role="button" tabindex="0">
           <span class="df-home-cta-emoji">📸</span>
           <div class="df-home-cta-txt">
-            <h3>Trouver le dupe d'un produit</h3>
-            <p>Prends-le en photo, Glow Up te trouve son dupe le plus proche, au meilleur prix.</p>
+            <h3>Trouver un dupe</h3>
+            <p>L'équivalent d'un produit, en moins cher.</p>
           </div>
           <span class="df-home-cta-arrow">→</span>
         </div>
         <div class="df-home-cta ra-home-cta" onclick="showScreen('routine-analyzer')" role="button" tabindex="0">
           <span class="df-home-cta-emoji">🔬</span>
           <div class="df-home-cta-txt">
-            <h3>Analyser ma routine actuelle</h3>
-            <p>Tes produits sont-ils faits pour ta peau ? Analyse experte + score sur 100.</p>
+            <h3>Analyser ma routine</h3>
+            <p>Tes produits te conviennent-ils ? Score sur 100.</p>
           </div>
           <span class="df-home-cta-arrow">→</span>
         </div>
       </section>
 
-      <!-- Produits vedettes -->
+      <!-- Les best-sellers -->
       <section class="section">
         <div class="section-head">
-          <span class="section-tag">Sélection</span>
-          <h2>Produits Vedettes</h2>
-          <p>Notés 4.5+ sur Amazon, sélectionnés sans favoritisme.</p>
+          <span class="section-tag">La sélection</span>
+          <h2>Les best-sellers</h2>
+          <p>Les préférés, notés 4.5+ — choisis sans favoritisme de marque.</p>
         </div>
         <div class="products-grid" id="featuredGrid"></div>
-        <div class="section-cta">
-          <button class="btn btn-outline" onclick="showScreen('shop')">Voir toute la collection →</button>
-        </div>
       </section>
 
       <!-- Promise -->
@@ -233,23 +231,23 @@
         <div class="promise-grid">
           <div class="promise-item">
             <span class="promise-icon">🌿</span>
-            <h4>Une routine pensée pour ta peau</h4>
-            <p>Analysée et construite selon tes vrais besoins, étape par étape.</p>
-          </div>
-          <div class="promise-item">
-            <span class="promise-icon">💰</span>
-            <h4>Le comparatif des prix du marché</h4>
-            <p>En un clic, compare les offres du marché pour t'aider à payer le juste prix.</p>
+            <h4>Une routine pour ta peau qui change</h4>
+            <p>Après 30 ans, ta peau évolue — fermeté, éclat, hydratation. On l'analyse et on l'adapte.</p>
           </div>
           <div class="promise-item">
             <span class="promise-icon">🤍</span>
-            <h4>Des recommandations guidées par tes besoins</h4>
-            <p>Jamais par une marque — seulement ce qui te convient vraiment.</p>
+            <h4>Zéro favoritisme de marque</h4>
+            <p>Aucune commission, aucun partenariat : seulement ce qui convient à ta peau.</p>
+          </div>
+          <div class="promise-item">
+            <span class="promise-icon">💰</span>
+            <h4>Le juste prix, comparé pour toi</h4>
+            <p>On compare le marché pour que tu paies le bon prix, sans pousser une marque.</p>
           </div>
           <div class="promise-item">
             <span class="promise-icon">✨</span>
-            <h4>Un accompagnement beauté personnalisé</h4>
-            <p>Un suivi de ta peau et un coach qui te connaît, dans le temps.</p>
+            <h4>Ta peau suivie dans le temps</h4>
+            <p>Photos et progression : vois ta peau s'améliorer, mois après mois.</p>
           </div>
         </div>
       </section>
