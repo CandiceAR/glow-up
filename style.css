@@ -10575,3 +10575,47 @@ body.drawer-open{ overflow: hidden; }   /* blocage du défilement arrière-plan 
 @media (prefers-reduced-motion: reduce){
   .drawer, .drawer-overlay{ transition: none; }
 }
+
+/* ── Tiroir : rubriques accordéons (Phase 2) ── */
+.drawer-acc-list{ margin-top: 20px; }
+.drawer-acc{ border-bottom: 1px solid var(--sand); }
+.drawer-acc-head{
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  background: none; border: none; padding: 14px 4px; min-height: 52px; text-align: left;
+  cursor: pointer; font-family: var(--font-sans); color: var(--charcoal);
+  -webkit-tap-highlight-color: transparent;
+}
+.drawer-acc-title{ font-size: 14.5px; font-weight: 600; line-height: 1.3; color: var(--charcoal); }
+.drawer-acc-chev{ flex: 0 0 auto; color: var(--label); transition: transform .28s ease; }
+.drawer-acc.open .drawer-acc-chev{ transform: rotate(180deg); }
+.drawer-acc-body{ max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+.drawer-acc-inner{ padding: 0 2px 12px; }
+.drawer-acc-sub{ font-size: 12.5px; font-style: italic; color: var(--label); line-height: 1.45; margin: 0 0 8px; }
+.drawer-sublink{
+  display: block; width: 100%; text-align: left; background: none; border: none;
+  padding: 11px 8px; min-height: 44px; font-size: 14px; color: var(--charcoal);
+  font-family: var(--font-sans); cursor: pointer; border-radius: 8px;
+}
+.drawer-sublink:hover{ background: var(--sand); color: var(--link); }
+.drawer-sublink.is-soon{
+  color: var(--muted); cursor: default; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.drawer-sublink.is-soon:hover{ background: none; color: var(--muted); }
+.soon-tag{
+  font-size: 10px; font-style: normal; font-weight: 600; letter-spacing: .02em;
+  background: var(--sand); color: var(--label); padding: 2px 8px; border-radius: 20px; flex: 0 0 auto;
+}
+.drawer-acc-head:focus-visible, .drawer-sublink:focus-visible, .drawer-foot-link:focus-visible{
+  outline: 2px solid var(--nude); outline-offset: 2px;
+}
+
+/* Pied du menu */
+.drawer-foot{ margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--sand); display: flex; flex-direction: column; }
+.drawer-foot-link{
+  display: block; width: 100%; text-align: left; background: none; border: none;
+  padding: 10px 4px; min-height: 44px; font-size: 13px; color: var(--label);
+  font-family: var(--font-sans); cursor: pointer; text-decoration: none;
+}
+.drawer-foot-link:hover{ color: var(--link); }
+.drawer-foot-link.is-soon{ color: var(--muted); cursor: default; display: flex; align-items: center; justify-content: space-between; }
+.drawer-foot-link.is-soon:hover{ color: var(--muted); }

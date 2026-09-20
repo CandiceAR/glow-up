@@ -281,6 +281,9 @@ function openDrawer() {
   d.setAttribute('aria-hidden', 'false');
   if (h) h.setAttribute('aria-expanded', 'true');
   document.body.classList.add('drawer-open');
+  // Lien connexion/déconnexion selon l'état
+  const authLink = document.getElementById('drawerAuthLink');
+  if (authLink) authLink.textContent = (typeof AppState !== 'undefined' && AppState.user && AppState.user.uid) ? 'Se déconnecter' : 'Se connecter';
   setTimeout(() => { document.getElementById('drawerClose')?.focus(); }, 60);
 }
 function closeDrawer() {
@@ -294,6 +297,40 @@ function closeDrawer() {
   document.body.classList.remove('drawer-open');
   setTimeout(() => { o.hidden = true; }, 300);
   if (h) h.focus();
+}
+// Accordéons du menu : une seule rubrique ouverte à la fois
+function toggleDrawerSection(btn) {
+  const acc = btn.closest('.drawer-acc');
+  const body = document.getElementById(btn.getAttribute('aria-controls'));
+  const isOpen = btn.getAttribute('aria-expanded') === 'true';
+  const list = acc && acc.parentElement;
+  if (!isOpen && list) {
+    list.querySelectorAll('.drawer-acc.open').forEach(a => {
+      if (a === acc) return;
+      const hb = a.querySelector('.drawer-acc-head');
+      const bd = a.querySelector('.drawer-acc-body');
+      if (hb) hb.setAttribute('aria-expanded', 'false');
+      a.classList.remove('open');
+      if (bd) { bd.style.maxHeight = bd.scrollHeight + 'px'; requestAnimationFrame(() => { bd.style.maxHeight = '0px'; }); }
+    });
+  }
+  btn.setAttribute('aria-expanded', String(!isOpen));
+  if (acc) acc.classList.toggle('open', !isOpen);
+  if (!body) return;
+  if (isOpen) {
+    body.style.maxHeight = body.scrollHeight + 'px';
+    requestAnimationFrame(() => { body.style.maxHeight = '0px'; });
+  } else {
+    body.style.maxHeight = body.scrollHeight + 'px';
+    body.addEventListener('transitionend', function te() { body.style.maxHeight = 'none'; body.removeEventListener('transitionend', te); });
+  }
+}
+// Connexion / déconnexion depuis le menu
+function drawerAuthAction() {
+  const loggedIn = (typeof AppState !== 'undefined' && AppState.user && AppState.user.uid);
+  closeDrawer();
+  if (loggedIn) { if (typeof Auth !== 'undefined' && Auth.signOut) Auth.signOut(); }
+  else { if (typeof openAuthModal === 'function') openAuthModal(); }
 }
 
 // ─── Initialisation principale ────────────────────────────────
