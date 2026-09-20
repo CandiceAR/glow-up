@@ -102,8 +102,9 @@ em { font-style: italic; color: var(--label); }
   filter: drop-shadow(0 0 6px rgba(240,145,63,0.45));
 }
 /* « low up » : complété par le grand G. → se lit « glow up ». Sans halo (plus net). */
+/* Ancien menu horizontal retiré : le tiroir hamburger est LE menu sur tous les écrans */
 .nav-links {
-  display: flex;
+  display: none;
   gap: 20px;
   align-items: center;
 }

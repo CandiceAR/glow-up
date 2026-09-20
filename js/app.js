@@ -276,6 +276,7 @@ function openDrawer() {
   const o = document.getElementById('drawerOverlay');
   const h = document.getElementById('hamburger');
   if (!d || !o) return;
+  d.removeAttribute('inert');
   o.hidden = false;
   requestAnimationFrame(() => { o.classList.add('open'); d.classList.add('open'); });
   d.setAttribute('aria-hidden', 'false');
@@ -292,6 +293,7 @@ function closeDrawer() {
   const h = document.getElementById('hamburger');
   if (!d || !o) return;
   d.classList.remove('open'); o.classList.remove('open');
+  d.setAttribute('inert', '');
   d.setAttribute('aria-hidden', 'true');
   if (h) h.setAttribute('aria-expanded', 'false');
   document.body.classList.remove('drawer-open');
@@ -403,6 +405,17 @@ function setupGlobalListeners() {
   // Tiroir hamburger : fermeture avec la touche Échap (l'ouverture est gérée en onclick)
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && document.body.classList.contains('drawer-open')) closeDrawer();
+  });
+  // Piège de focus clavier : Tab reste dans le tiroir tant qu'il est ouvert
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Tab' || !document.body.classList.contains('drawer-open')) return;
+    const d = document.getElementById('appDrawer'); if (!d) return;
+    const foc = [...d.querySelectorAll('button, a[href], [tabindex]:not([tabindex="-1"])')]
+      .filter(el => !el.disabled && el.offsetParent !== null);
+    if (!foc.length) return;
+    const first = foc[0], last = foc[foc.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   });
 
   // Fermer menu mobile au clic lien
