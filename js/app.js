@@ -270,6 +270,32 @@ function toggleMobileMenu() {
   document.getElementById('hamburger').classList.toggle('open');
 }
 
+// ─── Tiroir hamburger (Phase 1) ───────────────────────────────
+function openDrawer() {
+  const d = document.getElementById('appDrawer');
+  const o = document.getElementById('drawerOverlay');
+  const h = document.getElementById('hamburger');
+  if (!d || !o) return;
+  o.hidden = false;
+  requestAnimationFrame(() => { o.classList.add('open'); d.classList.add('open'); });
+  d.setAttribute('aria-hidden', 'false');
+  if (h) h.setAttribute('aria-expanded', 'true');
+  document.body.classList.add('drawer-open');
+  setTimeout(() => { document.getElementById('drawerClose')?.focus(); }, 60);
+}
+function closeDrawer() {
+  const d = document.getElementById('appDrawer');
+  const o = document.getElementById('drawerOverlay');
+  const h = document.getElementById('hamburger');
+  if (!d || !o) return;
+  d.classList.remove('open'); o.classList.remove('open');
+  d.setAttribute('aria-hidden', 'true');
+  if (h) h.setAttribute('aria-expanded', 'false');
+  document.body.classList.remove('drawer-open');
+  setTimeout(() => { o.hidden = true; }, 300);
+  if (h) h.focus();
+}
+
 // ─── Initialisation principale ────────────────────────────────
 // ─── Capture du code parrainage dans l'URL (?ref=GU-XXXXX) ───
 function _captureReferralCode() {
@@ -337,8 +363,10 @@ function setupGlobalListeners() {
   // Fermer modal au clic overlay
   document.getElementById('modalOverlay')?.addEventListener('click', closeModal);
 
-  // Hamburger
-  document.getElementById('hamburger')?.addEventListener('click', toggleMobileMenu);
+  // Tiroir hamburger : fermeture avec la touche Échap (l'ouverture est gérée en onclick)
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && document.body.classList.contains('drawer-open')) closeDrawer();
+  });
 
   // Fermer menu mobile au clic lien
   document.querySelectorAll('.nav-link').forEach(l => {

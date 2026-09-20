@@ -6,7 +6,7 @@
   <title>Glow Up — Skincare & Maquillage Virtuel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=251">
+  <link rel="stylesheet" href="style.css?v=252">
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#C9A98A">
@@ -26,7 +26,7 @@
   <!-- ===== NAVBAR ===== -->
   <header class="navbar">
     <div class="nav-left">
-      <button class="hamburger" id="hamburger" aria-label="Menu">
+      <button class="hamburger" id="hamburger" aria-label="Ouvrir le menu" aria-controls="appDrawer" aria-expanded="false" onclick="openDrawer()">
         <span></span><span></span><span></span>
       </button>
     </div>
@@ -53,6 +53,37 @@
       <div id="navUser"></div>
     </div>
   </header>
+
+  <!-- ===== MENU HAMBURGER (tiroir) ===== -->
+  <div class="drawer-overlay" id="drawerOverlay" hidden onclick="closeDrawer()"></div>
+  <aside class="drawer" id="appDrawer" aria-hidden="true" aria-label="Menu principal" role="dialog" aria-modal="true">
+    <div class="drawer-head">
+      <div class="drawer-brand" aria-hidden="true">
+        <img class="drawer-g" src="assets/logo-g-symbol.png?v=1" alt="">
+        <span class="drawer-word">low up</span>
+      </div>
+      <button class="drawer-close" id="drawerClose" aria-label="Fermer le menu" onclick="closeDrawer()">✕</button>
+    </div>
+    <div class="drawer-body">
+      <p class="drawer-tagline">L'agent IA skincare des femmes de +30 ans</p>
+      <button class="drawer-cta" onclick="closeDrawer(); startGlowUp();">Faire mon analyse</button>
+      <nav class="drawer-nav" aria-label="Navigation">
+        <button class="drawer-link" onclick="closeDrawer(); showScreen('home')">Accueil</button>
+        <button class="drawer-link" onclick="closeDrawer(); goToSkincare()">Créer ma routine skincare</button>
+        <button class="drawer-link" onclick="closeDrawer(); goToMakeup()">Make-up peaux matures</button>
+        <button class="drawer-link" onclick="closeDrawer(); goToRoutine()">Ma routine</button>
+        <button class="drawer-link" onclick="closeDrawer(); showScreen('shop')">Boutique</button>
+        <button class="drawer-link" onclick="closeDrawer(); goToSkinJourney()">Skin Journey</button>
+        <button class="drawer-link" onclick="closeDrawer(); showScreen('dupe-finder')">Trouver un dupe</button>
+        <button class="drawer-link" onclick="closeDrawer(); showScreen('routine-analyzer')">Analyser ma routine</button>
+        <button class="drawer-link" onclick="closeDrawer(); showScreen('coach')">Coach IA</button>
+        <button class="drawer-link" onclick="closeDrawer(); showScreen('skinpedia')">Skinpedia</button>
+        <button class="drawer-link" onclick="closeDrawer(); window.location.href='/blog/'">Conseils · le blog</button>
+        <button class="drawer-link" onclick="closeDrawer(); showScreen('profil')">Mon profil</button>
+      </nav>
+      <p class="drawer-soon">Menu complet en 5 rubriques — en préparation (Phase 2).</p>
+    </div>
+  </aside>
 
   <!-- ===== APP ===== -->
   <div id="app">
@@ -683,7 +714,7 @@
   <script src="js/dupeFinder.js?v=11"></script>
   <script src="js/routineAnalyzer.js?v=13"></script>
   <script src="js/profil.js?v=4"></script>
-  <script src="js/app.js?v=214"></script>
+  <script src="js/app.js?v=215"></script>
   <script src="js/analytics.js?v=1"></script>
 
   <!-- Derniers conseils (blog) sur la page d'accueil -->
