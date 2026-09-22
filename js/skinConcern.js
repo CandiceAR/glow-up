@@ -155,9 +155,15 @@
     return Object.keys(ACTIVE_RE).filter(k => hasActive(p, k));
   }
 
+  // Tags de préoccupation utilisateur (ex. answers.complexes/concerns) → clés de problématique
+  function concernsForTags(tags) {
+    const set = new Set((tags || []).map(String));
+    return CONCERNS.filter(c => c.concernTags.some(t => set.has(t))).map(c => c.key);
+  }
+
   const API = {
     CONCERNS, RULES, ACTIVE_LABEL,
-    scoreProductForConcern, rankForConcern, concernsCovered, detectActives, hasActive,
+    scoreProductForConcern, rankForConcern, concernsCovered, concernsForTags, detectActives, hasActive,
     concern: k => CONCERNS.find(c => c.key === k) || null,
   };
 

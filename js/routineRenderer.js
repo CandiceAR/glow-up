@@ -292,6 +292,17 @@ const RoutineRenderer = (() => {
       if (matching.length) pool = matching;   // fallback : si aucun ne matche, on garde le pool
     }
 
+    // Reco +30 : prioriser les produits qui adressent VRAIMENT les préoccupations de l'utilisatrice
+    // (problématique → actifs, via la table centrale SkinConcern). N'ajoute pas d'étape, améliore juste le choix.
+    const _ans = AppState.questionnaire.answers || {};
+    const _userTags = _ans.concerns || _ans.complexes || [];
+    const _concernKeys = (typeof SkinConcern !== 'undefined') ? SkinConcern.concernsForTags(_userTags) : [];
+    // Anti-doublon (§7) : problématiques déjà couvertes par les produits déjà choisis dans la routine
+    let _covered = {};
+    if (_concernKeys.length && excludeIds && excludeIds.size && typeof SkinConcern !== 'undefined') {
+      _covered = SkinConcern.concernsCovered(catalog.filter(p => excludeIds.has(p.id)));
+    }
+
     // Scorer : skinType match +20, rating ×10, isFeatured +10 (réduit pour ne pas dominer)
     pool = pool.map(p => {
       let score = (p.rating || 0) * 10;
@@ -299,6 +310,12 @@ const RoutineRenderer = (() => {
       if (p.skinTypeTags && skinType && p.skinTypeTags.includes(skinType)) score += 20;
       // Bonus fort par actif promis réellement présent (cohérence libellé ↔ produit)
       score += reqActives.filter(a => _productHasActive(p, a)).length * 40;
+      // Bonus +30 : adéquation problématique → actifs (priorité réduite si déjà couvert)
+      if (_concernKeys.length && typeof SkinConcern !== 'undefined') {
+        let cb = 0;
+        _concernKeys.forEach(ck => { cb += SkinConcern.scoreProductForConcern(p, ck).score * (_covered[ck] ? 0.25 : 1); });
+        score += cb * 0.8;
+      }
       if (_isLowBudget() && p.price > 0) score += (20 - Math.min(20, p.price)) * 2;
       if (_isBudgetUnder40() && stepType === 'moisturizer' && p.includesSPF) score += 60;
       // Variance DÉTERMINISTE (seed de la routine) — stable au re-rendu
