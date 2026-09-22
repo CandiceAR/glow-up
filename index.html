@@ -40,7 +40,7 @@
       <nav class="nav-links" id="navLinks">
         <a class="nav-link active"          data-screen="home"          href="#" onclick="showScreen('home'); return false;">Accueil</a>
         <a class="nav-link nav-link-primary" data-screen="profil"       href="#" onclick="showScreen('profil'); return false;">Mon Profil 👤</a>
-        <a class="nav-link"                 data-screen="shop"          href="#" onclick="showScreen('shop'); return false;">Boutique</a>
+        <a class="nav-link"                 data-screen="shop"          href="#" onclick="showScreen('shop'); return false;">Catalogue</a>
         <a class="nav-link" id="navSkinJourney" data-screen="journey"   href="#" onclick="goToSkinJourney(); return false;" style="display:none">Skin Journey</a>
         <a class="nav-link nav-link-primary" data-screen="questionnaire" href="#" onclick="goToSkincare(); return false;">Skincare</a>
         <a class="nav-link nav-link-primary" data-screen="makeup"        href="#" onclick="goToMakeup(); return false;">Make-up</a>
@@ -516,7 +516,7 @@
     <div class="screen" id="screen-shop">
       <div class="shop-hero">
         <span class="eyebrow">Collection complète</span>
-        <h1>La Boutique</h1>
+        <h1>Catalogue</h1>
         <p>Tous nos produits, sélectionnés sans favoritisme</p>
       </div>
 
@@ -585,9 +585,6 @@
         <!-- ── Contenu principal ── -->
         <main class="shop-main">
           <div id="catExplainer"></div>
-          <div class="shop-brand-bar" id="shopBrandBar">
-            <!-- pills marques générées dynamiquement -->
-          </div>
           <div class="products-grid" id="shopGrid"></div>
         </main>
 
@@ -730,7 +727,7 @@
       <div class="footer-col">
         <h5>Découvrir</h5>
         <ul>
-          <li><a href="#" onclick="showScreen('shop'); return false;">Boutique</a></li>
+          <li><a href="#" onclick="showScreen('shop'); return false;">Catalogue</a></li>
           <li><a href="#" onclick="startGlowUp(); return false;">Mon diagnostic</a></li>
           <li><a href="#" onclick="showScreen('tryon'); return false;">Try-on virtuel</a></li>
           <li><a href="/blog/">Conseils</a></li>
