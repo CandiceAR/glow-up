@@ -297,10 +297,16 @@ const RoutineRenderer = (() => {
     const _ans = AppState.questionnaire.answers || {};
     const _userTags = _ans.concerns || _ans.complexes || [];
     const _concernKeys = (typeof SkinConcern !== 'undefined') ? SkinConcern.concernsForTags(_userTags) : [];
-    // Anti-doublon (§7) : problématiques déjà couvertes par les produits déjà choisis dans la routine
+    // Anti-doublon (§7) : problématiques déjà couvertes par (a) les produits déjà choisis
+    // dans la routine générée + (b) les produits que l'utilisatrice UTILISE DÉJÀ (Phase 4).
     let _covered = {};
-    if (_concernKeys.length && excludeIds && excludeIds.size && typeof SkinConcern !== 'undefined') {
-      _covered = SkinConcern.concernsCovered(catalog.filter(p => excludeIds.has(p.id)));
+    if (_concernKeys.length && typeof SkinConcern !== 'undefined') {
+      const _chosen = (excludeIds && excludeIds.size) ? catalog.filter(p => excludeIds.has(p.id)) : [];
+      let _current = [];
+      if (typeof CurrentRoutine !== 'undefined' && CurrentRoutine.list) {
+        try { _current = CurrentRoutine.list().map(e => (e && e.id && catalog.find(p => p.id === e.id)) || e).filter(Boolean); } catch (e) {}
+      }
+      if (_chosen.length || _current.length) _covered = SkinConcern.concernsCovered(_chosen.concat(_current));
     }
 
     // Scorer : skinType match +20, rating ×10, isFeatured +10 (réduit pour ne pas dominer)

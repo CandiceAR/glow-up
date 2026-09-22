@@ -449,13 +449,31 @@ const RoutineAnalyzer = (() => {
                ingredientTags: cat?.ingredientTags || [], description: cat?.description || '' };
     });
     _saveUnknowns();
+    // Besoins couverts / manquants (table problématique → actifs) — additif pour l'IA
+    let _concernHint = null;
+    if (typeof SkinConcern !== 'undefined') {
+      try {
+        const cat = AppState.products.catalog || [];
+        const currentFull = S.products.map(p => (p.id && cat.find(x => x.id === p.id)) || p);
+        const covered = SkinConcern.concernsCovered(currentFull);
+        const userTags = (AppState.questionnaire.answers && (AppState.questionnaire.answers.concerns || AppState.questionnaire.answers.complexes)) || [];
+        const missing = SkinConcern.concernsForTags(userTags).filter(k => !covered[k]);
+        const lbl = k => { const c = SkinConcern.concern(k); return c && c.label; };
+        _concernHint = {
+          covered: Object.keys(covered).map(lbl).filter(Boolean),
+          missing: missing.map(lbl).filter(Boolean),
+          missingActives: missing.map(k => ({ concern: lbl(k), actives: (SkinConcern.RULES[k].primary || []).map(a => SkinConcern.ACTIVE_LABEL[a]) }))
+        };
+      } catch (e) {}
+    }
     try {
       const controller = new AbortController();
       const tid = setTimeout(() => controller.abort(), 55000);
       const resp = await fetch(apiUrl('/api/analyzeRoutine'), {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ products: payloadProducts, quiz: S.quiz, skin: S.faceSummary, moment: S.moment,
-          ageConstraint: (typeof AgeGuard !== 'undefined') ? AgeGuard.aiConstraint(AppState.questionnaire?.answers) : null }),
+          ageConstraint: (typeof AgeGuard !== 'undefined') ? AgeGuard.aiConstraint(AppState.questionnaire?.answers) : null,
+          concernHint: _concernHint }),
         signal: controller.signal
       });
       clearTimeout(tid);

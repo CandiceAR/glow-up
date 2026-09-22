@@ -23,13 +23,21 @@ module.exports = async (req, res) => {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(503).json({ error: 'ANTHROPIC_API_KEY manquante' });
 
-  const { products, quiz, skin, moment, ageConstraint } = req.body || {};
+  const { products, quiz, skin, moment, ageConstraint, concernHint } = req.body || {};
   if (!Array.isArray(products) || !products.length) {
     return res.status(400).json({ error: 'products manquants' });
   }
   const momentLabel = moment === 'soir' ? 'du SOIR' : moment === 'matin' ? 'du MATIN' : '';
   const ageBlock = (ageConstraint && ageConstraint.age)
     ? `\nRÈGLE ÂGE (PRIORITAIRE) : utilisatrice de ${ageConstraint.age} ans (moins de 15). ${ageConstraint.guidance || ''} Ne recommande JAMAIS ces actifs : ${(ageConstraint.restricted || []).join(', ')}. Si un produit qu'elle utilise contient un tel actif vedette, marque-le "weak"/"discouraged" avec un ton BIENVEILLANT (jamais "danger") et propose une alternative douce. La routine optimisée doit rester simple (nettoyage doux + hydratation + SPF).\n`
+    : '';
+
+  // Besoins couverts / manquants (calculés côté client via la table problématique→actifs)
+  const concernBlock = (concernHint && (Array.isArray(concernHint.missing) || Array.isArray(concernHint.covered)))
+    ? `\nBESOINS CIBLÉS (déduits de ses préoccupations + de l'INCI de ses produits) :
+- Déjà couverts : ${(concernHint.covered || []).join(', ') || 'aucun'}
+- NON couverts : ${(concernHint.missing || []).join(', ') || 'aucun'}
+Pour un besoin NON couvert, privilégie une reco contenant l'actif adapté (${(concernHint.missingActives || []).map(m => m.concern + ' → ' + (m.actives || []).join('/')).join(' ; ') || '—'}). Ne DUPLIQUE PAS un actif déjà présent : par ex. n'ajoute pas une 2e vitamine C si l'éclat/les taches sont déjà couverts — préfère l'actif manquant (ex. un rétinoïde pour les rides).\n`
     : '';
 
   // Produits compacts, indexés par ref
@@ -52,7 +60,7 @@ ${JSON.stringify(quiz || {}, null, 0)}
 
 SON PROFIL DE PEAU (analyse photo, peut être null) :
 ${JSON.stringify(skin || null, null, 0)}
-
+${concernBlock}
 Utilise ta connaissance des produits et de leurs actifs (INCI) même si tout n'est pas listé. Analyse À LA FOIS chaque produit ET la cohérence de TOUTE la routine (matin/soir, associations, doublons, manques).
 
 RÈGLES :
