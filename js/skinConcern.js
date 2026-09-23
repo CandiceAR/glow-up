@@ -13,7 +13,7 @@
   const CONCERNS = [
     { key: 'wrinkles',     label: 'Rides & ridules',                    concernTags: ['rides', 'ridules'] },
     { key: 'firmness',     label: 'Perte de fermeté',                   concernTags: ['fermete', 'anti_age'] },
-    { key: 'radiance',     label: 'Éclat / teint terne',                concernTags: ['eclat', 'teint_terne'] },
+    { key: 'radiance',     label: 'Éclat / teint terne',                concernTags: ['eclat', 'teint_terne', 'eclat_terne'] },
     { key: 'pigmentation', label: 'Taches',                             concernTags: ['taches', 'uniformite'] },
     { key: 'dehydration',  label: 'Déshydratation',                     concernTags: ['deshydratation', 'hydratation'] },
     { key: 'dryness',      label: 'Peau sèche / barrière fragilisée',   concernTags: ['secheresse', 'barriere', 'nourrissant'] },

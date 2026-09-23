@@ -21,14 +21,17 @@ const Questionnaire = (() => {
       required: true,
       skipIf: () => !!AppState.questionnaire?.reused?.complexes,
       options: [
-        { value: 'acne',      emoji: '😓', label: 'Acné / Boutons',        desc: 'Points noirs, kystes, imperfections' },
-        { value: 'taches',    emoji: '🫥', label: 'Taches & Teint inégal', desc: 'Hyperpigmentation, cicatrices' },
-        { value: 'rides',     emoji: '🕰', label: 'Rides & Fermeté',       desc: 'Perte de tonus, sillons' },
-        { value: 'cernes',    emoji: '😴', label: 'Cernes & Poches',       desc: 'Regard fatigué, cercles sombres' },
-        { value: 'pores',     emoji: '🔬', label: 'Pores dilatés',         desc: 'Peau d\'orange, brillances' },
-        { value: 'eclat',     emoji: '✨', label: 'Teint terne',            desc: 'Sans éclat, mine grise' },
-        { value: 'secheresse',emoji: '🏜', label: 'Sécheresse',            desc: 'Tiraillements, squames' },
-        { value: 'rougeurs',  emoji: '🌹', label: 'Rougeurs & Sensibilité',desc: 'Réactivité, couperose' }
+        { value: 'rides',         emoji: '🕰', label: 'Rides & ridules',        desc: 'Premières rides, sillons' },
+        { value: 'fermete',       emoji: '🪷', label: 'Perte de fermeté',       desc: 'Ovale du visage, tonus' },
+        { value: 'taches',        emoji: '🫥', label: 'Taches & teint inégal',  desc: 'Hyperpigmentation, marques' },
+        { value: 'eclat',         emoji: '✨', label: 'Teint terne',            desc: 'Manque d\'éclat, mine grise' },
+        { value: 'deshydratation',emoji: '💧', label: 'Déshydratation',         desc: 'Peau qui tiraille, ridules de déshydratation' },
+        { value: 'secheresse',    emoji: '🏜', label: 'Sécheresse & inconfort', desc: 'Tiraillements, squames, barrière fragilisée' },
+        { value: 'rougeurs',      emoji: '🌹', label: 'Rougeurs & sensibilité', desc: 'Réactivité, couperose' },
+        { value: 'pores',         emoji: '🔬', label: 'Pores & texture',        desc: 'Pores visibles, grain irrégulier' },
+        { value: 'acne',          emoji: '😓', label: 'Imperfections',          desc: 'Boutons, points noirs, comédons' },
+        { value: 'cernes',        emoji: '😴', label: 'Cernes & poches',        desc: 'Regard fatigué, cercles sombres' },
+        { value: 'anti_age',      emoji: '🛡️', label: 'Prévention anti-âge',    desc: 'Préserver ta peau après 30 ans' }
       ]
     },
 
