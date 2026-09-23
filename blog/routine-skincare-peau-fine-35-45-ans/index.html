@@ -25,10 +25,15 @@ a{color:var(--terra);}
 .wrap{max-width:1120px;margin:0 auto;padding:0 22px;}
 .bnav{position:sticky;top:0;z-index:10;background:rgba(245,236,224,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
 .bnav .wrap{display:flex;align-items:center;height:66px;gap:20px;}
-.bnav .brand{font-family:var(--serif);font-weight:600;font-size:26px;color:var(--terra);text-decoration:none;line-height:1;}
-.bnav .links{margin-left:auto;display:flex;gap:24px;font-size:14px;}
+.bnav .brand{display:flex;align-items:center;gap:2px;text-decoration:none;line-height:1;}
+.bnav .brand img{height:30px;width:auto;filter:drop-shadow(0 0 6px rgba(240,145,63,.45));}
+.bnav .brand span{font-family:var(--serif);font-weight:600;font-size:22px;color:var(--terra);}
+.bnav .links{margin-left:auto;display:flex;align-items:center;gap:22px;font-size:14px;}
 .bnav .links a{color:var(--muted);text-decoration:none;}
 .bnav .links a:hover{color:var(--terra);}
+.bnav .links .blog-cta{background:var(--terra);color:#fff;padding:8px 16px;border-radius:30px;font-weight:600;}
+.bnav .links .blog-cta:hover{color:#fff;opacity:.92;}
+@media(max-width:600px){.bnav .wrap{height:58px;gap:12px;}.bnav .links{gap:14px;font-size:13px;}.bnav .links .d-hide-sm{display:none;}.bnav .brand img{height:27px;}.bnav .brand span{font-size:20px;}}
 .kicker{font-size:12px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--terra);}
 .display{font-family:var(--anton);font-weight:400;text-transform:uppercase;letter-spacing:.01em;line-height:.96;text-wrap:balance;}
 .foot{background:var(--espresso);color:#E7D6C4;margin-top:64px;}
@@ -76,8 +81,8 @@ a{color:var(--terra);}
 .backlink{display:inline-block;margin-top:30px;color:var(--muted);text-decoration:none;font-size:14px;}
 </style>
 </head><body><nav class="bnav"><div class="wrap">
-<a class="brand" href="/">glow up</a>
-<div class="links"><a href="/">Accueil</a><a href="/blog/">Conseils</a><a href="/">Faire mon analyse</a></div>
+<a class="brand" href="/" aria-label="Glow Up — retour à l'application"><img src="/assets/logo-g-symbol.png" alt=""><span>low up</span></a>
+<div class="links"><a href="/">Accueil</a><a class="d-hide-sm" href="/blog/">Conseils</a><a class="blog-cta" href="/">Faire mon analyse</a></div>
 </div></nav><main class="article"><div class="wrap"><div class="inner">
           <p class="meta">10 septembre 2026 · Glow Up</p>
           <h1>Routine skincare peau fine 35-45 ans : les bons gestes matin et soir</h1>
@@ -110,6 +115,6 @@ a{color:var(--terra);}
         <div class="wrap" style="max-width:680px;margin:0 auto;"><a class="backlink" href="/blog/">← Tous les conseils</a></div>
         </main><footer class="foot"><div class="wrap">
 <div class="fb">glow up</div>
-<div class="fl"><a href="/">Accueil</a><a href="/blog/">Conseils</a><a href="/confidentialite/">Confidentialité</a><a href="https://www.instagram.com/">Instagram</a></div>
+<div class="fl"><a href="/">Accueil</a><a href="/blog/">Conseils</a><a href="/confidentialite/">Confidentialité</a><a href="https://www.instagram.com/glowupandshiny" target="_blank" rel="noopener">Instagram</a></div>
 <div class="copy">© 2026 Glow Up · Ton agent IA skincare</div>
 </div></footer></body></html>
