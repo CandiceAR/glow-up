@@ -10640,3 +10640,24 @@ body.drawer-open{ overflow: hidden; }   /* blocage du défilement arrière-plan 
 #screen-home .df-home-cta-arrow{ color: var(--terra); }
 #screen-home .df-home-cta--main{ background: linear-gradient(135deg, #FDE7D6, #FBDCC2); border-color: #F0C9AC; }
 #screen-home .df-home-cta--main .df-home-cta-txt h3{ color: var(--terra); }
+
+/* ═══════ Catalogue — « Quel est ton besoin ? » + filtres (Phase 2) ═══════ */
+.shop-need{ margin: 4px 0 14px; }
+.shop-need-label{ display: block; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--label); font-weight: 700; margin: 0 0 8px; }
+.shop-need-chips{ display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.shop-need-chips::-webkit-scrollbar{ display: none; }
+.need-chip{
+  flex: 0 0 auto; background: var(--white); border: 1px solid var(--sand); border-radius: 30px;
+  padding: 8px 14px; min-height: 38px; font-size: 13px; color: var(--charcoal);
+  font-family: var(--font-sans); cursor: pointer; white-space: nowrap;
+}
+.need-chip:hover{ border-color: var(--nude); }
+.need-chip.active{ background: var(--terra); color: #fff; border-color: var(--terra); }
+.shop-controls{ display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 18px; }
+.shop-ctrl{ display: flex; flex-direction: column; gap: 3px; font-size: 11px; color: var(--label); font-weight: 600; letter-spacing: .02em; }
+.shop-ctrl select{
+  font-family: var(--font-sans); font-size: 13px; color: var(--charcoal);
+  background: var(--white); border: 1px solid var(--sand); border-radius: 10px;
+  padding: 9px 12px; min-height: 42px; cursor: pointer; min-width: 130px;
+}
+.shop-ctrl select:focus-visible{ outline: 2px solid var(--nude); outline-offset: 1px; }

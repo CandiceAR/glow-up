@@ -165,7 +165,7 @@ function showScreen(name) {
       overlay.style.display = 'flex';
     }
   }
-  if (name === 'shop')          { renderShopBrands(); renderShop(); }
+  if (name === 'shop')          { renderNeedChips(); renderShopBrandSelect(); renderShop(); }
   if (name === 'tryon')         TryOn.initTryOnScreen();
   if (name === 'results') {
     RoutineRenderer.renderResults();
@@ -464,34 +464,88 @@ function renderFeaturedHome() {
   grid.innerHTML = featured.map(p => ProductCatalog.renderCard(p)).join('');
 }
 
-// ─── Shop — rendu grille complète ────────────────────────────
+// ─── Catalogue — filtres (besoin · marque · budget · tri) + rendu ──────────
+function _shopFilters() {
+  const f = AppState.products.filters;
+  if (!f.concern) f.concern = 'all';
+  if (!f.budget)  f.budget  = 'all';
+  if (!f.sort)    f.sort    = 'relevance';
+  return f;
+}
+// Marque canonique : fusionne les doublons (ANUA/Anua, KIKO MILANO/Kiko Milano,
+// Médicube/Medicube, e.l.f./E.L.F.…) et retire la partie « produit » après un tiret.
+function _canonBrand(b) {
+  return (b || '').toString().normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/\s*[-–—].*$/, '')
+    .replace(/\b(cosmetics?|professional makeup|beauty)\b/g, '')
+    .replace(/[^a-z0-9]/g, '');
+}
+function _brandGroups() {
+  const map = new Map();
+  (AppState.products.catalog || []).forEach(p => {
+    const key = _canonBrand(p.brand);
+    if (!key) return;
+    const disp = (p.brand || '').trim();
+    const nice = s => s && s !== s.toUpperCase() && s !== s.toLowerCase();
+    const cur = map.get(key);
+    if (!cur) map.set(key, { display: disp, count: 1 });
+    else { cur.count++; if (nice(disp) && !nice(cur.display)) cur.display = disp; }
+  });
+  return [...map.entries()].map(([key, v]) => ({ key, display: v.display, count: v.count }))
+    .sort((a, b) => a.display.localeCompare(b.display, 'fr'));
+}
+function renderShopBrandSelect() {
+  const sel = document.getElementById('shopBrandSel');
+  if (!sel) return;
+  const cur = _shopFilters().brand || 'all';
+  sel.innerHTML = '<option value="all">Toutes les marques</option>' +
+    _brandGroups().map(g => `<option value="${g.key}"${g.key === cur ? ' selected' : ''}>${g.display}</option>`).join('');
+}
+function renderNeedChips() {
+  const box = document.getElementById('shopNeedChips');
+  if (!box || typeof SkinConcern === 'undefined') return;
+  const cur = _shopFilters().concern || 'all';
+  box.innerHTML =
+    `<button class="need-chip${cur === 'all' ? ' active' : ''}" onclick="filterShopConcern('all')">Tous</button>` +
+    SkinConcern.CONCERNS.map(c =>
+      `<button class="need-chip${cur === c.key ? ' active' : ''}" onclick="filterShopConcern('${c.key}')">${c.label}</button>`
+    ).join('');
+}
+
 function renderShop() {
   const grid = document.getElementById('shopGrid');
   if (!grid) return;
-  const { category: cat, brand } = AppState.products.filters;
+  const f = _shopFilters();
   let list;
-  if (cat === 'all')           list = AppState.products.catalog;
-  else if (cat === 'featured') list = AppState.products.catalog.filter(p => p.isFeatured);
-  else if (cat === 'h2o')      list = AppState.products.catalog.filter(p => p.badge === 'h2o');
-  else if (cat === 'vitc')     list = AppState.products.catalog.filter(p => p.badge === 'vitc' || p.badge === 'vitc-spf');
-  else                         list = AppState.products.catalog.filter(p => p.category === cat);
-  if (brand !== 'all')         list = list.filter(p => p.brand === brand);
+  if (f.category === 'all')           list = AppState.products.catalog;
+  else if (f.category === 'featured') list = AppState.products.catalog.filter(p => p.isFeatured);
+  else if (f.category === 'h2o')      list = AppState.products.catalog.filter(p => p.badge === 'h2o');
+  else if (f.category === 'vitc')     list = AppState.products.catalog.filter(p => p.badge === 'vitc' || p.badge === 'vitc-spf');
+  else                                list = AppState.products.catalog.filter(p => p.category === f.category);
+  if (f.brand && f.brand !== 'all')   list = list.filter(p => _canonBrand(p.brand) === f.brand);
+  if (f.budget && f.budget !== 'all') {
+    const [lo, hi] = f.budget.split('-').map(Number);
+    list = list.filter(p => p.price != null && p.price >= lo && p.price <= hi);
+  }
+  // « Quel est ton besoin ? » → classement par actifs pertinents (table centrale)
+  if (f.concern && f.concern !== 'all' && typeof SkinConcern !== 'undefined') {
+    list = SkinConcern.rankForConcern(list, f.concern);
+  }
+  if (f.sort === 'new') {
+    list = [...list].sort((a, b) => String(b.curatedAt || '').localeCompare(String(a.curatedAt || '')) ||
+      ((parseInt(String(b.id).replace(/\D/g, '')) || 0) - (parseInt(String(a.id).replace(/\D/g, '')) || 0)));
+  } else if (f.sort === 'rating') {
+    list = [...list].sort((a, b) => (b.rating || 0) - (a.rating || 0));
+  }
   grid.innerHTML = list.length
     ? list.map(p => ProductCatalog.renderCard(p)).join('')
-    : '<p class="empty-state">Aucun produit dans cette sélection.</p>';
+    : '<p class="empty-state">Aucun produit pour ces filtres. Essaie d\'en retirer un.</p>';
 }
 
-function renderShopBrands() {
-  const container = document.getElementById('shopBrandBar');
-  if (!container) return;
-  const brands = [...new Set(AppState.products.catalog.map(p => p.brand).filter(Boolean))].sort();
-  const currentBrand = AppState.products.filters.brand;
-  container.innerHTML =
-    `<button class="brand-pill${currentBrand === 'all' ? ' active' : ''}" data-brand="all" onclick="filterShopBrand('all')">Toutes</button>` +
-    brands.map(b =>
-      `<button class="brand-pill${currentBrand === b ? ' active' : ''}" data-brand="${b.replace(/"/g,'&quot;')}" onclick="filterShopBrand(${JSON.stringify(b)})">${b}</button>`
-    ).join('');
-}
+function filterShopConcern(key) { _shopFilters().concern = key; renderNeedChips(); renderShop(); }
+function filterShopBudget(v)    { _shopFilters().budget  = v;   renderShop(); }
+function filterShopSort(v)      { _shopFilters().sort    = v;   renderShop(); }
 
 function filterShop(cat) {
   AppState.products.filters.category = cat;
@@ -501,12 +555,7 @@ function filterShop(cat) {
   renderShop();
 }
 
-function filterShopBrand(brand) {
-  AppState.products.filters.brand = brand;
-  document.querySelectorAll('.brand-pill').forEach(t =>
-    t.classList.toggle('active', t.dataset.brand === brand));
-  renderShop();
-}
+function filterShopBrand(brand) { _shopFilters().brand = brand; renderShop(); }
 
 function toggleSidebarGroup(id) {
   document.getElementById(id)?.classList.toggle('collapsed');
