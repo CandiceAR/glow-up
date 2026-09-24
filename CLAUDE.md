@@ -55,7 +55,7 @@ Products come from three sources, merged in priority order (highest first):
 2. Firestore `products` collection — admin-uploaded products
 3. `js/catalogue.js` (`CATALOGUE` const) — legacy static fallback
 
-All Amazon URLs must go through `ProductCatalog.ensureTag()` which injects the affiliate tag `kan10ar-21`. Never hardcode Amazon URLs without the tag.
+All Amazon URLs must go through `ProductCatalog.ensureTag()` which injects the affiliate tag `glowupapp-21`. Never hardcode Amazon URLs without the tag.
 
 ### Subscription / Feature Gating
 

@@ -7,7 +7,7 @@
 
 const ProductCatalog = (() => {
 
-  const TAG = 'kan10ar-21';
+  const TAG = 'glowupapp-21';
 
   // ─── Dupes curés (dupeId → { hero, savings, ... }) ────────────
   let _dupeMap = {};
@@ -54,7 +54,7 @@ const ProductCatalog = (() => {
         // 2a. JSON statique — toujours chargé (source de vérité pour les nouveaux produits)
         let jsonProducts = [];
         try {
-          const res = await fetch('data/products-manual.json?v=98');
+          const res = await fetch('data/products-manual.json?v=99');
           if (res.ok) {
             const data = await res.json();
             jsonProducts = Array.isArray(data) ? data : (data.products || []);

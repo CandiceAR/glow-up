@@ -58,7 +58,7 @@ const RoutineRenderer = (() => {
     let buyUrl = p.buyUrl;
     if (!buyUrl) {
       // Pas de lien direct → recherche Amazon affiliée (honnête, monétisée)
-      buyUrl = `https://www.amazon.fr/s?k=${encodeURIComponent(p.brand + ' ' + p.name)}&tag=kan10ar-21`;
+      buyUrl = `https://www.amazon.fr/s?k=${encodeURIComponent(p.brand + ' ' + p.name)}&tag=glowupapp-21`;
     }
     return {
       id: p.id, name: p.name, brand: p.brand,

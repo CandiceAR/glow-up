@@ -218,7 +218,7 @@ const DupeFinder = (() => {
 
   function _catalogProduct(id) { return (AppState.products.catalog || []).find(p => p.id === id); }
   function _compareUrl(p) { return `https://www.google.com/search?q=${encodeURIComponent((p.brand || '') + ' ' + (p.name || ''))}&tbm=shop`; }
-  function _amazonSearch(brand, name) { return `https://www.amazon.fr/s?k=${encodeURIComponent(((brand || '') + ' ' + (name || '')).trim())}&tag=kan10ar-21`; }
+  function _amazonSearch(brand, name) { return `https://www.amazon.fr/s?k=${encodeURIComponent(((brand || '') + ' ' + (name || '')).trim())}&tag=glowupapp-21`; }
 
   // Carte d'un dupe HORS catalogue (proposé par l'IA, lien Amazon affilié)
   function _externalCard(r) {

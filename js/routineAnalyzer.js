@@ -694,7 +694,7 @@ const RoutineAnalyzer = (() => {
     pool.sort((a, b2) => (b2.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0) || (b2.rating || 0) - (a.rating || 0));
     return pool[0] || null;
   }
-  function _amazonSearch(q) { return `https://www.amazon.fr/s?k=${encodeURIComponent((q || '').slice(0, 80))}&tag=kan10ar-21`; }
+  function _amazonSearch(q) { return `https://www.amazon.fr/s?k=${encodeURIComponent((q || '').slice(0, 80))}&tag=glowupapp-21`; }
 
   function _optProductCard(p, buy) {
     const url = p.amazonUrl || p.shopUrl || '#';

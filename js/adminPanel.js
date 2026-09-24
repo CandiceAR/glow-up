@@ -1494,7 +1494,7 @@ const Admin = (() => {
           noLink.map(p => `<li><strong>${p.id}</strong> — ${p.name}</li>`).join('') + '</ul>';
       }
       if (noTag.length) {
-        html += `<p style="font-weight:600;font-size:0.82rem;margin-bottom:6px;">⚠ ${noTag.length} produit(s) sans tag affilié <code>tag=kan10ar-21</code> :</p>`;
+        html += `<p style="font-weight:600;font-size:0.82rem;margin-bottom:6px;">⚠ ${noTag.length} produit(s) sans tag affilié <code>tag=glowupapp-21</code> :</p>`;
         html += '<ul style="font-size:0.8rem;color:var(--muted);margin:0 0 12px 16px;">' +
           noTag.map(p => `<li><strong>${p.id}</strong> — ${p.name}</li>`).join('') + '</ul>';
       }

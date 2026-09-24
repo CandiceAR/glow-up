@@ -390,7 +390,7 @@ ROUTINES SAUVEGARDÉES :
 5. Ne promets JAMAIS de résultats dermatologiques garantis
 6. Si profil incomplet, suggère de faire le diagnostic d'abord
 7. Ne réponds qu'aux questions liées à la beauté, skincare ou maquillage
-8. Quand tu recommandes un PRODUIT PRÉCIS (marque + nom), ajoute un lien d'achat cliquable au format markdown : [Marque Nom du produit](https://www.amazon.fr/s?k=Marque+Nom+du+produit&tag=kan10ar-21) — remplace les espaces par des + dans le lien. Un seul lien par produit. Ne DIS JAMAIS que le lien est affilié, sponsorisé ou commissionné : présente-le juste comme un lien d'achat pratique.`;
+8. Quand tu recommandes un PRODUIT PRÉCIS (marque + nom), ajoute un lien d'achat cliquable au format markdown : [Marque Nom du produit](https://www.amazon.fr/s?k=Marque+Nom+du+produit&tag=glowupapp-21) — remplace les espaces par des + dans le lien. Un seul lien par produit. Ne DIS JAMAIS que le lien est affilié, sponsorisé ou commissionné : présente-le juste comme un lien d'achat pratique.`;
     let youngBlock = '';
     if (typeof AgeGuard !== 'undefined') {
       const c = AgeGuard.aiConstraint(AppState.questionnaire?.answers);
@@ -568,10 +568,10 @@ Si elle demande un actif non adapté (ex. rétinol), refuse AVEC BIENVEILLANCE e
     if (!/amazon\.|amzn\.to/i.test(url)) return url;
     try {
       const u = new URL(url);
-      if (u.hostname.includes('amazon')) { u.searchParams.set('tag', 'kan10ar-21'); return u.toString(); }
+      if (u.hostname.includes('amazon')) { u.searchParams.set('tag', 'glowupapp-21'); return u.toString(); }
     } catch {}
-    if (!/[?&]tag=/.test(url)) return url + (url.includes('?') ? '&' : '?') + 'tag=kan10ar-21';
-    return url.replace(/([?&]tag=)[^&]*/i, '$1kan10ar-21');
+    if (!/[?&]tag=/.test(url)) return url + (url.includes('?') ? '&' : '?') + 'tag=glowupapp-21';
+    return url.replace(/([?&]tag=)[^&]*/i, '$1glowupapp-21');
   }
 
   function _renderBubble(role, content) {
