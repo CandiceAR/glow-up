@@ -332,6 +332,7 @@ const ProductCatalog = (() => {
           <p class="product-desc">${p.description || ''}</p>
           ${p.applyTip ? `<div class="product-apply-tip"><span class="apply-tip-label">💡 Comment l'appliquer</span><p>${p.applyTip}</p></div>` : ''}
           <div class="product-price-lg${p.price ? '' : ' product-price-lg--na'}">${priceLabel(p)}</div>
+          ${p.price != null && p.priceIsIndicative ? '<div class="price-indicative-note">Prix indicatif — le tarif exact s’affiche sur Amazon</div>' : ''}
           ${previews}
           ${pairedHtml}
           <div class="modal-actions">
@@ -437,8 +438,12 @@ const ProductCatalog = (() => {
     return typeof url === 'string' && /amazon\.[^/]+\/s\?/.test(url);
   }
   // Texte prix honnête quand aucun prix vérifié n'est disponible (jamais inventé)
+  // priceIsIndicative = prix relevé chez un revendeur (≈), pas le prix Amazon exact
   function priceLabel(product) {
-    if (product.price != null && product.price !== '') return product.price.toFixed(2) + ' €';
+    if (product.price != null && product.price !== '') {
+      const n = Number(product.price);
+      return (product.priceIsIndicative ? '≈ ' : '') + n.toFixed(2) + ' €';
+    }
     if (product.amazonUrl) return 'Prix sur Amazon';
     if (product.shopUrl)   return 'Voir le prix';
     return '—';

@@ -533,6 +533,7 @@ em { font-style: italic; color: var(--label); }
   color: var(--link);
 }
 .product-price-lg--na { font-size: 0.95rem; color: var(--link); }
+.price-indicative-note { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
 .empty-state {
   grid-column: 1/-1;
   text-align: center;
