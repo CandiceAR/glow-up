@@ -526,6 +526,13 @@ em { font-style: italic; color: var(--label); }
   font-weight: 600;
   color: var(--charcoal);
 }
+/* Prix indisponible (jamais inventé) : libellé discret, pas un vrai prix */
+.product-price--na {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--link);
+}
+.product-price-lg--na { font-size: 0.95rem; color: var(--link); }
 .empty-state {
   grid-column: 1/-1;
   text-align: center;

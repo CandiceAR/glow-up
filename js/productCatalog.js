@@ -277,7 +277,7 @@ const ProductCatalog = (() => {
           <div class="product-card-row">
             ${colorDot}
             <div class="product-rating">${ratingStars} <span>${product.rating || '—'}</span></div>
-            <span class="product-price">${product.price ? product.price.toFixed(2) + ' €' : '—'}</span>
+            <span class="product-price${product.price ? '' : ' product-price--na'}">${priceLabel(product)}</span>
           </div>
           ${stTags}
           ${showBuyButton ? renderBuyButton(product) : ''}
@@ -331,7 +331,7 @@ const ProductCatalog = (() => {
           <div class="product-rating">${ratingStars} <span>(${p.rating || '—'}/5)</span></div>
           <p class="product-desc">${p.description || ''}</p>
           ${p.applyTip ? `<div class="product-apply-tip"><span class="apply-tip-label">💡 Comment l'appliquer</span><p>${p.applyTip}</p></div>` : ''}
-          <div class="product-price-lg">${p.price ? p.price.toFixed(2) + ' €' : '—'}</div>
+          <div class="product-price-lg${p.price ? '' : ' product-price-lg--na'}">${priceLabel(p)}</div>
           ${previews}
           ${pairedHtml}
           <div class="modal-actions">
@@ -432,11 +432,24 @@ const ProductCatalog = (() => {
     </div>`;
   }
 
+  // Lien Amazon de recherche (/s?k=) = n'ouvre PAS la fiche produit exacte
+  function isAmazonSearch(url) {
+    return typeof url === 'string' && /amazon\.[^/]+\/s\?/.test(url);
+  }
+  // Texte prix honnête quand aucun prix vérifié n'est disponible (jamais inventé)
+  function priceLabel(product) {
+    if (product.price != null && product.price !== '') return product.price.toFixed(2) + ' €';
+    if (product.amazonUrl) return 'Prix sur Amazon';
+    if (product.shopUrl)   return 'Voir le prix';
+    return '—';
+  }
+
   // ─── Bouton achat (Amazon ou boutique directe) ───────────────
   function renderBuyButton(product) {
     const url = product.amazonUrl || product.shopUrl;
     if (!url) return '';
     const isAmazon = !!product.amazonUrl;
+    const isSearch = isAmazon && isAmazonSearch(product.amazonUrl);
     const canCompare = isComparable(product);
     const compareUrl = `https://www.google.com/search?q=${encodeURIComponent((product.brand || '') + ' ' + (product.name || ''))}&tbm=shop`;
     return `
@@ -451,7 +464,7 @@ const ProductCatalog = (() => {
            href="${url}" target="_blank"
            rel="noopener nofollow${isAmazon ? ' sponsored' : ''}"
            onclick="event.stopPropagation();${isAmazon ? ` trackAmazonClick('${product.id}')` : ''}">
-          ${isAmazon ? 'Acheter maintenant →' : 'Voir le produit →'}
+          ${isSearch ? 'Voir sur Amazon →' : (isAmazon ? 'Acheter maintenant →' : 'Voir le produit →')}
         </a>
       </div>`;
   }
