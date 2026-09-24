@@ -534,6 +534,20 @@ em { font-style: italic; color: var(--label); }
 }
 .product-price-lg--na { font-size: 0.95rem; color: var(--link); }
 .price-indicative-note { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+/* Bonus lèvres (additif, page résultats routine) */
+.lip-care-tip {
+  margin: 16px 0;
+  padding: 14px 16px;
+  background: var(--sand, #F3ECE4);
+  border: 1px solid var(--nude, #C9A98A);
+  border-radius: 14px;
+}
+.lip-care-tip-head { font-weight: 700; color: var(--charcoal); margin-bottom: 4px; }
+.lip-care-tip-reason { font-size: 0.86rem; color: var(--muted); margin: 0 0 10px; line-height: 1.4; }
+.lip-care-tip-prod { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; justify-content: space-between; }
+.lip-care-tip-name { font-weight: 600; color: var(--charcoal); font-size: 0.9rem; }
+.lip-care-tip-cta { white-space: nowrap; }
 .empty-state {
   grid-column: 1/-1;
   text-align: center;

@@ -150,6 +150,17 @@ const Questionnaire = (() => {
       ]
     },
 
+    // Q10b — Lèvres sèches/gercées (additif ; sert à proposer un baume à lèvres)
+    {
+      id: 'q10b', key: 'lipsDry', type: 'single', required: false, skipIf: null,
+      question: 'Tes lèvres sont-elles souvent sèches ou gercées ?',
+      options: [
+        { value: 'oui',     emoji: '💋', label: 'Oui, souvent', desc: 'Tiraillements, gerçures, peau qui pèle' },
+        { value: 'parfois', emoji: '🍃', label: 'Parfois',      desc: 'Surtout en hiver ou au froid' },
+        { value: 'non',     emoji: '✨', label: 'Non, ça va',   desc: 'Mes lèvres sont confortables' }
+      ]
+    },
+
     // Q11 — Budget
     {
       id: 'q11', key: 'budget', type: 'single',

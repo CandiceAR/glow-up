@@ -586,6 +586,9 @@ const RoutineRenderer = (() => {
       </div>
       ${renderRoutineSection('Routine du matin', matnSteps, '🌅', hasRetinol)}
 
+      <!-- 💋 Bonus lèvres — additif : peau déshydratée/sèche ou lèvres sèches déclarées -->
+      ${_renderLipCareTip()}
+
       <!-- ✨ Vitrine Premium — au pic d'intention, juste après la routine gratuite -->
       ${isLocked ? _renderVitrineBanner() : ''}
 
@@ -672,6 +675,37 @@ const RoutineRenderer = (() => {
   }
 
   // ─── Section libre ────────────────────────────────────────────
+  // ─── Bonus lèvres (additif) : proposé si lèvres sèches déclarées OU peau déshydratée/sèche ──
+  function _renderLipCareTip() {
+    const a = (AppState.questionnaire && AppState.questionnaire.answers) || {};
+    const tags = [].concat(a.complexes || [], a.concerns || []);
+    const dehydrated = tags.some(c => c === 'deshydratation' || c === 'secheresse') || a.skinType === 'seche';
+    const lipsDry = a.lipsDry === 'oui' || a.lipsDry === 'parfois';
+    if (!lipsDry && !dehydrated) return '';
+    const cat = (AppState.products && AppState.products.catalog) || [];
+    // Priorité au baume Torriden aux céramides (m522), sinon n'importe quel baume actif
+    let balm = cat.find(p => p.id === 'm522' && p.active !== false)
+            || cat.find(p => p.category === 'lipbalm' && p.active !== false);
+    if (!balm) return '';
+    const url = balm.amazonUrl || balm.shopUrl || '#';
+    const reason = lipsDry
+      ? 'Tu nous as dit que tes lèvres sont souvent inconfortables.'
+      : 'Ta peau est déshydratée ou sèche — les lèvres le sont souvent aussi.';
+    return `
+      <div class="lip-care-tip">
+        <div class="lip-care-tip-head">💋 Bonus lèvres</div>
+        <p class="lip-care-tip-reason">${reason} Un baume aux céramides scelle l'hydratation et répare la barrière des lèvres.</p>
+        <div class="lip-care-tip-prod">
+          <span class="lip-care-tip-name">${balm.brand} — ${balm.name}</span>
+          <a class="pc-cta pc-cta--buy lip-care-tip-cta" href="${url}" target="_blank"
+             rel="noopener nofollow sponsored"
+             onclick="event.stopPropagation();if(typeof trackAmazonClick==='function')trackAmazonClick('${balm.id}')">
+            Voir le baume →
+          </a>
+        </div>
+      </div>`;
+  }
+
   function renderRoutineSection(title, steps, emoji, hasRetinol) {
     if (!steps || steps.length === 0) return '';
 
