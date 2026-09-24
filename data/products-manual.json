@@ -13763,7 +13763,7 @@
       "description": "",
       "ingredientTags": [],
       "concernTags": [],
-      "active": true,
+      "active": false,
       "_priceIndicatif": true
     },
     {
@@ -13779,7 +13779,7 @@
       "description": "",
       "ingredientTags": [],
       "concernTags": [],
-      "active": true,
+      "active": false,
       "_priceIndicatif": true
     },
     {
@@ -25301,28 +25301,25 @@
     },
     {
       "id": "m515",
-      "name": "SKIN1004 Madagascar Centella Matrixyl 10 Boosting Shot Ampoule",
+      "name": "SKIN1004 Madagascar Centella Matrixyl 10 Boosting Shot",
       "brand": "SKIN1004",
       "category": "serum",
       "imageUrl": "assets/products/m515.jpg",
-      "amazonUrl": "https://www.amazon.fr/s?k=SKIN1004%20Madagascar%20Centella%20Matrixyl%2010%20Boosting%20Shot%20Ampoule&tag=glowupapp-21",
-      "amazonAsin": null,
-      "amazonAffiliateUrl": null,
+      "amazonUrl": "https://www.amazon.fr/dp/B0FDTVXBXS?tag=glowupapp-21",
+      "amazonAsin": "B0FDTVXBXS",
+      "amazonAffiliateUrl": "https://www.amazon.fr/dp/B0FDTVXBXS?tag=glowupapp-21",
       "brandUrl": "",
       "price": null,
       "currency": "EUR",
-      "description": "Sérum K-beauty SKIN1004 — actifs clés : Adenosine, Hydrolyzed Hyaluronic Acid, Palmitoyl Tripeptide-1.",
+      "description": "Ampoule booster SKIN1004 au Matrixyl (peptides) + Centella — cible la fermeté et les rides en stimulant le collagène. Matin et/ou soir, avant la crème.",
       "concernTags": [
         "fermete",
-        "ridules"
+        "anti_age",
+        "rides"
       ],
       "ingredientTags": [
-        "adenosine",
-        "hydrolyzedhyaluronicacid",
-        "palmitoyltripeptide1",
-        "palmitoyltetrapeptide7",
-        "panthenol",
-        "madecassoside"
+        "peptide",
+        "centella"
       ],
       "timeOfUse": "les deux",
       "routineStep": "Sérum / Traitement",
@@ -25568,7 +25565,7 @@
         "Centella Asiatica Extract"
       ],
       "barcode": null,
-      "volumeMl": null,
+      "volumeMl": 30,
       "inciSourceUrl": "https://incidecoder.com/products/skin1004-matrixyl-10-boosting-shot-ampoule",
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
@@ -25579,7 +25576,8 @@
       "active": true,
       "isFeatured": false,
       "curatedBy": "inci-import",
-      "curatedAt": "2026-09-17"
+      "curatedAt": "2026-09-17",
+      "maturity": "mature"
     },
     {
       "id": "m516",
@@ -31308,7 +31306,7 @@
       "needsReview": false,
       "needsReviewReason": "",
       "isKorean": false,
-      "active": true,
+      "active": false,
       "isFeatured": false,
       "curatedBy": "catalog-gap",
       "curatedAt": "2026-09-17"
@@ -32210,6 +32208,530 @@
       ],
       "isKorean": true,
       "active": true
+    },
+    {
+      "id": "m536",
+      "name": "SKIN1004 Madagascar Centella Retinol 0.2% Boosting Shot",
+      "brand": "SKIN1004",
+      "category": "serum",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/dp/B0FDTZ8Y5Q?tag=glowupapp-21",
+      "amazonAsin": "B0FDTZ8Y5Q",
+      "amazonAffiliateUrl": "https://www.amazon.fr/dp/B0FDTZ8Y5Q?tag=glowupapp-21",
+      "brandUrl": "",
+      "price": null,
+      "currency": "EUR",
+      "volumeMl": 30,
+      "maturity": "mature",
+      "description": "Ampoule booster SKIN1004 au rétinol 0,2% + Centella apaisante — lisse les rides et affine le grain de peau. Le SOIR uniquement, SPF le lendemain.",
+      "concernTags": [
+        "rides",
+        "anti_age",
+        "texture"
+      ],
+      "ingredientTags": [
+        "retinoid",
+        "centella"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "seche",
+        "mixte"
+      ],
+      "isKorean": true,
+      "active": true
+    },
+    {
+      "id": "m537",
+      "name": "Eucerin Anti-Pigment Sérum Duo Anti-Taches",
+      "brand": "Eucerin",
+      "category": "serum",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/dp/B07Q2S9L9Z?tag=glowupapp-21",
+      "amazonAsin": "B07Q2S9L9Z",
+      "amazonAffiliateUrl": "https://www.amazon.fr/dp/B07Q2S9L9Z?tag=glowupapp-21",
+      "brandUrl": "",
+      "price": null,
+      "currency": "EUR",
+      "volumeMl": 30,
+      "maturity": "mature",
+      "description": "Sérum Eucerin Anti-Pigment au Thiamidol — réduit visiblement les taches brunes et unifie le teint. Idéal peaux matures sujettes aux taches. Matin et soir.",
+      "concernTags": [
+        "taches",
+        "uniformite",
+        "eclat"
+      ],
+      "ingredientTags": [
+        "thiamidol",
+        "hyaluronicacid"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "seche",
+        "mixte",
+        "sensible"
+      ],
+      "active": true
+    },
+    {
+      "id": "m538",
+      "name": "Torriden Dive-In Low Molecular Hyaluronic Acid Cream (100 ml)",
+      "brand": "Torriden",
+      "category": "moisturizer",
+      "imageUrl": "",
+      "amazonUrl": "https://www.amazon.fr/dp/B097PDX6JN?tag=glowupapp-21",
+      "amazonAsin": "B097PDX6JN",
+      "amazonAffiliateUrl": "https://www.amazon.fr/dp/B097PDX6JN?tag=glowupapp-21",
+      "brandUrl": "",
+      "price": null,
+      "currency": "EUR",
+      "volumeMl": 100,
+      "description": "Crème hydratante et apaisante Torriden Dive-In à l’acide hyaluronique 5D (faible poids moléculaire) — hydratation profonde, confort, format 100 ml. Peaux normales à sensibles.",
+      "concernTags": [
+        "deshydratation",
+        "hydratation",
+        "rougeurs"
+      ],
+      "ingredientTags": [
+        "hyaluronicacid"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "seche",
+        "mixte",
+        "sensible"
+      ],
+      "isKorean": true,
+      "active": true
+    },
+    {
+      "imageUrl": "",
+      "brandUrl": "",
+      "price": null,
+      "currency": "EUR",
+      "amazonAffiliateUrl": "https://www.amazon.fr/dp/B097PG84S9?tag=glowupapp-21",
+      "amazonUrl": "https://www.amazon.fr/dp/B097PG84S9?tag=glowupapp-21",
+      "active": true,
+      "id": "m539",
+      "name": "Torriden Dive-In Low Molecular Hyaluronic Acid Serum (100 ml)",
+      "brand": "Torriden",
+      "category": "serum",
+      "amazonAsin": "B097PG84S9",
+      "volumeMl": 100,
+      "isKorean": true,
+      "concernTags": [
+        "deshydratation",
+        "hydratation"
+      ],
+      "ingredientTags": [
+        "hyaluronicacid"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "seche",
+        "mixte",
+        "sensible"
+      ],
+      "description": "Sérum à l’acide hyaluronique 5D (faible poids moléculaire), format 100 ml — hydratation intense et repulpante. À utiliser matin et soir avant la crème."
+    },
+    {
+      "imageUrl": "",
+      "brandUrl": "",
+      "price": null,
+      "currency": "EUR",
+      "amazonAffiliateUrl": "https://www.amazon.fr/dp/B08TBG2T2C?tag=glowupapp-21",
+      "amazonUrl": "https://www.amazon.fr/dp/B08TBG2T2C?tag=glowupapp-21",
+      "active": true,
+      "id": "m540",
+      "name": "Torriden Dive-In Low Molecular Hyaluronic Acid Toner (300 ml)",
+      "brand": "Torriden",
+      "category": "toner",
+      "amazonAsin": "B08TBG2T2C",
+      "volumeMl": 300,
+      "isKorean": true,
+      "concernTags": [
+        "deshydratation",
+        "hydratation"
+      ],
+      "ingredientTags": [
+        "hyaluronicacid"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "grasse",
+        "mixte",
+        "sensible"
+      ],
+      "description": "Lotion tonique hydratante à l’acide hyaluronique — prépare et hydrate la peau juste après le nettoyage. 1ère étape de soin."
+    },
+    {
+      "imageUrl": "",
+      "brandUrl": "",
+      "price": null,
+      "currency": "EUR",
+      "amazonAffiliateUrl": "https://www.amazon.fr/dp/B0DL9R21PT?tag=glowupapp-21",
+      "amazonUrl": "https://www.amazon.fr/dp/B0DL9R21PT?tag=glowupapp-21",
+      "active": true,
+      "id": "m541",
+      "name": "Torriden Dive-In Hyaluronic Acid Mask (x10)",
+      "brand": "Torriden",
+      "category": "mask",
+      "amazonAsin": "B0DL9R21PT",
+      "isKorean": true,
+      "concernTags": [
+        "deshydratation",
+        "hydratation"
+      ],
+      "ingredientTags": [
+        "hyaluronicacid"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "seche",
+        "mixte",
+        "sensible"
+      ],
+      "description": "Masque tissu à l’acide hyaluronique — coup d’hydratation express et éclat. 1 à 2 fois par semaine ou avant un événement."
+    },
+    {
+      "imageUrl": "",
+      "brandUrl": "",
+      "price": null,
+      "currency": "EUR",
+      "amazonAffiliateUrl": "https://www.amazon.fr/dp/B0F1SMM39H?tag=glowupapp-21",
+      "amazonUrl": "https://www.amazon.fr/dp/B0F1SMM39H?tag=glowupapp-21",
+      "active": true,
+      "id": "m542",
+      "name": "Torriden Dive-In Cleansing Oil (200 ml)",
+      "brand": "Torriden",
+      "category": "cleanser",
+      "amazonAsin": "B0F1SMM39H",
+      "volumeMl": 200,
+      "isKorean": true,
+      "concernTags": [
+        "deshydratation"
+      ],
+      "ingredientTags": [
+        "hyaluronicacid"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "seche",
+        "mixte",
+        "sensible"
+      ],
+      "description": "Huile démaquillante Torriden Dive-In — dissout maquillage et impuretés sans dessécher (double nettoyage), à l’acide hyaluronique. Le soir."
+    },
+    {
+      "imageUrl": "",
+      "brandUrl": "",
+      "price": null,
+      "currency": "EUR",
+      "amazonAffiliateUrl": "https://www.amazon.fr/dp/B0CBQ1FVL3?tag=glowupapp-21",
+      "amazonUrl": "https://www.amazon.fr/dp/B0CBQ1FVL3?tag=glowupapp-21",
+      "active": true,
+      "id": "m543",
+      "name": "Torriden Balanceful Cica Day Cream (50 ml)",
+      "brand": "Torriden",
+      "category": "moisturizer",
+      "amazonAsin": "B0CBQ1FVL3",
+      "volumeMl": 50,
+      "isKorean": true,
+      "concernTags": [
+        "rougeurs",
+        "sensibilite",
+        "apaisement"
+      ],
+      "ingredientTags": [
+        "centella",
+        "hyaluronicacid"
+      ],
+      "skinTypeTags": [
+        "mixte",
+        "grasse",
+        "sensible",
+        "normale"
+      ],
+      "description": "Crème de jour Torriden Balanceful à la Centella (Cica) — apaise rougeurs et sensibilité, équilibre les peaux mixtes à grasses. Texture légère."
+    },
+    {
+      "imageUrl": "",
+      "brandUrl": "",
+      "price": null,
+      "currency": "EUR",
+      "amazonAffiliateUrl": "https://www.amazon.fr/dp/B0BXWYVTBT?tag=glowupapp-21",
+      "amazonUrl": "https://www.amazon.fr/dp/B0BXWYVTBT?tag=glowupapp-21",
+      "active": true,
+      "id": "m544",
+      "name": "Torriden Balanceful Cica Mask (x10)",
+      "brand": "Torriden",
+      "category": "mask",
+      "amazonAsin": "B0BXWYVTBT",
+      "isKorean": true,
+      "concernTags": [
+        "rougeurs",
+        "sensibilite",
+        "apaisement"
+      ],
+      "ingredientTags": [
+        "centella",
+        "hyaluronicacid",
+        "panthenol"
+      ],
+      "skinTypeTags": [
+        "sensible",
+        "mixte",
+        "grasse",
+        "normale"
+      ],
+      "description": "Masque apaisant Torriden Balanceful à la Centella — calme les rougeurs et réconforte les peaux sensibles ou réactives."
+    },
+    {
+      "imageUrl": "",
+      "brandUrl": "",
+      "price": null,
+      "currency": "EUR",
+      "amazonAffiliateUrl": "https://www.amazon.fr/dp/B0D6THCFDW?tag=glowupapp-21",
+      "amazonUrl": "https://www.amazon.fr/dp/B0D6THCFDW?tag=glowupapp-21",
+      "active": true,
+      "id": "m545",
+      "name": "Torriden Cellmazing Firming Eye Cream (30 ml)",
+      "brand": "Torriden",
+      "category": "eye_cream",
+      "amazonAsin": "B0D6THCFDW",
+      "volumeMl": 30,
+      "isKorean": true,
+      "maturity": "mature",
+      "concernTags": [
+        "fermete",
+        "rides",
+        "cernes"
+      ],
+      "ingredientTags": [
+        "vitaminec",
+        "peptide"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "seche",
+        "mixte"
+      ],
+      "description": "Contour des yeux raffermissant Torriden Cellmazing — cible fermeté et ridules du regard, à la vitamine C et aux peptides."
+    },
+    {
+      "imageUrl": "",
+      "brandUrl": "",
+      "price": null,
+      "currency": "EUR",
+      "amazonAffiliateUrl": "https://www.amazon.fr/dp/B08TBK27NX?tag=glowupapp-21",
+      "amazonUrl": "https://www.amazon.fr/dp/B08TBK27NX?tag=glowupapp-21",
+      "active": true,
+      "id": "m546",
+      "name": "Torriden Dive-In Hyaluronic Acid Toner Pads (x80)",
+      "brand": "Torriden",
+      "category": "toner",
+      "amazonAsin": "B08TBK27NX",
+      "isKorean": true,
+      "concernTags": [
+        "deshydratation",
+        "hydratation"
+      ],
+      "ingredientTags": [
+        "hyaluronicacid"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "sensible"
+      ],
+      "description": "Pads toniques imbibés à l’acide hyaluronique Torriden Dive-In — hydratent et lissent en un geste, sans rinçage."
+    },
+    {
+      "imageUrl": "",
+      "brandUrl": "",
+      "price": null,
+      "currency": "EUR",
+      "amazonAffiliateUrl": "https://www.amazon.fr/dp/B0BXWXTKF7?tag=glowupapp-21",
+      "amazonUrl": "https://www.amazon.fr/dp/B0BXWXTKF7?tag=glowupapp-21",
+      "active": true,
+      "id": "m547",
+      "name": "Torriden Dive-In Daily Skincare Kit (routine 4 étapes)",
+      "brand": "Torriden",
+      "category": "set",
+      "amazonAsin": "B0BXWXTKF7",
+      "isKorean": true,
+      "concernTags": [
+        "deshydratation",
+        "hydratation"
+      ],
+      "ingredientTags": [
+        "hyaluronicacid"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "seche",
+        "mixte",
+        "sensible"
+      ],
+      "description": "Coffret routine Torriden Dive-In (nettoyant, lotion, sérum, crème) à l’acide hyaluronique — la routine hydratation complète, idéale pour découvrir la gamme."
+    },
+    {
+      "imageUrl": "",
+      "brandUrl": "",
+      "price": null,
+      "currency": "EUR",
+      "amazonAffiliateUrl": "https://www.amazon.fr/dp/B08BX8LLC5?tag=glowupapp-21",
+      "amazonUrl": "https://www.amazon.fr/dp/B08BX8LLC5?tag=glowupapp-21",
+      "active": true,
+      "id": "m548",
+      "name": "Eucerin Hyaluron-Filler + Elasticity Soin de Jour SPF30",
+      "brand": "Eucerin",
+      "category": "moisturizer",
+      "amazonAsin": "B08BX8LLC5",
+      "volumeMl": 50,
+      "maturity": "mature",
+      "includesSPF": true,
+      "concernTags": [
+        "rides",
+        "fermete",
+        "anti_age",
+        "taches"
+      ],
+      "ingredientTags": [
+        "hyaluronicacid",
+        "thiamidol"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "seche",
+        "mixte"
+      ],
+      "description": "Soin de jour Eucerin Hyaluron-Filler + Elasticity SPF30 — comble les rides, améliore l’élasticité et atténue les taches. Peaux matures. Protection solaire intégrée (geste anti-âge n°1)."
+    },
+    {
+      "imageUrl": "",
+      "brandUrl": "",
+      "price": null,
+      "currency": "EUR",
+      "amazonAffiliateUrl": "https://www.amazon.fr/dp/B07B3YSFFJ?tag=glowupapp-21",
+      "amazonUrl": "https://www.amazon.fr/dp/B07B3YSFFJ?tag=glowupapp-21",
+      "active": true,
+      "id": "m549",
+      "name": "Eucerin Hyaluron-Filler + Elasticity Soin de Nuit",
+      "brand": "Eucerin",
+      "category": "moisturizer",
+      "amazonAsin": "B07B3YSFFJ",
+      "volumeMl": 50,
+      "maturity": "mature",
+      "concernTags": [
+        "rides",
+        "fermete",
+        "anti_age",
+        "taches"
+      ],
+      "ingredientTags": [
+        "hyaluronicacid",
+        "thiamidol"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "seche",
+        "mixte"
+      ],
+      "description": "Soin de nuit Eucerin Hyaluron-Filler + Elasticity — comble les rides, raffermit et atténue les taches pendant la nuit. Peaux matures."
+    },
+    {
+      "imageUrl": "",
+      "brandUrl": "",
+      "price": null,
+      "currency": "EUR",
+      "amazonAffiliateUrl": "https://www.amazon.fr/dp/B09WV5JZ95?tag=glowupapp-21",
+      "amazonUrl": "https://www.amazon.fr/dp/B09WV5JZ95?tag=glowupapp-21",
+      "active": true,
+      "id": "m550",
+      "name": "Eucerin Hyaluron-Filler + 3x Effect Soin Contour des Yeux SPF15",
+      "brand": "Eucerin",
+      "category": "eye_cream",
+      "amazonAsin": "B09WV5JZ95",
+      "volumeMl": 15,
+      "maturity": "mature",
+      "concernTags": [
+        "rides",
+        "deshydratation",
+        "cernes"
+      ],
+      "ingredientTags": [
+        "hyaluronicacid"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "seche",
+        "mixte",
+        "sensible"
+      ],
+      "description": "Soin contour des yeux Eucerin Hyaluron-Filler — comble les rides du regard et hydrate la zone fragile des yeux, SPF15."
+    },
+    {
+      "imageUrl": "",
+      "brandUrl": "",
+      "price": null,
+      "currency": "EUR",
+      "amazonAffiliateUrl": "https://www.amazon.fr/dp/B07NJS3XM2?tag=glowupapp-21",
+      "amazonUrl": "https://www.amazon.fr/dp/B07NJS3XM2?tag=glowupapp-21",
+      "active": true,
+      "id": "m551",
+      "name": "Eucerin Anti-Pigment Crème de Jour SPF30",
+      "brand": "Eucerin",
+      "category": "moisturizer",
+      "amazonAsin": "B07NJS3XM2",
+      "volumeMl": 50,
+      "maturity": "mature",
+      "includesSPF": true,
+      "concernTags": [
+        "taches",
+        "uniformite",
+        "spf"
+      ],
+      "ingredientTags": [
+        "thiamidol"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "seche",
+        "mixte",
+        "sensible"
+      ],
+      "description": "Crème de jour Eucerin Anti-Pigment SPF30 (Thiamidol) — réduit et prévient les taches brunes, unifie le teint et protège du soleil. À associer au sérum anti-pigment."
+    },
+    {
+      "imageUrl": "",
+      "brandUrl": "",
+      "price": null,
+      "currency": "EUR",
+      "amazonAffiliateUrl": "https://www.amazon.fr/dp/B0DFMNQ9R9?tag=glowupapp-21",
+      "amazonUrl": "https://www.amazon.fr/dp/B0DFMNQ9R9?tag=glowupapp-21",
+      "active": true,
+      "id": "m552",
+      "name": "Eucerin Hyaluron-Filler Epigenetic Sérum",
+      "brand": "Eucerin",
+      "category": "serum",
+      "amazonAsin": "B0DFMNQ9R9",
+      "volumeMl": 30,
+      "maturity": "mature",
+      "concernTags": [
+        "rides",
+        "anti_age",
+        "fermete"
+      ],
+      "ingredientTags": [
+        "hyaluronicacid"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "seche",
+        "mixte"
+      ],
+      "description": "Sérum concentré Eucerin Hyaluron-Filler Epigenetic — cible les mécanismes du vieillissement cutané, comble les rides et repulpe. Peaux matures, matin et soir."
     }
   ]
 }
