@@ -54,7 +54,7 @@ const ProductCatalog = (() => {
         // 2a. JSON statique — toujours chargé (source de vérité pour les nouveaux produits)
         let jsonProducts = [];
         try {
-          const res = await fetch('data/products-manual.json?v=101');
+          const res = await fetch('data/products-manual.json?v=102');
           if (res.ok) {
             const data = await res.json();
             jsonProducts = Array.isArray(data) ? data : (data.products || []);
