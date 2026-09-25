@@ -67,6 +67,23 @@ function apiUrl(path) {
 }
 if (typeof window !== 'undefined') window.apiUrl = apiUrl;
 
+// ─── Flag : routine MAQUILLAGE désactivée temporairement ───────
+//     Pour RÉACTIVER le make-up : repasser cette seule ligne à true.
+//     (masque la nav/drawer/carte make-up + redirige les routes vers le skincare)
+const MAKEUP_ENABLED = false;
+if (typeof window !== 'undefined') window.MAKEUP_ENABLED = MAKEUP_ENABLED;
+
+// Masque les points d'entrée make-up quand le flag est off (appelé à l'init)
+function applyMakeupFlag() {
+  if (MAKEUP_ENABLED) return;
+  try {
+    document.querySelectorAll('[data-screen="makeup"]').forEach(el => { el.style.display = 'none'; });
+    ['drawerMakeupLink', 'choiceCardMakeup'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.style.display = 'none';
+    });
+  } catch (e) {}
+}
+
 // ─── Nav « Routine » : la routine générée, sinon on la crée ───
 function goToRoutine() {
   // Ne pas redemander le questionnaire si une routine a déjà été générée → la restaurer
@@ -75,7 +92,7 @@ function goToRoutine() {
     try { RoutineSaver.restoreProfile(); } catch (e) {}
   }
   if (AppState.routine && AppState.routine.ruleApplied) { showScreen('results'); return; }
-  if (AppState.routineChoice === 'makeup' && AppState.makeupQuiz) { showScreen('makeup'); return; }
+  if (MAKEUP_ENABLED && AppState.routineChoice === 'makeup' && AppState.makeupQuiz) { showScreen('makeup'); return; }
   goToSkincare();
 }
 
@@ -125,6 +142,9 @@ function showScreen(name) {
   if ((name === 'premium' || name === 'plans') && typeof Subscription !== 'undefined' && Subscription.MONETIZATION_ENABLED === false) {
     name = 'home';
   }
+
+  // Routine maquillage désactivée temporairement (filet de sécurité) → renvoi accueil
+  if (name === 'makeup' && !MAKEUP_ENABLED) { name = 'home'; }
 
   // Stopper l'analyse live caméra si on quitte la capture
   if (AppState.screen === 'capture' && name !== 'capture') {
@@ -360,6 +380,7 @@ async function initApp() {
   // 0. Listeners UI en premier — indépendants du chargement des données
   setupGlobalListeners();
   TryOn.setupCapture();
+  applyMakeupFlag();   // masque les entrées make-up si le flag est off
 
   // 1. Chargement du catalogue produits + règles (en parallèle)
   await Promise.all([
@@ -783,6 +804,8 @@ function _captureSkip() {
 // ─── Lancer le flow principal ─────────────────────────────────
 // Bouton home "Faire mon analyse" → écran de choix skincare/makeup
 function startGlowUp() {
+  // Make-up désactivé : plus de choix, on va droit au skincare
+  if (!MAKEUP_ENABLED) { goToSkincare(); return; }
   if (AppState.user?.isGuest) {
     Auth.openRequiredAuthModal(() => showScreen('routine-choice'));
     return;
@@ -870,6 +893,8 @@ function _newRoutineModal(type) {
 
 // Navbar "Make-up" → questionnaire makeup directement
 function goToMakeup() {
+  // Make-up désactivé temporairement → on bascule sur le skincare
+  if (!MAKEUP_ENABLED) { goToSkincare(); return; }
   if (AppState.user?.isGuest) {
     Auth.openRequiredAuthModal(() => _proceedToMakeup());
     return;
@@ -945,6 +970,7 @@ async function _saveFreeRoutineChoice(choice) {
 }
 
 function pickRoutine(type) {
+  if (type === 'makeup' && !MAKEUP_ENABLED) { goToSkincare(); return; }
   const plan     = typeof Subscription !== 'undefined' ? Subscription.getPlan() : 'free';
   const isLocked = !Subscription.isPlan('glow');
   const freeChoice = AppState.user?.freeRoutineChoice;
