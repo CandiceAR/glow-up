@@ -71,83 +71,45 @@
 
         <div class="drawer-acc">
           <button class="drawer-acc-head" aria-expanded="false" aria-controls="racc-1" onclick="toggleDrawerSection(this)">
-            <span class="drawer-acc-title">Mon accompagnement skincare après 30 ans</span>
+            <span class="drawer-acc-title">Ma routine</span>
             <svg class="drawer-acc-chev" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
           </button>
           <div class="drawer-acc-body" id="racc-1">
             <div class="drawer-acc-inner">
-              <p class="drawer-acc-sub">Crée, analyse et améliore ta routine grâce à l'intelligence artificielle.</p>
-              <button class="drawer-sublink" onclick="closeDrawer(); goToSkincare()">Créer ma routine personnalisée</button>
-              <button class="drawer-sublink" onclick="closeDrawer(); showScreen('routine-analyzer')">Analyser ma routine actuelle</button>
+              <button class="drawer-sublink" onclick="closeDrawer(); goToSkincare()">Créer ma routine</button>
+              <button class="drawer-sublink" onclick="closeDrawer(); showScreen('routine-analyzer')">Analyser ma routine</button>
               <button class="drawer-sublink" onclick="closeDrawer(); showScreen('dupe-finder')">Trouver un dupe</button>
-              <button class="drawer-sublink" onclick="closeDrawer(); showScreen('dupe-finder')">Scanner un produit</button>
-              <button class="drawer-sublink" onclick="closeDrawer(); showScreen('coach')">Demander au Coach IA</button>
-              <span class="drawer-sublink is-soon" aria-disabled="true">Comparer les prix<em class="soon-tag">bientôt</em></span>
+              <button class="drawer-sublink" onclick="closeDrawer(); showScreen('coach')">Coach IA</button>
             </div>
           </div>
         </div>
 
         <div class="drawer-acc">
           <button class="drawer-acc-head" aria-expanded="false" aria-controls="racc-2" onclick="toggleDrawerSection(this)">
-            <span class="drawer-acc-title">Skincare et maquillage pour peaux matures</span>
+            <span class="drawer-acc-title">Découvrir</span>
             <svg class="drawer-acc-chev" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
           </button>
           <div class="drawer-acc-body" id="racc-2">
             <div class="drawer-acc-inner">
-              <p class="drawer-acc-sub">Découvre des produits adaptés aux besoins de ta peau, à tes préférences et à ton budget.</p>
-              <button class="drawer-sublink" onclick="closeDrawer(); showScreen('shop')">Catalogue skincare après 30 ans</button>
-              <button class="drawer-sublink" id="drawerMakeupLink" onclick="closeDrawer(); goToMakeup()">Maquillage pour peaux matures</button>
-              <span class="drawer-sublink is-soon" aria-disabled="true">Best-sellers après 30 ans<em class="soon-tag">bientôt</em></span>
-              <span class="drawer-sublink is-soon" aria-disabled="true">Nouveautés skincare et maquillage<em class="soon-tag">bientôt</em></span>
+              <button class="drawer-sublink" onclick="closeDrawer(); showScreen('shop')">Catalogue</button>
+              <button class="drawer-sublink" onclick="closeDrawer(); window.location.href='/blog/'">Conseils / Blog</button>
+              <button class="drawer-sublink" onclick="closeDrawer(); showScreen('skinpedia')">Comprendre ma peau</button>
+              <span class="drawer-sublink is-soon" aria-disabled="true">Best-sellers<em class="soon-tag">bientôt</em></span>
             </div>
           </div>
         </div>
 
         <div class="drawer-acc">
           <button class="drawer-acc-head" aria-expanded="false" aria-controls="racc-3" onclick="toggleDrawerSection(this)">
-            <span class="drawer-acc-title">Mon espace beauté après 30 ans</span>
+            <span class="drawer-acc-title">Mon espace</span>
             <svg class="drawer-acc-chev" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
           </button>
           <div class="drawer-acc-body" id="racc-3">
             <div class="drawer-acc-inner">
-              <p class="drawer-acc-sub">Retrouve tes recommandations et suis l'évolution de ta peau.</p>
-              <button class="drawer-sublink" onclick="closeDrawer(); goToRoutine()">Ma routine skincare</button>
-              <button class="drawer-sublink" onclick="closeDrawer(); showScreen('profil'); if(window.Profil&&Profil.setTab)Profil.setTab('dupe')">Mes dupes enregistrés</button>
-              <button class="drawer-sublink" onclick="closeDrawer(); goToSkinJourney()">L'évolution de ma peau</button>
+              <button class="drawer-sublink" onclick="closeDrawer(); goToRoutine()">Ma routine</button>
+              <button class="drawer-sublink" onclick="closeDrawer(); showScreen('profil'); if(window.Profil&&Profil.setTab)Profil.setTab('dupe')">Mes dupes</button>
+              <button class="drawer-sublink" onclick="closeDrawer(); goToSkinJourney()">Évolution de ma peau</button>
               <button class="drawer-sublink" onclick="closeDrawer(); showScreen('profil')">Mon profil</button>
-              <span class="drawer-sublink is-soon" aria-disabled="true">Mes produits favoris<em class="soon-tag">bientôt</em></span>
-            </div>
-          </div>
-        </div>
-
-        <div class="drawer-acc">
-          <button class="drawer-acc-head" aria-expanded="false" aria-controls="racc-4" onclick="toggleDrawerSection(this)">
-            <span class="drawer-acc-title">Conseils skincare après 30 ans</span>
-            <svg class="drawer-acc-chev" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-          </button>
-          <div class="drawer-acc-body" id="racc-4">
-            <div class="drawer-acc-inner">
-              <p class="drawer-acc-sub">Comprends les changements de ta peau et apprends à choisir les bons actifs.</p>
-              <button class="drawer-sublink" onclick="closeDrawer(); window.location.href='/blog/'">Le blog Glow Up</button>
-              <button class="drawer-sublink" onclick="closeDrawer(); showScreen('skinpedia')">Comprendre ma peau</button>
-              <button class="drawer-sublink" onclick="closeDrawer(); showScreen('skinpedia')">Les actifs et ingrédients</button>
-              <span class="drawer-sublink is-soon" aria-disabled="true">Conseils par préoccupation<em class="soon-tag">bientôt</em></span>
-            </div>
-          </div>
-        </div>
-
-        <div class="drawer-acc">
-          <button class="drawer-acc-head" aria-expanded="false" aria-controls="racc-5" onclick="toggleDrawerSection(this)">
-            <span class="drawer-acc-title">Glow Up et les peaux de plus de 30 ans</span>
-            <svg class="drawer-acc-chev" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-          </button>
-          <div class="drawer-acc-body" id="racc-5">
-            <div class="drawer-acc-inner">
-              <p class="drawer-acc-sub">Découvre notre mission, notre fonctionnement et nos engagements.</p>
-              <span class="drawer-sublink is-soon" aria-disabled="true">Pourquoi Glow Up ?<em class="soon-tag">bientôt</em></span>
-              <span class="drawer-sublink is-soon" aria-disabled="true">Comment fonctionne l'application ?<em class="soon-tag">bientôt</em></span>
-              <span class="drawer-sublink is-soon" aria-disabled="true">Notre indépendance et notre neutralité<em class="soon-tag">bientôt</em></span>
-              <span class="drawer-sublink is-soon" aria-disabled="true">Aide et contact<em class="soon-tag">bientôt</em></span>
             </div>
           </div>
         </div>
@@ -157,6 +119,7 @@
       <div class="drawer-foot">
         <button class="drawer-foot-link" id="drawerAuthLink" onclick="drawerAuthAction()">Se connecter</button>
         <button class="drawer-foot-link" onclick="closeDrawer(); window.location.href='/confidentialite/'">Politique de confidentialité</button>
+        <span class="drawer-foot-link is-soon" aria-disabled="true">Aide &amp; contact<em class="soon-tag">bientôt</em></span>
         <span class="drawer-foot-link is-soon" aria-disabled="true">Conditions d'utilisation<em class="soon-tag">bientôt</em></span>
         <a class="drawer-foot-link" href="https://www.instagram.com/glowupandshiny" target="_blank" rel="noopener" onclick="closeDrawer()">Instagram ↗</a>
       </div>
