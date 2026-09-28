@@ -13,7 +13,7 @@ const path = require('path');
 const ROOT      = __dirname;
 const POSTS_DIR = path.join(ROOT, 'blog', 'posts');
 const OUT_DIR   = path.join(ROOT, 'blog');
-const SITE      = 'https://glowupskin.app';
+const SITE      = 'https://www.glowupskin.app';   // domaine canonique (l'apex redirige vers www)
 
 // ── Frontmatter minimal (--- clé: valeur --- + corps Markdown) ──
 function parseFront(raw) {
@@ -159,7 +159,24 @@ async function main() {
     const canonical = `${SITE}/blog/${slug}/`;
     const contentHTML = marked.parse(body);
 
+    // Données structurées Article (JSON-LD) — aide Google à comprendre l'article
+    const ld = {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: title,
+      description: desc,
+      datePublished: data.date || '',
+      dateModified: data.date || '',
+      inLanguage: 'fr-FR',
+      author: { '@type': 'Organization', name: data.author || 'Glow Up' },
+      publisher: { '@type': 'Organization', name: 'Glow Up', logo: { '@type': 'ImageObject', url: SITE + '/icons/icon-192.png' } },
+      mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
+    };
+    if (data.image) ld.image = data.image.startsWith('http') ? data.image : SITE + data.image;
+    const ldScript = `<script type="application/ld+json">${JSON.stringify(ld)}</script>`;
+
     const page = head(`${title} · Glow Up`, desc, canonical, data.image)
+      + ldScript
       + NAV
       + `<main class="article"><div class="wrap"><div class="inner">
           <p class="meta">${frDate(data.date)}${data.author ? ' · ' + esc(data.author) : ''}</p>
@@ -209,7 +226,25 @@ async function main() {
   fs.writeFileSync(path.join(OUT_DIR, 'index.html'), list);
 
   fs.writeFileSync(path.join(OUT_DIR, 'posts.json'), JSON.stringify(posts, null, 2));
-  console.log(`\nOK — ${posts.length} article(s) · blog/index.html + blog/posts.json générés.`);
+
+  // ── sitemap.xml + robots.txt (à la racine du site) ──
+  const today = new Date().toISOString().slice(0, 10);
+  const urls = [
+    { loc: SITE + '/', lastmod: today, priority: '1.0' },
+    { loc: SITE + '/blog/', lastmod: today, priority: '0.8' },
+    ...posts.map(p => ({ loc: SITE + p.url, lastmod: (p.date || today).slice(0, 10), priority: '0.7' })),
+    { loc: SITE + '/confidentialite/', lastmod: today, priority: '0.3' },
+  ];
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n`
+    + `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`
+    + urls.map(u => `  <url><loc>${u.loc}</loc><lastmod>${u.lastmod}</lastmod><priority>${u.priority}</priority></url>`).join('\n')
+    + `\n</urlset>\n`;
+  fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), sitemap);
+
+  const robots = `User-agent: *\nAllow: /\nDisallow: /admin.html\nDisallow: /admin\n\nSitemap: ${SITE}/sitemap.xml\n`;
+  fs.writeFileSync(path.join(ROOT, 'robots.txt'), robots);
+
+  console.log(`\nOK — ${posts.length} article(s) · blog/index.html + posts.json + sitemap.xml + robots.txt générés.`);
 }
 
 if (require.main === module) {
