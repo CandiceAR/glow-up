@@ -138,8 +138,8 @@ const FOOT = `<footer class="foot"><div class="wrap">
 <div class="copy">© ${new Date().getFullYear()} Glow Up · Ton agent IA skincare</div>
 </div></footer></body></html>`;
 
-function coverHTML(image, cls) {
-  return `<div class="${cls}">${image ? `<img src="${esc(image)}" alt="">` : ''}</div>`;
+function coverHTML(image, cls, alt) {
+  return `<div class="${cls}">${image ? `<img src="${esc(image)}" alt="${esc(alt || '')}">` : ''}</div>`;
 }
 
 async function main() {
@@ -173,7 +173,17 @@ async function main() {
       mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
     };
     if (data.image) ld.image = data.image.startsWith('http') ? data.image : SITE + data.image;
-    const ldScript = `<script type="application/ld+json">${JSON.stringify(ld)}</script>`;
+    // Fil d'Ariane (breadcrumb) : Accueil › Conseils › Article
+    const breadcrumb = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Accueil', item: SITE + '/' },
+        { '@type': 'ListItem', position: 2, name: 'Conseils', item: SITE + '/blog/' },
+        { '@type': 'ListItem', position: 3, name: title, item: canonical },
+      ],
+    };
+    const ldScript = `<script type="application/ld+json">${JSON.stringify([ld, breadcrumb])}</script>`;
 
     const page = head(`${title} · Glow Up`, desc, canonical, data.image)
       + ldScript
@@ -182,7 +192,7 @@ async function main() {
           <p class="meta">${frDate(data.date)}${data.author ? ' · ' + esc(data.author) : ''}</p>
           <h1>${esc(title)}</h1>
         </div></div>
-        ${data.image ? `<div class="wrap"><div class="inner">${coverHTML(data.image,'cover')}</div></div>` : ''}
+        ${data.image ? `<div class="wrap"><div class="inner">${coverHTML(data.image,'cover',title)}</div></div>` : ''}
         <article class="prose">${contentHTML}</article>
         <div class="backcta">
           <strong>Envie d'une routine faite pour ta peau ?</strong><br>
@@ -204,7 +214,7 @@ async function main() {
 
   // page liste
   const cards = posts.map(p => `<a class="card" href="${p.url}">
-      ${coverHTML(p.image,'cover')}
+      ${coverHTML(p.image,'cover',p.title)}
       <div class="cbody">
         <span class="date">${frDate(p.date)}</span>
         <h2>${esc(p.title)}</h2>
