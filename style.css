@@ -4202,9 +4202,10 @@ em { font-style: italic; color: var(--label); }
 }
 .cg-step-title {
   font-family: var(--font-serif);
-  font-size: 1.1rem;
-  font-weight: 400;
+  font-size: 1.5rem;
+  font-weight: 600;
   color: var(--charcoal);
+  line-height: 1.15;
   margin: 0 0 6px;
 }
 .cg-step-tip {
@@ -4744,6 +4745,7 @@ em { font-style: italic; color: var(--label); }
   .cg-step-meta { flex: none; }
   .cg-bonus-item-label { flex: none; }
   .cg-step-num { font-size: 1.5rem; }
+  .cg-step-title { font-size: 1.28rem; }
 }
 
 /* ─── Teaser Make-up dans la page Résultats ─────────────────── */
