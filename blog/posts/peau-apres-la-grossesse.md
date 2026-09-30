@@ -61,6 +61,8 @@ C'est le point le plus important. Pendant l'allaitement, par précaution, **cert
 
 Dans le doute, demande toujours conseil à ton médecin, ta sage-femme ou un dermatologue : eux seuls connaissent ta situation.
 
+*Enceinte plutôt qu'en post-partum ? Les précautions ne sont pas les mêmes — on détaille [quels actifs éviter pendant la grossesse](/blog/skincare-grossesse/).*
+
 ## Une routine douce pour la peau après la grossesse
 
 Pas besoin de dix produits. L'objectif : **réparer, hydrater, protéger**, sans agresser.
