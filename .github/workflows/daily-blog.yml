@@ -1,0 +1,46 @@
+name: Publication automatique du blog
+
+# Publie chaque jour les articles dont la date est arrivée (frontmatter `date`).
+# Les articles datés dans le futur restent invisibles jusqu'à leur jour.
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # tous les jours à 06:00 UTC (~08:00 Paris)
+  workflow_dispatch:       # permet aussi un lancement manuel depuis l'onglet Actions
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-blog
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Installer Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Installer la dépendance (marked)
+        run: npm install marked --no-save
+
+      - name: Générer le blog (articles du jour + sitemap)
+        run: node build-blog.js
+
+      - name: Publier s'il y a un nouvel article
+        run: |
+          git config user.name "glowup-blog-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add blog/ sitemap.xml robots.txt
+          if git diff --staged --quiet; then
+            echo "Rien de nouveau à publier aujourd'hui."
+          else
+            git commit -m "Publication auto du blog ($(date +%F))"
+            git push
+          fi

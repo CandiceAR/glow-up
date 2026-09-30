@@ -150,10 +150,14 @@ async function main() {
   const files = fs.readdirSync(POSTS_DIR).filter(f => f.endsWith('.md'));
   const posts = [];
 
+  // Publication programmée : on ne génère que les articles dont la date est arrivée (<= aujourd'hui).
+  const pubCutoff = new Date(); pubCutoff.setHours(23, 59, 59, 999);
+
   for (const file of files) {
     const raw = fs.readFileSync(path.join(POSTS_DIR, file), 'utf8');
     const { data, body } = parseFront(raw);
     const slug = data.slug || file.replace(/\.md$/, '');
+    if (data.date && new Date(data.date) > pubCutoff) { console.log('⏳ programmé :', slug, '(' + data.date + ')'); continue; }
     const title = data.title || slug;
     const desc = data.metaDescription || data.excerpt || '';
     const canonical = `${SITE}/blog/${slug}/`;
