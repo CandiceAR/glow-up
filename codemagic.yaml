@@ -54,14 +54,14 @@ workflows:
           set -e
           PLIST="ios/App/App/Info.plist"
           if [ ! -f "$PLIST" ]; then echo "Info.plist introuvable ($PLIST)"; exit 1; fi
-          # Delete-then-Add : garantit une écriture propre de la clé (string)
-          add_key () {
-            /usr/libexec/PlistBuddy -c "Delete :$1" "$PLIST" 2>/dev/null || true
-            /usr/libexec/PlistBuddy -c "Add :$1 string $2" "$PLIST"
+          # plutil -replace : robuste aux apostrophes (PlistBuddy « Add » cassait sur « l'appareil »).
+          # -replace crée la clé si absente, ou la remplace si présente.
+          set_key () {
+            plutil -replace "$1" -string "$2" "$PLIST"
           }
-          add_key NSCameraUsageDescription "Glow Up utilise l'appareil photo pour analyser votre peau et personnaliser votre routine."
-          add_key NSPhotoLibraryUsageDescription "Glow Up accède à vos photos pour vous permettre de sélectionner une photo pour votre analyse."
-          add_key NSPhotoLibraryAddUsageDescription "Glow Up peut enregistrer une photo prise dans l'application si vous le choisissez."
+          set_key NSCameraUsageDescription "Glow Up utilise l'appareil photo pour analyser votre peau et personnaliser votre routine."
+          set_key NSPhotoLibraryUsageDescription "Glow Up accède à vos photos pour vous permettre de sélectionner une photo pour votre analyse."
+          set_key NSPhotoLibraryAddUsageDescription "Glow Up peut enregistrer une photo prise dans l'application si vous le choisissez."
           # VÉRIFICATION : le build échoue si une clé est absente (évite un nouveau crash caméra)
           echo "--- Vérification des autorisations Info.plist ---"
           for K in NSCameraUsageDescription NSPhotoLibraryUsageDescription NSPhotoLibraryAddUsageDescription; do
