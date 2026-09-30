@@ -943,23 +943,35 @@ const Questionnaire = (() => {
     // Dans le navigateur intégré d'Instagram, la caméra live est bloquée :
     // on met l'upload en avant (qui, lui, fonctionne parfaitement).
     const inApp = (typeof InAppBrowser !== 'undefined' && InAppBrowser.isInApp());
+    // App native (Capacitor WKWebView) : getUserMedia (caméra live) y est bloqué par iOS.
+    // → « Prendre une photo » passe par l'input fichier NATIF (capture), qui ouvre la caméra de façon fiable.
+    const nativeApp = !!(window.Capacitor && (typeof window.Capacitor.isNativePlatform === 'function'
+      ? window.Capacitor.isNativePlatform()
+      : (window.Capacitor.platform && window.Capacitor.platform !== 'web')));
+    const camBlocked = inApp || nativeApp;   // caméra live non fiable → sélecteur natif
+
     const uploadBtn = `
-      <label class="btn ${inApp ? 'btn-dark' : 'btn-outline'}" style="cursor:pointer;text-align:center;">
-        📂 ${inApp ? 'Choisir une photo' : 'Uploader une photo'}
+      <label class="btn btn-outline" style="cursor:pointer;text-align:center;">
+        📂 Choisir une photo
         <input type="file" accept="image/*" style="display:none"
                onchange="Questionnaire.uploadPhoto(this)">
       </label>`;
-    const cameraBtn = `
-      <button class="btn ${inApp ? 'btn-outline' : 'btn-dark'}" onclick="Questionnaire.takePhoto()">📸 Prendre une photo</button>`;
+    const cameraBtn = camBlocked
+      ? `<label class="btn btn-dark" style="cursor:pointer;text-align:center;">
+           📸 Prendre une photo
+           <input type="file" accept="image/*" capture="user" style="display:none"
+                  onchange="Questionnaire.uploadPhoto(this)">
+         </label>`
+      : `<button class="btn btn-dark" onclick="Questionnaire.takePhoto()">📸 Prendre une photo</button>`;
 
     return `<div class="q-photo-step">
       <p style="font-size:0.9rem;color:var(--muted);margin-bottom:20px;">
         En 5 secondes, l'IA analyse ta peau et pré-remplit les questions suivantes.
       </p>
       <div class="q-photo-buttons">
-        ${inApp ? uploadBtn + cameraBtn : cameraBtn + uploadBtn}
+        ${cameraBtn + uploadBtn}
       </div>
-      ${inApp ? `<p class="q-inapp-note">📷 Pour prendre une photo en direct, ouvre Glow Up dans Safari ou Chrome — l'upload fonctionne ici sans souci ✦</p>` : ''}
+      ${inApp && !nativeApp ? `<p class="q-inapp-note">📷 Pour prendre une photo en direct, ouvre Glow Up dans Safari ou Chrome — l'upload fonctionne ici sans souci ✦</p>` : ''}
       <button class="q-textarea-skip" onclick="Questionnaire.skipPhoto()">
         Passer cette étape →
       </button>
