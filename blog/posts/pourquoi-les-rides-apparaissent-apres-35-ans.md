@@ -5,6 +5,7 @@ date: 2026-09-23
 excerpt: Collagène, élastine, hormones, soleil… Après 35 ans, plusieurs mécanismes expliquent l'apparition des rides. Comprendre pourquoi pour mieux les prévenir.
 metaDescription: Découvrez pourquoi les rides apparaissent après 35 ans : causes biologiques, types de rides et conseils de prévention pour garder une peau souple et éclatante.
 author: Glow Up
+image: /assets/blog/pourquoi-les-rides-apparaissent-apres-35-ans.jpg
 ---
 
 Vous avez peut-être remarqué que votre peau après 35 ans n'a plus tout à fait le même comportement qu'à 25 ans. Les traits se marquent un peu plus, certaines ridules deviennent visibles le matin, et les rides d'expression semblent s'installer durablement. Cette évolution est parfaitement naturelle : la peau après 35 ans entre dans une nouvelle phase de sa vie, où plusieurs mécanismes biologiques ralentissent.
