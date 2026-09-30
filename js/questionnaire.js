@@ -1636,6 +1636,14 @@ const Questionnaire = (() => {
       if (Subscription.getPlan() === 'free' && typeof RoutineSaver !== 'undefined') RoutineSaver.save();
       Subscription.markRoutineGenerated();
     }
+    // Tracking GA4 : routine réellement générée = fin du tunnel (avant l'achat).
+    if (window.Track && Track.ga) {
+      Track.ga('routine_generee', {
+        type:  AppState.routineChoice || 'skincare',
+        regle: (AppState.routine && (AppState.routine.ruleName || AppState.routine.ruleApplied)) || '',
+        ecran: 'results'
+      });
+    }
     showScreen('results');
   }
 
