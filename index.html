@@ -129,6 +129,7 @@
 
       <div class="drawer-foot">
         <button class="drawer-foot-link" id="drawerAuthLink" onclick="drawerAuthAction()">Se connecter</button>
+        <button class="drawer-foot-link" onclick="closeDrawer(); window.location.href='/a-propos/'">À propos</button>
         <button class="drawer-foot-link" onclick="closeDrawer(); window.location.href='/confidentialite/'">Politique de confidentialité</button>
         <span class="drawer-foot-link is-soon" aria-disabled="true">Aide &amp; contact<em class="soon-tag">bientôt</em></span>
         <span class="drawer-foot-link is-soon" aria-disabled="true">Conditions d'utilisation<em class="soon-tag">bientôt</em></span>
@@ -737,6 +738,7 @@
       <div class="footer-col">
         <h5>Infos</h5>
         <ul>
+          <li><a href="/a-propos/">À propos</a></li>
           <li><a href="#" onclick="showScreen('home'); document.getElementById('promise').scrollIntoView({behavior:'smooth'}); return false;">Notre philosophie</a></li>
           <li><a href="#">FAQ</a></li>
           <li><a href="#">Contact</a></li>

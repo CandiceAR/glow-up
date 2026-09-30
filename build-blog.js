@@ -134,7 +134,7 @@ const NAV = `<nav class="bnav"><div class="wrap">
 
 const FOOT = `<footer class="foot"><div class="wrap">
 <div class="fb">glow up</div>
-<div class="fl"><a href="/">Accueil</a><a href="/blog/">Conseils</a><a href="/confidentialite/">Confidentialité</a><a href="https://www.instagram.com/glowupandshiny" target="_blank" rel="noopener">Instagram</a></div>
+<div class="fl"><a href="/">Accueil</a><a href="/blog/">Conseils</a><a href="/a-propos/">À propos</a><a href="/confidentialite/">Confidentialité</a><a href="https://www.instagram.com/glowupandshiny" target="_blank" rel="noopener">Instagram</a></div>
 <div class="copy">© ${new Date().getFullYear()} Glow Up · Ton agent IA skincare</div>
 </div></footer></body></html>`;
 
@@ -241,11 +241,65 @@ async function main() {
 
   fs.writeFileSync(path.join(OUT_DIR, 'posts.json'), JSON.stringify(posts, null, 2));
 
+  // ── Page « À propos » (statique, indexable — crédibilité / E-E-A-T) ──
+  const aproposDesc = "Glow Up, l'agent IA skincare des femmes de +30 ans : notre mission, notre indépendance (aucune marque ne nous paie) et notre façon de recommander sans influence.";
+  const aproposPage = head('À propos de Glow Up', aproposDesc, `${SITE}/a-propos/`, '')
+    + NAV
+    + `<main class="article">
+      <div class="wrap"><div class="inner">
+        <p class="meta">À propos</p>
+        <h1>Une routine skincare juste, pour chaque peau après 30&nbsp;ans</h1>
+      </div></div>
+      <article class="prose">
+        <p>Glow Up est un agent beauté nouvelle génération, pensé pour les femmes de plus de 30&nbsp;ans. Notre but&nbsp;: t'aider à <strong>comprendre ta peau</strong> et à construire une <strong>routine skincare vraiment adaptée</strong> — sans jargon, sans pression, et sans te vendre la marque du moment.</p>
+
+        <h2>Pourquoi Glow Up existe</h2>
+        <p>Le skincare est devenu un labyrinthe&nbsp;: des milliers de produits, des promesses partout, un marketing omniprésent. Et passé 30&nbsp;ans, quand la peau évolue — fermeté, éclat, hydratation, premières rides —, il devient encore plus difficile de savoir quoi choisir.</p>
+        <p>Glow Up est né de cette frustration. Plutôt qu'une énième boutique, on a voulu un outil qui part de <strong>ta</strong> peau&nbsp;: ton type, tes préoccupations, ton âge, ton budget — pour te proposer une routine claire et des produits qui te correspondent vraiment.</p>
+
+        <h2>Notre différence&nbsp;: l'indépendance</h2>
+        <p>C'est notre engagement le plus important&nbsp;: <strong>aucune marque ne nous paie pour être recommandée</strong>. Nos suggestions dépendent uniquement des besoins de ta peau, jamais d'un partenariat.</p>
+        <p>En toute transparence&nbsp;: pour faire vivre un service gratuit, certains liens vers Amazon contiennent un code affilié — nous touchons alors une petite commission, <strong>identique sur tous les produits</strong>. Cela ne change jamais nos recommandations&nbsp;: on te conseille ce qui convient à ta peau, pas ce qui rapporte le plus.</p>
+
+        <h2>Comment ça marche</h2>
+        <ul>
+          <li>Une <strong>analyse de ta peau</strong> (quelques questions, et si tu veux une photo analysée par l'IA).</li>
+          <li>Une <strong>routine personnalisée</strong> matin et soir, étape par étape, avec le rôle de chaque produit.</li>
+          <li>Un <strong>catalogue</strong> filtrable selon tes besoins et ton budget.</li>
+          <li>Un outil pour trouver des <strong>dupes</strong> — des alternatives moins chères à composition proche.</li>
+          <li>Un <strong>coach IA</strong> pour répondre à tes questions, et un <a href="/blog/">journal de conseils</a> pour comprendre ta peau au fil du temps.</li>
+        </ul>
+
+        <h2>Nos engagements</h2>
+        <ul>
+          <li><strong>Ne jamais inventer une donnée</strong> — composition, prix, ingrédients&nbsp;: on s'appuie sur des sources vérifiées.</li>
+          <li><strong>Recommander selon tes besoins</strong>, jamais selon le marketing.</li>
+          <li><strong>La bienveillance avant tout</strong>&nbsp;: pas de culpabilisation, pas d'injonction à la perfection.</li>
+          <li><strong>Le respect de tes données</strong> personnelles (voir notre <a href="/confidentialite/">politique de confidentialité</a>).</li>
+        </ul>
+
+        <h2>Pour qui&nbsp;?</h2>
+        <p>Glow Up s'adresse à toutes les femmes de <strong>30 à 70&nbsp;ans</strong> qui veulent prendre soin de leur peau simplement — qu'elles débutent ou s'y connaissent déjà. Peaux matures, peaux sensibles, premières rides ou envie d'éclat&nbsp;: chaque routine part de ta peau, pas d'un modèle unique.</p>
+
+        <p>Glow Up est un projet <strong>indépendant</strong>, porté par une conviction simple&nbsp;: bien choisir ses soins ne devrait être ni compliqué, ni dicté par le marketing.</p>
+      </article>
+      <div class="backcta">
+        <strong>Envie d'une routine faite pour ta peau&nbsp;?</strong><br>
+        <a class="btn" href="/">Faire mon analyse ✦</a>
+      </div>
+      <div class="wrap" style="max-width:680px;margin:0 auto;"><a class="backlink" href="/blog/">← Voir nos conseils</a></div>
+      </main>`
+    + FOOT;
+  fs.mkdirSync(path.join(ROOT, 'a-propos'), { recursive: true });
+  fs.writeFileSync(path.join(ROOT, 'a-propos', 'index.html'), aproposPage);
+  console.log('✓ page À propos');
+
   // ── sitemap.xml + robots.txt (à la racine du site) ──
   const today = new Date().toISOString().slice(0, 10);
   const urls = [
     { loc: SITE + '/', lastmod: today, priority: '1.0' },
     { loc: SITE + '/blog/', lastmod: today, priority: '0.8' },
+    { loc: SITE + '/a-propos/', lastmod: today, priority: '0.5' },
     ...posts.map(p => ({ loc: SITE + p.url, lastmod: (p.date || today).slice(0, 10), priority: '0.7' })),
     { loc: SITE + '/confidentialite/', lastmod: today, priority: '0.3' },
   ];
