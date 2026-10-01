@@ -948,7 +948,9 @@ const Questionnaire = (() => {
     const nativeApp = !!(window.Capacitor && (typeof window.Capacitor.isNativePlatform === 'function'
       ? window.Capacitor.isNativePlatform()
       : (window.Capacitor.platform && window.Capacitor.platform !== 'web')));
-    const camBlocked = inApp || nativeApp;   // caméra live non fiable → sélecteur natif
+    const isMobileUA = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent || '')
+      || (navigator.maxTouchPoints > 1 && /Mac/.test(navigator.platform || ''));   // iPad récent se fait passer pour Mac
+    const camBlocked = inApp || nativeApp || isMobileUA;   // app/mobile : caméra web peu fiable → sélecteur natif
 
     const uploadBtn = `
       <label class="btn btn-outline" style="cursor:pointer;text-align:center;">
