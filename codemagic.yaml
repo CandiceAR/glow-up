@@ -71,6 +71,9 @@ workflows:
           set_key NSCameraUsageDescription "Glow Up utilise l'appareil photo pour analyser votre peau et personnaliser votre routine."
           set_key NSPhotoLibraryUsageDescription "Glow Up accède à vos photos pour vous permettre de sélectionner une photo pour votre analyse."
           set_key NSPhotoLibraryAddUsageDescription "Glow Up peut enregistrer une photo prise dans l'application si vous le choisissez."
+          # Conformité chiffrement : l'app n'utilise que du HTTPS standard → "non".
+          # Évite que chaque build reste bloqué en "Missing Compliance" dans TestFlight.
+          plutil -replace ITSAppUsesNonExemptEncryption -bool false "$PLIST"
           # VÉRIFICATION : le build échoue si une clé est absente (évite un nouveau crash caméra)
           echo "--- Vérification des autorisations Info.plist ---"
           for K in NSCameraUsageDescription NSPhotoLibraryUsageDescription NSPhotoLibraryAddUsageDescription; do
