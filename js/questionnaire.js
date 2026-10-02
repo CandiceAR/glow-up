@@ -958,13 +958,22 @@ const Questionnaire = (() => {
         <input type="file" accept="image/*" style="display:none"
                onchange="Questionnaire.uploadPhoto(this)">
       </label>`;
-    const cameraBtn = camBlocked
-      ? `<label class="btn btn-dark" style="cursor:pointer;text-align:center;">
+    let cameraBtn;
+    if (nativeApp) {
+      // App native (Capacitor) : vrai bouton → takePhoto() ouvre le plugin caméra NATIF.
+      // (Un <input type=file capture> plante la WKWebView iOS → c'était la cause du « ça saute ».)
+      cameraBtn = `<button class="btn btn-dark" onclick="Questionnaire.takePhoto()">📸 Prendre une photo</button>`;
+    } else if (inApp || isMobileUA) {
+      // Navigateur mobile (Safari/Chrome) ou in-app : input fichier natif avec capture caméra.
+      cameraBtn = `<label class="btn btn-dark" style="cursor:pointer;text-align:center;">
            📸 Prendre une photo
            <input type="file" accept="image/*" capture="user" style="display:none"
                   onchange="Questionnaire.uploadPhoto(this)">
-         </label>`
-      : `<button class="btn btn-dark" onclick="Questionnaire.takePhoto()">📸 Prendre une photo</button>`;
+         </label>`;
+    } else {
+      // Desktop : écran caméra live (getUserMedia).
+      cameraBtn = `<button class="btn btn-dark" onclick="Questionnaire.takePhoto()">📸 Prendre une photo</button>`;
+    }
 
     return `<div class="q-photo-step">
       <p style="font-size:0.9rem;color:var(--muted);margin-bottom:20px;">
