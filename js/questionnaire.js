@@ -1185,7 +1185,29 @@ const Questionnaire = (() => {
 
   // ─── Photo step ───────────────────────────────────────────────
 
-  function takePhoto() {
+  async function takePhoto() {
+    // App native (Capacitor) : la caméra web (getUserMedia) est bloquée dans la
+    // WKWebView iOS → on utilise le plugin caméra NATIF (menu : photo ou galerie).
+    const C = window.Capacitor;
+    const isNative = !!(C && C.Plugins && C.Plugins.Camera &&
+      (typeof C.isNativePlatform !== 'function' || C.isNativePlatform()));
+    if (isNative) {
+      try {
+        const photo = await C.Plugins.Camera.getPhoto({
+          quality: 80, allowEditing: false, resultType: 'dataUrl',
+          source: 'PROMPT', direction: 'FRONT', saveToGallery: false,
+          promptLabelHeader: 'Analyse ta peau',
+          promptLabelPicture: 'Prendre une photo',
+          promptLabelPhoto:   'Choisir dans la galerie',
+          promptLabelCancel:  'Annuler'
+        });
+        const dataUrl = photo && (photo.dataUrl ||
+          (photo.base64String ? 'data:image/jpeg;base64,' + photo.base64String : null));
+        if (dataUrl) await _processPhoto(dataUrl);
+      } catch (e) { /* annulé ou refusé : ne pas bloquer le parcours */ }
+      return;
+    }
+    // Navigateur classique : écran de capture live (getUserMedia)
     sessionStorage.setItem('glow_resume_questionnaire', '1');
     showScreen('capture');
   }
@@ -1201,56 +1223,56 @@ const Questionnaire = (() => {
     takePhoto();
   }
 
+  // Traitement commun d'une photo (dataURL) : analyse + navigation.
+  // Utilisé par l'upload fichier ET par la caméra native (Capacitor).
+  async function _processPhoto(dataUrl) {
+    _skinDiagView = false;   // nouvelle photo → vue analyse
+    AppState.face = AppState.face || {};
+    AppState.face.photo        = dataUrl;
+    AppState.face.skinAnalysis = null;
+
+    _showPhotoAnalyzing();
+    try {
+      if (typeof SkinAnalysis !== 'undefined') {
+        const result = await SkinAnalysis.analyzeFromPhoto(dataUrl);
+        if (result) AppState.face.skinAnalysis = result;
+      }
+    } catch {}
+
+    // ── Filet de sécurité : analyse impossible → ne JAMAIS bloquer ──
+    if (!AppState.face.skinAnalysis) {
+      if (typeof showToast === 'function') {
+        showToast("L'analyse auto n'est pas dispo sur ce navigateur — continue, on personnalise avec tes réponses ✦", 'info', 5500);
+      }
+      if (mode === 'makeup') {
+        const nxt = _mkNextActive(makeupIndex);
+        if (nxt >= 0) { makeupIndex = nxt; _renderMakeupLegacy(); }
+        else { showScreen('makeup'); }
+      } else {
+        const nxt = _nextActive(currentIndex);
+        if (nxt >= 0) _slideTo(nxt, 'forward'); else submit();
+      }
+      return;
+    }
+
+    if (mode === 'makeup') {
+      const an = AppState.face.skinAnalysis;
+      AppState.makeupQuiz = AppState.makeupQuiz || {};
+      AppState.makeupQuiz.mkCarnation = CARN_PHOTO_MAP[an?.carnation?.type] || AppState.makeupQuiz.mkCarnation || null;
+      AppState.makeupQuiz.mkUndertone = an?.undertone?.type || AppState.makeupQuiz.mkUndertone || null;
+      makeupIndex = 0; // rester sur l'étape photo pour afficher l'analyse
+    } else {
+      _prefillFromPhoto();
+    }
+
+    _showPhotoResult();
+  }
+
   function uploadPhoto(input) {
     const file = input.files?.[0];
     if (!file) return;
-    _skinDiagView = false;   // nouvelle photo → vue analyse
     const reader = new FileReader();
-    reader.onload = async (e) => {
-      AppState.face = AppState.face || {};
-      AppState.face.photo       = e.target.result;
-      AppState.face.skinAnalysis = null;
-
-      // Analyse en arrière-plan (skincare ET makeup) — pas d'écran intermédiaire lourd
-      _showPhotoAnalyzing();
-      try {
-        if (typeof SkinAnalysis !== 'undefined') {
-          const result = await SkinAnalysis.analyzeFromPhoto(e.target.result);
-          if (result) AppState.face.skinAnalysis = result;
-        }
-      } catch {}
-
-      // ── Filet de sécurité : analyse impossible (navigateur ancien,
-      //    MediaPipe/CDN bloqué, webview Instagram…) → ne JAMAIS bloquer ──
-      if (!AppState.face.skinAnalysis) {
-        if (typeof showToast === 'function') {
-          showToast("L'analyse auto n'est pas dispo sur ce navigateur — continue, on personnalise avec tes réponses ✦", 'info', 5500);
-        }
-        if (mode === 'makeup') {
-          const nxt = _mkNextActive(makeupIndex);
-          if (nxt >= 0) { makeupIndex = nxt; _renderMakeupLegacy(); }
-          else { showScreen('makeup'); }
-        } else {
-          const nxt = _nextActive(currentIndex);
-          if (nxt >= 0) _slideTo(nxt, 'forward'); else submit();
-        }
-        return;
-      }
-
-      if (mode === 'makeup') {
-        // Pré-remplir carnation / sous-ton du quiz makeup depuis la photo
-        const an = AppState.face.skinAnalysis;
-        AppState.makeupQuiz = AppState.makeupQuiz || {};
-        AppState.makeupQuiz.mkCarnation = CARN_PHOTO_MAP[an?.carnation?.type] || AppState.makeupQuiz.mkCarnation || null;
-        AppState.makeupQuiz.mkUndertone = an?.undertone?.type || AppState.makeupQuiz.mkUndertone || null;
-        makeupIndex = 0; // rester sur l'étape photo pour afficher l'analyse
-      } else {
-        _prefillFromPhoto();
-      }
-
-      // Afficher d'abord l'analyse (avec sympathie), puis continuer le questionnaire
-      _showPhotoResult();
-    };
+    reader.onload = (e) => { _processPhoto(e.target.result); };
     reader.readAsDataURL(file);
   }
 
