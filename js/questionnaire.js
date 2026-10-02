@@ -1200,28 +1200,50 @@ const Questionnaire = (() => {
     const C = window.Capacitor;
     const isNative = !!(C && (typeof C.isNativePlatform === 'function'
       ? C.isNativePlatform() : (C.platform && C.platform !== 'web')));
-    // IMPORTANT : site chargé à distance → Capacitor.Plugins.Camera est VIDE.
-    // On crée le pont vers le plugin natif avec registerPlugin('Camera').
-    if (isNative && typeof C.registerPlugin === 'function') {
+
+    if (isNative) {
+      // On tente d'obtenir le plugin Camera par TOUTES les méthodes possibles,
+      // car selon la version du pont natif injecté, l'API diffère.
+      let Camera = null;
       try {
-        const Camera = C.registerPlugin('Camera');
-        const photo = await Camera.getPhoto({
-          quality: 80, allowEditing: false, resultType: 'dataUrl',
-          source: 'PROMPT', direction: 'FRONT', saveToGallery: false,
-          promptLabelHeader: 'Analyse ta peau',
-          promptLabelPicture: 'Prendre une photo',
-          promptLabelPhoto:   'Choisir dans la galerie',
-          promptLabelCancel:  'Annuler'
-        });
-        const dataUrl = photo && (photo.dataUrl ||
-          (photo.base64String ? 'data:image/jpeg;base64,' + photo.base64String : null));
-        if (dataUrl) { await _processPhoto(dataUrl); return; }
-      } catch (e) {
-        if (typeof showToast === 'function') {
-          showToast("Impossible d'ouvrir la caméra ici — utilise « Choisir une photo » 📂", 'info', 5000);
+        if (typeof C.registerPlugin === 'function')      Camera = C.registerPlugin('Camera');
+        else if (C.Plugins && C.Plugins.Camera)          Camera = C.Plugins.Camera;
+      } catch (e) { /* ignore, on diagnostique plus bas */ }
+
+      if (Camera && typeof Camera.getPhoto === 'function') {
+        try {
+          const photo = await Camera.getPhoto({
+            quality: 80, allowEditing: false, resultType: 'dataUrl',
+            source: 'PROMPT', direction: 'FRONT', saveToGallery: false,
+            promptLabelHeader: 'Analyse ta peau',
+            promptLabelPicture: 'Prendre une photo',
+            promptLabelPhoto:   'Choisir dans la galerie',
+            promptLabelCancel:  'Annuler'
+          });
+          const dataUrl = photo && (photo.dataUrl ||
+            (photo.base64String ? 'data:image/jpeg;base64,' + photo.base64String : null));
+          if (dataUrl) { await _processPhoto(dataUrl); return; }
+        } catch (e) {
+          // annulation volontaire ? on ne dérange pas. Vraie erreur → on l'affiche.
+          const msg = (e && (e.message || e.errorMessage)) ? (e.message || e.errorMessage) : String(e);
+          if (!/cancel|annul/i.test(msg)) {
+            try { alert('Caméra — erreur :\n' + msg); } catch (_) {}
+          }
         }
+        return;   // en app : NE JAMAIS basculer sur l'écran caméra web (il plante)
       }
-      return;   // en app : NE PAS basculer sur l'écran caméra web (il plante)
+
+      // Plugin introuvable → diagnostic visible (Candice m'envoie la capture).
+      const diag = {
+        Capacitor: typeof C,
+        isNativePlatform: (C && typeof C.isNativePlatform === 'function') ? C.isNativePlatform() : 'absent',
+        getPlatform: (C && typeof C.getPlatform === 'function') ? C.getPlatform() : (C && C.platform) || 'absent',
+        registerPlugin: C ? typeof C.registerPlugin : 'absent',
+        Plugins: C ? typeof C.Plugins : 'absent',
+        'Plugins.Camera': (C && C.Plugins) ? typeof C.Plugins.Camera : 'absent'
+      };
+      try { alert('DIAG caméra (envoie cette capture à Claude) :\n' + JSON.stringify(diag, null, 2)); } catch (_) {}
+      return;
     }
     // Navigateur classique : écran de capture live (getUserMedia)
     sessionStorage.setItem('glow_resume_questionnaire', '1');
