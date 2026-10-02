@@ -44,10 +44,19 @@ workflows:
 
       - name: Générer icônes + splash (depuis resources/)
         script: |
+          set -e
           npx @capacitor/assets generate --ios \
             --iconBackgroundColor '#F5ECE0' \
-            --splashBackgroundColor '#F5ECE0' || true
+            --splashBackgroundColor '#F5ECE0'
           npx cap sync ios
+          # VÉRIFICATION : l'icône doit exister, sinon l'app sort SANS logo → on bloque le build
+          ICONSET="ios/App/App/Assets.xcassets/AppIcon.appiconset"
+          echo "--- Vérification de l'icône générée ---"
+          if [ ! -d "$ICONSET" ]; then echo "MANQUANT: $ICONSET"; exit 1; fi
+          PNG_COUNT=$(ls "$ICONSET"/*.png 2>/dev/null | wc -l | tr -d ' ')
+          echo "Icônes PNG générées : $PNG_COUNT"
+          if [ "$PNG_COUNT" -lt 1 ]; then echo "AUCUNE icône PNG générée"; exit 1; fi
+          ls -la "$ICONSET"
 
       - name: Autorisations caméra / photos (Info.plist, FR) + vérification
         script: |
