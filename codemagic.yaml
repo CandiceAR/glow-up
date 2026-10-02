@@ -100,6 +100,23 @@ workflows:
             --workspace "$XCODE_WORKSPACE" \
             --scheme "$XCODE_SCHEME"
 
+      - name: VÉRIFICATION FINALE — l'autorisation caméra est bien dans l'IPA
+        script: |
+          set -e
+          IPA=$(ls build/ios/ipa/*.ipa 2>/dev/null | head -1)
+          if [ -z "$IPA" ]; then echo "IPA introuvable"; exit 1; fi
+          echo "IPA : $IPA"
+          WORK=$(mktemp -d)
+          unzip -q "$IPA" -d "$WORK"
+          APP_PLIST=$(ls "$WORK"/Payload/*.app/Info.plist 2>/dev/null | head -1)
+          if [ -z "$APP_PLIST" ]; then echo "Info.plist introuvable dans l'IPA"; exit 1; fi
+          echo "--- Vérification des autorisations DANS l'app compilée ---"
+          for K in NSCameraUsageDescription NSPhotoLibraryUsageDescription; do
+            V=$(/usr/libexec/PlistBuddy -c "Print :$K" "$APP_PLIST" 2>/dev/null || true)
+            if [ -z "$V" ]; then echo "ABSENTE de l'IPA : $K"; exit 1; fi
+            echo "OK (dans l'IPA) $K = $V"
+          done
+
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
