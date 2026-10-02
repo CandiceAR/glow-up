@@ -1189,11 +1189,14 @@ const Questionnaire = (() => {
     // App native (Capacitor) : la caméra web (getUserMedia) est bloquée dans la
     // WKWebView iOS → on utilise le plugin caméra NATIF (menu : photo ou galerie).
     const C = window.Capacitor;
-    const isNative = !!(C && C.Plugins && C.Plugins.Camera &&
-      (typeof C.isNativePlatform !== 'function' || C.isNativePlatform()));
-    if (isNative) {
+    const isNative = !!(C && (typeof C.isNativePlatform === 'function'
+      ? C.isNativePlatform() : (C.platform && C.platform !== 'web')));
+    // IMPORTANT : site chargé à distance → Capacitor.Plugins.Camera est VIDE.
+    // On crée le pont vers le plugin natif avec registerPlugin('Camera').
+    if (isNative && typeof C.registerPlugin === 'function') {
       try {
-        const photo = await C.Plugins.Camera.getPhoto({
+        const Camera = C.registerPlugin('Camera');
+        const photo = await Camera.getPhoto({
           quality: 80, allowEditing: false, resultType: 'dataUrl',
           source: 'PROMPT', direction: 'FRONT', saveToGallery: false,
           promptLabelHeader: 'Analyse ta peau',
@@ -1203,9 +1206,13 @@ const Questionnaire = (() => {
         });
         const dataUrl = photo && (photo.dataUrl ||
           (photo.base64String ? 'data:image/jpeg;base64,' + photo.base64String : null));
-        if (dataUrl) await _processPhoto(dataUrl);
-      } catch (e) { /* annulé ou refusé : ne pas bloquer le parcours */ }
-      return;
+        if (dataUrl) { await _processPhoto(dataUrl); return; }
+      } catch (e) {
+        if (typeof showToast === 'function') {
+          showToast("Impossible d'ouvrir la caméra ici — utilise « Choisir une photo » 📂", 'info', 5000);
+        }
+      }
+      return;   // en app : NE PAS basculer sur l'écran caméra web (il plante)
     }
     // Navigateur classique : écran de capture live (getUserMedia)
     sessionStorage.setItem('glow_resume_questionnaire', '1');
