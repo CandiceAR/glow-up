@@ -17,7 +17,7 @@
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=260">
+  <link rel="stylesheet" href="style.css?v=261">
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#C9A98A">
@@ -152,6 +152,8 @@
           <div class="hero-cta-wrap">
             <button class="btn btn-hero" onclick="startGlowUp()">Créer ma routine skincare</button>
             <span class="hero-cta-caption">après 30 ans</span>
+            <button class="btn btn-hero btn-hero--scan" onclick="showScreen('scan-product')">📷 Scanner un produit</button>
+            <span class="hero-cta-caption">Tu désires un produit, mais est-il vraiment fait pour toi ?</span>
           </div>
           <p class="hero-login-hint" id="heroLoginHint">
             Déjà un compte ? <a href="#" onclick="openAuthModal(); return false;">Connecte-toi</a> pour retrouver ton analyse.
@@ -166,6 +168,14 @@
           <div class="df-home-cta-txt">
             <h3>Créer ma routine skincare</h3>
             <p>Ton analyse de peau + ta routine sur-mesure, après 30 ans.</p>
+          </div>
+          <span class="df-home-cta-arrow">→</span>
+        </div>
+        <div class="df-home-cta df-home-cta--main df-home-cta--scan" onclick="showScreen('scan-product')" role="button" tabindex="0">
+          <span class="df-home-cta-emoji">📷</span>
+          <div class="df-home-cta-txt">
+            <h3>Scanner un produit</h3>
+            <p>Tu désires un produit ? Glow Up te dit s'il est fait pour ta peau.</p>
           </div>
           <span class="df-home-cta-arrow">→</span>
         </div>
@@ -659,6 +669,14 @@
       </div>
     </div><!-- /screen-dupe-finder -->
 
+    <div class="screen" id="screen-scan-product">
+      <div class="screen-inner">
+        <div id="scanProductContent">
+          <p class="loading-placeholder">Chargement…</p>
+        </div>
+      </div>
+    </div><!-- /screen-scan-product -->
+
     <div class="screen" id="screen-routine-analyzer">
       <div class="screen-inner">
         <div id="routineAnalyzerContent">
@@ -791,7 +809,8 @@
   <script src="js/dupeFinder.js?v=12"></script>
   <script src="js/routineAnalyzer.js?v=15"></script>
   <script src="js/profil.js?v=4"></script>
-  <script src="js/app.js?v=219"></script>
+  <script src="js/scanProduct.js?v=1"></script>
+  <script src="js/app.js?v=220"></script>
   <script src="js/analytics.js?v=1"></script>
 
   <!-- Derniers conseils (blog) sur la page d'accueil -->

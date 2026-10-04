@@ -82,6 +82,7 @@ const Admin = (() => {
   async function initAdmin() {
     await loadProducts();
     renderStats();
+    renderScanStats();
     renderTable();
   }
 
@@ -227,6 +228,43 @@ const Admin = (() => {
       <div class="stat-card"><div class="stat-number">${active}</div><div class="stat-label">Actifs</div></div>
       <div class="stat-card"><div class="stat-number">${featured}</div><div class="stat-label">Produits vedettes</div></div>
       <div class="stat-card"><div class="stat-number">${cats}</div><div class="stat-label">Catégories</div></div>`;
+  }
+
+  // ─── Suivi des scans produits (compteur Firestore + coût estimé) ──
+  async function renderScanStats() {
+    const box = document.getElementById('scanStatsBox');
+    if (!box) return;
+    if (typeof firebase === 'undefined' || !firebase.firestore) { box.innerHTML = ''; return; }
+    const COST = 0.02;   // ~2 centimes / scan (identification photo + verdict Sonnet)
+    try {
+      const snap = await firebase.firestore().collection('scanStats').get();
+      const rows = [];
+      snap.forEach(d => rows.push(d.data() || {}));
+      rows.sort((a, b) => (b.month || '').localeCompare(a.month || ''));
+      const now = new Date();
+      const ym  = now.getUTCFullYear() + '-' + String(now.getUTCMonth() + 1).padStart(2, '0');
+      const cur = rows.find(r => r.month === ym) || { count: 0 };
+      const totalAll = rows.reduce((s, r) => s + (r.count || 0), 0);
+      const history = rows.slice(0, 6).map(r =>
+        `<tr><td>${r.month || '?'}</td><td style="text-align:right">${r.count || 0}</td><td style="text-align:right">${((r.count || 0) * COST).toFixed(2)} €</td></tr>`
+      ).join('');
+      box.innerHTML = `
+        <h2 style="margin:28px 0 12px">📷 Scans produits</h2>
+        <div class="admin-stats">
+          <div class="stat-card"><div class="stat-number">${cur.count || 0}</div><div class="stat-label">Scans ce mois (${ym})</div></div>
+          <div class="stat-card"><div class="stat-number">${((cur.count || 0) * COST).toFixed(2)} €</div><div class="stat-label">Coût estimé ce mois</div></div>
+          <div class="stat-card"><div class="stat-number">${totalAll}</div><div class="stat-label">Scans total</div></div>
+          <div class="stat-card"><div class="stat-number">${(totalAll * COST).toFixed(2)} €</div><div class="stat-label">Coût total estimé</div></div>
+        </div>
+        <table style="width:100%;margin-top:10px;border-collapse:collapse;font-size:0.85rem">
+          <thead><tr><th style="text-align:left;padding:4px 0">Mois</th><th style="text-align:right">Scans</th><th style="text-align:right">Coût est.</th></tr></thead>
+          <tbody>${history || '<tr><td colspan="3" style="color:#999;padding:8px 0">Aucun scan pour le moment</td></tr>'}</tbody>
+        </table>
+        <p style="font-size:0.75rem;color:#999;margin-top:6px">Estimation ~0,02 € par scan (identification photo + verdict IA Sonnet).</p>`;
+    } catch (e) {
+      console.warn('[admin] scanStats:', e.message);
+      box.innerHTML = '<p style="color:#999;margin-top:20px">Suivi des scans indisponible pour le moment.</p>';
+    }
   }
 
   // ─── Table produits ───────────────────────────────────────────

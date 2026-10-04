@@ -10685,3 +10685,39 @@ body.drawer-open{ overflow: hidden; }   /* blocage du défilement arrière-plan 
   padding: 9px 12px; min-height: 42px; cursor: pointer; min-width: 130px;
 }
 .shop-ctrl select:focus-visible{ outline: 2px solid var(--nude); outline-offset: 1px; }
+
+/* ===== Scanner un produit ===== */
+.btn-hero--scan{background:#fff;color:var(--ink,#2b2320);border:1.5px solid var(--ink,#2b2320);margin-top:10px;}
+.df-home-cta--scan .df-home-cta-emoji{filter:none;}
+.scan-wrap{max-width:560px;margin:0 auto;padding:8px 2px 40px;}
+.scan-wrap--center{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:50vh;gap:18px;text-align:center;}
+.scan-hero{text-align:center;margin:10px 0 22px;}
+.scan-hero-emoji{font-size:2.4rem;display:block;margin-bottom:6px;}
+.scan-title{font-size:1.6rem;margin:0 0 8px;}
+.scan-sub{font-size:0.95rem;color:var(--muted,#6b625c);line-height:1.5;max-width:440px;margin:0 auto;}
+.scan-actions{display:flex;flex-direction:column;gap:10px;margin:18px 0;}
+.scan-cta{width:100%;}
+.scan-tip{font-size:0.8rem;color:var(--muted,#6b625c);text-align:center;line-height:1.4;}
+.scan-gate{background:rgba(0,0,0,0.03);border-radius:16px;padding:22px 18px;text-align:center;}
+.scan-gate-txt{font-size:1rem;line-height:1.5;margin:0 0 16px;}
+.scan-gate-sub{font-size:0.82rem;color:var(--muted,#6b625c);margin:12px 0 0;}
+.scan-spin{width:42px;height:42px;border-radius:50%;border:3px solid rgba(0,0,0,0.1);border-top-color:var(--ink,#2b2320);animation:scanspin 0.8s linear infinite;}
+@keyframes scanspin{to{transform:rotate(360deg);}}
+.scan-loading-txt{font-size:0.95rem;color:var(--muted,#6b625c);max-width:320px;}
+.scan-prod-head{text-align:center;margin-bottom:14px;}
+.scan-prod-brand{display:block;font-size:0.78rem;letter-spacing:0.04em;text-transform:uppercase;color:var(--muted,#6b625c);}
+.scan-prod-name{display:block;font-size:1.1rem;font-weight:600;}
+.scan-verdict{display:flex;align-items:center;gap:12px;border-radius:16px;padding:16px 18px;margin-bottom:16px;}
+.scan-verdict--green{background:#eaf6ed;}
+.scan-verdict--orange{background:#fdf3e6;}
+.scan-verdict--red{background:#fbeaea;}
+.scan-verdict-ic{font-size:1.6rem;}
+.scan-verdict-title{font-size:1.1rem;margin:0;line-height:1.35;}
+.scan-block{margin:0 0 16px;}
+.scan-block-h{font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted,#6b625c);margin:0 0 8px;}
+.scan-reasons{margin:0;padding-left:18px;}
+.scan-reasons li{margin-bottom:6px;line-height:1.45;font-size:0.92rem;}
+.scan-line{display:flex;gap:8px;align-items:flex-start;font-size:0.92rem;line-height:1.45;margin:0 0 6px;}
+.scan-line-ic{flex-shrink:0;}
+.scan-note{background:#fdf3e6;border-radius:12px;padding:12px 14px;font-size:0.88rem;line-height:1.45;margin:0 0 16px;}
+.scan-result-ctas{display:flex;flex-direction:column;gap:10px;margin-top:18px;}

@@ -39,6 +39,9 @@
     "api/identifyProduct.js": {
       "maxDuration": 30
     },
+    "api/scanVerdict.js": {
+      "maxDuration": 30
+    },
     "api/dupeMatch.js": {
       "maxDuration": 45
     },

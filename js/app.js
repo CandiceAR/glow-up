@@ -200,6 +200,7 @@ function showScreen(name) {
   if (name === 'premium')         { if (typeof Subscription !== 'undefined') Subscription.renderPremiumPage(); }
   if (name === 'dupe-finder')     { if (typeof DupeFinder !== 'undefined') DupeFinder.initScreen(); }
   if (name === 'routine-analyzer'){ if (typeof RoutineAnalyzer !== 'undefined') RoutineAnalyzer.initScreen(); }
+  if (name === 'scan-product')    { if (typeof ScanProduct !== 'undefined') ScanProduct.initScreen(); }
   if (name === 'profil')          { if (typeof Profil !== 'undefined') Profil.initScreen(); }
 
   // ─── Écrans avec gating ───────────────────────────────────────
