@@ -58,6 +58,22 @@ const Questionnaire = (() => {
       skipIf: () => !!AppState.questionnaire?.reused?.face
     },
 
+    // Q-rides — Localisation ridules/rides (juste après la photo) : fiable car déclaré
+    {
+      id: 'q-rides', key: 'wrinkleZones', type: 'multiple', max: 4,
+      question: 'Remarques-tu des ridules ou des rides ?',
+      subtitle: 'Sélectionne les zones concernées (ou « Non »)',
+      required: false,
+      skipIf: () => !!AppState.questionnaire?.reused?.wrinkleZones,
+      options: [
+        { value: 'yeux',    emoji: '👁️', label: 'Coin des yeux',      desc: "Pattes d'oie" },
+        { value: 'lion',    emoji: '😠', label: 'Entre les sourcils', desc: 'Ride du lion' },
+        { value: 'front',   emoji: '〰️', label: 'Front',              desc: 'Lignes horizontales' },
+        { value: 'sillons', emoji: '💬', label: 'Autour de la bouche', desc: 'Sillons / plis' },
+        { value: 'aucune',  emoji: '✨', label: 'Non, pas vraiment',  desc: 'Peau lisse' }
+      ]
+    },
+
     // Q1 — Type de peau (toujours affiché — photo pré-sélectionne mais user peut corriger)
     {
       id: 'q1', key: 'skinType', type: 'single',
@@ -978,6 +994,9 @@ const Questionnaire = (() => {
     return `<div class="q-photo-step">
       <p style="font-size:0.9rem;color:var(--muted);margin-bottom:20px;">
         En 5 secondes, l'IA analyse ta peau et pré-remplit les questions suivantes.
+      </p>
+      <p class="q-photo-tip" style="font-size:0.8rem;color:var(--muted);background:rgba(0,0,0,0.03);border-radius:10px;padding:8px 12px;margin-bottom:18px;line-height:1.4;">
+        📸 Pour une analyse précise : photo <strong>bien nette</strong> et <strong>bien éclairée</strong> (lumière du jour), visage de face, <strong>sans lunettes</strong> ni cheveux sur le visage.
       </p>
       <div class="q-photo-buttons">
         ${cameraBtn + uploadBtn}

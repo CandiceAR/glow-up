@@ -36,6 +36,14 @@ const RulesEngine = (() => {
       enriched.concerns = [...enriched.complexes];
     }
 
+    // Rides ciblées déclarées (question après photo) → complex 'rides' (lignes installées).
+    // Indépendant de la photo : on le traite avant le retour anticipé ci-dessous.
+    const _wz = Array.isArray(enriched.wrinkleZones) ? enriched.wrinkleZones : [];
+    if (_wz.some(z => ['lion', 'front', 'sillons'].includes(z)) && !enriched.complexes?.includes('rides')) {
+      enriched.complexes = [...(enriched.complexes || []), 'rides'];
+      enriched.concerns  = [...(enriched.concerns  || []), 'rides'];
+    }
+
     const pd = answers.photoData;
     if (!pd) return enriched;
 
@@ -183,6 +191,40 @@ const RulesEngine = (() => {
           });
         }
       }
+    }
+
+    // ── Rides ciblées (question après photo / déclaré) : anti-âge + contour yeux ──
+    const wz = Array.isArray(answers.wrinkleZones) ? answers.wrinkleZones : [];
+    const wantsEye   = wz.includes('yeux');
+    const wantsLines = wz.some(z => ['lion', 'front', 'sillons'].includes(z)) || complexes.includes('rides');
+
+    if (wantsLines) {
+      // Grossesse / ado : rétinol interdit → on bascule sur les peptides (sûrs et efficaces).
+      const safeAntiAge = labels.includes('grossesse') || ageGroup === 'moins-20' || ageGroup === 'moins-15';
+      const hasAntiAge  = arr => arr.some(s => /r[ée]tinol|peptide/i.test((s.label || '') + ' ' + (s.note || '')));
+      if (!hasAntiAge(adapted.soir) && !hasAntiAge(adapted.matin)) {
+        if (safeAntiAge) {
+          adapted.soir.splice(Math.max(0, adapted.soir.length - 1), 0, {
+            order: adapted.soir.length + 1, step: 'serum',
+            label: 'Sérum peptides repulpant',
+            note:  'Lisse les ridules et soutient la fermeté — alternative douce, sans rétinol'
+          });
+        } else {
+          adapted.soir.splice(Math.max(0, adapted.soir.length - 1), 0, {
+            order: adapted.soir.length + 1, step: 'treatment',
+            label: 'Sérum rétinol anti-rides',
+            note:  'Le soir, 2–3x/semaine au début — lisse les rides et stimule le collagène. SPF le matin indispensable.'
+          });
+        }
+      }
+    }
+    if (wantsEye && !hasStep(adapted.matin, 'eye') && !hasStep(adapted.soir, 'eye')) {
+      const insertAt = Math.max(0, adapted.matin.length - 2);
+      adapted.matin.splice(insertAt, 0, {
+        order: adapted.matin.length + 1, step: 'eye',
+        label: 'Contour des yeux — peptides + acide hyaluronique',
+        note:  "Pattes d'oie : tapotements doux, matin et soir"
+      });
     }
 
     // ── Mature (40+) : ajouter contour yeux si absent ──
