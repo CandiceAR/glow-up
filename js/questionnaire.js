@@ -1018,6 +1018,10 @@ const Questionnaire = (() => {
     push('☀️', 'Taches', taches);
     const texture = photo.texture === 'irrégulière' ? 0.7 : photo.texture === 'légèrement_irrégulière' ? 0.4 : 0.15;
     push('🫧', 'Grain de peau', texture);
+    // Ridules de déshydratation : combinaison déshydratation + texture irrégulière.
+    // Signe ciblé par l'acide hyaluronique (repulpe, lisse les ridules de déshydratation).
+    const ridules = Math.min(1, deshy * 0.55 + texture * 0.45);
+    push('〰️', 'Ridules de déshydratation', ridules);
     const sebum = photo.skinType?.type === 'grasse' ? 0.75 : photo.skinType?.type === 'mixte' ? 0.45 : 0.2;
     push('💫', 'Brillance / sébum', sebum);
     // Type de peau en 1er, puis les 4 plus marquantes → 5 max, personnalisées

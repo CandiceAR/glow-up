@@ -80,6 +80,18 @@ const RulesEngine = (() => {
       }
     }
 
+    // ridules de déshydratation depuis photo (texture irrégulière ou peau sèche)
+    // → déclenche la reco acide hyaluronique (voir _applyAdaptations).
+    if (!enriched.complexes?.includes('deshydratation') && pd.zones) {
+      const vals = Object.values(pd.zones);
+      const texAvg = vals.reduce((s, z) => s + (z.texture != null ? z.texture : 100), 0) / vals.length;
+      const dry = pd.skinType?.type === 'seche';
+      if (texAvg < 50 || dry) {
+        enriched.complexes = [...(enriched.complexes || []), 'deshydratation'];
+        enriched.concerns  = [...(enriched.concerns  || []), 'deshydratation'];
+      }
+    }
+
     // Métadonnées photo disponibles pour les adaptations
     if (pd.undertone)  enriched.undertone  = pd.undertone;
     if (pd.carnation)  enriched.carnation  = pd.carnation;
@@ -148,6 +160,29 @@ const RulesEngine = (() => {
         }
         return s;
       });
+    }
+
+    // ── Ridules de déshydratation (photo ou déclaré) : acide hyaluronique ──
+    if (complexes.includes('deshydratation')) {
+      const hasHA = arr => arr.some(s => /hyaluron/i.test((s.label || '') + ' ' + (s.note || '')));
+      const haNote = 'Acide hyaluronique pour repulper et lisser les ridules de déshydratation — sur peau humide';
+      if (!hasHA(adapted.matin) && !hasHA(adapted.soir)) {
+        if (hasStep(adapted.matin, 'serum')) {
+          adapted.matin = adapted.matin.map(s => s.step === 'serum'
+            ? { ...s, note: (s.note ? s.note + ' — ' : '') + haNote } : s);
+        } else if (hasStep(adapted.soir, 'serum')) {
+          adapted.soir = adapted.soir.map(s => s.step === 'serum'
+            ? { ...s, note: (s.note ? s.note + ' — ' : '') + haNote } : s);
+        } else {
+          const insertAt = Math.max(0, adapted.matin.length - 2);
+          adapted.matin.splice(insertAt, 0, {
+            order: adapted.matin.length + 1,
+            step:  'serum',
+            label: 'Sérum acide hyaluronique',
+            note:  'Repulpe et lisse les ridules de déshydratation — appliquer sur peau humide'
+          });
+        }
+      }
     }
 
     // ── Mature (40+) : ajouter contour yeux si absent ──

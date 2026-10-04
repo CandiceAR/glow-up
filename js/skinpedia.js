@@ -440,8 +440,11 @@ const Skinpedia = (() => {
   function renderRoutineImprovement(product, stepType, molIdx) {
     if (!product) return '';
 
-    // 1. Détection depuis la description produit
-    const searchText = `${product.name} ${product.description || ''}`;
+    // 1. Détection : on privilégie les actifs clés du produit (ingredientTags),
+    //    puis l'INCI, le nom et la description → identifie la molécule principale.
+    const tags = (product.ingredientTags || []).join(' ');
+    const inci = (product.inciNormalized || product.ingredients || []).join(' ');
+    const searchText = `${tags} ${inci} ${product.name || ''} ${product.description || ''}`;
     let mols = detectInText(searchText).filter(m => m.skinImprovement && m.tier !== 'caution');
 
     // 2. Fallback : map étape → molécules clés
@@ -453,16 +456,24 @@ const Skinpedia = (() => {
 
     if (mols.length === 0) return '';
 
-    // Rotation via seed : molécule différente à chaque génération
-    const m = mols[(molIdx || 0) % mols.length];
+    // Molécule PRINCIPALE : celle qui correspond au 1er actif clé listé pour le produit.
+    const firstTag = ((product.ingredientTags || [])[0] || '').toLowerCase();
+    let m = firstTag
+      ? mols.find(x => x.keywords.some(kw => {
+          const k = kw.toLowerCase();
+          return firstTag.includes(k) || k.includes(firstTag);
+        }))
+      : null;
+    if (!m) m = mols[(molIdx || 0) % mols.length];
 
+    // Lien compact vers la fiche molécule (le rôle est déjà expliqué dans la phrase du produit).
     return `
       <div class="step-improvement" onclick="event.stopPropagation(); Skinpedia.openModal('${m.id}')">
-        <span class="step-improvement-icon">📈</span>
+        <span class="step-improvement-icon">${m.icon || '🔎'}</span>
         <div class="step-improvement-text">
-          <strong>${m.name}</strong> — ${m.skinImprovement}
+          Comprendre <strong>${m.name}</strong>
+          <span class="step-improvement-more">Skinpedia →</span>
         </div>
-        <span class="step-improvement-more">Skinpedia →</span>
       </div>`;
   }
 

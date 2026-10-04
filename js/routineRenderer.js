@@ -683,10 +683,15 @@ const RoutineRenderer = (() => {
     const lipsDry = a.lipsDry === 'oui' || a.lipsDry === 'parfois';
     if (!lipsDry && !dehydrated) return '';
     const cat = (AppState.products && AppState.products.catalog) || [];
-    // Priorité au baume Torriden aux céramides (m522), sinon n'importe quel baume actif
-    let balm = cat.find(p => p.id === 'm522' && p.active !== false)
-            || cat.find(p => p.category === 'lipbalm' && p.active !== false);
-    if (!balm) return '';
+    // Varier la proposition (ne plus figer Torriden) : on pioche parmi TOUS les
+    // baumes actifs via le tirage pseudo-aléatoire stable du rendu (change à chaque
+    // génération / profil), avec un léger bonus aux mieux notés.
+    const balms = cat.filter(p => p.category === 'lipbalm' && p.active !== false);
+    if (!balms.length) return '';
+    balms.sort((x, y) =>
+      ((y.rating || 0) * 0.15 + _seededRandom('lipbalm_' + y.id)) -
+      ((x.rating || 0) * 0.15 + _seededRandom('lipbalm_' + x.id)));
+    const balm = balms[0];
     const url = balm.amazonUrl || balm.shopUrl || '#';
     const reason = lipsDry
       ? 'Tu nous as dit que tes lèvres sont souvent inconfortables.'
@@ -694,7 +699,7 @@ const RoutineRenderer = (() => {
     return `
       <div class="lip-care-tip">
         <div class="lip-care-tip-head">💋 Bonus lèvres</div>
-        <p class="lip-care-tip-reason">${reason} Un baume aux céramides scelle l'hydratation et répare la barrière des lèvres.</p>
+        <p class="lip-care-tip-reason">${reason} Un bon baume scelle l'hydratation et répare la barrière des lèvres.</p>
         <div class="lip-care-tip-prod">
           <span class="lip-care-tip-name">${balm.brand} — ${balm.name}</span>
           <a class="pc-cta pc-cta--buy lip-care-tip-cta" href="${url}" target="_blank"
@@ -830,6 +835,8 @@ const RoutineRenderer = (() => {
             </div>
           </div>
         </a>
+        ${(typeof Skinpedia !== 'undefined' && Skinpedia.renderRoutineImprovement)
+            ? Skinpedia.renderRoutineImprovement(product, (step && step.step) || null, 0) : ''}
         <div class="premium-card-ctas">
           ${canCompare ? `<a class="pc-cta pc-cta--compare" href="${compareUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Comparer les prix</a>` : ''}
           <a class="pc-cta pc-cta--buy" href="${url}" target="_blank" rel="noopener nofollow${isAffiliate ? ' sponsored' : ''}"
@@ -1017,22 +1024,46 @@ const RoutineRenderer = (() => {
     const noun = _STEP_NOUN[step.step] || 'ce produit';
     const SKIN = { normale: 'normale', grasse: 'grasse', seche: 'sèche', mixte: 'mixte', sensible: 'sensible' };
 
+    // Molécule principale du produit → explication qui parle VRAIMENT du produit
+    // (sa molécule + à quoi elle sert), et qui varie d'un produit à l'autre.
+    let mainMol = null;
+    try {
+      if (typeof Skinpedia !== 'undefined' && Skinpedia.detectInText) {
+        const txt = [(product.ingredientTags || []).join(' '),
+                     (product.inciNormalized || []).join(' '),
+                     product.name || '', product.description || ''].join(' ');
+        const found = Skinpedia.detectInText(txt).filter(m => m.tier !== 'caution' && m.role);
+        const ft = ((product.ingredientTags || [])[0] || '').toLowerCase();
+        mainMol = (ft && found.find(m => m.keywords.some(k => {
+          const kk = k.toLowerCase(); return ft.includes(kk) || kk.includes(ft);
+        }))) || found[0] || null;
+      }
+    } catch (e) {}
+
+    // Touche personnalisée selon le profil (pourquoi TOI tu en as besoin)
+    const c = u.complexes;
+    let perso;
+    if (u.sensitive)                                            perso = 'tout en douceur pour ta peau sensible';
+    else if (u.skinType === 'seche' || c.includes('secheresse')) perso = 'parfait quand ta peau manque de confort';
+    else if (c.includes('acne') || c.includes('pores') || u.skinType === 'grasse') perso = 'adapté à ta zone T sans l\'agresser';
+    else if (c.includes('taches') || u.objectives === 'uniformisation') perso = 'pour aider à unifier ton teint';
+    else if (c.includes('rides') || c.includes('deshydratation') || u.objectives === 'anti-age') perso = 'pour lisser et prévenir les signes de l\'âge';
+    else if (c.includes('eclat') || u.objectives === 'eclat')   perso = 'pour raviver ton éclat';
+    else if (u.objectives === 'hydratation')                    perso = 'pour une hydratation optimale';
+    else                                                        perso = `adapté à ta peau ${SKIN[u.skinType] || 'et à ton profil'}`.trim();
+
     // Explication dédiée du produit (ex : soins cernes ciblés) prioritaire
     let why;
     if (product.whyPitch) {
       why = product.whyPitch;
     } else if (step.step === 'spf' && product.description) {
       why = product.description;
+    } else if (mainMol) {
+      // Mène avec la molécule + son rôle (varie selon le produit) + touche perso.
+      const role = (mainMol.role || '').replace(/\s*\.\s*$/, '');
+      why = `${mainMol.name} : ${role.charAt(0).toLowerCase() + role.slice(1)} — ${perso}.`;
     } else {
-      const c = u.complexes;
-      if (u.sensitive)                                    why = `Nous avons choisi ${noun} car il est adapté à ta peau sensible et aide à limiter les rougeurs.`;
-      else if (u.skinType === 'seche' || c.includes('secheresse')) why = `Nous avons choisi ${noun} car ta peau a tendance à la sécheresse et a besoin de confort et d'hydratation.`;
-      else if (c.includes('acne') || c.includes('pores') || u.skinType === 'grasse') why = `Nous avons choisi ${noun} car il purifie et régule la zone T sans agresser ta peau.`;
-      else if (c.includes('taches') || u.objectives === 'uniformisation') why = `Nous avons choisi ${noun} pour aider à unifier ton teint et estomper les taches.`;
-      else if (c.includes('eclat') || u.objectives === 'eclat')       why = `Nous avons choisi ${noun} car ta peau manque un peu d'éclat — il ravive la luminosité.`;
-      else if (c.includes('rides') || u.objectives === 'anti-age')    why = `Nous avons choisi ${noun} pour repulper la peau et prévenir les signes de l'âge.`;
-      else if (u.objectives === 'hydratation')             why = `Nous avons choisi ${noun} pour une hydratation optimale, adaptée à tes besoins.`;
-      else                                                 why = `Nous avons choisi ${noun} car il correspond à ton type de peau ${SKIN[u.skinType] || 'et à ton profil'}.`;
+      why = `Nous avons choisi ${noun} car il est ${perso}.`;
     }
 
     // « Pourquoi celui-ci plutôt qu'un autre ? »
