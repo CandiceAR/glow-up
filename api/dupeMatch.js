@@ -73,7 +73,6 @@ function _overlap(refList, candList) {
 
 module.exports = async (req, res) => {
   Object.entries(CORS).forEach(([k, v]) => res.setHeader(k, v));
-  res.setHeader('X-Dupe-Engine', 'selfexclude-1');   // marqueur de version (diagnostic déploiement)
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST')    return res.status(405).json({ error: 'Method Not Allowed' });
 
@@ -82,10 +81,6 @@ module.exports = async (req, res) => {
 
   const { product, candidates, userSkin, ageConstraint } = req.body || {};
   if (!product) return res.status(400).json({ error: 'product manquant' });
-  if (req.body.__debug === 'same') {   // diagnostic temporaire
-    return res.status(200).json({ node: process.version,
-      same: (Array.isArray(candidates) ? candidates : []).map(c => ({ id: c.id, same: _sameProduct(product, c) })) });
-  }
   const ageBlock = (ageConstraint && ageConstraint.age)
     ? `\n\nRÈGLE ÂGE (PRIORITAIRE) : utilisatrice de ${ageConstraint.age} ans (moins de 15). ${ageConstraint.guidance || ''} Ne propose JAMAIS, ni en dupe catalogue ni en dupe externe, un produit dont l'actif vedette est : ${(ageConstraint.restricted || []).join(', ')}. Privilégie des produits doux adaptés à une peau jeune.`
     : '';
