@@ -25,6 +25,9 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST')    return res.status(405).json({ error: 'Method Not Allowed' });
 
+  // Mode « verdict » du scan produit (même fonction : le plan Hobby limite à 12 fonctions API)
+  if (req.body && req.body.mode === 'verdict') return require('../lib/scanVerdict')(req, res);
+
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(503).json({ error: 'ANTHROPIC_API_KEY manquante' });
 

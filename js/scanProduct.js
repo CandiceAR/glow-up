@@ -224,9 +224,9 @@ const ScanProduct = (() => {
         pregnant: Array.isArray(a.labels) && a.labels.includes('grossesse')
       };
       try {
-        const vResp = await fetch(apiUrl('/api/scanVerdict'), {
+        const vResp = await fetch(apiUrl('/api/identifyProduct'), {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ product: prod, verdict: facts.verdict, facts, profile })
+          body: JSON.stringify({ mode: 'verdict', product: prod, verdict: facts.verdict, facts, profile })
         });
         S.result = await vResp.json().catch(() => null);
       } catch (e) { S.result = null; }
