@@ -551,7 +551,9 @@ const DupeFinder = (() => {
   // ─── Recherche de dupe ────────────────────────────────────────
   function _shortlist(id) {
     const cat = _normCat(id.category);
-    const catalog = AppState.products.catalog || [];
+    // Le produit scanné ne peut pas être son propre dupe (même fiche, accents/tailles ignorés)
+    const _notSelf = p => !(typeof SameProduct !== 'undefined' && SameProduct.same(id, p));
+    const catalog = (AppState.products.catalog || []).filter(_notSelf);
     let pool = catalog.filter(p => _normCat(p.category) === cat);
     if (!pool.length) pool = catalog.filter(p => p.category === id.category);
     if (!pool.length) return [];
@@ -606,6 +608,15 @@ const DupeFinder = (() => {
       id.inciConfidence = 'none';
       console.info('[DupeFinder] INCI référence: non trouvé');
     }
+
+    // Si le produit scanné est déjà dans notre catalogue, on se fie à SON prix réel
+    // (l'estimation de l'IA peut être très fausse → « tu économises X € » trompeur).
+    try {
+      if (typeof SameProduct !== 'undefined') {
+        const own = (AppState.products.catalog || []).find(p => SameProduct.same(id, p) && p.price > 0);
+        if (own) { id.estPrice = own.price; id.catalogId = own.id; }
+      }
+    } catch (e) {}
 
     // Pré-filtre catalogue ; même vide, l'IA peut proposer un dupe hors catalogue
     const candidates = _shortlist(id);

@@ -21,6 +21,8 @@ const CORS = {
 // Similarité de FORMULE déterministe (familles d'actifs, dérivés, position, concentration,
 // règle éliminatoire) — utilisée quand l'INCI structuré du candidat est disponible.
 const { similarity: _formulaSim } = require('../lib/inciSim.js');
+// Un produit n'est jamais son propre dupe (accents / tailles / variantes ignorés)
+const { same: _sameProduct } = require('../lib/sameProduct.js');
 
 // ─── INCI candidats + recouvrement de composition (B-3, déterministe) ──
 const OBF_UA = 'GlowUp/1.0 (dupe finder)';
@@ -82,7 +84,8 @@ module.exports = async (req, res) => {
   const ageBlock = (ageConstraint && ageConstraint.age)
     ? `\n\nRÈGLE ÂGE (PRIORITAIRE) : utilisatrice de ${ageConstraint.age} ans (moins de 15). ${ageConstraint.guidance || ''} Ne propose JAMAIS, ni en dupe catalogue ni en dupe externe, un produit dont l'actif vedette est : ${(ageConstraint.restricted || []).join(', ')}. Privilégie des produits doux adaptés à une peau jeune.`
     : '';
-  const cands = Array.isArray(candidates) ? candidates : [];
+  // On retire des candidats tout produit qui EST le produit scanné (même fiche sous un autre nom)
+  const cands = (Array.isArray(candidates) ? candidates : []).filter(c => !_sameProduct(product, c));
 
   // Composition INCI réelle de la référence (Open Beauty Facts), si disponible
   const refInciList = Array.isArray(product.inciList) ? product.inciList.slice(0, 40) : [];
@@ -275,7 +278,7 @@ Donne au maximum 3 résultats au total (catalogue + externes confondus), du plus
 
     // Dupes hors catalogue (repli quand le catalogue ne couvre pas)
     const externalResults = Array.isArray(parsed.externalResults) ? parsed.externalResults
-      .filter(r => r && (r.brand || r.name))
+      .filter(r => r && (r.brand || r.name) && !_sameProduct(product, { brand: r.brand, name: r.name }))
       .slice(0, 3)
       .map(r => ({
         brand:        typeof r.brand === 'string' ? r.brand.slice(0, 60) : '',
