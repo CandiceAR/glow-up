@@ -359,16 +359,28 @@ const DupeFinder = (() => {
     const catRes = S.results || [];
     const extRes = S.externalResults || [];
 
+    // Le produit scanné est lui-même une alternative abordable à un produit plus cher
+    const sd = S.selfDupe;
+    const selfBanner = sd ? `
+      <div class="df-selfdupe">
+        <span class="df-hero-emoji">✅</span>
+        <div>
+          <strong>Ce produit est déjà une alternative abordable à ${sd.ofBrand} ${sd.ofName}${sd.approxPrice > 0 ? ` (~${sd.approxPrice.toFixed(2).replace('.', ',')} €)` : ''}.</strong>
+          <p>Pas besoin de chercher un dupe.</p>
+          ${sd.why ? `<p class="df-selfdupe-why">${sd.why}</p>` : ''}
+        </div>
+      </div>` : '';
+
     // Pas de vrai dupe (ni catalogue ni externe)
     if (!S.trueDupe || (!catRes.length && !extRes.length)) {
       const alt = S.bestAltId ? _catalogProduct(S.bestAltId) : null;
       return `
         <div class="df-results">
           ${header}
-          <div class="df-nodupe">
+          ${selfBanner || `<div class="df-nodupe">
             <span class="df-hero-emoji">💡</span>
             <p>${S.noDupeMsg || "Nous n'avons pas trouvé de dupe suffisamment proche de ce produit. Nous préférons ne pas te proposer une alternative peu pertinente."}</p>
-          </div>
+          </div>`}
           ${alt ? `<p class="df-alt-h">Une alternative similaire, adaptée à ta peau :</p>${_resultCard({ id: alt.id, similarity: 0, role: 'value', skinFit: 'adapted', commonPoints: [], differences: [], why: '', skinNote: '' }, 0)}` : ''}
           ${_footer(left)}
         </div>`;
@@ -397,6 +409,7 @@ const DupeFinder = (() => {
     return `
       <div class="df-results">
         ${header}
+        ${selfBanner}
         ${warn}
         <div class="df-list">${catHtml}${extHtml}</div>
         ${altBlock}
@@ -595,7 +608,7 @@ const DupeFinder = (() => {
 
     if (_left() <= 0) { S.view = 'blocked'; render(); return; }  // inerte tant que l'app est gratuite
 
-    S.view = 'searching'; S.lastError = null; render();
+    S.view = 'searching'; S.lastError = null; S.selfDupe = null; render();
 
     // Récupérer l'INCI réel de la référence (Open Beauty Facts) — non bloquant
     const inci = await _fetchInci(id);
@@ -653,6 +666,7 @@ const DupeFinder = (() => {
     S.externalResults = Array.isArray(data.externalResults) ? data.externalResults : [];
     S.noDupeMsg       = data.noDupeMessage || '';
     S.bestAltId       = data.bestSkinAlternativeId || null;
+    S.selfDupe        = (data.selfDupe && data.selfDupe.ofName) ? data.selfDupe : null;
     _inc();
 
     const hasResults = S.trueDupe && (S.results.length > 0 || S.externalResults.length > 0);

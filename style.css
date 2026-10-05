@@ -10731,3 +10731,9 @@ body.drawer-open{ overflow: hidden; }   /* blocage du défilement arrière-plan 
 .alts--fold[open] .alts-sum{border-bottom-left-radius:0;border-bottom-right-radius:0;}
 .alts--fold .alts-list{margin-top:0;padding:10px 0 2px;}
 @media (prefers-reduced-motion:reduce){.alts--fold .alts-chev{transition:none;}}
+
+/* ===== Dupes : le produit scanné est déjà une alternative abordable ===== */
+.df-selfdupe{display:flex;gap:12px;align-items:flex-start;background:#eaf6ed;border-radius:14px;padding:14px 16px;margin:14px 0;}
+.df-selfdupe strong{font-size:0.95rem;line-height:1.4;display:block;}
+.df-selfdupe p{margin:4px 0 0;font-size:0.88rem;line-height:1.45;}
+.df-selfdupe .df-selfdupe-why{color:var(--muted,#6b625c);font-size:0.8rem;}

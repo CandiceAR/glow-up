@@ -170,6 +170,7 @@ RÈGLES IMPÉRATIVES :
 - La recherche part TOUJOURS du produit photographié, PAS du profil de peau. Le profil sert seulement à remplir "skinFit"/"skinNote".
 - "skinFit" : "adapted" / "caution" / "unfit". Même un dupe "unfit" doit être affiché comme dupe.
 - "bestSkinAlternativeId" : parmi les candidats du CATALOGUE (id), celui qui ressemble au produit MAIS est le mieux adapté à SA peau. null si identique au meilleur dupe ou aucun.
+- "selfDupe" : le produit PHOTOGRAPHIÉ est-il LUI-MÊME déjà un dupe / une alternative abordable à un produit plus cher et bien identifié ? Réponds isDupe=true UNIQUEMENT si c'est un fait largement connu (la marque le présente comme tel, ou la communauté beauté le reconnaît clairement) ET que le produit de référence est précisément nommé (marque + nom) ET nettement plus cher. En cas de doute, même léger : isDupe=false et confidence="low". Ne devine JAMAIS, n'invente JAMAIS une référence. Une simple ressemblance de promesse ne suffit pas.
 
 Retourne UNIQUEMENT ce JSON, sans texte avant/après :
 {
@@ -201,7 +202,15 @@ Retourne UNIQUEMENT ce JSON, sans texte avant/après :
       "skinNote": "phrase courte"
     }
   ],
-  "bestSkinAlternativeId": "id du catalogue ou null"
+  "bestSkinAlternativeId": "id du catalogue ou null",
+  "selfDupe": {
+    "isDupe": boolean,
+    "confidence": "high | low",
+    "ofBrand": "marque du produit plus cher dont il est l'alternative, sinon ''",
+    "ofName": "nom exact de ce produit plus cher, sinon ''",
+    "approxPrice": number,
+    "why": "une phrase factuelle : pourquoi il est reconnu comme alternative (sinon '')"
+  }
 }
 Donne au maximum 3 résultats au total (catalogue + externes confondus), du plus similaire au moins similaire.`;
 
@@ -319,12 +328,34 @@ Donne au maximum 3 résultats au total (catalogue + externes confondus), du plus
       }
     }
 
+    // Le produit est-il LUI-MÊME un dupe ? Garde-fous stricts : on n'affiche que si l'IA est sûre,
+    // que la référence est nommée, différente du produit, et nettement plus chère.
+    let selfDupe = null;
+    const sd = parsed.selfDupe;
+    if (sd && sd.isDupe === true && sd.confidence === 'high'
+        && typeof sd.ofName === 'string' && sd.ofName.trim().length >= 3
+        && typeof sd.ofBrand === 'string' && sd.ofBrand.trim().length >= 2
+        && !_sameProduct(product, { brand: sd.ofBrand, name: sd.ofName })) {
+      const refPrice = (typeof sd.approxPrice === 'number' && sd.approxPrice > 0 && sd.approxPrice < 1000) ? Math.round(sd.approxPrice * 100) / 100 : 0;
+      const ownPrice = Number(product.estPrice) > 0 ? Number(product.estPrice) : 0;
+      // si les deux prix sont connus, la référence doit être au moins 25 % plus chère
+      if (!(refPrice && ownPrice) || refPrice >= ownPrice * 1.25) {
+        selfDupe = {
+          ofBrand: sd.ofBrand.trim().slice(0, 60),
+          ofName: sd.ofName.trim().slice(0, 120),
+          approxPrice: refPrice,
+          why: typeof sd.why === 'string' ? sd.why.slice(0, 200) : ''
+        };
+      }
+    }
+
     return res.status(200).json({
       trueDupeExists,
       noDupeMessage,
       results: trueDupeExists ? strongCatalog : [],
       externalResults: trueDupeExists ? trimmedExternal : [],
-      bestSkinAlternativeId: bestAlt
+      bestSkinAlternativeId: bestAlt,
+      selfDupe
     });
 
   } catch (err) {
