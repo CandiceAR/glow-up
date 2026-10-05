@@ -79,7 +79,10 @@ const ScanProduct = (() => {
           <p class="scan-sub">Tu désires un produit, mais est-il vraiment fait pour toi ? Prends-le en photo, Glow Up te dit s'il est adapté à <strong>ta</strong> peau.</p>
         </div>
         <div class="scan-actions">
-          <button class="btn btn-dark scan-cta" onclick="ScanProduct.scan()">📸 Prendre / choisir une photo</button>
+          <button class="btn btn-dark scan-cta" onclick="ScanProduct.scan()">📸 Prendre une photo</button>
+          <label class="btn btn-outline scan-cta" style="cursor:pointer;text-align:center;">📂 Choisir dans la galerie
+            <input type="file" accept="image/*" style="display:none" onchange="ScanProduct.onFile(this)">
+          </label>
         </div>
         <p class="scan-tip">Astuce : photographie le <strong>packaging</strong> ou l'étiquette bien lisible (ou une capture d'écran du produit).</p>
       </div>`;
@@ -154,7 +157,11 @@ const ScanProduct = (() => {
           promptLabelPhoto: 'Choisir dans la galerie', promptLabelCancel: 'Annuler'
         });
         return photo && (photo.dataUrl || (photo.base64String ? 'data:image/jpeg;base64,' + photo.base64String : null));
-      } catch (e) { return null; }
+      } catch (e) {
+        const msg = (e && (e.message || e.errorMessage)) ? (e.message || e.errorMessage) : String(e);
+        if (!/cancel|annul/i.test(msg)) { try { alert('Photo — erreur : ' + msg); } catch (_) {} }
+        return null;
+      }
     }
     // Web / navigateur : input fichier
     return new Promise(resolve => {
@@ -188,11 +195,22 @@ const ScanProduct = (() => {
     });
   }
 
+  // Galerie via input fichier (geste utilisateur direct → fiable dans la WebView iOS)
+  function onFile(input) {
+    const f = input.files && input.files[0];
+    input.value = '';
+    if (!f) return;
+    const rd = new FileReader();
+    rd.onload = e => scan(e.target.result);
+    rd.onerror = () => { try { alert('Lecture de la photo impossible'); } catch (_) {} };
+    rd.readAsDataURL(f);
+  }
+
   // ─── Flux principal : scan ───────────────────────────────────
-  async function scan() {
+  async function scan(rawIn) {
     if (S.busy) return;
     if (!hasProfile()) { S.view = 'gate'; render(); return; }
-    const raw = await _capturePhoto();
+    const raw = rawIn || await _capturePhoto();
     if (!raw) return;                       // annulé
     S.busy = true; S.view = 'identifying'; render();
     try {
@@ -239,7 +257,7 @@ const ScanProduct = (() => {
     } catch (e) {
       console.warn('[ScanProduct] scan échoué:', e.message);
       S.busy = false; S.view = 'intro'; render();
-      if (typeof showToast === 'function') showToast('Analyse impossible, réessaie dans un instant', 'error');
+      try { alert('Analyse impossible : ' + (e && e.message ? e.message : e)); } catch (_) {}
     }
   }
 
@@ -407,7 +425,7 @@ const ScanProduct = (() => {
     if (AppState.routine.ruleApplied) showScreen('results');
   }
 
-  return { initScreen, scan, reset, goCreateRoutine, addToRoutine, computeFacts, hasProfile };
+  return { initScreen, scan, onFile, reset, goCreateRoutine, addToRoutine, computeFacts, hasProfile };
 })();
 
 if (typeof window !== 'undefined') window.ScanProduct = ScanProduct;
