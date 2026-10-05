@@ -220,56 +220,75 @@ const DupeFinder = (() => {
   function _compareUrl(p) { return `https://www.google.com/search?q=${encodeURIComponent((p.brand || '') + ' ' + (p.name || ''))}&tbm=shop`; }
   function _amazonSearch(brand, name) { return `https://www.amazon.fr/s?k=${encodeURIComponent(((brand || '') + ' ' + (name || '')).trim())}&tag=glowupapp-21`; }
 
-  // Carte d'un dupe HORS catalogue (proposé par l'IA, lien Amazon affilié)
-  function _externalCard(r) {
-    const est = S.identified?.estPrice || 0;
-    const savings = (est > 0 && r.approxPrice > 0 && r.approxPrice < est) ? (est - r.approxPrice) : 0;
-    const fit = FIT[r.skinFit] || FIT.caution;
-    const buyUrl = _amazonSearch(r.brand, r.name);
+  // ─── Lignes compactes repliables : photo + nom + prix, détail au clic ──
+  // Un seul menu ouvert à la fois (ouvrir un menu referme les autres).
+  const _TOG = "var t=this;if(t.open){document.querySelectorAll('.df-row[open]').forEach(function(d){if(d!==t)d.open=false;});}";
+
+  function _row(o) {
     return `
-      <article class="df-result df-result--ext">
-        <div class="df-result-role">${ROLE_LABEL[r.role] || ROLE_LABEL.closest} <span class="df-ext-tag">hors catalogue</span> ${_tier(r.similarity)} ${_confTag(r.confidence)}</div>
-        <div class="df-result-top">
-          <div class="df-result-img-wrap">
-            <div class="df-result-noimg">🔎</div>
-            ${r.similarity > 0 ? `<span class="df-sim">${r.similarity}%<small>similaire</small></span>` : ''}
-          </div>
-          <div class="df-result-info">
-            <span class="df-result-brand">${r.brand || ''}</span>
-            <h3 class="df-result-name">${r.name || ''}</h3>
-            <div class="df-result-price">
-              <strong>${r.approxPrice > 0 ? '≈ ' + r.approxPrice.toFixed(2) + ' €' : 'Prix à vérifier'}</strong>
-              ${savings > 0 ? `<span class="df-save">≈ ${savings.toFixed(2)} € d'économie</span>` : ''}
-            </div>
-            <div class="df-fit ${fit.cls}">${fit.icon} ${fit.label}</div>
-          </div>
-        </div>
-        ${r.why ? `<p class="df-why-line">${r.why}</p>` : ''}
-        <details class="df-why">
-          <summary>Pourquoi est-ce un dupe&nbsp;?</summary>
-          <div class="df-why-body">
-            ${r.commonPoints?.length ? `<p class="df-why-h">✓ Points communs</p><ul>${r.commonPoints.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}
-            ${r.differences?.length ? `<p class="df-why-h">≠ Différences</p><ul>${r.differences.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}
-            ${r.skinNote ? `<p class="df-why-h">🧴 Pour ta peau</p><p class="df-skinnote">${r.skinNote}</p>` : ''}
-            <p class="df-ext-note">✨ Ce dupe ne fait pas encore partie de notre sélection — prix indicatif, à confirmer sur la boutique.</p>
-          </div>
-        </details>
-        <div class="df-result-ctas">
-          <a class="pc-cta pc-cta--compare" href="https://www.google.com/search?q=${encodeURIComponent((r.brand || '') + ' ' + (r.name || ''))}&tbm=shop" target="_blank" rel="noopener">🔍 Comparer les prix</a>
-          <a class="pc-cta pc-cta--buy" href="${buyUrl}" target="_blank" rel="noopener nofollow sponsored">Voir sur Amazon →</a>
-        </div>
-      </article>`;
+      <details class="df-row${o.ext ? ' df-row--ext' : ''}" ontoggle="${_TOG}">
+        <summary class="df-row-sum">
+          <span class="df-row-img">${o.img}</span>
+          <span class="df-row-main">
+            <span class="df-row-brand">${o.brand || ''}</span>
+            <span class="df-row-name">${o.name || ''}</span>
+          </span>
+          <span class="df-row-price">${o.price}</span>
+          <svg class="df-row-chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </summary>
+        <div class="df-row-body">${o.body}</div>
+      </details>`;
   }
 
+  // Contenu du menu déroulant (identique pour catalogue et hors catalogue)
+  function _rowBody(o) {
+    const r = o.r, fit = FIT[r.skinFit] || FIT.caution;
+    return `
+      <div class="df-row-pills">
+        ${r.similarity > 0 ? `<span class="df-pill df-pill-sim">📊 ${r.similarity}% similaire</span>` : ''}
+        <span class="df-pill df-fit ${fit.cls}">${fit.icon} ${fit.label}</span>
+      </div>
+      ${o.savings ? `<p class="df-row-save">💰 ${o.savings}</p>` : ''}
+      ${o.volLine || ''}
+      ${o.descr ? `<p class="df-row-h">Le produit</p><p class="df-row-txt">${o.descr}</p>` : ''}
+      <p class="df-row-h">Pourquoi est-ce un dupe&nbsp;?</p>
+      ${r.why ? `<p class="df-row-txt">${r.why}</p>` : ''}
+      ${r.commonPoints?.length ? `<p class="df-why-h">✓ Points communs</p><ul class="df-row-ul">${r.commonPoints.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}
+      ${r.differences?.length ? `<p class="df-why-h">≠ Différences</p><ul class="df-row-ul">${r.differences.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}
+      ${r.skinNote ? `<p class="df-why-h">🧴 Pour ta peau</p><p class="df-skinnote">${r.skinNote}</p>` : ''}
+      <p class="df-row-meta">${_tier(r.similarity)} ${_confTag(r.confidence)}</p>
+      ${o.extNote ? `<p class="df-ext-note">${o.extNote}</p>` : ''}
+      <div class="df-result-ctas">
+        <a class="pc-cta pc-cta--compare" href="${o.compareUrl}" target="_blank" rel="noopener">🔍 Comparer les prix</a>
+        <a class="pc-cta pc-cta--buy" href="${o.buyUrl}" target="_blank" rel="noopener nofollow${o.isAff ? ' sponsored' : ''}"${o.buyAttrs || ''}>Acheter →</a>
+      </div>`;
+  }
+
+  // Dupe HORS catalogue (proposé par l'IA, lien Amazon affilié)
+  function _externalCard(r) {
+    const est = S.identified?.estPrice || 0;
+    const sv = (est > 0 && r.approxPrice > 0 && r.approxPrice < est) ? (est - r.approxPrice) : 0;
+    return _row({
+      ext: true,
+      img: '<span class="df-row-noimg">🔎</span>',
+      brand: r.brand, name: r.name,
+      price: r.approxPrice > 0 ? '≈ ' + r.approxPrice.toFixed(2) + ' €' : 'Prix à vérifier',
+      body: _rowBody({
+        r, savings: sv > 0 ? `≈ ${sv.toFixed(2)} € d'économie` : '',
+        compareUrl: _compareUrl(r), buyUrl: _amazonSearch(r.brand, r.name), isAff: true,
+        extNote: '✨ Ce dupe ne fait pas encore partie de notre sélection — prix indicatif, à confirmer sur la boutique.'
+      })
+    });
+  }
+
+  // Dupe du catalogue
   function _resultCard(r, idx) {
     const p = _catalogProduct(r.id);
     if (!p) return '';
     const est = S.identified?.estPrice || 0;
     let savings = (est > 0 && p.price != null && p.price < est) ? (est - p.price) : 0;
-    const fit = FIT[r.skinFit] || FIT.caution;
-    const buyUrl = p.amazonUrl || p.shopUrl || '#';
     const isAff = !!p.amazonUrl;
-    // Prix à volume égal (section 11) — uniquement si les 2 contenances sont connues
+    // Prix à volume égal — uniquement si les 2 contenances sont connues
     const refVol  = (S.identified && S.identified.volumeMl) || 0;
     const candVol = p.volumeMl || 0;
     let volLine = '';
@@ -278,40 +297,18 @@ const DupeFinder = (() => {
       volLine = `<div class="df-vol">${p.price.toFixed(2)} € / ${candVol} ml → ≈ <strong>${normCand.toFixed(2)} €</strong> pour ${refVol} ml</div>`;
       if (est > 0 && normCand < est) savings = est - normCand;
     }
-    return `
-      <article class="df-result">
-        <div class="df-result-role">${ROLE_LABEL[r.role] || ROLE_LABEL.closest} ${_tier(r.similarity)} ${_confTag(r.confidence)}</div>
-        <div class="df-result-top">
-          <div class="df-result-img-wrap">
-            ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" class="df-result-img" loading="lazy" onerror="this.style.display='none'">` : '<div class="df-result-noimg">🧴</div>'}
-            <span class="df-sim">${r.similarity}%<small>similaire</small></span>
-          </div>
-          <div class="df-result-info">
-            <span class="df-result-brand">${p.brand || ''}</span>
-            <h3 class="df-result-name">${p.name || ''}</h3>
-            <div class="df-result-price">
-              <strong>${p.price != null ? p.price.toFixed(2) + ' €' : '—'}</strong>
-              ${savings > 0 ? `<span class="df-save">Tu économises ${savings.toFixed(2)} €${volLine ? ' (à volume égal)' : ''}</span>` : ''}
-            </div>
-            ${volLine}
-            <div class="df-fit ${fit.cls}">${fit.icon} ${fit.label}</div>
-          </div>
-        </div>
-        ${r.why ? `<p class="df-why-line">${r.why}</p>` : ''}
-        <details class="df-why">
-          <summary>Pourquoi est-ce un dupe&nbsp;?</summary>
-          <div class="df-why-body">
-            ${r.commonPoints?.length ? `<p class="df-why-h">✓ Points communs</p><ul>${r.commonPoints.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}
-            ${r.differences?.length ? `<p class="df-why-h">≠ Différences</p><ul>${r.differences.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}
-            ${r.skinNote ? `<p class="df-why-h">🧴 Pour ta peau</p><p class="df-skinnote">${r.skinNote}</p>` : ''}
-          </div>
-        </details>
-        <div class="df-result-ctas">
-          <a class="pc-cta pc-cta--compare" href="${_compareUrl(p)}" target="_blank" rel="noopener">🔍 Comparer les prix</a>
-          <a class="pc-cta pc-cta--buy" href="${buyUrl}" target="_blank" rel="noopener nofollow${isAff ? ' sponsored' : ''}"
-             ${isAff ? `onclick="if(typeof trackAmazonClick==='function')trackAmazonClick('${p.id}')"` : ''}>${isAff ? 'Voir le prix →' : 'Voir le produit →'}</a>
-        </div>
-      </article>`;
+    const descr = (p.description || '').length > 220 ? p.description.slice(0, 219) + '…' : (p.description || '');
+    return _row({
+      img: p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">` : '<span class="df-row-noimg">🧴</span>',
+      brand: p.brand, name: p.name,
+      price: p.price != null ? p.price.toFixed(2) + ' €' : '—',
+      body: _rowBody({
+        r, descr, volLine,
+        savings: savings > 0 ? `Tu économises ${savings.toFixed(2)} €${volLine ? ' (à volume égal)' : ''}` : '',
+        compareUrl: _compareUrl(p), buyUrl: p.amazonUrl || p.shopUrl || '#', isAff,
+        buyAttrs: isAff ? ` onclick="if(typeof trackAmazonClick==='function')trackAmazonClick('${p.id}')"` : ''
+      })
+    });
   }
 
   // Message doux si l'utilisatrice jeune scanne un produit non adapté à son âge
