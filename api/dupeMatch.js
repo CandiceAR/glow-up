@@ -73,6 +73,7 @@ function _overlap(refList, candList) {
 
 module.exports = async (req, res) => {
   Object.entries(CORS).forEach(([k, v]) => res.setHeader(k, v));
+  res.setHeader('X-Dupe-Engine', 'selfexclude-1');   // marqueur de version (diagnostic déploiement)
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST')    return res.status(405).json({ error: 'Method Not Allowed' });
 
