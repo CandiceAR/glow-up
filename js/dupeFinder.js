@@ -374,12 +374,16 @@ const DupeFinder = (() => {
     // Pas de vrai dupe (ni catalogue ni externe)
     if (!S.trueDupe || (!catRes.length && !extRes.length)) {
       const alt = S.bestAltId ? _catalogProduct(S.bestAltId) : null;
+      // Produit déjà peu cher : on le dit clairement (pas de dupe car rien de moins cher à qualité comparable)
+      const cheapMsg = (id.estPrice > 0 && id.estPrice <= 20)
+        ? `Ce produit n'a pas de dupe : il est déjà peu cher (~${id.estPrice.toFixed(2).replace('.', ',')} €), il est difficile de trouver moins cher à qualité équivalente.`
+        : '';
       return `
         <div class="df-results">
           ${header}
           ${selfBanner || `<div class="df-nodupe">
             <span class="df-hero-emoji">💡</span>
-            <p>${S.noDupeMsg || "Nous n'avons pas trouvé de dupe suffisamment proche de ce produit. Nous préférons ne pas te proposer une alternative peu pertinente."}</p>
+            <p>${cheapMsg || S.noDupeMsg || "Nous n'avons pas trouvé de dupe suffisamment proche de ce produit. Nous préférons ne pas te proposer une alternative peu pertinente."}</p>
           </div>`}
           ${alt ? `<p class="df-alt-h">Une alternative similaire, adaptée à ta peau :</p>${_resultCard({ id: alt.id, similarity: 0, role: 'value', skinFit: 'adapted', commonPoints: [], differences: [], why: '', skinNote: '' }, 0)}` : ''}
           ${_footer(left)}
