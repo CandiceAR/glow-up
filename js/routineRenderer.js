@@ -1171,18 +1171,23 @@ const RoutineRenderer = (() => {
     const plan  = typeof Subscription !== 'undefined' ? Subscription.getPlan() : 'free';
     const isSub = plan === 'glow' || plan === 'glowplus';
     if (isSub) {
+      // Menu repliable : fermé par défaut pour ne pas alourdir l'écran routine
       return `
-        <div class="alts">
-          <div class="alts-head">✦ Alternatives pour toi</div>
+        <details class="alts alts--fold">
+          <summary class="alts-sum">
+            <span>✦ Voir ${alts.length} alternative${alts.length > 1 ? 's' : ''} pour toi</span>
+            <svg class="alts-chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          </summary>
           <div class="alts-list">${alts.map(a => _altCard(a.product, a.reason)).join('')}</div>
-        </div>`;
+        </details>`;
     }
-    // Gratuit : aperçu flouté cliquable
+    // Gratuit : une seule ligne, le clic ouvre l'écran Premium (comme avant)
     return `
-      <div class="alts alts--locked" onclick="Subscription.openLock('alternatives')" role="button" tabindex="0">
-        <div class="alts-head">🔓 Alternatives</div>
-        <div class="alts-list alts-list--blur" aria-hidden="true">${alts.map(a => _altCard(a.product, a.reason)).join('')}</div>
-        <div class="alts-lock-cta">${alts.length} alternatives disponibles avec Glow Up Premium →</div>
+      <div class="alts alts--fold alts--locked" onclick="Subscription.openLock('alternatives')" role="button" tabindex="0">
+        <div class="alts-sum">
+          <span>🔓 ${alts.length} alternative${alts.length > 1 ? 's' : ''} avec Glow Up Premium</span>
+          <svg class="alts-chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
       </div>`;
   }
 

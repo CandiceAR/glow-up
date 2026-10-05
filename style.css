@@ -10721,3 +10721,13 @@ body.drawer-open{ overflow: hidden; }   /* blocage du défilement arrière-plan 
 .scan-line-ic{flex-shrink:0;}
 .scan-note{background:#fdf3e6;border-radius:12px;padding:12px 14px;font-size:0.88rem;line-height:1.45;margin:0 0 16px;}
 .scan-result-ctas{display:flex;flex-direction:column;gap:10px;margin-top:18px;}
+
+/* ===== Alternatives repliables (écran routine allégé) ===== */
+.alts--fold{margin-top:10px;}
+.alts--fold .alts-sum{display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;list-style:none;padding:10px 14px;border:1px solid rgba(0,0,0,0.10);border-radius:12px;font-size:0.85rem;font-weight:500;background:rgba(0,0,0,0.02);}
+.alts--fold .alts-sum::-webkit-details-marker{display:none;}
+.alts--fold .alts-chev{flex-shrink:0;transition:transform .2s ease;}
+.alts--fold[open] .alts-chev{transform:rotate(180deg);}
+.alts--fold[open] .alts-sum{border-bottom-left-radius:0;border-bottom-right-radius:0;}
+.alts--fold .alts-list{margin-top:0;padding:10px 0 2px;}
+@media (prefers-reduced-motion:reduce){.alts--fold .alts-chev{transition:none;}}
