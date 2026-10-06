@@ -32784,7 +32784,8 @@
         "grasse",
         "sensible"
       ],
-      "notes": "Lien et description relevés sur la fiche Amazon.fr (10 ml). Prix à renseigner."
+      "notes": "Lien et description relevés sur la fiche Amazon.fr (10 ml). Prix à renseigner.",
+      "imageUrl": "assets/products/m553.jpg"
     },
     {
       "category": "lipbalm",
@@ -32816,7 +32817,8 @@
         "grasse",
         "sensible"
       ],
-      "notes": "Prix et avis relevés sur Amazon.fr le 2026-10-06 (indicatifs)."
+      "notes": "Prix et avis relevés sur Amazon.fr le 2026-10-06 (indicatifs).",
+      "imageUrl": "assets/products/m554.jpg"
     },
     {
       "category": "lipbalm",
@@ -32847,7 +32849,8 @@
         "seche",
         "grasse"
       ],
-      "notes": "Contient du miel (peut être parfumé) : non étiqueté « lèvres sensibles ». Prix relevé sur Amazon.fr le 2026-10-06 (indicatif)."
+      "notes": "Contient du miel (peut être parfumé) : non étiqueté « lèvres sensibles ». Prix relevé sur Amazon.fr le 2026-10-06 (indicatif).",
+      "imageUrl": "assets/products/m555.jpg"
     },
     {
       "id": "m556",
@@ -32880,7 +32883,8 @@
       "active": true,
       "curatedBy": "claude",
       "curatedAt": "2026-10-06",
-      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs.",
+      "imageUrl": "assets/products/m556.jpg"
     },
     {
       "id": "m557",
@@ -32941,7 +32945,8 @@
       "active": true,
       "curatedBy": "claude",
       "curatedAt": "2026-10-06",
-      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs.",
+      "imageUrl": "assets/products/m558.jpg"
     },
     {
       "id": "m559",
@@ -32997,7 +33002,8 @@
       "active": true,
       "curatedBy": "claude",
       "curatedAt": "2026-10-06",
-      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs.",
+      "imageUrl": "assets/products/m560.jpg"
     },
     {
       "id": "m561",
@@ -33055,7 +33061,8 @@
       "active": true,
       "curatedBy": "claude",
       "curatedAt": "2026-10-06",
-      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs.",
+      "imageUrl": "assets/products/m562.jpg"
     },
     {
       "id": "m563",
@@ -33145,7 +33152,8 @@
       "active": true,
       "curatedBy": "claude",
       "curatedAt": "2026-10-06",
-      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs.",
+      "imageUrl": "assets/products/m565.jpg"
     },
     {
       "id": "m566",
@@ -33175,7 +33183,8 @@
       "active": true,
       "curatedBy": "claude",
       "curatedAt": "2026-10-06",
-      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs.",
+      "imageUrl": "assets/products/m566.jpg"
     },
     {
       "id": "m567",
@@ -33208,7 +33217,8 @@
       "active": true,
       "curatedBy": "claude",
       "curatedAt": "2026-10-06",
-      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs.",
+      "imageUrl": "assets/products/m567.jpg"
     },
     {
       "id": "m568",
@@ -33264,7 +33274,8 @@
       "active": true,
       "curatedBy": "claude",
       "curatedAt": "2026-10-06",
-      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner).",
+      "imageUrl": "assets/products/m569.jpg"
     },
     {
       "id": "m570",
@@ -33352,7 +33363,8 @@
       "active": true,
       "curatedBy": "claude",
       "curatedAt": "2026-10-06",
-      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs.",
+      "imageUrl": "assets/products/m572.jpg"
     },
     {
       "id": "m573",
@@ -33436,7 +33448,8 @@
       "active": true,
       "curatedBy": "claude",
       "curatedAt": "2026-10-06",
-      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner).",
+      "imageUrl": "assets/products/m575.jpg"
     },
     {
       "id": "m576",
@@ -33521,7 +33534,8 @@
       "active": true,
       "curatedBy": "claude",
       "curatedAt": "2026-10-06",
-      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner).",
+      "imageUrl": "assets/products/m578.jpg"
     },
     {
       "id": "m579",
@@ -33576,7 +33590,8 @@
       "active": true,
       "curatedBy": "claude",
       "curatedAt": "2026-10-06",
-      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner).",
+      "imageUrl": "assets/products/m580.jpg"
     },
     {
       "id": "m581",
@@ -33630,7 +33645,8 @@
       "active": true,
       "curatedBy": "claude",
       "curatedAt": "2026-10-06",
-      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs.",
+      "imageUrl": "assets/products/m582.jpg"
     },
     {
       "id": "m583",
@@ -33684,7 +33700,8 @@
       "active": true,
       "curatedBy": "claude",
       "curatedAt": "2026-10-06",
-      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner).",
+      "imageUrl": "assets/products/m584.jpg"
     },
     {
       "id": "m585",
@@ -33711,7 +33728,8 @@
       "active": true,
       "curatedBy": "claude",
       "curatedAt": "2026-10-06",
-      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner).",
+      "imageUrl": "assets/products/m585.jpg"
     },
     {
       "id": "m586",
@@ -33848,7 +33866,8 @@
       "active": true,
       "curatedBy": "claude",
       "curatedAt": "2026-10-06",
-      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner).",
+      "imageUrl": "assets/products/m590.jpg"
     },
     {
       "id": "m591",
@@ -33875,7 +33894,8 @@
       "active": true,
       "curatedBy": "claude",
       "curatedAt": "2026-10-06",
-      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner).",
+      "imageUrl": "assets/products/m591.jpg"
     },
     {
       "id": "m592",
@@ -33904,7 +33924,8 @@
       "active": true,
       "curatedBy": "claude",
       "curatedAt": "2026-10-06",
-      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs.",
+      "imageUrl": "assets/products/m592.jpg"
     },
     {
       "id": "m593",
@@ -33987,7 +34008,8 @@
       "active": true,
       "curatedBy": "claude",
       "curatedAt": "2026-10-06",
-      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs.",
+      "imageUrl": "assets/products/m595.jpg"
     },
     {
       "id": "m596",
