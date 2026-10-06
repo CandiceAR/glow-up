@@ -1,6 +1,7 @@
 /* ============================================================
    skinAnalysis.js — Diagnostic cutané avancé par zone
-   • Analyse locale : 100% navigateur, aucune donnée envoyée
+   • Analyse locale (MediaPipe) dans le navigateur ; avec l'accord de l'utilisatrice (AIConsent),
+     le visage recadré est aussi envoyé à l'IA (/api/faceVision) pour affiner l'analyse
    • 5 zones (front, joues, nez, menton) × 5 métriques
    • Détection sous-tons via espace colorimétrique LAB
    • Overlay temps réel sur caméra (VIDEO mode MediaPipe)
@@ -1732,6 +1733,8 @@ const SkinAnalysis = (() => {
   }
 
   async function callFaceVision(photoDataUrl, landmarks) {
+    // Envoi de la photo à l'IA : uniquement avec l'accord de l'utilisatrice (sinon analyse 100 % locale)
+    if (typeof AIConsent !== 'undefined' && !(await AIConsent.ensure())) return {};
     try {
       const photoForAI = await _buildFaceCrop(photoDataUrl, landmarks);
       const controller = new AbortController();

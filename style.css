@@ -10833,3 +10833,13 @@ body.drawer-open{ overflow: hidden; }   /* blocage du défilement arrière-plan 
 .re-custom summary{cursor:pointer;font-weight:600;font-size:.88rem;}
 .re-custom .re-muted{margin:8px 0;}
 .re-empty{padding:8px 0;}
+
+
+/* ===== Accord avant envoi d'une photo à l'IA ===== */
+.aic-overlay{position:fixed;inset:0;z-index:5000;background:rgba(40,28,22,.55);display:flex;align-items:center;justify-content:center;padding:20px;}
+.aic-box{background:#fff;border-radius:20px;max-width:440px;width:100%;padding:24px 22px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-height:90vh;overflow-y:auto;}
+.aic-box h2{font-family:var(--font-serif);font-size:1.4rem;margin:0 0 10px;}
+.aic-box p{font-size:.92rem;line-height:1.5;margin:0 0 10px;}
+.aic-box ul{margin:0 0 12px;padding-left:20px;font-size:.9rem;line-height:1.5;}
+.aic-small{font-size:.8rem!important;color:var(--muted);}
+.aic-box .btn{width:100%;margin-top:8px;}

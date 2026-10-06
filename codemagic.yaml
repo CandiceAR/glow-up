@@ -94,6 +94,25 @@ workflows:
             echo "OK $K = $V"
           done
 
+      - name: iPhone uniquement + iOS 15 minimum (exigence App Store)
+        script: |
+          set -e
+          PBX="ios/App/App.xcodeproj/project.pbxproj"
+          PLIST="ios/App/App/Info.plist"
+          if [ ! -f "$PBX" ]; then echo "project.pbxproj introuvable : $PBX"; exit 1; fi
+          # iPhone uniquement : pas de captures iPad à fournir pour l'App Store
+          perl -pi -e 's/TARGETED_DEVICE_FAMILY = "1,2";/TARGETED_DEVICE_FAMILY = 1;/g' "$PBX"
+          # iOS 15 minimum : supprime l'avertissement ITMS-90068 (exigé par Apple dès avril 2027)
+          perl -pi -e 's/IPHONEOS_DEPLOYMENT_TARGET = [0-9.]+;/IPHONEOS_DEPLOYMENT_TARGET = 15.0;/g' "$PBX"
+          if [ -f ios/App/Podfile ]; then perl -pi -e "s/platform :ios, '[0-9.]+'/platform :ios, '15.0'/" ios/App/Podfile; fi
+          plutil -remove 'UISupportedInterfaceOrientations~ipad' "$PLIST" 2>/dev/null || true
+          # VÉRIFICATION : on bloque le build si le réglage n'a pas été appliqué
+          echo "--- Vérification ---"
+          if grep -q 'TARGETED_DEVICE_FAMILY = "1,2"' "$PBX"; then echo "ÉCHEC : l'app est encore compatible iPad"; exit 1; fi
+          grep -q 'TARGETED_DEVICE_FAMILY = 1;' "$PBX" || { echo "ÉCHEC : TARGETED_DEVICE_FAMILY non défini à iPhone"; exit 1; }
+          grep -q 'IPHONEOS_DEPLOYMENT_TARGET = 15.0;' "$PBX" || { echo "ÉCHEC : cible iOS non définie à 15.0"; exit 1; }
+          echo "OK : iPhone uniquement, iOS 15.0 minimum"
+
       - name: Numéro de build unique et croissant (accepté par TestFlight)
         script: |
           # Basé sur la date/heure → toujours supérieur au build précédent, jamais de collision.

@@ -94,7 +94,22 @@ const Profil = (() => {
     }
   }
 
-  function _cOverview() { return _routineActuelle() + _evolutionTeaser(); }
+  function _cOverview() { return _routineActuelle() + _evolutionTeaser() + _aiConsentBlock(); }
+
+  // Photos & IA : l'utilisatrice peut retirer à tout moment l'accord donné avant l'envoi d'une photo
+  function _aiConsentBlock() {
+    if (typeof AIConsent === 'undefined' || !AIConsent.granted()) return '';
+    return `<section class="pf-section pf-ai">
+      <h2 class="pf-h2">Photos & IA</h2>
+      <p class="pf-muted">Tu as autorisé l'envoi de tes photos à notre prestataire d'intelligence artificielle pour les analyser.</p>
+      <button class="btn btn-outline pf-cta" onclick="Profil.revokeAI()">Retirer mon accord</button>
+    </section>`;
+  }
+  function revokeAI() {
+    if (typeof AIConsent !== 'undefined') AIConsent.revoke();
+    if (typeof showToast === 'function') showToast('Accord retiré — tes photos ne seront plus envoyées', 'success', 3200);
+    render();
+  }
 
   function _routineActuelle() {
     const r = AppState.routine;
@@ -224,7 +239,7 @@ const Profil = (() => {
       ${_renderTabs()}`;
   }
 
-  return { initScreen, render, setTab, setMoment };
+  return { initScreen, render, setTab, setMoment, revokeAI };
 })();
 
 if (typeof window !== 'undefined') window.Profil = Profil;

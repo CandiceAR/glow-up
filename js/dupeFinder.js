@@ -500,6 +500,12 @@ const DupeFinder = (() => {
   }
 
   async function _identify(photo) {
+    // La photo part vers l'IA : uniquement avec l'accord de l'utilisatrice
+    if (typeof AIConsent !== 'undefined' && !(await AIConsent.ensure())) {
+      S.view = 'home'; render();
+      if (typeof showToast === 'function') showToast("Sans ton accord, la photo n'est pas envoyée — tu peux saisir le produit à la main.", 'info', 4500);
+      return;
+    }
     S.view = 'analyzing'; render();
     console.info('[DupeFinder] identify: envoi de la photo…');
     try {

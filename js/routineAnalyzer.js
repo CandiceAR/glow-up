@@ -242,6 +242,12 @@ const RoutineAnalyzer = (() => {
     reader.onload = async (e) => {
       const photo = await _compress(e.target.result);
       const thumb = await _thumb(e.target.result);   // petite vignette conservée pour la routine
+      if (typeof AIConsent !== 'undefined' && !(await AIConsent.ensure())) {
+        if (msg) msg.innerHTML = '';
+        showToast('Photo non envoyée — ajoute le produit à la main', 'info', 3500);
+        _openManualPrefill({});
+        return;
+      }
       try {
         const controller = new AbortController();
         const tid = setTimeout(() => controller.abort(), 25000);

@@ -220,6 +220,11 @@ const ScanProduct = (() => {
     if (!hasProfile()) { S.view = 'gate'; render(); return; }
     const raw = rawIn || await _capturePhoto();
     if (!raw) return;                       // annulé
+    // La photo part vers l'IA : uniquement avec l'accord de l'utilisatrice
+    if (typeof AIConsent !== 'undefined' && !(await AIConsent.ensure())) {
+      if (typeof showToast === 'function') showToast("Sans ton accord, la photo n'est pas envoyée à notre IA.", 'info', 4500);
+      return;
+    }
     S.busy = true; S.view = 'identifying'; render();
     try {
       const photo = await _compress(raw);

@@ -711,6 +711,12 @@ const Questionnaire = (() => {
     reader.onload = async (e) => {
       const photo = await _crCompress(e.target.result);
       const thumb = await _crThumb(e.target.result);
+      if (typeof AIConsent !== 'undefined' && !(await AIConsent.ensure())) {
+        if (msg) msg.innerHTML = '';
+        showToast("Photo non envoyée — ajoute le produit à la main", 'info', 3500);
+        crToggleManual();
+        return;
+      }
       try {
         const resp = await fetch(apiUrl('/api/identifyProduct'), {
           method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ photo })
