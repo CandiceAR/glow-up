@@ -10773,3 +10773,13 @@ body.drawer-open{ overflow: hidden; }   /* blocage du défilement arrière-plan 
 
 /* Chiffres des étapes de routine : « 01 » lisible (la police affichait « OI ») */
 .cg-step-num{font-variant-numeric:lining-nums;font-feature-settings:"lnum" 1;}
+
+/* Accueil : « Déjà un compte ? » lisible (le texte était blanc sur fond clair) */
+.hero-login-hint{color:var(--muted,#6b625c);opacity:1;}
+.hero-login-hint a{color:var(--charcoal,#2b2320);font-weight:600;}
+.hero-login-hint a:hover{color:var(--charcoal,#2b2320);}
+
+/* Bouton « Scan » flottant : reste AU-DESSUS de la barre du bas, y compris sur iPhone (zone de sécurité) */
+.df-fab{bottom:calc(82px + env(safe-area-inset-bottom, 0px));}
+.fab-wrap{bottom:calc(82px + env(safe-area-inset-bottom, 0px));}
+.fab-wrap .df-fab{bottom:auto;}
