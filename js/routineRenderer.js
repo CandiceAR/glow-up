@@ -735,7 +735,8 @@ const RoutineRenderer = (() => {
   // Choix varié : tirage pondéré légèrement par la note (tous les produits du pool sont pertinents).
   function _pickLipBalm(pool) {
     if (!pool.length) return null;
-    const score = p => (p.rating || 4.3) * 0.15 + _rand01('lipbalm_' + p.id);
+    // léger avantage aux produits qui ont une photo (le bonus lèvres l'affiche) ; ne sort jamais du pool pertinent
+    const score = p => (p.rating || 4.3) * 0.15 + _rand01('lipbalm_' + p.id) + (p.imageUrl ? 0.3 : 0);
     return [...pool].sort((x, y) => score(y) - score(x))[0];
   }
 
@@ -759,7 +760,12 @@ const RoutineRenderer = (() => {
         <div class="lip-care-tip-head">💋 Bonus lèvres</div>
         <p class="lip-care-tip-reason">${reason} Un bon baume scelle l'hydratation et répare la barrière des lèvres.</p>
         <div class="lip-care-tip-prod">
-          <span class="lip-care-tip-name">${balm.brand} — ${balm.name}</span>
+          <span class="lip-care-tip-main">
+            <span class="lip-care-tip-img">${balm.imageUrl
+              ? `<img src="${balm.imageUrl}" alt="${balm.name}" loading="lazy" onerror="this.onerror=null;this.replaceWith(document.createTextNode('💋'))">`
+              : '💋'}</span>
+            <span class="lip-care-tip-name">${balm.brand} — ${balm.name}</span>
+          </span>
           <a class="pc-cta pc-cta--buy lip-care-tip-cta" href="${url}" target="_blank"
              rel="noopener nofollow sponsored"
              onclick="event.stopPropagation();if(typeof trackAmazonClick==='function')trackAmazonClick('${balm.id}')">
