@@ -10689,7 +10689,7 @@ body.drawer-open{ overflow: hidden; }   /* blocage du défilement arrière-plan 
 /* ===== Scanner un produit ===== */
 .btn-hero--scan{background:#fff;color:var(--ink,#2b2320);border:1.5px solid var(--ink,#2b2320);margin-top:10px;}
 .df-home-cta--scan .df-home-cta-emoji{filter:none;}
-.scan-wrap{max-width:560px;margin:0 auto;padding:8px 2px 40px;}
+.scan-wrap{max-width:560px;margin:0 auto;padding:8px 20px 40px;}
 .scan-wrap--center{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:50vh;gap:18px;text-align:center;}
 .scan-hero{text-align:center;margin:10px 0 22px;}
 .scan-hero-emoji{font-size:2.4rem;display:block;margin-bottom:6px;}
@@ -10770,3 +10770,6 @@ body.drawer-open{ overflow: hidden; }   /* blocage du défilement arrière-plan 
 .scan-expected .scan-line{margin:0 0 8px;}
 .scan-expected .scan-line:last-child{margin-bottom:0;}
 .scan-expected em{color:var(--muted,#6b625c);font-style:normal;font-size:0.85em;}
+
+/* Chiffres des étapes de routine : « 01 » lisible (la police affichait « OI ») */
+.cg-step-num{font-variant-numeric:lining-nums;font-feature-settings:"lnum" 1;}
