@@ -190,9 +190,16 @@ const RoutineRenderer = (() => {
   };
   function _stepRequiredActives(step) {
     if (!step) return [];
-    const hay = (step.label || '') + ' ' + (step.note || '');
+    // 1) Le LIBELLÉ de l'étape fait foi : « Sérum rétinol » exige du rétinol, rien d'autre.
+    //    (Avant, les mots de la note — ex. « collagène » — ajoutaient des actifs et laissaient passer
+    //    des sérums peptides/niacinamide à la place du rétinol.)
+    const label = step.label || '';
+    const fromLabel = new Set();
+    LABEL_ACTIVE_MAP.forEach(([re, a]) => { if (re.test(label)) fromLabel.add(a); });
+    if (fromLabel.size) return [...fromLabel];
+    // 2) Libellé neutre (« Sérum ») : on retombe sur la note (ex. « Vit C pour unifier le teint »)
     const out = new Set();
-    LABEL_ACTIVE_MAP.forEach(([re, a]) => { if (re.test(hay)) out.add(a); });
+    LABEL_ACTIVE_MAP.forEach(([re, a]) => { if (re.test(step.note || '')) out.add(a); });
     return [...out];
   }
   function _productText(p) {

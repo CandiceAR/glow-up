@@ -213,7 +213,7 @@ const RulesEngine = (() => {
           adapted.soir.splice(Math.max(0, adapted.soir.length - 1), 0, {
             order: adapted.soir.length + 1, step: 'treatment',
             label: 'Sérum rétinol anti-rides',
-            note:  'Le soir, 2–3x/semaine au début — lisse les rides et stimule le collagène. SPF le matin indispensable.'
+            note:  'Le soir, 2–3x/semaine au début — lisse les rides et aide à restaurer la fermeté. SPF le matin indispensable.'
           });
         }
       }
