@@ -707,6 +707,11 @@ const RoutineRenderer = (() => {
     // 1) uniquement ceux étiquetés « lèvres gercées » (repli : tous les baumes si aucun n'est étiqueté)
     const suited = pool.filter(p => (p.concernTags || []).includes('levres_gercees'));
     if (suited.length) pool = suited;
+    // 1b) « Oui, souvent » (tiraillements, gerçures, peau qui pèle) : soins de réparation intensive
+    if (a.lipsDry === 'oui') {
+      const strong = pool.filter(p => (p.concernTags || []).includes('levres_tres_gercees'));
+      if (strong.length) pool = strong;
+    }
     // 2) peau/lèvres sensibles ou « sans parfum » demandé : formules apaisantes uniquement
     if (u.sensitive || (u.avoid || []).includes('parfum')) {
       const gentle = pool.filter(p => (p.concernTags || []).includes('levres_sensibles'));

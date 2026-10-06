@@ -1302,7 +1302,8 @@
       "isFeatured": true,
       "active": true,
       "concernTags": [
-        "levres_gercees"
+        "levres_gercees",
+        "levres_tres_gercees"
       ]
     },
     {
@@ -1425,7 +1426,8 @@
       "active": true,
       "concernTags": [
         "levres_gercees",
-        "levres_sensibles"
+        "levres_sensibles",
+        "levres_tres_gercees"
       ]
     },
     {
@@ -1442,7 +1444,8 @@
       "isFeatured": false,
       "active": true,
       "concernTags": [
-        "levres_gercees"
+        "levres_gercees",
+        "levres_tres_gercees"
       ]
     },
     {
@@ -32767,7 +32770,8 @@
         "levres_gercees",
         "levres_sensibles",
         "confort_levres",
-        "secheresse"
+        "secheresse",
+        "levres_tres_gercees"
       ],
       "ingredientTags": [
         "panthenol",
@@ -32844,6 +32848,1173 @@
         "grasse"
       ],
       "notes": "Contient du miel (peut être parfumé) : non étiqueté « lèvres sensibles ». Prix relevé sur Amazon.fr le 2026-10-06 (indicatif)."
+    },
+    {
+      "id": "m556",
+      "name": "Uriage Bariéderm-Cica Lèvres Baume Réparateur",
+      "brand": "Uriage",
+      "category": "lipbalm",
+      "amazonAsin": "B01IXL8GDK",
+      "amazonUrl": "https://www.amazon.fr/dp/B01IXL8GDK?tag=glowupapp-21",
+      "price": 6.74,
+      "currency": "EUR",
+      "rating": 4.6,
+      "reviews": 2393,
+      "volumeMl": 15,
+      "description": "Baume réparateur Uriage Bariéderm-Cica (15 ml) à la glycérine et au squalane — répare, protège et apaise les lèvres très sèches, gercées et abîmées ; sans parfum ; utilisable aussi en masque de nuit.",
+      "concernTags": [
+        "levres_gercees",
+        "levres_tres_gercees",
+        "levres_sensibles",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+    },
+    {
+      "id": "m557",
+      "name": "Bioderma Atoderm Lèvres Baume Réparateur",
+      "brand": "Bioderma",
+      "category": "lipbalm",
+      "amazonAsin": "B00BWBS8N2",
+      "amazonUrl": "https://www.amazon.fr/dp/B00BWBS8N2?tag=glowupapp-21",
+      "price": 9.89,
+      "currency": "EUR",
+      "volumeMl": 15,
+      "description": "Baume réparateur Bioderma Atoderm Lip (15 ml) pour lèvres sèches, gercées et abîmées — nourrit et apaise ; formule hypoallergénique.",
+      "concernTags": [
+        "levres_gercees",
+        "levres_tres_gercees",
+        "levres_sensibles",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+    },
+    {
+      "id": "m558",
+      "name": "Carmex Classic Baume à Lèvres (pot)",
+      "brand": "Carmex",
+      "category": "lipbalm",
+      "amazonAsin": "B00178JQ4K",
+      "amazonUrl": "https://www.amazon.fr/dp/B00178JQ4K?tag=glowupapp-21",
+      "price": 5.99,
+      "currency": "EUR",
+      "rating": 4.5,
+      "reviews": 7175,
+      "description": "Baume Carmex Classic en pot — adoucit et soulage les lèvres sèches et gercées, crée une barrière protectrice ; effet rafraîchissant (camphre, menthol).",
+      "concernTags": [
+        "levres_gercees",
+        "levres_tres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+    },
+    {
+      "id": "m559",
+      "name": "Carmex Classic Baume à Lèvres (tube)",
+      "brand": "Carmex",
+      "category": "lipbalm",
+      "amazonAsin": "B00178I0KQ",
+      "amazonUrl": "https://www.amazon.fr/dp/B00178I0KQ?tag=glowupapp-21",
+      "price": null,
+      "currency": "EUR",
+      "description": "Baume Carmex Classic en tube (10 g) pour lèvres sèches et gercées — hydrate et protège ; effet rafraîchissant.",
+      "concernTags": [
+        "levres_gercees",
+        "levres_tres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+    },
+    {
+      "id": "m560",
+      "name": "Blistex MedPlus Stick Soin Intensif Lèvres",
+      "brand": "Blistex",
+      "category": "lipbalm",
+      "amazonAsin": "B016WTBA0Q",
+      "amazonUrl": "https://www.amazon.fr/dp/B016WTBA0Q?tag=glowupapp-21",
+      "price": 7.99,
+      "currency": "EUR",
+      "description": "Stick Blistex MedPlus — soin intensif des lèvres gercées, sèches et irritées (thymol).",
+      "concernTags": [
+        "levres_gercees",
+        "levres_tres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+    },
+    {
+      "id": "m561",
+      "name": "Blistex Lip Medex Baume Lèvres",
+      "brand": "Blistex",
+      "category": "lipbalm",
+      "amazonAsin": "B000Y8S8HU",
+      "amazonUrl": "https://www.amazon.fr/dp/B000Y8S8HU?tag=glowupapp-21",
+      "price": 7.99,
+      "currency": "EUR",
+      "description": "Baume Blistex Lip Medex (10,8 g) — soulage les lèvres gercées, douloureuses et abîmées ; effet rafraîchissant.",
+      "concernTags": [
+        "levres_gercees",
+        "levres_tres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+    },
+    {
+      "id": "m562",
+      "name": "Lanolips 101 Ointment Baume Multi-usage",
+      "brand": "Lanolips",
+      "category": "lipbalm",
+      "amazonAsin": "B07H4TT8M5",
+      "amazonUrl": "https://www.amazon.fr/dp/B07H4TT8M5?tag=glowupapp-21",
+      "price": 4.49,
+      "currency": "EUR",
+      "rating": 4.5,
+      "reviews": 2356,
+      "description": "Baume à la lanoline Lanolips 101 — répare et protège les lèvres gercées, mais aussi cuticules et zones sèches.",
+      "concernTags": [
+        "levres_gercees",
+        "levres_tres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+    },
+    {
+      "id": "m563",
+      "name": "Lansinoh Baume à Lèvres à la Lanoline",
+      "brand": "Lansinoh",
+      "category": "lipbalm",
+      "amazonAsin": "B097C5D6P1",
+      "amazonUrl": "https://www.amazon.fr/dp/B097C5D6P1?tag=glowupapp-21",
+      "price": null,
+      "currency": "EUR",
+      "description": "Baume à la lanoline Lansinoh (7 g) — protège et apaise les lèvres sèches et gercées.",
+      "concernTags": [
+        "levres_gercees",
+        "levres_tres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+    },
+    {
+      "id": "m564",
+      "name": "Dr. Lipp Original Baume à la Lanoline",
+      "brand": "Dr. Lipp",
+      "category": "lipbalm",
+      "amazonAsin": "B07D63413Y",
+      "amazonUrl": "https://www.amazon.fr/dp/B07D63413Y?tag=glowupapp-21",
+      "price": null,
+      "currency": "EUR",
+      "volumeMl": 15,
+      "description": "Baume Dr. Lipp Original à la lanoline (15 ml) — soin multi-usage des lèvres sèches ; hypoallergénique, sans parfum.",
+      "concernTags": [
+        "levres_gercees",
+        "levres_tres_gercees",
+        "levres_sensibles",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+    },
+    {
+      "id": "m565",
+      "name": "Weleda Skin Food Baume Lèvres",
+      "brand": "Weleda",
+      "category": "lipbalm",
+      "amazonAsin": "B07JKF4G32",
+      "amazonUrl": "https://www.amazon.fr/dp/B07JKF4G32?tag=glowupapp-21",
+      "price": 12,
+      "currency": "EUR",
+      "rating": 4.3,
+      "reviews": 8557,
+      "volumeMl": 10,
+      "description": "Baume Weleda Skin Food (10 ml) — répare et nourrit intensément les lèvres sèches et gercées (cire d'abeille, huile de tournesol, pensée sauvage, calendula, camomille) ; utilisable en soin de nuit.",
+      "concernTags": [
+        "levres_gercees",
+        "levres_tres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+    },
+    {
+      "id": "m566",
+      "name": "Burt's Bees Soin Intensif de Nuit Lèvres",
+      "brand": "Burt's Bees",
+      "category": "lipbalm",
+      "amazonAsin": "B07C3BLZRN",
+      "amazonUrl": "https://www.amazon.fr/dp/B07C3BLZRN?tag=glowupapp-21",
+      "price": 14.65,
+      "currency": "EUR",
+      "rating": 4.3,
+      "reviews": 10986,
+      "description": "Soin de nuit Burt's Bees (7 g) aux céramides, huiles de jojoba et de ricin — nourrit intensément et aide à restaurer la barrière des lèvres pendant le sommeil.",
+      "concernTags": [
+        "levres_gercees",
+        "levres_tres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+    },
+    {
+      "id": "m567",
+      "name": "Caudalie Vinotherapist Baume Lèvres Réparateur",
+      "brand": "Caudalie",
+      "category": "lipbalm",
+      "amazonAsin": "B0CKC1ZV6R",
+      "amazonUrl": "https://www.amazon.fr/dp/B0CKC1ZV6R?tag=glowupapp-21",
+      "price": 22.9,
+      "currency": "EUR",
+      "rating": 4.1,
+      "reviews": 12,
+      "volumeMl": 10,
+      "description": "Baume réparateur Caudalie Vinotherapist (10 ml) pour lèvres sèches, gercées ou sensibles — nourrit et hydrate.",
+      "concernTags": [
+        "levres_gercees",
+        "levres_tres_gercees",
+        "levres_sensibles",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+    },
+    {
+      "id": "m568",
+      "name": "Sebamed Baume Lèvres Protecteur SPF 30",
+      "brand": "Sebamed",
+      "category": "lipbalm",
+      "amazonAsin": "B0FX39F8HQ",
+      "amazonUrl": "https://www.amazon.fr/dp/B0FX39F8HQ?tag=glowupapp-21",
+      "price": null,
+      "currency": "EUR",
+      "description": "Baume protecteur Sebamed SPF 30 pour lèvres sèches et gercées — nourrit intensément avec des huiles végétales, sans huile minérale.",
+      "concernTags": [
+        "levres_gercees",
+        "levres_tres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+    },
+    {
+      "id": "m569",
+      "name": "Aquaphor SOS Lip Repair Stick Apaisant",
+      "brand": "Eucerin",
+      "category": "lipbalm",
+      "amazonAsin": "B095XSPLVY",
+      "amazonUrl": "https://www.amazon.fr/dp/B095XSPLVY?tag=glowupapp-21",
+      "price": null,
+      "currency": "EUR",
+      "description": "Stick Eucerin Aquaphor SOS Lip Repair (10 g) — soin réparateur apaisant des lèvres abîmées.",
+      "concernTags": [
+        "levres_gercees",
+        "levres_tres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+    },
+    {
+      "id": "m570",
+      "name": "Aquaphor Lip Repair Baume Lèvres Sèches et Gercées",
+      "brand": "Aquaphor",
+      "category": "lipbalm",
+      "amazonAsin": "B009NW867A",
+      "amazonUrl": "https://www.amazon.fr/dp/B009NW867A?tag=glowupapp-21",
+      "price": 12.52,
+      "currency": "EUR",
+      "rating": 4.5,
+      "reviews": 434,
+      "description": "Baume Aquaphor Lip Repair (10 g) — répare et protège les lèvres sèches et gercées.",
+      "concernTags": [
+        "levres_gercees",
+        "levres_tres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+    },
+    {
+      "id": "m571",
+      "name": "Eucerin Aquaphor Baume Nez et Lèvres Réparateur",
+      "brand": "Eucerin",
+      "category": "lipbalm",
+      "amazonAsin": "B0753CTNGW",
+      "amazonUrl": "https://www.amazon.fr/dp/B0753CTNGW?tag=glowupapp-21",
+      "price": null,
+      "currency": "EUR",
+      "description": "Pommade réparatrice Eucerin Aquaphor pour nez et lèvres (7 g) — apaise et protège les zones sèches et irritées.",
+      "concernTags": [
+        "levres_gercees",
+        "levres_tres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+    },
+    {
+      "id": "m572",
+      "name": "Elizabeth Arden Eight Hour Lip Protectant Stick SPF 15",
+      "brand": "Elizabeth Arden",
+      "category": "lipbalm",
+      "amazonAsin": "B001SEQN2G",
+      "amazonUrl": "https://www.amazon.fr/dp/B001SEQN2G?tag=glowupapp-21",
+      "price": 23.66,
+      "currency": "EUR",
+      "rating": 4.5,
+      "reviews": 282,
+      "description": "Stick transparent Eight Hour (3,7 g) à la vitamine E et SPF 15 — hydrate, adoucit, soulage gerçures et crevasses.",
+      "concernTags": [
+        "levres_gercees",
+        "levres_tres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+    },
+    {
+      "id": "m573",
+      "name": "Mixa Cica Lip Repair+ Baume Lèvres et Nez",
+      "brand": "Mixa",
+      "category": "lipbalm",
+      "amazonAsin": "B0FY6955JN",
+      "amazonUrl": "https://www.amazon.fr/dp/B0FY6955JN?tag=glowupapp-21",
+      "price": null,
+      "currency": "EUR",
+      "description": "Baume réparateur Mixa Cica Lip Repair+ pour lèvres et contour du nez irrités ou abîmés.",
+      "concernTags": [
+        "levres_gercees",
+        "levres_tres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+    },
+    {
+      "id": "m574",
+      "name": "Alphanova Repair Stick Lèvres Bio Réparateur",
+      "brand": "Alphanova",
+      "category": "lipbalm",
+      "amazonAsin": "B00TZV36EC",
+      "amazonUrl": "https://www.amazon.fr/dp/B00TZV36EC?tag=glowupapp-21",
+      "price": null,
+      "currency": "EUR",
+      "description": "Stick lèvres bio Alphanova Repair (4 g) — hydrate et répare les lèvres exposées aux conditions extrêmes.",
+      "concernTags": [
+        "levres_gercees",
+        "levres_tres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+    },
+    {
+      "id": "m575",
+      "name": "Neutrogena Formule Norvégienne Stick Lèvres",
+      "brand": "Neutrogena",
+      "category": "lipbalm",
+      "amazonAsin": "B0B25NDLWV",
+      "amazonUrl": "https://www.amazon.fr/dp/B0B25NDLWV?tag=glowupapp-21",
+      "price": null,
+      "currency": "EUR",
+      "description": "Stick Neutrogena Formule Norvégienne (4,8 g) au beurre de cacao et à la glycérine concentrée — protège les lèvres sèches et gercées.",
+      "concernTags": [
+        "levres_gercees",
+        "levres_tres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+    },
+    {
+      "id": "m576",
+      "name": "Cattier Cica Repair Baume Lèvres",
+      "brand": "Cattier",
+      "category": "lipbalm",
+      "amazonAsin": "B0B31JB4RR",
+      "amazonUrl": "https://www.amazon.fr/dp/B0B31JB4RR?tag=glowupapp-21",
+      "price": null,
+      "currency": "EUR",
+      "volumeMl": 15,
+      "description": "Baume lèvres Cattier Paris Cica Repair (15 ml) — apporte un confort immédiat et isole des agressions extérieures.",
+      "concernTags": [
+        "levres_gercees",
+        "levres_tres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+    },
+    {
+      "id": "m577",
+      "name": "Melvita Baume Lèvres Nourrissant et Réparateur",
+      "brand": "Melvita",
+      "category": "lipbalm",
+      "amazonAsin": "B09NKHDVQS",
+      "amazonUrl": "https://www.amazon.fr/dp/B09NKHDVQS?tag=glowupapp-21",
+      "price": null,
+      "currency": "EUR",
+      "volumeMl": 15,
+      "description": "Baume Melvita bio (15 ml) à l'huile de figue de Barbarie — nourrit, répare et protège les lèvres irritées ou abîmées.",
+      "concernTags": [
+        "levres_gercees",
+        "levres_tres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+    },
+    {
+      "id": "m578",
+      "name": "Lavera Lips Repair Baume Lèvres Réparateur",
+      "brand": "Lavera",
+      "category": "lipbalm",
+      "amazonAsin": "B000VYDKXY",
+      "amazonUrl": "https://www.amazon.fr/dp/B000VYDKXY?tag=glowupapp-21",
+      "price": null,
+      "currency": "EUR",
+      "description": "Baume lèvres réparateur Lavera Lips Repair (4,5 g), soin naturel des lèvres sèches.",
+      "concernTags": [
+        "levres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+    },
+    {
+      "id": "m579",
+      "name": "Laboratoires de Biarritz Baume Lèvres Cica Repa Bio",
+      "brand": "Laboratoires de Biarritz",
+      "category": "lipbalm",
+      "amazonAsin": "B08562NNKV",
+      "amazonUrl": "https://www.amazon.fr/dp/B08562NNKV?tag=glowupapp-21",
+      "price": null,
+      "currency": "EUR",
+      "volumeMl": 15,
+      "description": "Baume lèvres réparateur bio Cica Repa (15 ml).",
+      "concernTags": [
+        "levres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+    },
+    {
+      "id": "m580",
+      "name": "Uriage Stick Lèvres Hydratant",
+      "brand": "Uriage",
+      "category": "lipbalm",
+      "amazonAsin": "B00E1BTL4K",
+      "amazonUrl": "https://www.amazon.fr/dp/B00E1BTL4K?tag=glowupapp-21",
+      "price": null,
+      "currency": "EUR",
+      "description": "Stick lèvres hydratant Uriage (4 g), pour hydrater les lèvres au quotidien.",
+      "concernTags": [
+        "levres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+    },
+    {
+      "id": "m581",
+      "name": "Laneige Lip Sleeping Mask",
+      "brand": "Laneige",
+      "category": "lipbalm",
+      "amazonAsin": "B0DTBFWWN8",
+      "amazonUrl": "https://www.amazon.fr/dp/B0DTBFWWN8?tag=glowupapp-21",
+      "price": null,
+      "currency": "EUR",
+      "description": "Masque de nuit pour les lèvres Laneige Lip Sleeping Mask — hydratation intense pendant le sommeil (acide hyaluronique).",
+      "concernTags": [
+        "levres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+    },
+    {
+      "id": "m582",
+      "name": "Vaseline Lip Therapy Original (pot)",
+      "brand": "Vaseline",
+      "category": "lipbalm",
+      "amazonAsin": "B000WQWV1S",
+      "amazonUrl": "https://www.amazon.fr/dp/B000WQWV1S?tag=glowupapp-21",
+      "price": 3.5,
+      "currency": "EUR",
+      "description": "Baume Vaseline Lip Therapy Original en pot (20 g) à la gelée de pétrole et à la vitamine E — retient l'hydratation et apaise les lèvres sèches.",
+      "concernTags": [
+        "levres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+    },
+    {
+      "id": "m583",
+      "name": "Labello Med Repair Baume Lèvres",
+      "brand": "Labello",
+      "category": "lipbalm",
+      "amazonAsin": "B07DJFTNJS",
+      "amazonUrl": "https://www.amazon.fr/dp/B07DJFTNJS?tag=glowupapp-21",
+      "price": null,
+      "currency": "EUR",
+      "description": "Baume Labello Med Repair à la vitamine E et aux huiles naturelles, SPF 15 — protège, hydrate et aide à réparer les lèvres gercées.",
+      "concernTags": [
+        "levres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+    },
+    {
+      "id": "m584",
+      "name": "Nivea Labello Original Baume Lèvres",
+      "brand": "Nivea",
+      "category": "lipbalm",
+      "amazonAsin": "B01NH0EDWP",
+      "amazonUrl": "https://www.amazon.fr/dp/B01NH0EDWP?tag=glowupapp-21",
+      "price": null,
+      "currency": "EUR",
+      "description": "Baume Nivea Labello Original (4,8 g) au beurre de karité et aux huiles naturelles — hydratation 24 h, protège du dessèchement.",
+      "concernTags": [
+        "levres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+    },
+    {
+      "id": "m585",
+      "name": "Labello Protect+ Baume Lèvres SPF 15",
+      "brand": "Labello",
+      "category": "lipbalm",
+      "amazonAsin": "B0C9NHY1WS",
+      "amazonUrl": "https://www.amazon.fr/dp/B0C9NHY1WS?tag=glowupapp-21",
+      "price": null,
+      "currency": "EUR",
+      "description": "Baume Labello Protect+ (5,5 ml) enrichi en huiles naturelles, SPF 15 — hydrate et aide à réparer les lèvres sèches et gercées.",
+      "concernTags": [
+        "levres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+    },
+    {
+      "id": "m586",
+      "name": "Nivea Labello Vegan Naturally Chanvre",
+      "brand": "Nivea",
+      "category": "lipbalm",
+      "amazonAsin": "B09HD87F29",
+      "amazonUrl": "https://www.amazon.fr/dp/B09HD87F29?tag=glowupapp-21",
+      "price": null,
+      "currency": "EUR",
+      "description": "Baume Nivea Labello vegan au beurre de karité et à l'huile de chanvre (4,8 g) — hydrate et répare.",
+      "concernTags": [
+        "levres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+    },
+    {
+      "id": "m587",
+      "name": "Nivea Lip Care Essential",
+      "brand": "Nivea",
+      "category": "lipbalm",
+      "amazonAsin": "B001H3FPM2",
+      "amazonUrl": "https://www.amazon.fr/dp/B001H3FPM2?tag=glowupapp-21",
+      "price": 5.44,
+      "currency": "EUR",
+      "description": "Stick Nivea Lip Care Essential (4,8 g), soin hydratant des lèvres.",
+      "concernTags": [
+        "levres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+    },
+    {
+      "id": "m588",
+      "name": "Nivea Soin Lèvres de Nuit",
+      "brand": "Nivea",
+      "category": "lipbalm",
+      "amazonAsin": "B0D4F6QN9J",
+      "amazonUrl": "https://www.amazon.fr/dp/B0D4F6QN9J?tag=glowupapp-21",
+      "price": null,
+      "currency": "EUR",
+      "description": "Stick Nivea soin de nuit pour les lèvres (4,8 g) — nourrit et aide à régénérer les lèvres pendant la nuit.",
+      "concernTags": [
+        "levres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+    },
+    {
+      "id": "m589",
+      "name": "Nivea Med Repair Stick Lèvres SPF 15",
+      "brand": "Nivea",
+      "category": "lipbalm",
+      "amazonAsin": "B0BB2GCNV6",
+      "amazonUrl": "https://www.amazon.fr/dp/B0BB2GCNV6?tag=glowupapp-21",
+      "price": 6.29,
+      "currency": "EUR",
+      "description": "Stick Nivea Med Repair au beurre de karité, huiles et vitamines, SPF 15 (4,8 g) — soin réparateur.",
+      "concernTags": [
+        "levres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+    },
+    {
+      "id": "m590",
+      "name": "Eucerin pH5 Lip-Activ Stick",
+      "brand": "Eucerin",
+      "category": "lipbalm",
+      "amazonAsin": "B07QXL662F",
+      "amazonUrl": "https://www.amazon.fr/dp/B07QXL662F?tag=glowupapp-21",
+      "price": null,
+      "currency": "EUR",
+      "description": "Stick Eucerin pH5 Lip-Activ (4,8 g) au dexpanthénol et à la vitamine E — protège les lèvres sensibles et sèches.",
+      "concernTags": [
+        "levres_gercees",
+        "levres_sensibles",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+    },
+    {
+      "id": "m591",
+      "name": "Weleda Baume Lèvres Stick Nourrissant",
+      "brand": "Weleda",
+      "category": "lipbalm",
+      "amazonAsin": "B0002JGIL4",
+      "amazonUrl": "https://www.amazon.fr/dp/B0002JGIL4?tag=glowupapp-21",
+      "price": null,
+      "currency": "EUR",
+      "description": "Stick Weleda (4,8 g) nourrissant, protecteur et adoucissant pour les lèvres.",
+      "concernTags": [
+        "levres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+    },
+    {
+      "id": "m592",
+      "name": "Dr. Hauschka Soin des Lèvres Stick",
+      "brand": "Dr. Hauschka",
+      "category": "lipbalm",
+      "amazonAsin": "B002HRS7ZY",
+      "amazonUrl": "https://www.amazon.fr/dp/B002HRS7ZY?tag=glowupapp-21",
+      "price": 18.05,
+      "currency": "EUR",
+      "rating": 4.5,
+      "reviews": 1310,
+      "description": "Stick Dr. Hauschka (4,8 g) au beurre de karité, pétales de rose et églantier — fortifie, apaise et adoucit les lèvres.",
+      "concernTags": [
+        "levres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+    },
+    {
+      "id": "m593",
+      "name": "Nuxe Bio Beauté Stick Lèvres Haute Nutrition 8H",
+      "brand": "Nuxe",
+      "category": "lipbalm",
+      "amazonAsin": "B00PKJ1ANC",
+      "amazonUrl": "https://www.amazon.fr/dp/B00PKJ1ANC?tag=glowupapp-21",
+      "price": null,
+      "currency": "EUR",
+      "description": "Stick lèvres Nuxe Bio Beauté (4 g) au cold cream naturel — nutrition longue durée (huiles d'amande douce, d'argan, de jojoba, de coco, cire d'abeille).",
+      "concernTags": [
+        "levres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+    },
+    {
+      "id": "m594",
+      "name": "Mixa Superfat Soin Lèvres Stick",
+      "brand": "Mixa",
+      "category": "lipbalm",
+      "amazonAsin": "B076JKWM74",
+      "amazonUrl": "https://www.amazon.fr/dp/B076JKWM74?tag=glowupapp-21",
+      "price": null,
+      "currency": "EUR",
+      "description": "Stick Mixa Superfat (5 ml), soin nourrissant des lèvres sèches.",
+      "concernTags": [
+        "levres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+    },
+    {
+      "id": "m595",
+      "name": "Cattier Stick Lèvres Réparateur Ultra Nourrissant",
+      "brand": "Cattier",
+      "category": "lipbalm",
+      "amazonAsin": "B005A5XVGK",
+      "amazonUrl": "https://www.amazon.fr/dp/B005A5XVGK?tag=glowupapp-21",
+      "price": 2.64,
+      "currency": "EUR",
+      "rating": 4.5,
+      "reviews": 322,
+      "description": "Stick lèvres bio Cattier (4 g), réparateur et ultra nourrissant, protège des agressions extérieures.",
+      "concernTags": [
+        "levres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs."
+    },
+    {
+      "id": "m596",
+      "name": "Melvita Nectar de 3 Miels Lèvres et Zones Sèches",
+      "brand": "Melvita",
+      "category": "lipbalm",
+      "amazonAsin": "B00YC8UU5Q",
+      "amazonUrl": "https://www.amazon.fr/dp/B00YC8UU5Q?tag=glowupapp-21",
+      "price": null,
+      "currency": "EUR",
+      "description": "Baume bio Melvita Nectar de 3 miels (8 g) pour lèvres et zones sèches.",
+      "concernTags": [
+        "levres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
     }
   ]
 }
