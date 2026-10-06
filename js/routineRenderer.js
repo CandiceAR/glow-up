@@ -567,6 +567,8 @@ const RoutineRenderer = (() => {
     const matnSteps  = lowBudget
       ? _buildLowBudgetRoutine()
       : _filterSpfIfIncluded(routine.matin || []);
+    // Titres cohérents avec les produits réellement choisis (pas de « rétinol » sans rétinol)
+    try { _alignStepsWithProducts(matnSteps); _alignStepsWithProducts(routine.soir); } catch (e) { console.warn('[Routine] alignement titres:', e.message); }
     const hasRetinol = _routineHasRetinol({ matin: matnSteps, soir: routine.soir });
 
     container.innerHTML = `
@@ -782,6 +784,53 @@ const RoutineRenderer = (() => {
       </div>`;
   }
 
+  // ─── Cohérence titre ↔ produit ────────────────────────────────
+  // Un titre d'étape ne doit jamais annoncer un actif (rétinol, peptides…) que le produit
+  // choisi ne contient pas. Si le catalogue n'a pas de produit adapté (âge, budget, peau…),
+  // on retire la promesse du titre au lieu d'afficher « Sérum rétinol » sur un autre produit.
+  const ACTIVE_STRIP = {
+    retinoid:   /r[ée]tin(?:ol|al|o[iï]des?)|bakuchiol/gi,
+    peptide:    /peptides?|collag[eè]nes?/gi,
+    niacinamide:/niacinamide/gi,
+    vitaminec:  /vitamines?\s*c\b|vit\.?\s*c\b/gi,
+    ceramide:   /c[ée]ramides?/gi,
+    hyaluronic: /acide\s+hyaluronique|hyaluronique/gi,
+    squalane:   /squalane/gi,
+    azelaic:    /(?:acide\s+)?az[ée]la[iï]que/gi,
+    arbutin:    /arbutine?/gi,
+    centella:   /centella(?:\s+asiatica)?|\bcica\b/gi,
+    panthenol:  /panth[ée]nol/gi,
+    caffeine:   /caf[ée]ine/gi
+  };
+  function _neutralLabel(label, missing) {
+    if (missing.includes('retinoid')) return 'Sérum ciblé';
+    let l = label || '';
+    missing.forEach(a => { if (ACTIVE_STRIP[a]) l = l.replace(ACTIVE_STRIP[a], ' '); });
+    l = l.replace(/\s{2,}/g, ' ')
+         .replace(/\s*[+&·]\s*(?=[+&·]|$)/g, '')
+         .replace(/^[+&·\s]+|[+&·\s,–—-]+$/g, '').trim();
+    return l || 'Soin ciblé';
+  }
+  // Même sélection que renderRoutineSection (mêmes règles, même ordre) : le produit évalué ici
+  // est celui qui sera affiché.
+  function _alignStepsWithProducts(steps) {
+    if (!steps || !steps.length) return;
+    const hasCR = typeof CurrentRoutine !== 'undefined';
+    const used = new Set(), usedKept = new Set();
+    [...steps].sort((a, b) => a.order - b.order).forEach(step => {
+      const kept = hasCR ? CurrentRoutine.getKeptForStep(step.step, usedKept) : null;
+      if (kept) { usedKept.add(kept._key); return; }
+      const req = _stepRequiredActives(step);
+      const product = findBestProductForStep(step.step, used, step);
+      if (product) used.add(product.id);
+      if (!req.length || !product) return;
+      const missing = req.filter(a => !_productHasActive(product, a));
+      if (!missing.length) return;
+      step.label = _neutralLabel(step.label, missing);
+      step.note  = '';          // la note décrivait l'actif retiré (ex. « rétinol : 2–3x/semaine »)
+    });
+  }
+
   function renderRoutineSection(title, steps, emoji, hasRetinol) {
     if (!steps || steps.length === 0) return '';
 
@@ -828,7 +877,8 @@ const RoutineRenderer = (() => {
         stepNote = stepNote.replace(/^[,·\s]+|[,·\s]+$/g, '').trim();
       }
 
-      const tip = applyTip || stepNote || '';
+      // Étapes ajoutées avec un conseil précis (ex. rétinol : « le soir, 2–3x/semaine ») : il passe avant le conseil générique
+      const tip = step.priorityNote ? (stepNote || applyTip || '') : (applyTip || stepNote || '');
       const spfExtras = step.step === 'spf' ? _renderSpfExtras() : '';
       blocks.push(`
         <div class="cg-step">

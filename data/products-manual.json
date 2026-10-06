@@ -34037,6 +34037,219 @@
       "curatedBy": "claude",
       "curatedAt": "2026-10-06",
       "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06. Prix/avis indicatifs : prix non relevé (à renseigner)."
+    },
+    {
+      "id": "m597",
+      "name": "Kiehl's Retinol Skin-Renewing Daily Micro-Dose Serum",
+      "brand": "Kiehl's",
+      "category": "serum",
+      "imageUrl": "assets/products/m597.jpg",
+      "amazonAsin": "B0DW937JGV",
+      "amazonUrl": "https://www.amazon.fr/dp/B0DW937JGV?tag=glowupapp-21",
+      "price": 60.31,
+      "currency": "EUR",
+      "rating": 4,
+      "reviews": 17,
+      "volumeMl": 50,
+      "description": "Sérum quotidien Kiehl's au rétinol pur, peptide et céramides (50 ml) — favorise le renouvellement cutané, raffermit, réduit l'apparence des rides et affine le grain de peau, en limitant les inconforts (rougeurs, sécheresse, desquamation).",
+      "concernTags": [
+        "rides",
+        "ridules",
+        "anti_age",
+        "fermete",
+        "texture"
+      ],
+      "ingredientTags": [
+        "retinol"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06 ; prix/avis indicatifs. "
+    },
+    {
+      "id": "m598",
+      "name": "Medicube Retinol Boosting Serum",
+      "brand": "Medicube",
+      "category": "serum",
+      "imageUrl": "assets/products/m598.jpg",
+      "amazonAsin": "B0FPFDSC7X",
+      "amazonUrl": "https://www.amazon.fr/dp/B0FPFDSC7X?tag=glowupapp-21",
+      "price": 18.26,
+      "currency": "EUR",
+      "volumeMl": 30,
+      "description": "Sérum booster au rétinol Medicube (30 ml), rétinol encapsulé à 1,9 % (« Retinol-some ») — soin raffermissant anti-âge.",
+      "concernTags": [
+        "rides",
+        "ridules",
+        "anti_age",
+        "fermete",
+        "texture"
+      ],
+      "ingredientTags": [
+        "retinol"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06 ; prix/avis indicatifs. Prix relevé variable sur Amazon.fr (13,50 € à 18,26 €) : valeur haute retenue, indicative."
+    },
+    {
+      "id": "m599",
+      "name": "La Roche-Posay Retinol B3 Sérum Anti-Rides",
+      "brand": "La Roche-Posay",
+      "category": "serum",
+      "imageUrl": "assets/products/m599.jpg",
+      "amazonAsin": "B07Z9Y4M3C",
+      "amazonUrl": "https://www.amazon.fr/dp/B07Z9Y4M3C?tag=glowupapp-21",
+      "price": 35.98,
+      "currency": "EUR",
+      "rating": 4.6,
+      "reviews": 18908,
+      "volumeMl": 30,
+      "description": "Sérum anti-rides La Roche-Posay Retinol B3 (30 ml) : rétinol pur à libération progressive, vitamine B3 et glycérine — régénère et resurface la peau ; bonne tolérance, même sur peau sensible.",
+      "concernTags": [
+        "rides",
+        "ridules",
+        "anti_age",
+        "fermete",
+        "texture"
+      ],
+      "ingredientTags": [
+        "retinol"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06 ; prix/avis indicatifs. "
+    },
+    {
+      "id": "m600",
+      "name": "CeraVe Sérum Rétinol Anti-Marques",
+      "brand": "CeraVe",
+      "category": "serum",
+      "imageUrl": "assets/products/m600.jpg",
+      "amazonAsin": "B0B913JC2W",
+      "amazonUrl": "https://www.amazon.fr/dp/B0B913JC2W?tag=glowupapp-21",
+      "price": 11.93,
+      "currency": "EUR",
+      "volumeMl": 30,
+      "description": "Sérum rétinol anti-marques CeraVe (30 ml) : rétinol doux encapsulé, niacinamide, extrait de racine de réglisse, acide hyaluronique et 3 céramides — resurfaçant et lissant, réduit l'apparence des marques post-acné ; pour peaux à imperfections.",
+      "concernTags": [
+        "imperfections",
+        "taches",
+        "texture",
+        "pores",
+        "anti_age"
+      ],
+      "ingredientTags": [
+        "retinol"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06 ; prix/avis indicatifs. "
+    },
+    {
+      "id": "m601",
+      "name": "Purito Retinol + Retinal 2000 NAD+ Serum",
+      "brand": "Purito",
+      "category": "serum",
+      "imageUrl": "assets/products/m601.jpg",
+      "amazonAsin": "B0GWLKCFSM",
+      "amazonUrl": "https://www.amazon.fr/dp/B0GWLKCFSM?tag=glowupapp-21",
+      "price": 21.9,
+      "currency": "EUR",
+      "rating": 4.7,
+      "reviews": 31,
+      "volumeMl": 30,
+      "description": "Sérum de nuit Purito (30 ml) à double rétinoïde — rétinol + rétinal (0,1 % chacun) — avec NAD+ : soin raffermissant qui aide à réduire ridules et à améliorer la texture. Plutôt pour les personnes déjà habituées aux rétinoïdes.",
+      "concernTags": [
+        "rides",
+        "ridules",
+        "anti_age",
+        "fermete",
+        "texture"
+      ],
+      "ingredientTags": [
+        "retinol"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06 ; prix/avis indicatifs. "
+    },
+    {
+      "id": "m602",
+      "name": "L'Oréal Paris Revitalift Laser Pure Retinol Sérum de Nuit",
+      "brand": "L'Oréal Paris",
+      "category": "serum",
+      "imageUrl": "assets/products/m602.jpg",
+      "amazonAsin": "B08QQ5YSK1",
+      "amazonUrl": "https://www.amazon.fr/dp/B08QQ5YSK1?tag=glowupapp-21",
+      "price": 13.97,
+      "currency": "EUR",
+      "rating": 4.3,
+      "reviews": 1384,
+      "volumeMl": 30,
+      "description": "Sérum de nuit L'Oréal Paris Revitalift Laser (30 ml) au rétinol pur (0,2 %) et à la glycérine — anti-rides, pour tous types de peau.",
+      "concernTags": [
+        "rides",
+        "ridules",
+        "anti_age",
+        "fermete",
+        "texture"
+      ],
+      "ingredientTags": [
+        "retinol"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06 ; prix/avis indicatifs. "
     }
   ]
 }
