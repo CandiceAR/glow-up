@@ -121,6 +121,14 @@ const ScanProduct = (() => {
 
         ${reasons ? `<div class="scan-block"><h3 class="scan-block-h">Pourquoi</h3><ul class="scan-reasons">${reasons}</ul></div>` : ''}
 
+        ${(r.expected && (r.expected.purpose || r.expected.results || r.expected.forYou)) ? `
+          <div class="scan-block scan-expected">
+            <h3 class="scan-block-h">Résultats attendus</h3>
+            ${r.expected.purpose ? `<p class="scan-line"><span class="scan-line-ic">🎯</span> <span><strong>À quoi il sert :</strong> ${r.expected.purpose}</span></p>` : ''}
+            ${r.expected.results ? `<p class="scan-line"><span class="scan-line-ic">✨</span> <span><strong>Ce que tu peux en attendre :</strong> ${r.expected.results}${r.expected.timeline ? ` <em>(en général ${r.expected.timeline})</em>` : ''}</span></p>` : ''}
+            ${r.expected.forYou ? `<p class="scan-line"><span class="scan-line-ic">👤</span> <span><strong>Pour toi :</strong> ${r.expected.forYou}</span></p>` : ''}
+          </div>` : ''}
+
         ${(v !== 'red' && (r.timing || r.step)) ? `
           <div class="scan-block">
             <h3 class="scan-block-h">Comment l'utiliser</h3>
@@ -238,6 +246,7 @@ const ScanProduct = (() => {
       const profile = {
         skinType: (AppState.face && AppState.face.skinAnalysis && AppState.face.skinAnalysis.skinType && AppState.face.skinAnalysis.skinType.type) || a.skinType || null,
         concerns: a.concerns || a.complexes || [],
+        objective: a.objectives || null,
         age: (typeof AgeGuard !== 'undefined' && AgeGuard.age) ? AgeGuard.age(a) : null,
         pregnant: Array.isArray(a.labels) && a.labels.includes('grossesse')
       };

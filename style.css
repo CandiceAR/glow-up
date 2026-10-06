@@ -10764,3 +10764,9 @@ body.drawer-open{ overflow: hidden; }   /* blocage du défilement arrière-plan 
 .df-row-meta{margin:8px 0 0;display:flex;flex-wrap:wrap;gap:6px;}
 .df-row-body .df-result-ctas{margin-top:14px;}
 @media (prefers-reduced-motion:reduce){.df-row-chev{transition:none;}}
+
+/* ===== Scan produit : résultats attendus ===== */
+.scan-expected{background:rgba(0,0,0,0.03);border-radius:14px;padding:14px 16px;}
+.scan-expected .scan-line{margin:0 0 8px;}
+.scan-expected .scan-line:last-child{margin-bottom:0;}
+.scan-expected em{color:var(--muted,#6b625c);font-style:normal;font-size:0.85em;}

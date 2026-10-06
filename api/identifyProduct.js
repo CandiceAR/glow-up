@@ -53,6 +53,7 @@ Retourne UNIQUEMENT ce JSON valide, sans texte avant ni après :
   "productType": "skincare | makeup",
   "shade": "teinte si maquillage (ex: '220 Natural Beige'), sinon ''",
   "keyActives": ["actifs/ingrédients principaux connus, ex: 'niacinamide','acide hyaluronique' — [] si inconnu"],
+  "claims": ["promesses/bénéfices LISIBLES sur l'emballage, ex: 'raffermissant','anti-taches','hydratation 24h' — [] si rien de lisible"],
   "texture": "gel|crème|fluide|huile|baume|mousse|liquide|poudre|stick|'' ",
   "finish": "mat|satiné|lumineux|naturel|'' ",
   "coverage": "légère|moyenne|haute|'' (maquillage teint uniquement, sinon '')",
