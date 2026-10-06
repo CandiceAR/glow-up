@@ -45,6 +45,8 @@ const RoutineSaver = (() => {
       data.routine   = AppState.routine; // compat
       data.skincare  = { routine: AppState.routine, answers: AppState.questionnaire.answers || {} };
     }
+    // Produits choisis par l'utilisatrice (« Modifier ma routine ») : conservés d'une génération à l'autre
+    try { if (typeof RoutineEdit !== 'undefined') data.routineEdits = RoutineEdit.exportAll(); } catch (e) {}
 
     try {
       localStorage.setItem(_getKey(), JSON.stringify(data));
@@ -84,6 +86,7 @@ const RoutineSaver = (() => {
       AppState.questionnaire.completed = true;
       AppState.routine = { ...AppState.routine, ...r };
       AppState.routineChoice = 'skincare';
+      try { if (typeof RoutineEdit !== 'undefined') RoutineEdit.importAll(d.routineEdits); } catch (e) {}
       if (AppState.questionnaire.answers?.skinType && typeof ProductCatalog !== 'undefined') {
         ProductCatalog.getRecommended(AppState.questionnaire.answers);
       }
@@ -119,6 +122,7 @@ const RoutineSaver = (() => {
     AppState.questionnaire.completed = true;
     AppState.routine = { ...AppState.routine, ...data.routine };
     AppState.routineChoice = data.routineChoice || 'skincare';
+    try { if (typeof RoutineEdit !== 'undefined') RoutineEdit.importAll(data.routineEdits); } catch (e) {}
     if (data.skinAnalysis) {
       AppState.face = AppState.face || {};
       AppState.face.skinAnalysis = data.skinAnalysis;
@@ -149,6 +153,7 @@ const RoutineSaver = (() => {
       skinAnalysis: AppState.face?.skinAnalysis || null,
       savedAt:     new Date().toISOString()
     };
+    try { if (typeof RoutineEdit !== 'undefined') data.routineEdits = RoutineEdit.exportAll(); } catch (e) {}
     try {
       localStorage.setItem(_getProfileKey(), JSON.stringify(data));
       console.log('[RoutineSaver] Profil sauvegardé →', _getProfileKey());
@@ -200,6 +205,7 @@ const RoutineSaver = (() => {
     if (skincareRoutine?.ruleApplied) {
       AppState.routine = { ...AppState.routine, ...skincareRoutine };
       AppState.routineChoice = profile.routineChoice || 'skincare';
+      try { if (typeof RoutineEdit !== 'undefined') RoutineEdit.importAll(profile.routineEdits); } catch (e) {}
       const ans = profile.skincare?.answers || profile.answers;
       if (ans?.skinType && typeof ProductCatalog !== 'undefined') {
         ProductCatalog.getRecommended(ans);
@@ -215,6 +221,7 @@ const RoutineSaver = (() => {
   // ─── Migrer routine guest → compte connecté ──────────────────
   function migrateGuestToUser(uid) {
     if (!uid) return;
+    try { if (typeof RoutineEdit !== 'undefined') RoutineEdit.migrateGuestToUser(uid); } catch (e) {}
     const guestData = localStorage.getItem(KEY_GUEST);
     if (guestData) {
       localStorage.setItem(`glow_routine_${uid}`, guestData);

@@ -104,10 +104,13 @@ const Profil = (() => {
         <button class="btn btn-dark" onclick="goToSkincare()">Créer ma routine ✦</button>
       </section>`;
     }
-    const steps = (_moment === 'soir' ? (r.soir || []) : (r.matin || []));
-    const prods = steps
-      .map(s => (typeof RoutineRenderer !== 'undefined' && RoutineRenderer.findBestProductForStep) ? RoutineRenderer.findBestProductForStep(s.step) : null)
-      .filter(Boolean).slice(0, 4);
+    // Même sélection que l'écran « routine complète » (choix personnalisés inclus)
+    let prods = [];
+    try {
+      prods = (typeof RoutineRenderer !== 'undefined' && RoutineRenderer.resolveSection)
+        ? RoutineRenderer.resolveSection(_moment === 'soir' ? 'soir' : 'matin').map(x => x.product).filter(Boolean).slice(0, 4)
+        : [];
+    } catch (e) { prods = []; }
     const thumbs = prods.length
       ? prods.map(p => `<div class="pf-rprod">${p.imageUrl ? `<img src="${p.imageUrl}" alt="" loading="lazy" onerror="this.style.display='none'">` : '<div class="pf-rprod-ph">🧴</div>'}</div>`).join('')
       : '<p class="pf-muted">—</p>';
@@ -119,6 +122,7 @@ const Profil = (() => {
       </div>
       <div class="pf-routine-prods">${thumbs}</div>
       <button class="btn btn-outline pf-cta" onclick="goToRoutine()">Voir ma routine complète →</button>
+      ${typeof RoutineEdit !== 'undefined' ? `<button class="btn btn-ghost pf-cta pf-cta-edit" onclick="RoutineEdit.open('${_moment === 'soir' ? 'soir' : 'matin'}')">✏️ Modifier ma routine</button>` : ''}
     </section>`;
   }
 

@@ -437,8 +437,18 @@ const RoutineRenderer = (() => {
     const seen = new Set();      // dédup pour le prix (ne compter qu'une fois par produit)
     const usedIds = new Set();   // dédup pour le choix (même logique que renderRoutineSection)
 
+    // clés des choix personnalisés (même numérotation que l'affichage : par section, triée par ordre)
+    const keyOf = new Map();
+    [['matin', routine.matin], ['soir', routine.soir]].forEach(([sec, list]) => {
+      const occ = {};
+      [...(list || [])].sort((a, b) => a.order - b.order).forEach(s => {
+        const n = occ[s.step] = (occ[s.step] === undefined ? 0 : occ[s.step] + 1);
+        keyOf.set(s, _stepKey(sec, s.step, n));
+      });
+    });
+
     for (const step of allSteps) {
-      const p = findBestProductForStep(step.step, usedIds, step);
+      const p = _userChoice(keyOf.get(step)) || findBestProductForStep(step.step, usedIds, step);
       if (p) {
         usedIds.add(p.id);
         if (p.price && !seen.has(p.id)) {
@@ -568,7 +578,7 @@ const RoutineRenderer = (() => {
       ? _buildLowBudgetRoutine()
       : _filterSpfIfIncluded(routine.matin || []);
     // Titres cohérents avec les produits réellement choisis (pas de « rétinol » sans rétinol)
-    try { _alignStepsWithProducts(matnSteps); _alignStepsWithProducts(routine.soir); } catch (e) { console.warn('[Routine] alignement titres:', e.message); }
+    try { _alignStepsWithProducts(matnSteps, 'matin'); _alignStepsWithProducts(routine.soir, 'soir'); } catch (e) { console.warn('[Routine] alignement titres:', e.message); }
     const hasRetinol = _routineHasRetinol({ matin: matnSteps, soir: routine.soir });
 
     container.innerHTML = `
@@ -577,6 +587,7 @@ const RoutineRenderer = (() => {
         <span class="section-tag">Diagnostic personnalisé</span>
         <h1>${routine.ruleName || 'Ta Routine'}</h1>
         <p class="results-diagnosis-summary">${_buildDiagnosisSummary()}</p>
+        ${typeof RoutineEdit !== 'undefined' ? '<button type="button" class="btn btn-outline re-open-btn" onclick="RoutineEdit.open()">✏️ Modifier ma routine</button>' : ''}
       </div>
 
       ${lowBudget ? `<div class="routine-budget-notice">🌱 Routine essentielle · Budget serré · Max ~40 € pour les 3 produits</div>` : ''}
@@ -813,11 +824,46 @@ const RoutineRenderer = (() => {
   }
   // Même sélection que renderRoutineSection (mêmes règles, même ordre) : le produit évalué ici
   // est celui qui sera affiché.
-  function _alignStepsWithProducts(steps) {
+  // ─── Choix personnalisés (« Modifier ma routine » → RoutineEdit) ─
+  // Clé stable d'une étape : section | type d'étape | n° d'occurrence. Elle ne dépend ni de la graine
+  // ni des produits : une NOUVELLE routine qui contient la même étape retrouve donc le choix enregistré.
+  function _stepKey(section, type, n) { return section + '|' + type + '|' + n; }
+  function _userChoice(key) {
+    try { return (typeof RoutineEdit !== 'undefined' && RoutineEdit.resolve) ? RoutineEdit.resolve(key) : null; }
+    catch (e) { return null; }
+  }
+  // Produit retenu pour chaque étape d'une section — MÊME sélection que l'écran « routine complète »
+  // (choix perso > produit déjà possédé > recommandation). Sert au Profil, à l'éditeur et aux totaux.
+  function resolveSection(section) {
+    _refreshSeed();   // même graine que l'écran « routine complète », même si on arrive depuis le Profil
+    const r = AppState.routine || {};
+    const steps = section === 'matin'
+      ? (_isLowBudget() ? _buildLowBudgetRoutine() : _filterSpfIfIncluded(r.matin || []))
+      : (r.soir || []);
+    const hasCR = typeof CurrentRoutine !== 'undefined';
+    const used = new Set(), usedKept = new Set(), occ = {};
+    return [...steps].sort((a, b) => a.order - b.order).map(step => {
+      const n = occ[step.step] = (occ[step.step] === undefined ? 0 : occ[step.step] + 1);
+      const key = _stepKey(section, step.step, n);
+      const chosen = _userChoice(key);
+      if (chosen) { used.add(chosen.id); return { step, key, product: chosen, overridden: true, kept: null }; }
+      const kept = hasCR ? CurrentRoutine.getKeptForStep(step.step, usedKept) : null;
+      if (kept) { usedKept.add(kept._key); return { step, key, product: null, overridden: false, kept }; }
+      const product = findBestProductForStep(step.step, used, step);
+      if (product) used.add(product.id);
+      return { step, key, product, overridden: false, kept: null };
+    });
+  }
+
+  function _alignStepsWithProducts(steps, section) {
     if (!steps || !steps.length) return;
     const hasCR = typeof CurrentRoutine !== 'undefined';
-    const used = new Set(), usedKept = new Set();
+    const used = new Set(), usedKept = new Set(), occ = {};
     [...steps].sort((a, b) => a.order - b.order).forEach(step => {
+      const n = occ[step.step] = (occ[step.step] === undefined ? 0 : occ[step.step] + 1);
+      // Étape choisie par l'utilisatrice : on ne touche pas au titre enregistré (adapté à l'affichage)
+      const chosen = section ? _userChoice(_stepKey(section, step.step, n)) : null;
+      if (chosen) { used.add(chosen.id); return; }
       const kept = hasCR ? CurrentRoutine.getKeptForStep(step.step, usedKept) : null;
       if (kept) { usedKept.add(kept._key); return; }
       const req = _stepRequiredActives(step);
@@ -847,11 +893,20 @@ const RoutineRenderer = (() => {
     const usedReplaced   = new Set(); // produits « à remplacer » déjà signalés
     const hasCR          = typeof CurrentRoutine !== 'undefined';
 
+    const sectionName = isMatin ? 'matin' : 'soir';
+    const occ = {};   // n° d'occurrence de chaque type d'étape → clé stable d'un choix personnalisé
+
     for (const step of sortedSteps) {
+      // Choix personnalisé de l'utilisatrice (« Modifier ma routine ») : il passe avant tout le reste
+      const n = occ[step.step] = (occ[step.step] === undefined ? 0 : occ[step.step] + 1);
+      const chosen = _userChoice(_stepKey(sectionName, step.step, n));
       // Produit que l'utilisatrice utilise déjà ET adapté → on le garde à sa place
-      const kept = hasCR ? CurrentRoutine.getKeptForStep(step.step, usedKept) : null;
+      const kept = (!chosen && hasCR) ? CurrentRoutine.getKeptForStep(step.step, usedKept) : null;
       let product = null, replaced = null;
-      if (kept) {
+      if (chosen) {
+        product = chosen;
+        usedProductIds.add(chosen.id);
+      } else if (kept) {
         usedKept.add(kept._key);
       } else {
         product = findBestProductForStep(step.step, usedProductIds, step);
@@ -866,8 +921,15 @@ const RoutineRenderer = (() => {
       stepIndex++;
       if (product?.price) products.push(product); // les produits gardés ne comptent pas dans le total
 
+      // Titre/conseil cohérents : un produit choisi par l'utilisatrice peut ne pas contenir l'actif annoncé
+      let stepLabel = step.label, stepNoteRaw = step.note || '';
+      if (chosen && !chosen.custom) {
+        const missing = _stepRequiredActives(step).filter(a => !_productHasActive(chosen, a));
+        if (missing.length) { stepLabel = _neutralLabel(step.label, missing); stepNoteRaw = ''; }
+      }
+
       // Nettoyer les mentions rétinol dans les notes si non applicable
-      let stepNote = step.note || '';
+      let stepNote = stepNoteRaw;
       if (!hasRetinol && stepNote) {
         // Retirer "· rétinol" ou "rétinol ·" ou "rétinol," patterns en liste
         stepNote = stepNote.replace(/·?\s*r[eé]tinol\s*(·|,|$)/gi, '').trim();
@@ -885,7 +947,7 @@ const RoutineRenderer = (() => {
           <div class="cg-step-meta">
             <span class="cg-step-num">${String(stepIndex).padStart(2, '0')}</span>
             <div class="cg-step-info">
-              <h2 class="cg-step-title">${step.step === 'serum' ? 'Sérum' : step.label}</h2>
+              <h2 class="cg-step-title">${step.step === 'serum' ? 'Sérum' : stepLabel}</h2>
               ${tip ? `<p class="cg-step-tip">${tip}</p>` : ''}
             </div>
           </div>
@@ -896,9 +958,9 @@ const RoutineRenderer = (() => {
             ` : `
               ${replaced ? `<div class="cr-replace-note">🔄 À la place de ton <strong>${(replaced.brand ? replaced.brand + ' ' : '') + replaced.name}</strong> — ${CurrentRoutine.evaluate(replaced).reason}</div>` : ''}
               ${product ? `<div class="cg-step-card">${_renderPremiumProductCard(product, step)}</div>` : ''}
-              ${product ? _renderDupeCompact(product) : ''}
+              ${(product && !product.custom) ? _renderDupeCompact(product) : ''}
               ${product ? _renderApplyMeta(step, stepIndex, isMatin) : ''}
-              ${product ? _renderAlternatives(step, product) : ''}
+              ${(product && !product.custom) ? _renderAlternatives(step, product) : ''}
               ${spfExtras}
             `}
           </div>
@@ -936,8 +998,15 @@ const RoutineRenderer = (() => {
     // personnalisée « pourquoi ce produit » (fusion → plus de bloc séparé).
     // Repli sur la description si le step n'est pas fourni.
     let sentence = '';
-    try { sentence = step ? (buildProductReason(step, product).why || '') : ''; } catch (e) {}
-    if (!sentence) sentence = description || '';
+    if (product.userChoice) {
+      // Produit choisi par l'utilisatrice : on ne prétend pas l'avoir sélectionné, et pour un produit
+      // hors catalogue on n'affiche aucune information qu'elle n'a pas saisie elle-même.
+      sentence = product.custom ? 'Produit choisi par toi pour cette étape.' : ((description || '') ? ('Choisi par toi. ' + description) : 'Produit choisi par toi pour cette étape.');
+      if (!product.custom && sentence.length > 200) sentence = sentence.slice(0, 199) + '…';
+    } else {
+      try { sentence = step ? (buildProductReason(step, product).why || '') : ''; } catch (e) {}
+      if (!sentence) sentence = description || '';
+    }
     return `
       <article class="premium-card premium-card--compact" data-product-id="${id}">
         <a href="${url}" target="_blank" rel="noopener nofollow${isAffiliate ? ' sponsored' : ''}" class="premium-card-link"
@@ -947,6 +1016,7 @@ const RoutineRenderer = (() => {
             ${imageUrl ? `<img src="${imageUrl}" alt="${name}" class="premium-card-image" loading="lazy" onerror="this.onerror=null;this.style.display='none'">` : ''}
           </div>
           <div class="premium-card-content">
+            ${product.userChoice ? '<span class="user-choice-tag">✦ Ton choix</span>' : ''}
             <span class="premium-card-brand">${brand || ''}</span>
             <h3 class="premium-card-name">${name || ''}</h3>
             ${sentence ? `<p class="premium-card-desc">💡 ${sentence}</p>` : ''}
@@ -956,7 +1026,7 @@ const RoutineRenderer = (() => {
             </div>
           </div>
         </a>
-        ${(typeof Skinpedia !== 'undefined' && Skinpedia.renderRoutineImprovement)
+        ${(typeof Skinpedia !== 'undefined' && Skinpedia.renderRoutineImprovement && !product.custom)
             ? Skinpedia.renderRoutineImprovement(product, (step && step.step) || null, 0) : ''}
         <div class="premium-card-ctas">
           ${canCompare ? `<a class="pc-cta pc-cta--compare" href="${compareUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Comparer les prix</a>` : ''}
@@ -1779,6 +1849,7 @@ const RoutineRenderer = (() => {
     return html;
   }
 
-  return { renderResults, renderConversionBlocksMakeup, saveRoutineNow, findBestProductForStep, toggleAccordion };
+  return { renderResults, renderConversionBlocksMakeup, saveRoutineNow, findBestProductForStep, toggleAccordion,
+           resolveSection, stepRequiredActives: _stepRequiredActives, productHasActive: _productHasActive };
 
 })();
