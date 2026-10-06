@@ -1301,7 +1301,9 @@
       "description": "Baume à lèvres culte Eight Hour. Réparation et protection intense.",
       "isFeatured": true,
       "active": true,
-      "concernTags": []
+      "concernTags": [
+        "levres_gercees"
+      ]
     },
     {
       "id": "m073",
@@ -1421,7 +1423,10 @@
       "description": "Baume réparateur lèvres abîmées. Formule apaisante dermatologique.",
       "isFeatured": false,
       "active": true,
-      "concernTags": []
+      "concernTags": [
+        "levres_gercees",
+        "levres_sensibles"
+      ]
     },
     {
       "id": "m081",
@@ -1436,7 +1441,9 @@
       "description": "Baume lèvres soin intensif. Répare les lèvres gercées.",
       "isFeatured": false,
       "active": true,
-      "concernTags": []
+      "concernTags": [
+        "levres_gercees"
+      ]
     },
     {
       "id": "m082",
@@ -1451,7 +1458,9 @@
       "description": "Baume à lèvres naturel à la cire d'abeille. Hydratation 100% naturelle.",
       "isFeatured": true,
       "active": true,
-      "concernTags": []
+      "concernTags": [
+        "levres_gercees"
+      ]
     },
     {
       "id": "m083",
@@ -1466,7 +1475,9 @@
       "description": "Baume à lèvres artisanal au miel britannique. 100% naturel.",
       "isFeatured": false,
       "active": true,
-      "concernTags": []
+      "concernTags": [
+        "levres_gercees"
+      ]
     },
     {
       "id": "m084",
@@ -1481,7 +1492,9 @@
       "description": "Baume à lèvres 100% bio et vegan. Ingrédients naturels.",
       "isFeatured": false,
       "active": true,
-      "concernTags": []
+      "concernTags": [
+        "levres_gercees"
+      ]
     },
     {
       "id": "m085",
@@ -27915,7 +27928,9 @@
       "description": "Baume à lèvres Torriden aux 5 céramides (NP, NS, AS, EOP, AP) — hydrate, répare et confort durable pour lèvres sèches ou gercées.",
       "concernTags": [
         "secheresse",
-        "confort_levres"
+        "confort_levres",
+        "levres_gercees",
+        "levres_sensibles"
       ],
       "ingredientTags": [
         "ceramide"
@@ -32732,6 +32747,103 @@
         "mixte"
       ],
       "description": "Sérum concentré Eucerin Hyaluron-Filler Epigenetic — cible les mécanismes du vieillissement cutané, comble les rides et repulpe. Peaux matures, matin et soir."
+    },
+    {
+      "category": "lipbalm",
+      "currency": "EUR",
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "id": "m553",
+      "name": "La Roche-Posay Cicaplast Lèvres B5",
+      "brand": "La Roche-Posay",
+      "amazonAsin": "B07MSG1HPK",
+      "amazonUrl": "https://www.amazon.fr/dp/B07MSG1HPK?tag=glowupapp-21",
+      "price": null,
+      "volumeMl": 10,
+      "description": "Baume réparateur La Roche-Posay Cicaplast Lèvres B5, enrichi en vitamine B5, beurre de karité et lipides MP — apaise, protège et reconstruit les lèvres gercées et irritées.",
+      "concernTags": [
+        "levres_gercees",
+        "levres_sensibles",
+        "confort_levres",
+        "secheresse"
+      ],
+      "ingredientTags": [
+        "panthenol",
+        "karite"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "notes": "Lien et description relevés sur la fiche Amazon.fr (10 ml). Prix à renseigner."
+    },
+    {
+      "category": "lipbalm",
+      "currency": "EUR",
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "id": "m554",
+      "name": "Bioderma Atoderm Stick Lèvres",
+      "brand": "Bioderma",
+      "amazonAsin": "B0060OKMLC",
+      "amazonUrl": "https://www.amazon.fr/dp/B0060OKMLC?tag=glowupapp-21",
+      "price": 6.38,
+      "rating": 4.6,
+      "reviews": 8633,
+      "description": "Stick lèvres Bioderma Atoderm (4 g) pour lèvres normales à gercées, très sèches — soulage et répare ; formule sans parabène ni allergène.",
+      "concernTags": [
+        "levres_gercees",
+        "levres_sensibles",
+        "confort_levres",
+        "secheresse"
+      ],
+      "ingredientTags": [],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse",
+        "sensible"
+      ],
+      "notes": "Prix et avis relevés sur Amazon.fr le 2026-10-06 (indicatifs)."
+    },
+    {
+      "category": "lipbalm",
+      "currency": "EUR",
+      "isFeatured": false,
+      "active": true,
+      "curatedBy": "claude",
+      "curatedAt": "2026-10-06",
+      "id": "m555",
+      "name": "Nuxe Rêve de Miel Soin Lèvres",
+      "brand": "Nuxe",
+      "amazonAsin": "B0BH58BR2D",
+      "amazonUrl": "https://www.amazon.fr/dp/B0BH58BR2D?tag=glowupapp-21",
+      "price": 15.71,
+      "volumeMl": 10,
+      "description": "Soin lèvres Nuxe Rêve de Miel au miel (10 ml) — nourrit et hydrate les lèvres sèches.",
+      "concernTags": [
+        "levres_gercees",
+        "confort_levres",
+        "secheresse"
+      ],
+      "ingredientTags": [
+        "miel"
+      ],
+      "skinTypeTags": [
+        "normale",
+        "mixte",
+        "seche",
+        "grasse"
+      ],
+      "notes": "Contient du miel (peut être parfumé) : non étiqueté « lèvres sensibles ». Prix relevé sur Amazon.fr le 2026-10-06 (indicatif)."
     }
   ]
 }

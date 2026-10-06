@@ -250,6 +250,12 @@ const RoutineRenderer = (() => {
     }
     if (!pool.length) return null;
 
+    // Étape « baume lèvres » : même sélection pertinente + variée que le bonus lèvres
+    if (stepType === 'lipbalm') {
+      const lipPick = _pickLipBalm(_lipBalmPool(excludeIds));
+      if (lipPick) return lipPick;
+    }
+
     // Garde-fou anti mauvaise catégorie : un produit dont le NOM indique un masque,
     // un nettoyant ou un démaquillant ne doit jamais servir de crème/sérum/etc.
     if (!['mask', 'nightmask', 'cleanser'].includes(stepType)) {
@@ -674,6 +680,60 @@ const RoutineRenderer = (() => {
     if (typeof showToast === 'function') showToast('Routine enregistrée ✦', 'success', 2500);
   }
 
+  // ─── Baume lèvres : sélection pertinente ET variée ────────────
+  // Tirage [0,1[ de bonne qualité (cyrb53). Le hachage historique _seededRandom donne des valeurs
+  // quasi identiques pour des clés qui ne diffèrent qu'à la fin (ex. 'lipbalm_m082' / 'lipbalm_m083') :
+  // résultat, le même baume gagnait à chaque routine. On ne le modifie PAS (les routines déjà
+  // enregistrées garderaient sinon d'autres produits) : on l'utilise seulement pour les baumes.
+  function _rand01(key) {
+    const s = _renderSeed + '|' + key;
+    let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+    for (let i = 0; i < s.length; i++) {
+      const c = s.charCodeAt(i);
+      h1 = Math.imul(h1 ^ c, 2654435761);
+      h2 = Math.imul(h2 ^ c, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return (4294967296 * (2097151 & h2) + (h1 >>> 0)) / 9007199254740992;
+  }
+
+  // Baumes ADAPTÉS aux lèvres gercées (pas les baumes teintés) et compatibles avec le profil.
+  function _lipBalmPool(excludeIds) {
+    const cat = (AppState.products && AppState.products.catalog) || [];
+    const a = (AppState.questionnaire && AppState.questionnaire.answers) || {};
+    const u = _reasonProfile();
+    let pool = cat.filter(p => p.category === 'lipbalm' && p.active !== false);
+    // 1) uniquement ceux étiquetés « lèvres gercées » (repli : tous les baumes si aucun n'est étiqueté)
+    const suited = pool.filter(p => (p.concernTags || []).includes('levres_gercees'));
+    if (suited.length) pool = suited;
+    // 2) peau/lèvres sensibles ou « sans parfum » demandé : formules apaisantes uniquement
+    if (u.sensitive || (u.avoid || []).includes('parfum')) {
+      const gentle = pool.filter(p => (p.concernTags || []).includes('levres_sensibles'));
+      if (gentle.length) pool = gentle;
+    }
+    // 3) règle d'âge centrale
+    if (typeof AgeGuard !== 'undefined') pool = AgeGuard.filter(pool, AgeGuard.age(a));
+    // 4) petit budget : baumes abordables si possible
+    if (_isLowBudget()) {
+      const cheap = pool.filter(p => p.price > 0 && p.price <= 10);
+      if (cheap.length) pool = cheap;
+    }
+    // 5) pas deux fois le même produit dans la routine
+    if (excludeIds && excludeIds.size) {
+      const rest = pool.filter(p => !excludeIds.has(p.id));
+      if (rest.length) pool = rest;
+    }
+    return pool;
+  }
+
+  // Choix varié : tirage pondéré légèrement par la note (tous les produits du pool sont pertinents).
+  function _pickLipBalm(pool) {
+    if (!pool.length) return null;
+    const score = p => (p.rating || 4.3) * 0.15 + _rand01('lipbalm_' + p.id);
+    return [...pool].sort((x, y) => score(y) - score(x))[0];
+  }
+
   // ─── Section libre ────────────────────────────────────────────
   // ─── Bonus lèvres (additif) : proposé si lèvres sèches déclarées OU peau déshydratée/sèche ──
   function _renderLipCareTip() {
@@ -682,16 +742,9 @@ const RoutineRenderer = (() => {
     const dehydrated = tags.some(c => c === 'deshydratation' || c === 'secheresse') || a.skinType === 'seche';
     const lipsDry = a.lipsDry === 'oui' || a.lipsDry === 'parfois';
     if (!lipsDry && !dehydrated) return '';
-    const cat = (AppState.products && AppState.products.catalog) || [];
-    // Varier la proposition (ne plus figer Torriden) : on pioche parmi TOUS les
-    // baumes actifs via le tirage pseudo-aléatoire stable du rendu (change à chaque
-    // génération / profil), avec un léger bonus aux mieux notés.
-    const balms = cat.filter(p => p.category === 'lipbalm' && p.active !== false);
-    if (!balms.length) return '';
-    balms.sort((x, y) =>
-      ((y.rating || 0) * 0.15 + _seededRandom('lipbalm_' + y.id)) -
-      ((x.rating || 0) * 0.15 + _seededRandom('lipbalm_' + x.id)));
-    const balm = balms[0];
+    // Baume adapté aux lèvres gercées et au profil, varié d'une routine à l'autre
+    const balm = _pickLipBalm(_lipBalmPool());
+    if (!balm) return '';
     const url = balm.amazonUrl || balm.shopUrl || '#';
     const reason = lipsDry
       ? 'Tu nous as dit que tes lèvres sont souvent inconfortables.'
