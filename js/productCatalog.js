@@ -264,7 +264,7 @@ const ProductCatalog = (() => {
       <div class="product-card" data-id="${product.id}" onclick="ProductCatalog.openProductModal('${product.id}')">
         <div class="product-card-img">
           <img src="${product.imageUrl || ''}"
-               alt="${product.name}"
+               alt="${product.name}" loading="lazy" decoding="async"
                onerror="this.onerror=null;this.style.opacity='0'">
           ${badgeHTML}
         </div>
