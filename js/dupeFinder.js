@@ -407,11 +407,20 @@ const DupeFinder = (() => {
         ${_resultCard({ id: alt.id, similarity: 0, role: 'value', skinFit: 'adapted', commonPoints: [], differences: [], why: '', skinNote: '' }, 99)}`;
     }
 
+    // Titre de section : sépare « Ton produit » des propositions (seulement s'il y a des dupes du catalogue)
+    const _t = String((id.brand ? id.brand + ' ' : '') + (id.name || '')).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const dupesTitle = catRes.length ? `
+        <div class="df-dupes-title">
+          <h3 class="df-dupes-h">Les dupes de « ${_t} »</h3>
+          <p class="df-dupes-sub">Des produits à la formule proche, souvent moins chers.</p>
+        </div>` : '';
+
     return `
       <div class="df-results">
         ${header}
         ${selfBanner}
         ${warn}
+        ${dupesTitle}
         <div class="df-list">${catHtml}${extHtml}</div>
         ${altBlock}
         ${_footer(left)}

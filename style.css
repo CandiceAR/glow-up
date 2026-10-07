@@ -10848,3 +10848,7 @@ body.drawer-open{ overflow: hidden; }   /* blocage du défilement arrière-plan 
 .feature-tryon { display: none !important; }
 .feat-tryon .feature-tryon { display: revert !important; }
 .affiliate-note { font-size: .82rem; color: var(--muted, #777); margin-top: 8px; }
+
+.df-dupes-title { margin: 18px 0 10px; }
+.df-dupes-h { font-size: 1.05rem; margin: 0 0 4px; }
+.df-dupes-sub { font-size: .86rem; color: var(--muted, #777); margin: 0; }
