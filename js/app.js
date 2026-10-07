@@ -130,6 +130,8 @@ document.addEventListener('click', (ev) => {
 });
 
 function showScreen(name) {
+  // Essayer virtuellement : mis de côté (réactivable via GLOW_FEATURES.tryOn dans index.html)
+  if ((name === 'tryon' || name === 'final') && !(window.GLOW_FEATURES && window.GLOW_FEATURES.tryOn)) name = 'home';
   // Compte OBLIGATOIRE pour le dupe et l'analyse de routine (comme la génération de routine)
   if ((name === 'dupe-finder' || name === 'routine-analyzer') && !(AppState.user && AppState.user.uid)) {
     if (typeof Auth !== 'undefined' && Auth.openRequiredAuthModal) {
@@ -762,7 +764,7 @@ function renderRecommendedProducts() {
     grid.innerHTML = '<p class="empty-state">Complète le questionnaire pour voir tes recommandations.</p>';
     return;
   }
-  grid.innerHTML = list.map(p => ProductCatalog.renderCard(p, { showTryOn: true })).join('');
+  grid.innerHTML = list.map(p => ProductCatalog.renderCard(p, { showTryOn: !!(window.GLOW_FEATURES && window.GLOW_FEATURES.tryOn) })).join('');
 }
 
 // ─── Navigation capture → analyse ou questionnaire ────────────

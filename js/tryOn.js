@@ -406,7 +406,7 @@ const TryOn = (() => {
       </div>
 
       <div class="final-disclaimer">
-        <p>🔗 Les liens Amazon utilisent notre code affilié <strong>kand10ar-21</strong>. Le prix que tu paies ne change pas — nous recevons une petite commission au même taux pour tous les produits, sans favoritisme.</p>
+        <p>🔗 Les liens Amazon utilisent notre code affilié <strong>glowupapp-21</strong>. Le prix que tu paies ne change pas — nous recevons une petite commission au même taux pour tous les produits, sans favoritisme.</p>
       </div>`;
 
     // Copier le canvas du try-on dans le canvas final

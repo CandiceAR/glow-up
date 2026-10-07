@@ -1453,7 +1453,7 @@ const RoutineRenderer = (() => {
           <span>🌙 Routine du soir</span>
           <span>💄 Conseils maquillage</span>
           <span>✦ Produits recommandés</span>
-          <span>◇ Try-on virtuel</span>
+          ${(window.GLOW_FEATURES && window.GLOW_FEATURES.tryOn) ? '<span>◇ Try-on virtuel</span>' : ''}
         </div>
         <button class="btn btn-dark paywall-main-btn" onclick="openPaywallModal()">
           Débloquer mon Beauty Plan
@@ -1645,9 +1645,9 @@ const RoutineRenderer = (() => {
           <button class="btn btn-outline" onclick="showScreen('products')">
             Voir tous les produits →
           </button>
-          <button class="btn btn-outline" onclick="showScreen('tryon')" style="margin-top:12px">
+          ${(window.GLOW_FEATURES && window.GLOW_FEATURES.tryOn) ? `<button class="btn btn-outline" onclick="showScreen('tryon')" style="margin-top:12px">
             Essayer virtuellement ✦
-          </button>
+          </button>` : ''}
         </div>
       </div>`;
   }

@@ -337,9 +337,9 @@ const ProductCatalog = (() => {
           ${pairedHtml}
           <div class="modal-actions">
             ${renderBuyButton(p)}
-            <button class="btn btn-outline" onclick="TryOn.addProduct('${p.id}'); closeModal();">
+            ${(window.GLOW_FEATURES && window.GLOW_FEATURES.tryOn) ? `<button class="btn btn-outline" onclick="TryOn.addProduct('${p.id}'); closeModal();">
               ✦ Essayer virtuellement
-            </button>
+            </button>` : ''}
           </div>
         </div>
       </div>`;

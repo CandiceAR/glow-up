@@ -10843,3 +10843,8 @@ body.drawer-open{ overflow: hidden; }   /* blocage du défilement arrière-plan 
 .aic-box ul{margin:0 0 12px;padding-left:20px;font-size:.9rem;line-height:1.5;}
 .aic-small{font-size:.8rem!important;color:var(--muted);}
 .aic-box .btn{width:100%;margin-top:8px;}
+
+/* Fonctions mises de côté (essayage virtuel) : masquées tant que GLOW_FEATURES.tryOn est false */
+.feature-tryon { display: none !important; }
+.feat-tryon .feature-tryon { display: revert !important; }
+.affiliate-note { font-size: .82rem; color: var(--muted, #777); margin-top: 8px; }
