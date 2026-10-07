@@ -36,6 +36,10 @@ const CurrentRoutine = (() => {
 
   // Déduit la catégorie à partir du NOM du produit (corrige les erreurs de l'IA)
   const _CAT_RULES = [
+    // PRIORITAIRE : un produit de NETTOYAGE ne doit jamais être pris pour une crème ou un contour des yeux
+    // (ex. « Eau micellaire », « Lait démaquillant yeux »).
+    ['cleanser',    ['micellaire', 'micellar', 'micelle', 'démaquill', 'demaquill', 'makeup remover', 'make-up remover',
+                     'eau nettoyante', 'lotion nettoyante', 'lait nettoyant', 'gel nettoyant', 'gel lavant', 'huile lavante', 'cleansing']],
     ['eye',         ['contour des yeux', 'contour yeux', 'eye cream', 'eye serum', 'eye contour', ' eye ', 'yeux', 'dark circle', 'anti-cerne', 'cerne']],
     ['exfoliant',   ['exfolia', 'peeling', 'gommage', 'scrub', 'glycolic', 'salicylic', 'aha ', 'bha ']],
     ['cleanser',    ['cleanser', 'nettoyant', 'cleansing', 'foam', 'mousse', 'demaquill', 'démaquill', 'makeup remover', 'gel moussant']],
@@ -45,6 +49,7 @@ const CurrentRoutine = (() => {
     ['lipbalm',     ['lip balm', 'baume à lèvres', 'baume levres', 'lip mask', 'lip treatment']],
     ['oil',         ['face oil', 'facial oil', 'huile visage', 'cleansing oil']],
     ['mask',        ['sleeping mask', 'sleeping pack', 'wash off mask', 'masque', ' mask']],
+    ['moisturizer', ['lait-crème', 'lait crème', 'lait-creme', 'lait creme']],
     ['serum',       ['serum', 'sérum', 'ampoule', 'ampule', 'ampoul', 'essence', 'booster', 'concentr', 'concentrate']],
     ['moisturizer', ['moistur', 'crème', 'creme', 'cream', 'hydratant', 'emulsion', 'émulsion', 'gel-crème', 'gel cream', 'lotion']]
   ];

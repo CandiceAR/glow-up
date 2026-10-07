@@ -239,6 +239,9 @@ const ScanProduct = (() => {
         if (typeof showToast === 'function') showToast('Produit non reconnu — réessaie avec une photo plus nette du packaging', 'info', 4000);
         return;
       }
+      // Le TYPE du produit ne doit jamais dépendre de la seule IA : catalogue, puis règles sur le NOM
+      // (ex. « eau micellaire » = nettoyant, jamais une crème).
+      prod.category = _fixCategory(prod);
       S.product = prod;
 
       // 2) Calculer les FAITS (fiables, côté app)
@@ -275,6 +278,31 @@ const ScanProduct = (() => {
     }
   }
 
+  // ─── Type du produit : jamais « deviné » par l'IA seule ──────────
+  function _fixCategory(prod) {
+    // 1) produit connu du catalogue → sa catégorie fait foi
+    try {
+      if (typeof SameProduct !== 'undefined') {
+        const own = ((AppState.products && AppState.products.catalog) || []).find(p => p.category && SameProduct.same(prod, p));
+        if (own) return own.category;
+      }
+    } catch (e) {}
+    // 2) sinon : déduit du NOM (règles déterministes)
+    try {
+      if (typeof CurrentRoutine !== 'undefined' && CurrentRoutine.inferCategory) return CurrentRoutine.inferCategory(prod.name || '', prod.category);
+    } catch (e) {}
+    return prod.category || 'other';
+  }
+  const KIND_FR = {
+    cleanser: "nettoyant / démaquillant (produit de nettoyage : il nettoie la peau, ce n'est pas un soin qui reste sur le visage)",
+    toner: 'tonique / lotion', serum: 'sérum', moisturizer: 'crème ou soin hydratant', spf: 'protection solaire',
+    eye: 'soin contour des yeux', mask: 'masque', exfoliant: 'exfoliant', oil: 'huile', lipbalm: 'baume à lèvres', treatment: 'soin ciblé'
+  };
+  function _kindFr(prod) {
+    if (/micellaire|micellar/i.test(prod.name || '')) return "eau micellaire (nettoyant démaquillant : elle nettoie la peau, ce n'est PAS une crème ni un soin qui reste sur le visage)";
+    return KIND_FR[_normStep(prod.category || 'other')] || '';
+  }
+
   // Repli texte local si l'IA échoue (toujours cohérent avec les faits)
   function _localText(product, facts) {
     const title = facts.verdict === 'green'  ? 'Oui, ce produit peut te convenir'
@@ -285,6 +313,7 @@ const ScanProduct = (() => {
     if (facts.duplicateOf)              reasons.push('Il ferait doublon avec ' + facts.duplicateOf + " — tu n'en as pas forcément besoin.");
     (facts.conflicts || []).forEach(c => reasons.push(c));
     if (facts.safety)                   reasons.push(facts.safety);
+    if (facts.basic && !facts.duplicateOf) reasons.unshift("C'est un produit de base de la routine : il ne cible pas un besoin précis, il a un rôle (nettoyer, tonifier ou protéger).");
     if (!reasons.length)                reasons.push("Aucun besoin clair identifié dans ton profil pour ce produit.");
     return { title, reasons: reasons.slice(0, 3), timing: facts.moment || '', step: facts.stepText || '', note: facts.safety || (facts.conflicts || [])[0] || '' };
   }
@@ -376,13 +405,24 @@ const ScanProduct = (() => {
     const place = _placeInRoutine(prod, prodActives);
 
     // 7) Verdict (déterministe)
+    // Produit de BASE (nettoyant, tonique, SPF) : il ne « cible » pas un besoin, il a un rôle dans la routine.
+    // On ne lui reproche donc pas de ne rien cibler ; on ne prétend pas non plus vérifier sa composition (inconnue).
+    const baseCat  = _normStep(prod.category || 'other');
+    const isBasic  = baseCat === 'cleanser' || baseCat === 'toner' || baseCat === 'spf';
+    const sensitive = a.skinType === 'sensible' || (Array.isArray(a.complexes) && a.complexes.includes('rougeurs'))
+                      || (typeof a.sensitivity === 'number' && a.sensitivity >= 6);
+    if (isBasic && sensitive && !safety) {
+      safety = "Peau sensible : vérifie sur l'emballage qu'il est sans parfum ni alcool — Glow Up n'a pas pu vérifier sa composition.";
+    }
     let verdict;
     if (restricted || avoidHit || hardConflict)                                   verdict = 'red';
     else if (duplicateOf || conflicts.length || (prodActives.retinol && (a.skinType === 'sensible'))) verdict = 'orange';
+    else if (isBasic)                                                             verdict = sensitive ? 'orange' : 'green';
     else if (addresses.length)                                                    verdict = 'green';
     else                                                                          verdict = 'orange';
 
-    return { verdict, addresses, duplicateOf, conflicts, safety, moment: place.moment, stepText: place.stepText, section: place.section, pos: place.pos };
+    return { verdict, addresses, duplicateOf, conflicts, safety, moment: place.moment, stepText: place.stepText, section: place.section, pos: place.pos,
+             basic: isBasic, kindFr: _kindFr(prod), replaceKey: place.replaceKey || null, replacesLabel: place.replacesLabel || null };
   }
 
   const _STEP_ORDER = ['cleanser', 'toner', 'exfoliant', 'serum', 'treatment', 'eye', 'moisturizer', 'oil', 'spf'];
@@ -410,6 +450,18 @@ const ScanProduct = (() => {
     if (after)  stepText += `, après ${after}`;
     if (before) stepText += ` et avant ${before}`;
     stepText += '.';
+
+    // Étape « unique » (nettoyant, crème, SPF) : le produit PREND LA PLACE de celui de l'étape, il ne s'ajoute pas
+    if (['cleanser', 'moisturizer', 'spf'].includes(stepCat)) {
+      const sorted = [...steps].sort((x, y) => x.order - y.order);
+      const idx = sorted.findIndex(s => _normStep(s.step) === stepCat);
+      if (idx >= 0) {
+        const n = sorted.slice(0, idx).filter(s => s.step === sorted[idx].step).length;
+        const replacesLabel = sorted[idx].label;
+        return { moment, section, pos: idx + 1, replaceKey: section + '|' + sorted[idx].step + '|' + n, replacesLabel,
+                 stepText: `Il remplacerait le produit de l'étape ${idx + 1} (« ${replacesLabel} ») de ta routine ${sectionLabel} : garde l'un ou l'autre, pas les deux.` };
+      }
+    }
     return { moment, stepText, section, pos };
   }
 
@@ -417,6 +469,15 @@ const ScanProduct = (() => {
   function addToRoutine() {
     const p = S.product, f = S.facts;
     if (!p || !f) return;
+    // Étape unique (nettoyant, crème, SPF) : le produit scanné remplace celui de l'étape (même système que « Modifier ma routine »)
+    if (f.replaceKey && typeof RoutineEdit !== 'undefined' && RoutineEdit.setChoice) {
+      let own = null;
+      try { if (typeof SameProduct !== 'undefined') own = ((AppState.products && AppState.products.catalog) || []).find(c => c.category && SameProduct.same(p, c)); } catch (e) {}
+      RoutineEdit.setChoice(f.replaceKey, own ? { id: own.id } : { custom: { brand: p.brand || '', name: p.name || '', category: p.category || 'other' } });
+      if (typeof showToast === 'function') showToast('Ton produit remplace celui de cette étape ✦', 'success', 2800);
+      if (AppState.routine && AppState.routine.ruleApplied) showScreen('results');
+      return;
+    }
     const r = AppState.routine || (AppState.routine = { matin: [], soir: [] });
     const section = f.section || 'matin';
     if (!Array.isArray(r[section])) r[section] = [];

@@ -87,6 +87,13 @@ const RoutineEdit = (() => {
     }
     return null;
   }
+  // Enregistre directement un choix pour une étape (utilisé par « Ajouter à ma routine » du scan)
+  function setChoice(key, entry) {
+    if (!key || !entry) return;
+    _load()[key] = entry;
+    _persist();
+    _refreshScreens();
+  }
   function hasChoice(key) { const e = _load()[key]; return !!e && !e.reset; }
 
   // ─── Rafraîchir l'écran visible après un changement ──────────
@@ -272,7 +279,7 @@ const RoutineEdit = (() => {
   }
 
   return { open, close, setMoment, pick, back, search, choose, useCustom, reset,
-           resolve, hasChoice, exportAll, importAll, migrateGuestToUser };
+           resolve, hasChoice, setChoice, exportAll, importAll, migrateGuestToUser };
 })();
 
 if (typeof window !== 'undefined') window.RoutineEdit = RoutineEdit;

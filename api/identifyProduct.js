@@ -72,7 +72,12 @@ Règles :
   • "spf/sun/sunscreen/solaire/uv" → spf
   • "exfoliant/peeling/gommage/scrub/aha/bha" → exfoliant
   Un flacon compte-gouttes ou une ampoule = presque toujours un serum, pas une crème.
+  • "eau micellaire / micellar water / eau démaquillante / lait, huile ou baume démaquillant / gel ou mousse nettoyant(e)" → cleanser.
+    Une EAU MICELLAIRE est un NETTOYANT démaquillant : ce n'est JAMAIS une crème, un sérum ni un soin apaisant ou barrière.
   Ne confonds JAMAIS un sérum avec une crème hydratante, ni un contour des yeux avec une crème.
+- "name" = EXACTEMENT ce qui est écrit sur l'emballage (y compris « eau micellaire », « lait-crème », « gel »…).
+  N'y substitue JAMAIS un autre produit plus célèbre de la même marque : identifie CE produit-là, pas la marque.
+  Si le type de produit (eau micellaire, crème, sérum…) n'est pas lisible, mets "confidence": "low" et "category": "other".
 - Sois factuelle : n'invente pas une marque que tu ne vois pas. Mais tu peux déduire actifs/texture/fini d'un produit que tu reconnais.
 - "estPrice" = prix de vente public estimé en euros (0 si inconnu).
 - Réponds UNIQUEMENT avec le JSON.`;
@@ -117,12 +122,18 @@ Règles :
     const str = (v, max = 80) => (typeof v === 'string' ? v.slice(0, max) : '');
     const arr = (v) => Array.isArray(v) ? v.filter(x => typeof x === 'string' && x.length < 40).slice(0, 8) : [];
 
+    // Le type d'un produit de NETTOYAGE se déduit aussi du NOM, de façon déterministe (l'IA peut se tromper)
+    const CLEANSER_RE = /micellaire|micellar|micelle|d[ée]maquill|makeup remover|make-up remover|eau nettoyante|lotion nettoyante|lait nettoyant|gel nettoyant|gel lavant|huile lavante|cleansing|cleanser|nettoyant/i;
+    const fixCategory = (name, cat) => (CLEANSER_RE.test(name || '') ? 'cleanser' : cat);
+    const claims = Array.isArray(parsed.claims) ? parsed.claims.filter(x => typeof x === 'string' && x.length < 70).slice(0, 6) : [];
+
     const safe = {
       recognized:  Boolean(parsed.recognized),
       brand:       str(parsed.brand, 60),
       name:        str(parsed.name, 120),
       range:       str(parsed.range, 60),
-      category:    CATEGORIES.includes(parsed.category) ? parsed.category : 'other',
+      category:    fixCategory(str(parsed.name, 120), CATEGORIES.includes(parsed.category) ? parsed.category : 'other'),
+      claims,
       productType: parsed.productType === 'makeup' ? 'makeup' : 'skincare',
       shade:       str(parsed.shade, 40),
       keyActives:  arr(parsed.keyActives),
