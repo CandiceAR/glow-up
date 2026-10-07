@@ -409,10 +409,15 @@ const DupeFinder = (() => {
 
     // Titre de section : sépare « Ton produit » des propositions (seulement s'il y a des dupes du catalogue)
     const _t = String((id.brand ? id.brand + ' ' : '') + (id.name || '')).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-    const dupesTitle = catRes.length ? `
+    const _prices = catRes.map(r => { const cp = _catalogProduct(r.id); return cp && cp.price != null ? cp.price : null; }).filter(x => x != null && x > 0);
+    const _from = _prices.length ? Math.min.apply(null, _prices) : 0;
+    const _count = catRes.length;
+    const dupesTitle = _count ? `
         <div class="df-dupes-title">
-          <h3 class="df-dupes-h">Les dupes de « ${_t} »</h3>
+          <span class="df-dupes-eyebrow">✦ Les dupes de ✦</span>
+          <h3 class="df-dupes-h">« ${_t} »</h3>
           <p class="df-dupes-sub">Des produits à la formule proche, souvent moins chers.</p>
+          <span class="df-dupes-count">${_count} alternative${_count > 1 ? 's' : ''} trouvée${_count > 1 ? 's' : ''}${_from ? ' · à partir de ' + _from.toFixed(2).replace('.', ',') + ' €' : ''}</span>
         </div>` : '';
 
     return `

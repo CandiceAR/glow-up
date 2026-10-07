@@ -10849,9 +10849,11 @@ body.drawer-open{ overflow: hidden; }   /* blocage du défilement arrière-plan 
 .feat-tryon .feature-tryon { display: revert !important; }
 .affiliate-note { font-size: .82rem; color: var(--muted, #777); margin-top: 8px; }
 
-.df-dupes-title { margin: 18px 0 10px; }
-.df-dupes-h { font-size: 1.05rem; margin: 0 0 4px; }
-.df-dupes-sub { font-size: .86rem; color: var(--muted, #777); margin: 0; }
+.df-dupes-title { margin: 26px 0 16px; padding: 18px 8px 4px; text-align: center; border-top: 2px solid var(--sand, #e8dfd6); }
+.df-dupes-eyebrow { display: block; font-size: .78rem; font-weight: 800; letter-spacing: .22em; text-transform: uppercase; color: #b4472a; margin-bottom: 8px; }
+.df-dupes-h { font-family: var(--font-serif); font-size: 1.6rem; font-weight: 700; line-height: 1.2; margin: 0 0 8px; color: var(--charcoal, #2b2420); text-wrap: balance; }
+.df-dupes-sub { font-size: .92rem; font-weight: 600; color: var(--muted, #6f635b); margin: 0 0 10px; }
+.df-dupes-count { display: inline-block; font-size: .85rem; font-weight: 800; color: #fff; background: #b4472a; border-radius: 999px; padding: 6px 14px; }
 
 /* Téléphone : photos produits plus petites (fiche produit + cartes du catalogue) */
 @media (max-width: 768px) {
