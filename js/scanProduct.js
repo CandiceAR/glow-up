@@ -48,6 +48,7 @@ const ScanProduct = (() => {
     switch (S.view) {
       case 'gate':        html = _vGate(); break;
       case 'identifying': html = _vLoading(); break;
+      case 'confirm':     html = _vConfirm(); break;
       case 'result':      html = _vResult(); break;
       default:            html = _vIntro();
     }
@@ -93,6 +94,41 @@ const ScanProduct = (() => {
       <div class="scan-wrap scan-wrap--center">
         <div class="scan-spin"></div>
         <p class="scan-loading-txt">🔍 Glow Up identifie le produit et le compare à ta peau…</p>
+      </div>`;
+  }
+
+  // Types proposés à la cliente (elle a toujours le dernier mot sur le type)
+  const TYPE_CHOICES = [
+    ['cleanser', 'Nettoyant / eau micellaire / démaquillant'], ['toner', 'Lotion / tonique'], ['serum', 'Sérum / ampoule / essence'],
+    ['moisturizer', 'Crème / soin hydratant'], ['eye', 'Contour des yeux'], ['spf', 'Protection solaire'], ['mask', 'Masque'],
+    ['exfoliant', 'Exfoliant / gommage / peeling'], ['oil', 'Huile visage'], ['lipbalm', 'Baume à lèvres'], ['other', 'Autre / je ne sais pas']
+  ];
+  function _esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+  function _vConfirm() {
+    const p = S.product || {};
+    const cur = _normStep(p.category || 'other');
+    const sure = S.catSure && cur !== 'other' && TYPE_CHOICES.some(t => t[0] === cur);
+    const opts = TYPE_CHOICES.map(t => '<option value="' + t[0] + '"' + (sure && t[0] === cur ? ' selected' : '') + '>' + t[1] + '</option>').join('');
+    return `
+      <div class="scan-wrap">
+        <div class="scan-hero">
+          <span class="scan-hero-emoji">🔎</span>
+          <h1 class="scan-title">Vérifions ensemble</h1>
+          <p class="scan-sub">Pour être sûre de ne pas me tromper, confirme le <strong>produit</strong> et son <strong>type</strong> avant l'analyse.</p>
+        </div>
+        <div class="scan-block">
+          <label class="scan-block-h" for="scanConfName">Produit lu sur la photo</label>
+          <input id="scanConfName" type="text" maxlength="120" value="${_esc((p.brand ? p.brand + ' ' : '') + (p.name || ''))}" style="width:100%;padding:12px;border:1px solid #ccc;border-radius:10px;font-size:16px;box-sizing:border-box;">
+          <label class="scan-block-h" for="scanConfType" style="display:block;margin-top:14px;">Quel type de produit est-ce ?</label>
+          <select id="scanConfType" style="width:100%;padding:12px;border:1px solid #ccc;border-radius:10px;font-size:16px;box-sizing:border-box;">
+            ${sure ? '' : '<option value="" selected disabled>— Choisis le type —</option>'}${opts}
+          </select>
+          <p class="scan-tip" style="margin-top:10px;">${sure ? "J'ai détecté ce type d'après le nom. Change-le si ce n'est pas le bon." : "Je ne suis pas certaine du type : choisis-le pour que l'analyse soit juste."}</p>
+        </div>
+        <div class="scan-result-ctas">
+          <button class="btn btn-dark scan-cta" onclick="ScanProduct.confirmType()">✓ Confirmer et analyser</button>
+          <button class="btn btn-outline scan-cta" onclick="ScanProduct.reset()">↩ Reprendre une photo</button>
+        </div>
       </div>`;
   }
 
@@ -243,7 +279,30 @@ const ScanProduct = (() => {
       // (ex. « eau micellaire » = nettoyant, jamais une crème).
       prod.category = _fixCategory(prod);
       S.product = prod;
+      // Le type est toujours CONFIRMÉ par l'utilisatrice avant l'analyse (aucune erreur silencieuse)
+      S.catSure = prod.confidence !== 'low' && prod.category !== 'other';
+      S.busy = false; S.view = 'confirm'; render();
+    } catch (e) {
+      console.warn('[ScanProduct] scan échoué:', e.message);
+      S.busy = false; S.view = 'intro'; render();
+      try { alert('Analyse impossible : ' + (e && e.message ? e.message : e)); } catch (_) {}
+    }
+  }
 
+  // Étape 2 : après confirmation du type par l'utilisatrice
+  async function confirmType() {
+    if (S.busy || !S.product) return;
+    const nameEl = document.getElementById('scanConfName'), typeEl = document.getElementById('scanConfType');
+    const cat = typeEl && typeEl.value;
+    if (!cat) { if (typeof showToast === 'function') showToast('Choisis d’abord le type de produit.', 'info', 3000); return; }
+    const prod = S.product;
+    const typed = nameEl ? nameEl.value.trim() : '';
+    const orig = ((prod.brand ? prod.brand + ' ' : '') + (prod.name || '')).trim();
+    if (typed && typed !== orig) { prod.brand = ''; prod.name = typed.slice(0, 120); }   // nom corrigé par elle : on le prend tel quel
+    prod.category = cat;                                                                  // le type choisi par elle fait foi
+    prod.userConfirmedType = true;
+    S.busy = true; S.view = 'identifying'; render();
+    try {
       // 2) Calculer les FAITS (fiables, côté app)
       const facts = computeFacts(prod);
       S.facts = facts;
@@ -500,7 +559,7 @@ const ScanProduct = (() => {
     if (AppState.routine.ruleApplied) showScreen('results');
   }
 
-  return { initScreen, scan, onFile, reset, goCreateRoutine, addToRoutine, computeFacts, hasProfile };
+  return { initScreen, scan, confirmType, onFile, reset, goCreateRoutine, addToRoutine, computeFacts, hasProfile };
 })();
 
 if (typeof window !== 'undefined') window.ScanProduct = ScanProduct;
