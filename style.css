@@ -10859,3 +10859,15 @@ body.drawer-open{ overflow: hidden; }   /* blocage du défilement arrière-plan 
   .product-card-img { aspect-ratio: 4 / 3; }
   .product-card-img img { padding: 6px; box-sizing: border-box; }
 }
+
+/* Catalogue sur téléphone : les cartes ne dépassent jamais de l'écran (les filtres, eux, défilent) */
+@media (max-width: 768px) {
+  .shop-layout { align-items: stretch; padding-bottom: 130px; }
+  .shop-main { width: 100%; max-width: 100%; min-width: 0; }
+  .shop-need-chips { max-width: 100%; }
+  .shop-controls { max-width: 100%; }
+  .products-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .product-card { padding: 0; min-width: 0; }
+  .product-card-img { aspect-ratio: 1; }
+  .product-card-img img { height: 100%; width: 100%; object-fit: contain; padding: 8px; box-sizing: border-box; }
+}
