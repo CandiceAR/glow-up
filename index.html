@@ -792,7 +792,7 @@
   <script src="js/rulesEngine.js?v=196"></script>
   <script src="js/catalogue.js?v=192"></script>
   <script src="js/ageGuard.js?v=2"></script>
-  <script src="js/productCatalog.js?v=234"></script>
+  <script src="js/productCatalog.js?v=235"></script>
   <script src="js/spfEngine.js?v=200"></script>
   <script src="js/currentRoutine.js?v=5"></script>
   <script src="js/questionnaire.js?v=229"></script>
@@ -817,7 +817,7 @@
   <script src="js/aiConsent.js?v=1"></script>
   <script src="js/profil.js?v=6"></script>
   <script src="js/scanProduct.js?v=8"></script>
-  <script src="js/app.js?v=221"></script>
+  <script src="js/app.js?v=222"></script>
   <script src="js/analytics.js?v=1"></script>
 
   <!-- Derniers conseils (blog) sur la page d'accueil -->
@@ -887,7 +887,16 @@
         if (_swRefreshing) return;
         _swRefreshing = true;
         // Ne recharger que si une version tournait déjà (= vraie mise à jour, pas 1ʳᵉ install)
-        if (_hadController) window.location.reload();
+        // …et jamais en plein milieu d'une navigation : on attend que la personne soit sur l'accueil
+        // (sinon l'app « saute » vers l'accueil pendant qu'elle utilise le catalogue, etc.).
+        if (_hadController) {
+          const _go = () => {
+            const a = document.querySelector('.screen.active');
+            if (!a || a.id === 'screen-home') { window.location.reload(); return true; }
+            return false;
+          };
+          if (!_go()) { const _t = setInterval(() => { if (_go()) clearInterval(_t); }, 1500); }
+        }
       });
 
       window.addEventListener('load', () => {

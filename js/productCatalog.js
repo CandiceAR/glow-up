@@ -65,7 +65,7 @@ const ProductCatalog = (() => {
         let firestoreProducts = [];
         if (typeof FirestoreProducts !== 'undefined') {
           try {
-            firestoreProducts = await FirestoreProducts.loadAll() || [];
+            firestoreProducts = await Promise.race([FirestoreProducts.loadAll(), new Promise(r => setTimeout(() => r([]), 4000))]) || [];
           } catch (e) { /* ignore */ }
         }
 

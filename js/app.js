@@ -409,8 +409,9 @@ async function initApp() {
 
   // 4. (listeners déjà attachés en step 0)
 
-  // 5. Affichage écran home
-  showScreen('home');
+  // 5. Affichage écran home (sauf si la personne a déjà ouvert un autre écran pendant le chargement)
+  const _cur = document.querySelector('.screen.active');
+  if (!_cur || _cur.id === 'screen-home') showScreen('home');
 
   // 6. Rendu grille featured sur home
   renderFeaturedHome();
