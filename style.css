@@ -10852,3 +10852,10 @@ body.drawer-open{ overflow: hidden; }   /* blocage du défilement arrière-plan 
 .df-dupes-title { margin: 18px 0 10px; }
 .df-dupes-h { font-size: 1.05rem; margin: 0 0 4px; }
 .df-dupes-sub { font-size: .86rem; color: var(--muted, #777); margin: 0; }
+
+/* Téléphone : photos produits plus petites (fiche produit + cartes du catalogue) */
+@media (max-width: 768px) {
+  .modal-product-img img { width: auto; max-width: 100%; height: 200px; margin: 0 auto; display: block; aspect-ratio: auto; }
+  .product-card-img { aspect-ratio: 4 / 3; }
+  .product-card-img img { padding: 6px; box-sizing: border-box; }
+}
