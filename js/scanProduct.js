@@ -143,7 +143,8 @@ const ScanProduct = (() => {
     const reasons = (r.reasons || []).map(x => `<li>${x}</li>`).join('');
     return `
       <div class="scan-wrap">
-        <div class="scan-prod-head">
+        <div class="scan-prod-head" style="display:flex;align-items:center;gap:12px;">
+          ${S.photo ? `<img src="${S.photo}" alt="Photo de ton produit" style="width:64px;height:64px;object-fit:cover;border-radius:12px;flex:none;border:1px solid rgba(0,0,0,.1);">` : ''}
           <div class="scan-prod-id">
             <span class="scan-prod-brand">${p.brand || ''}</span>
             <span class="scan-prod-name">${p.name || 'Produit'}</span>
@@ -186,7 +187,7 @@ const ScanProduct = (() => {
     try { sessionStorage.setItem('glow_after_routine_scan', '1'); } catch (e) {}
     if (typeof startGlowUp === 'function') startGlowUp(); else showScreen('questionnaire');
   }
-  function reset() { S = { view: 'intro', busy: false, product: null, facts: null, verdict: null }; render(); }
+  function reset() { S = { view: 'intro', busy: false, product: null, facts: null, verdict: null, photo: null }; render(); }
 
   // ─── Capture photo (caméra native en app, input fichier sinon) ──
   async function _capturePhoto() {
@@ -264,6 +265,7 @@ const ScanProduct = (() => {
     S.busy = true; S.view = 'identifying'; render();
     try {
       const photo = await _compress(raw);
+      S.photo = photo;                         // gardée en mémoire seulement, pour l'afficher en petit dans la fiche
       // 1) Identifier le produit (brique existante)
       const idResp = await fetch(apiUrl('/api/identifyProduct'), {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
