@@ -129,7 +129,25 @@ document.addEventListener('click', (ev) => {
   if (wrap && wrap.classList.contains('open') && !wrap.contains(ev.target)) wrap.classList.remove('open');
 });
 
+// ── DIAGNOSTIC TEMPORAIRE (à retirer) : repère ce qui ramène à l'accueil juste après l'ouverture du catalogue ──
+let _dbgShopAt = 0;
+try {
+  const t = Number(sessionStorage.getItem('glow_dbg_shop_ts') || 0);
+  if (t && Date.now() - t < 8000) {
+    sessionStorage.removeItem('glow_dbg_shop_ts');
+    setTimeout(() => { try { alert("DIAGNOSTIC : la page a été rechargée juste après l'ouverture du catalogue." + '\n' + (sessionStorage.getItem('glow_dbg_last') || '')); } catch (e) {} }, 1500);
+  }
+} catch (e) {}
 function showScreen(name) {
+  try {
+    const stack = (new Error().stack || '').split('\n').slice(2, 5).map(x => x.trim().slice(0, 90)).join(' | ');
+    sessionStorage.setItem('glow_dbg_last', name + ' <- ' + stack);
+    if (name === 'shop') { _dbgShopAt = Date.now(); sessionStorage.setItem('glow_dbg_shop_ts', String(_dbgShopAt)); setTimeout(() => sessionStorage.removeItem('glow_dbg_shop_ts'), 8000); }
+    else if (_dbgShopAt && Date.now() - _dbgShopAt < 8000 && name !== 'shop') {
+      const msg = 'DIAGNOSTIC : retour automatique vers ' + name + '\n' + stack;
+      _dbgShopAt = 0; setTimeout(() => { try { alert(msg); } catch (e) {} }, 300);
+    }
+  } catch (e) {}
   // Essayer virtuellement : mis de côté (réactivable via GLOW_FEATURES.tryOn dans index.html)
   if ((name === 'tryon' || name === 'final') && !(window.GLOW_FEATURES && window.GLOW_FEATURES.tryOn)) name = 'home';
   // Compte OBLIGATOIRE pour le dupe et l'analyse de routine (comme la génération de routine)
