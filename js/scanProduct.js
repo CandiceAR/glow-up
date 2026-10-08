@@ -139,7 +139,9 @@ const ScanProduct = (() => {
     const badge = v === 'green'  ? { cls: 'green',  ic: '🟢' }
                 : v === 'orange' ? { cls: 'orange', ic: '🟠' }
                 :                  { cls: 'red',    ic: '🔴' };
+    const f = S.facts || {};
     const canAdd = v === 'green';
+    const offer = v === 'orange' && f.replaceOffer && f.replaceKey;
     const reasons = (r.reasons || []).map(x => `<li>${x}</li>`).join('');
     return `
       <div class="scan-wrap">
@@ -174,6 +176,14 @@ const ScanProduct = (() => {
           </div>` : ''}
 
         ${r.note ? `<div class="scan-note">⚠️ ${r.note}</div>` : ''}
+
+        ${offer ? `
+          <div class="scan-block scan-replace">
+            <h3 class="scan-block-h">🔁 Veux-tu le remplacer ?</h3>
+            <p class="scan-line">Ce produit fait doublon avec <strong>« ${_esc(f.replacesLabel || 'ton produit actuel')} »</strong> déjà dans ta routine. Tu peux le remplacer : ta routine sera modifiée et enregistrée.</p>
+            <button class="btn btn-dark scan-cta" onclick="ScanProduct.addToRoutine()">✓ Oui, le remplacer dans ma routine</button>
+            <button class="btn btn-outline scan-cta" onclick="ScanProduct.reset()">Non, garder mon produit actuel</button>
+          </div>` : ''}
 
         <div class="scan-result-ctas">
           ${canAdd ? `<button class="btn btn-dark scan-cta" onclick="ScanProduct.addToRoutine()">✦ Ajouter à ma routine</button>` : ''}
@@ -372,6 +382,7 @@ const ScanProduct = (() => {
     const reasons = [];
     if ((facts.addresses || []).length) reasons.push('Il répond à ' + facts.addresses.join(', ') + '.');
     if (facts.duplicateOf)              reasons.push('Il ferait doublon avec ' + facts.duplicateOf + " — tu n'en as pas forcément besoin.");
+    if (facts.replaceOffer && facts.replacesLabel) reasons.push('Il fait doublon avec « ' + facts.replacesLabel + ' » : tu peux le remplacer dans ta routine.');
     (facts.conflicts || []).forEach(c => reasons.push(c));
     if (facts.safety)                   reasons.push(facts.safety);
     if (facts.basic && !facts.duplicateOf) reasons.unshift("C'est un produit de base de la routine : il ne cible pas un besoin précis, il a un rôle (nettoyer, tonifier ou protéger).");
@@ -402,6 +413,33 @@ const ScanProduct = (() => {
       try { CurrentRoutine.list().forEach(e => { hay += ' ' + (e.name || '') + ' ' + (e.brand || ''); }); } catch (e) {}
     }
     return hay;
+  }
+
+  // Cherche, dans la routine réellement affichée (choix perso > produits déjà possédés > recommandations),
+  // l'étape qui contient DÉJÀ le même actif (ex. rétinol) pour un produit du même type : c'est elle qu'on propose de remplacer.
+  function _findSameActiveStep(prod, prodActives) {
+    try {
+      if (typeof RoutineRenderer === 'undefined' || !RoutineRenderer.resolveSection) return null;
+      const cat = _normStep(prod.category || 'other');
+      const SER = ['serum', 'treatment'];
+      const keys = Object.keys(prodActives).filter(k => prodActives[k]);
+      if (!keys.length || cat === 'other') return null;
+      for (const section of ['soir', 'matin']) {
+        const rows = RoutineRenderer.resolveSection(section) || [];
+        for (let i = 0; i < rows.length; i++) {
+          const row = rows[i], t = _normStep(row.step.step);
+          if (!(t === cat || (SER.includes(t) && SER.includes(cat)))) continue;
+          let txt = '', label = '';
+          if (row.product) { txt = (row.product.name || '') + ' ' + (row.product.brand || '') + ' ' + ((row.product.ingredientTags || []).join(' ')); label = ((row.product.brand ? row.product.brand + ' ' : '') + (row.product.name || '')).trim(); }
+          else if (row.kept) { txt = (row.kept.name || '') + ' ' + (row.kept.brand || ''); label = ((row.kept.brand ? row.kept.brand + ' ' : '') + (row.kept.name || '')).trim(); }
+          if (!txt) continue;
+          const have = _actives(txt);
+          const hit = keys.find(k => have[k]);
+          if (hit) return { key: row.key, label: label || row.step.label, section, pos: i + 1, active: hit };
+        }
+      }
+    } catch (e) {}
+    return null;
   }
 
   function computeFacts(prod) {
@@ -464,6 +502,15 @@ const ScanProduct = (() => {
 
     // 6) Moment + position réelle dans la routine
     const place = _placeInRoutine(prod, prodActives);
+    // Doublon d'actif (ex. 2 produits au rétinol) : on cherche le produit de la routine à remplacer
+    if (!place.replaceKey && (hardConflict || duplicateOf)) {
+      const same = _findSameActiveStep(prod, prodActives);
+      if (same) {
+        const sl = same.section === 'soir' ? 'du soir' : 'du matin';
+        place.replaceKey = same.key; place.replacesLabel = same.label; place.section = same.section; place.pos = same.pos;
+        place.stepText = `Il ferait doublon avec « ${same.label} » (étape ${same.pos} de ta routine ${sl}) : tu peux le remplacer, mais garde un seul des deux.`;
+      }
+    }
 
     // 7) Verdict (déterministe)
     // Produit de BASE (nettoyant, tonique, SPF) : il ne « cible » pas un besoin, il a un rôle dans la routine.
@@ -476,14 +523,15 @@ const ScanProduct = (() => {
       safety = "Peau sensible : vérifie sur l'emballage qu'il est sans parfum ni alcool — Glow Up n'a pas pu vérifier sa composition.";
     }
     let verdict;
-    if (restricted || avoidHit || hardConflict)                                   verdict = 'red';
+    if (restricted || avoidHit || (hardConflict && !place.replaceKey))            verdict = 'red';
     else if (duplicateOf || conflicts.length || (prodActives.retinol && (a.skinType === 'sensible'))) verdict = 'orange';
     else if (isBasic)                                                             verdict = sensitive ? 'orange' : 'green';
     else if (addresses.length)                                                    verdict = 'green';
     else                                                                          verdict = 'orange';
 
     return { verdict, addresses, duplicateOf, conflicts, safety, moment: place.moment, stepText: place.stepText, section: place.section, pos: place.pos,
-             basic: isBasic, kindFr: _kindFr(prod), replaceKey: place.replaceKey || null, replacesLabel: place.replacesLabel || null };
+             basic: isBasic, kindFr: _kindFr(prod), replaceKey: place.replaceKey || null, replacesLabel: place.replacesLabel || null,
+             replaceOffer: !!(place.replaceKey && (hardConflict || duplicateOf)) };
   }
 
   const _STEP_ORDER = ['cleanser', 'toner', 'exfoliant', 'serum', 'treatment', 'eye', 'moisturizer', 'oil', 'spf'];
@@ -535,7 +583,7 @@ const ScanProduct = (() => {
       let own = null;
       try { if (typeof SameProduct !== 'undefined') own = ((AppState.products && AppState.products.catalog) || []).find(c => c.category && SameProduct.same(p, c)); } catch (e) {}
       RoutineEdit.setChoice(f.replaceKey, own ? { id: own.id } : { custom: { brand: p.brand || '', name: p.name || '', category: p.category || 'other' } });
-      if (typeof showToast === 'function') showToast('Ton produit remplace celui de cette étape ✦', 'success', 2800);
+      if (typeof showToast === 'function') showToast("C'est fait : " + (f.replacesLabel ? '« ' + f.replacesLabel + ' » est remplacé dans ta routine ✦' : 'ton produit remplace celui de cette étape ✦'), 'success', 2800);
       if (AppState.routine && AppState.routine.ruleApplied) showScreen('results');
       return;
     }
