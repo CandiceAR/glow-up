@@ -15,20 +15,51 @@ const POSTS_DIR = path.join(ROOT, 'blog', 'posts');
 const OUT_DIR   = path.join(ROOT, 'blog');
 const SITE      = 'https://www.glowupskin.app';   // domaine canonique (l'apex redirige vers www)
 
+// Auteure des articles (Person dans les données structurées + ligne « Par … » sous le titre).
+// Nom de l'auteure (utilisé aussi pour les articles sans champ « author »). Si un texte entre crochets y est remis,
+// le script refuse de tourner sur GitHub Actions (garde-fou contre un faux nom).
+const AUTHOR_NAME = 'Candice COHEN';
+const AUTHOR_URL  = SITE + '/a-propos/';
+// Image de partage par défaut (1200 x 630) quand un article n'a pas sa propre image
+const DEFAULT_SHARE = { path: '/assets/og-default.jpg', width: 1200, height: 630 };
+
 // ── Frontmatter minimal (--- clé: valeur --- + corps Markdown) ──
 function parseFront(raw) {
   const m = raw.match(/^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/);
   if (!m) return { data: {}, body: raw };
   const data = {};
+  let listKey = null;   // une clé sans valeur suivie de lignes « - élément » devient une liste (sources, related)
   m[1].split('\n').forEach(line => {
+    const li = line.match(/^\s*-\s+(.*)$/);
+    if (li && listKey) { data[listKey].push(li[1].trim()); return; }
     const i = line.indexOf(':');
     if (i === -1) return;
     const key = line.slice(0, i).trim();
     let val = line.slice(i + 1).trim();
+    if (val === '') { data[key] = []; listKey = key; return; }
+    listKey = null;
     if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) val = val.slice(1, -1);
     data[key] = val;
   });
   return { data, body: m[2] };
+}
+
+// Dimensions d'une image JPEG / PNG (sans dépendance), pour width / height dans le HTML
+function imageSize(file) {
+  try {
+    const b = fs.readFileSync(file);
+    if (b[0] === 0x89 && b[1] === 0x50) return { width: b.readUInt32BE(16), height: b.readUInt32BE(20) };   // PNG
+    if (b[0] === 0xFF && b[1] === 0xD8) {                                                                       // JPEG
+      let o = 2;
+      while (o < b.length) {
+        if (b[o] !== 0xFF) { o++; continue; }
+        const mk = b[o + 1], len = b.readUInt16BE(o + 2);
+        if (mk >= 0xC0 && mk <= 0xCF && mk !== 0xC4 && mk !== 0xC8 && mk !== 0xCC) return { height: b.readUInt16BE(o + 5), width: b.readUInt16BE(o + 7) };
+        o += 2 + len;
+      }
+    }
+  } catch (e) { /* image illisible : pas de dimensions */ }
+  return null;
 }
 
 const esc = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -102,10 +133,27 @@ a{color:var(--terra);}
 .backcta{max-width:680px;margin:44px auto 0;padding:26px;background:var(--peach);border-radius:20px;text-align:center;}
 .backcta a.btn{display:inline-block;margin-top:12px;background:var(--terra);color:#fff;text-decoration:none;font-weight:600;padding:13px 26px;border-radius:40px;}
 .backlink{display:inline-block;margin-top:30px;color:var(--muted);text-decoration:none;font-size:14px;}
+.byline{color:var(--muted);font-size:14px;margin-top:6px;}
+.byline a{color:var(--terra);font-weight:600;text-decoration:none;}
+.byline a:hover{text-decoration:underline;}
+.sources{max-width:680px;margin:40px auto 0;font-size:15px;color:#4a3527;}
+.sources h2{font-family:var(--serif);font-weight:600;font-size:22px;color:var(--espresso);margin-bottom:10px;}
+.sources ol{padding-left:1.3em;}
+.sources li+li{margin-top:6px;}
+.related{max-width:680px;margin:44px auto 0;}
+.related h2{font-family:var(--serif);font-weight:600;font-size:26px;color:var(--espresso);margin-bottom:14px;}
+.related ul{list-style:none;display:grid;gap:12px;}
+.related a{display:block;background:var(--white);border:1px solid var(--line);border-radius:16px;padding:14px 18px;text-decoration:none;color:var(--espresso);}
+.related a:hover{border-color:var(--terra);}
+.related a strong{display:block;font-family:var(--serif);font-weight:600;font-size:18px;line-height:1.3;}
+.related a span{display:block;color:var(--muted);font-size:14px;margin-top:4px;}
 `;
 
-function head(title, desc, canonical, image) {
-  const img = image ? (image.startsWith('http') ? image : SITE + image) : '';
+function head(title, desc, canonical, image, opts = {}) {
+  // Image de partage : celle de l'article, sinon l'image par défaut de la marque
+  const img = image ? (image.startsWith('http') ? image : SITE + image) : SITE + DEFAULT_SHARE.path;
+  const iw = image ? opts.imgW : DEFAULT_SHARE.width, ih = image ? opts.imgH : DEFAULT_SHARE.height;
+  const ogTitle = opts.ogTitle || title;
   return `<!doctype html><html lang="fr"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -113,12 +161,16 @@ function head(title, desc, canonical, image) {
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${esc(canonical)}">
 <meta name="robots" content="index,follow">
-<meta property="og:type" content="article">
-<meta property="og:title" content="${esc(title)}">
+<meta property="og:type" content="${opts.ogType || 'article'}">
+<meta property="og:title" content="${esc(ogTitle)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${esc(canonical)}">
-${img ? `<meta property="og:image" content="${esc(img)}">` : ''}
-<meta name="twitter:card" content="${img ? 'summary_large_image' : 'summary'}">
+<meta property="og:image" content="${esc(img)}">
+${iw && ih ? `<meta property="og:image:width" content="${iw}"><meta property="og:image:height" content="${ih}">` : ''}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${esc(ogTitle)}">
+<meta name="twitter:description" content="${esc(desc)}">
+<meta name="twitter:image" content="${esc(img)}">
 <link rel="icon" href="/icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -138,8 +190,9 @@ const FOOT = `<footer class="foot"><div class="wrap">
 <div class="copy">© ${new Date().getFullYear()} Glow Up · Ton agent IA skincare</div>
 </div></footer></body></html>`;
 
-function coverHTML(image, cls, alt) {
-  return `<div class="${cls}">${image ? `<img src="${esc(image)}" alt="${esc(alt || '')}">` : ''}</div>`;
+function coverHTML(image, cls, alt, w, h) {
+  const dims = w && h ? ` width="${w}" height="${h}"` : '';
+  return `<div class="${cls}">${image ? `<img src="${esc(image)}" alt="${esc(alt || '')}"${dims} decoding="async">` : ''}</div>`;
 }
 
 async function main() {
@@ -153,30 +206,88 @@ async function main() {
   // Publication programmée : on ne génère que les articles dont la date est arrivée (<= aujourd'hui).
   const pubCutoff = new Date(); pubCutoff.setHours(23, 59, 59, 999);
 
+  // Garde-fou : on ne publie jamais avec le faux nom d'auteure (GitHub Actions)
+  if (/\[|\]/.test(AUTHOR_NAME) && process.env.GITHUB_ACTIONS) {
+    console.error('ERREUR : AUTHOR_NAME contient encore un texte entre crochets. Renseigne le vrai nom dans build-blog.js.');
+    process.exit(1);
+  }
+
+  const ISO = d => String(d || '').slice(0, 10);
+  const STOP = new Set('avec dans pour sans cette cela mais plus tout tous tres comme leur leurs elle elles votre vous nous sont etre faire fait ainsi alors apres avant entre chez depuis voici quelle quels quelles dont aussi ceux celle peut peuvent bien quoi comment pourquoi ce qu il ne pas que qui une des les est son ses sur par aux the'.split(' '));
+  const tokens = t => new Set(String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').split(/[^a-z0-9]+/).filter(w => w.length >= 4 && !STOP.has(w)));
+
+  // ── Passe 1 : lecture de tous les articles publiés ──
+  const entries = [];
   for (const file of files) {
     const raw = fs.readFileSync(path.join(POSTS_DIR, file), 'utf8');
     const { data, body } = parseFront(raw);
     const slug = data.slug || file.replace(/\.md$/, '');
     if (data.date && new Date(data.date) > pubCutoff) { console.log('⏳ programmé :', slug, '(' + data.date + ')'); continue; }
     const title = data.title || slug;
-    const desc = data.metaDescription || data.excerpt || '';
+
+    // Image : champ « image » du .md, sinon assets/blog/<slug>.(jpg|jpeg|png|webp) s'il existe
+    let image = data.image || '';
+    if (!image) {
+      for (const ext of ['jpg', 'jpeg', 'png', 'webp']) {
+        if (fs.existsSync(path.join(ROOT, 'assets', 'blog', slug + '.' + ext))) { image = `/assets/blog/${slug}.${ext}`; break; }
+      }
+    }
+    const size = image && !image.startsWith('http') ? imageSize(path.join(ROOT, image.replace(/^\//, ''))) : null;
+
+    // Sources : lignes « Titre | https://adresse » (jamais inventées : rien n'est affiché si le champ est vide)
+    const sources = (Array.isArray(data.sources) ? data.sources : []).map(l => {
+      const i = l.lastIndexOf('|');
+      const t = i > 0 ? l.slice(0, i).trim() : '', u = i > 0 ? l.slice(i + 1).trim() : '';
+      if (!t || !/^https?:\/\//.test(u)) { console.warn('⚠️ source ignorée (format « Titre | https://… » attendu) dans', slug, ':', l); return null; }
+      return { title: t, url: u };
+    }).filter(Boolean);
+
+    if (data.titre_seo && data.titre_seo.length > 60) console.warn('⚠️ titre_seo > 60 caractères dans', slug, '(' + data.titre_seo.length + ')');
+    entries.push({
+      slug, title, titreSeo: data.titre_seo || '', date: ISO(data.date), updated: ISO(data.updated) || ISO(data.date),
+      hasUpdate: !!data.updated && ISO(data.updated) !== ISO(data.date),
+      excerpt: data.excerpt || '', desc: data.metaDescription || data.excerpt || '',
+      image, imageAlt: data.image_alt || '', imgW: size && size.width, imgH: size && size.height,
+      author: data.author && data.author !== 'Glow Up' ? data.author : AUTHOR_NAME,
+      sources, relatedManual: Array.isArray(data.related) ? data.related : String(data.related || '').split(',').map(x => x.trim()).filter(Boolean),
+      tok: tokens(title + ' ' + (data.excerpt || '') + ' ' + (data.metaDescription || '')), body,
+    });
+  }
+
+  // « À lire aussi » : 3 articles publiés les plus proches (mots communs pondérés par leur rareté), sinon les plus récents
+  const df = {}; entries.forEach(e => e.tok.forEach(w => { df[w] = (df[w] || 0) + 1; }));
+  const relatedOf = e => {
+    const manual = e.relatedManual.map(sl => entries.find(x => x.slug === sl)).filter(x => x && x !== e);
+    const scored = entries.filter(x => x !== e && !manual.includes(x)).map(x => {
+      let sc = 0; x.tok.forEach(w => { if (e.tok.has(w)) sc += 1 / df[w]; });
+      return { x, sc, d: Math.abs(new Date(x.date) - new Date(e.date)) };
+    }).sort((a, b) => (b.sc - a.sc) || (a.d - b.d)).map(o => o.x);
+    return [...manual, ...scored].slice(0, 3);
+  };
+
+  // ── Passe 2 : génération des pages ──
+  for (const e of entries) {
+    const { slug, title } = e;
+    const desc = e.desc;
     const canonical = `${SITE}/blog/${slug}/`;
-    const contentHTML = marked.parse(body);
+    const contentHTML = marked.parse(e.body);
+    const absImg = e.image ? (e.image.startsWith('http') ? e.image : SITE + e.image) : SITE + DEFAULT_SHARE.path;
+    const altTxt = e.imageAlt || title;
 
     // Données structurées Article (JSON-LD) — aide Google à comprendre l'article
     const ld = {
       '@context': 'https://schema.org',
-      '@type': 'BlogPosting',
+      '@type': 'Article',
       headline: title,
       description: desc,
-      datePublished: data.date || '',
-      dateModified: data.date || '',
+      image: [absImg],
+      datePublished: e.date,
+      dateModified: e.updated,
       inLanguage: 'fr-FR',
-      author: { '@type': 'Organization', name: data.author || 'Glow Up' },
-      publisher: { '@type': 'Organization', name: 'Glow Up', logo: { '@type': 'ImageObject', url: SITE + '/icons/icon-192.png' } },
+      author: { '@type': 'Person', name: e.author, url: AUTHOR_URL },
+      publisher: { '@type': 'Organization', name: 'Glow Up', url: SITE + '/', logo: { '@type': 'ImageObject', url: SITE + '/icons/icon-512.png', width: 512, height: 512 } },
       mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
     };
-    if (data.image) ld.image = data.image.startsWith('http') ? data.image : SITE + data.image;
     // Fil d'Ariane (breadcrumb) : Accueil › Conseils › Article
     const breadcrumb = {
       '@context': 'https://schema.org',
@@ -189,15 +300,27 @@ async function main() {
     };
     const ldScript = `<script type="application/ld+json">${JSON.stringify([ld, breadcrumb])}</script>`;
 
-    const page = head(`${title} · Glow Up`, desc, canonical, data.image)
+    // Sous le H1 : auteure (lien vers /a-propos/), date de publication et — seulement s'il y en a une — date de mise à jour
+    const byline = `<p class="byline">Par <a href="${AUTHOR_URL}" rel="author">${esc(e.author)}</a> · Publié le <time datetime="${e.date}">${frDate(e.date)}</time>${e.hasUpdate ? ` · Mis à jour le <time datetime="${e.updated}">${frDate(e.updated)}</time>` : ''}</p>`;
+    const sourcesHTML = e.sources.length
+      ? `<section class="sources"><h2>Sources</h2><ol>${e.sources.map(s => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.title)}</a></li>`).join('')}</ol></section>`
+      : '';
+    const rel = relatedOf(e);
+    const relatedHTML = rel.length
+      ? `<aside class="related"><h2>À lire aussi</h2><ul>${rel.map(r => `<li><a href="${SITE}/blog/${r.slug}/"><strong>${esc(r.title)}</strong><span>${esc(r.excerpt)}</span></a></li>`).join('')}</ul></aside>`
+      : '';
+
+    const page = head(e.titreSeo || `${title} · Glow Up`, desc, canonical, e.image, { imgW: e.imgW, imgH: e.imgH, ogTitle: title })
       + ldScript
       + NAV
       + `<main class="article"><div class="wrap"><div class="inner">
-          <p class="meta">${frDate(data.date)}${data.author ? ' · ' + esc(data.author) : ''}</p>
           <h1>${esc(title)}</h1>
+          ${byline}
         </div></div>
-        ${data.image ? `<div class="wrap"><div class="inner">${coverHTML(data.image,'cover',title)}</div></div>` : ''}
+        ${e.image ? `<div class="wrap"><div class="inner">${coverHTML(e.image,'cover',altTxt,e.imgW,e.imgH)}</div></div>` : ''}
         <article class="prose">${contentHTML}</article>
+        ${sourcesHTML}
+        ${relatedHTML}
         <div class="backcta">
           <strong>Envie d'une routine faite pour ta peau ?</strong><br>
           <a class="btn" href="/">Faire mon analyse ✦</a>
@@ -209,7 +332,7 @@ async function main() {
     const dir = path.join(OUT_DIR, slug);
     fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(path.join(dir, 'index.html'), page);
-    posts.push({ title, slug, date: data.date || '', excerpt: data.excerpt || '', image: data.image || '', url: `/blog/${slug}/` });
+    posts.push({ title, slug, date: e.date, updated: e.updated, excerpt: e.excerpt, image: e.image, imageAlt: e.imageAlt, imgW: e.imgW, imgH: e.imgH, url: `/blog/${slug}/` });
     console.log('✓ article :', slug);
   }
 
@@ -218,7 +341,7 @@ async function main() {
 
   // page liste
   const cards = posts.map(p => `<a class="card" href="${p.url}">
-      ${coverHTML(p.image,'cover',p.title)}
+      ${coverHTML(p.image,'cover',p.imageAlt || p.title,p.imgW,p.imgH)}
       <div class="cbody">
         <span class="date">${frDate(p.date)}</span>
         <h2>${esc(p.title)}</h2>
@@ -228,7 +351,7 @@ async function main() {
 
   const list = head('Conseils skincare · Le journal Glow Up',
       'Tous nos conseils skincare : routines, actifs, dupes et bons gestes pour prendre soin de ta peau au juste prix.',
-      `${SITE}/blog/`, '')
+      `${SITE}/blog/`, '', { ogType: 'website' })
     + NAV
     + `<header class="bhero"><div class="wrap">
         <span class="kicker">Le journal</span>
@@ -243,7 +366,7 @@ async function main() {
 
   // ── Page « À propos » (statique, indexable — crédibilité / E-E-A-T) ──
   const aproposDesc = "Glow Up, l'agent IA skincare des femmes de +30 ans : notre mission, notre indépendance (aucune marque ne nous paie) et notre façon de recommander sans influence.";
-  const aproposPage = head('À propos de Glow Up', aproposDesc, `${SITE}/a-propos/`, '')
+  const aproposPage = head('À propos de Glow Up', aproposDesc, `${SITE}/a-propos/`, '', { ogType: 'website' })
     + NAV
     + `<main class="article">
       <div class="wrap"><div class="inner">
@@ -300,7 +423,7 @@ async function main() {
     { loc: SITE + '/', lastmod: today, priority: '1.0' },
     { loc: SITE + '/blog/', lastmod: today, priority: '0.8' },
     { loc: SITE + '/a-propos/', lastmod: today, priority: '0.5' },
-    ...posts.map(p => ({ loc: SITE + p.url, lastmod: (p.date || today).slice(0, 10), priority: '0.7' })),
+    ...posts.map(p => ({ loc: SITE + p.url, lastmod: (p.updated || p.date || today).slice(0, 10), priority: '0.7' })),
     { loc: SITE + '/confidentialite/', lastmod: today, priority: '0.3' },
   ];
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n`

@@ -1,11 +1,17 @@
 ---
 title: Skincare et cycle menstruel : adapter sa routine phase par phase
 slug: skincare-cycle-menstruel
+titre_seo: Skincare et cycle menstruel : adapter sa routine
 date: 2026-09-28
 excerpt: Peau terne, éclatante ou couverte de boutons selon les jours ? Ta peau suit ton cycle menstruel. Voici comment adapter ta skincare phase par phase, avec un mini calendrier.
 metaDescription: Ta peau change à chaque phase du cycle menstruel. Le guide pour adapter ta routine skincare (règles, phase folliculaire, ovulation, SPM), avec un mini calendrier.
-author: Glow Up
+author: Candice COHEN
 image: /assets/blog/skincare-cycle-menstruel.jpg
+image_alt: Flacon compte-gouttes en verre dépoli et pot de crème posés sur un tissu beige, avec une lune décorative et des fleurs séchées
+related:
+  - skincare-grossesse
+  - peau-apres-la-grossesse
+  - menopause-et-peau
 ---
 
 Certains jours ta peau est lumineuse, d'autres elle tire, et parfois elle se couvre de boutons juste avant tes règles. Ce n'est pas dans ta tête : ta peau suit ton **cycle menstruel**, au rythme de tes hormones. Bonne nouvelle — en adaptant ta skincare à chaque phase, tu travailles **avec** ta peau au lieu de la brusquer, pour de meilleurs résultats sans multiplier les produits.

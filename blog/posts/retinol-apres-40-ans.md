@@ -1,10 +1,15 @@
 ---
 title: Rétinol après 40 ans : comment bien commencer sans irriter sa peau
 slug: retinol-apres-40-ans
+titre_seo: Rétinol après 40 ans : bien commencer sans irriter
 date: 2026-10-01
 excerpt: Le rétinol est l'actif anti-âge le plus documenté, mais il intimide. Après 40 ans, voici comment l'introduire sans rougeurs, à quelle fréquence, et les erreurs à éviter.
 metaDescription: Rétinol après 40 ans : pourquoi c'est l'actif anti-âge n°1, comment l'introduire sans irritation, à quelle fréquence l'utiliser et les erreurs à éviter.
-author: Glow Up
+author: Candice COHEN
+related:
+  - pourquoi-les-rides-apparaissent-apres-35-ans
+  - skincare-grossesse
+  - taches-brunes-visage
 ---
 
 C'est sans doute la question skincare la plus posée passé la quarantaine : **faut-il se mettre au rétinol, et comment le faire sans se retrouver avec la peau qui pèle ?** Le rétinol est l'un des rares actifs dont l'efficacité anti-âge est solidement démontrée — mais mal introduit, il irrite. Voici comment bien commencer après 40 ans.

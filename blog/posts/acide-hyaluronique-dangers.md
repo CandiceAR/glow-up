@@ -1,10 +1,11 @@
 ---
 title: Acide hyaluronique visage : y a-t-il des dangers ?
 slug: acide-hyaluronique-dangers
-date: 2026-10-11
+titre_seo: Acide hyaluronique visage : y a-t-il des dangers ?
+date: 2026-10-23
 excerpt: L'acide hyaluronique est partout — mais présente-t-il des risques pour le visage ? On fait le tri entre l'acide hyaluronique en soin (très sûr) et en injection (médical), et les vraies précautions.
 metaDescription: Acide hyaluronique visage et dangers : ce qu'il faut savoir sur sa sécurité en cosmétique, la différence avec les injections, et comment l'utiliser sans risque.
-author: Glow Up
+author: Candice COHEN
 ---
 
 L'acide hyaluronique est l'un des ingrédients les plus populaires du soin de la peau — et forcément, on se demande s'il comporte des **dangers**. Bonne nouvelle : en cosmétique, c'est l'un des actifs les plus sûrs qui soient. Mais il y a quelques nuances à connaître, notamment une confusion fréquente avec les **injections**.

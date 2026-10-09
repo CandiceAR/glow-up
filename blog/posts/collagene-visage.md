@@ -1,10 +1,11 @@
 ---
 title: Le collagène est-il bon pour le visage ? Ce qu'il faut savoir
 slug: collagene-visage
-date: 2026-10-14
+titre_seo: Collagène pour le visage : crèmes et compléments efficaces ?
+date: 2026-10-30
 excerpt: Crèmes au collagène, compléments à boire… Le collagène est partout. Mais est-il vraiment efficace pour le visage ? On démêle le vrai du marketing, simplement.
 metaDescription: Le collagène est-il bon pour le visage ? Ce que font (vraiment) les crèmes et compléments au collagène, et comment relancer son collagène naturellement.
-author: Glow Up
+author: Candice COHEN
 ---
 
 Fermeté, rides, élasticité : le **collagène** est au cœur de toutes les promesses anti-âge. Crèmes, sérums, compléments à boire… On en met partout. Mais le collagène est-il vraiment efficace pour le visage ? Faisons le tri, sans marketing.

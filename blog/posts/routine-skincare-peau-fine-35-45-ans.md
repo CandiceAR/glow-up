@@ -1,11 +1,17 @@
 ---
 title: Routine skincare peau fine 35-45 ans : les bons gestes matin et soir
 slug: routine-skincare-peau-fine-35-45-ans
+titre_seo: Routine skincare peau fine 35-45 ans : matin et soir
 date: 2026-09-10
 excerpt: Une routine matin/soir pensée spécifiquement pour renforcer une peau fine et réactive après 35 ans — étape par étape, sans l'agresser.
 metaDescription: Peau fine, réactive, qui tiraille ? Voici une routine matin/soir pensée spécifiquement pour renforcer une peau fine après 35 ans, étape par étape.
 image: /assets/blog/routine-skincare-peau-fine-35-45-ans.jpg
-author: Glow Up
+image_alt: Femme appliquant un sérum au compte-gouttes devant un miroir rond, avec des produits de soin posés sur le lavabo
+author: Candice COHEN
+related:
+  - peau-fine-et-fragile
+  - pourquoi-les-rides-apparaissent-apres-35-ans
+  - retinol-apres-40-ans
 ---
 
 Si votre peau est devenue plus fine et plus réactive ces dernières années (on en parlait dans [l'article précédent](/blog/peau-fine-et-fragile/)), la question n'est plus « quel actif miracle utiliser » mais « comment reconstruire une **barrière cutanée** solide, sans l'agresser davantage ». Voici une routine pensée pour ça, étape par étape.
@@ -37,4 +43,4 @@ Si votre peau est devenue plus fine et plus réactive ces dernières années (on
 
 ---
 
-Vous ne savez pas si vos produits actuels renforcent ou fragilisent votre barrière cutanée ? L'[analyse de peau gratuite sur Glow Up](https://glowupskin.app) évalue votre routine actuelle et vous indique précisément ce qui manque — sans jamais pousser une marque plutôt qu'une autre.
+Vous ne savez pas si vos produits actuels renforcent ou fragilisent votre barrière cutanée ? L'[analyse de peau gratuite sur Glow Up](https://www.glowupskin.app) évalue votre routine actuelle et vous indique précisément ce qui manque — sans jamais pousser une marque plutôt qu'une autre.

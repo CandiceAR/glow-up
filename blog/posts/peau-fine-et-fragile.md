@@ -1,11 +1,17 @@
 ---
 title: Peau fine et fragile : comment la reconnaître (et pourquoi elle change après 35 ans)
 slug: peau-fine-et-fragile
+titre_seo: Peau fine et fragile : signes et causes après 35 ans
 date: 2026-09-07
 excerpt: Rougeurs, tiraillements, réactivité… Après 35 ans, la peau devient naturellement plus fine et plus fragile. Voici les signes qui ne trompent pas — et pourquoi.
 metaDescription: Peau fine, qui rougit, qui tiraille ? Voici les signes qui ne trompent pas et pourquoi la peau devient plus fragile après 35 ans.
 image: /assets/blog/peau-fine-et-fragile.jpg
-author: Glow Up
+image_alt: Femme vue de dos, accoudée à une balustrade au-dessus d'une terrasse éclairée le soir, avec le titre « Après 35 ans, la peau change »
+author: Candice COHEN
+related:
+  - routine-skincare-peau-fine-35-45-ans
+  - pourquoi-les-rides-apparaissent-apres-35-ans
+  - acide-hyaluronique-guide
 ---
 
 Vous avez remarqué que votre peau réagit plus vite qu'avant ? Qu'elle rougit pour un rien, qu'elle tiraille après la douche, qu'un nouveau produit la fait réagir alors qu'il ne posait aucun problème il y a cinq ans ? Ce n'est pas une impression. Après 35 ans, la peau devient naturellement plus fine et plus fragile — et savoir le reconnaître change tout dans la façon d'en prendre soin.
@@ -41,4 +47,4 @@ C'est exactement le point de départ de la routine qu'on détaille dans [le proc
 
 ---
 
-Vous ne savez plus si votre peau a vraiment besoin de renfort ou juste d'un ajustement ? L'[analyse de peau gratuite sur Glow Up](https://glowupskin.app) identifie en quelques secondes le niveau de sensibilité de votre peau et vous propose une routine adaptée — sans jamais pousser une marque plutôt qu'une autre.
+Vous ne savez plus si votre peau a vraiment besoin de renfort ou juste d'un ajustement ? L'[analyse de peau gratuite sur Glow Up](https://www.glowupskin.app) identifie en quelques secondes le niveau de sensibilité de votre peau et vous propose une routine adaptée — sans jamais pousser une marque plutôt qu'une autre.

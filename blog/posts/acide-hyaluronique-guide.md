@@ -1,10 +1,15 @@
 ---
 title: Acide hyaluronique : à quoi ça sert et comment bien l'utiliser
 slug: acide-hyaluronique-guide
+titre_seo: Acide hyaluronique : à quoi ça sert et comment l'utiliser
 date: 2026-10-03
 excerpt: On le voit partout, mais à quoi sert vraiment l'acide hyaluronique ? Ce qu'il fait pour la peau, pour qui il est utile, et comment l'appliquer pour qu'il soit efficace.
 metaDescription: Acide hyaluronique : à quoi ça sert, ce qu'il fait pour la peau, pour qui, et comment bien l'utiliser (sur peau humide, avant la crème) pour un effet repulpant.
-author: Glow Up
+author: Candice COHEN
+related:
+  - peau-fine-et-fragile
+  - skincare-coreenne-peau-mature
+  - skincare-apres-50-ans
 ---
 
 C'est l'un des ingrédients les plus présents en skincare — et l'un des plus mal utilisés. **À quoi sert vraiment l'acide hyaluronique, et comment l'appliquer pour qu'il fonctionne ?** On fait le point simplement.

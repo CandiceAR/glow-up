@@ -1,11 +1,17 @@
 ---
 title: La peau après la grossesse : ce qui change et comment en prendre soin
 slug: peau-apres-la-grossesse
+titre_seo: Peau après l'accouchement : problèmes fréquents et soins
 date: 2026-09-28
 excerpt: Masque de grossesse, relâchement, sécheresse, sensibilité… La peau après la grossesse traverse de vrais bouleversements hormonaux. Voici pourquoi, et les bons gestes doux pour l'accompagner.
 metaDescription: Pourquoi la peau change après la grossesse (taches, relâchement, sécheresse) et comment en prendre soin en douceur, avec les actifs sûrs même si tu allaites.
-author: Glow Up
+author: Candice COHEN
 image: /assets/blog/peau-apres-la-grossesse.jpg
+image_alt: Femme appliquant une crème sur la joue devant un miroir, avec un bébé allongé sur un lit en arrière-plan
+related:
+  - skincare-grossesse
+  - taches-brunes-visage
+  - skincare-cycle-menstruel
 ---
 
 Après neuf mois à fabriquer la vie, ton corps – et ta peau – ont beaucoup donné. Il est donc parfaitement normal que la peau après la grossesse ne ressemble plus tout à fait à celle d'avant : taches qui apparaissent, teint plus terne, peau qui tiraille ou au contraire qui fait des boutons, ventre qui a perdu en fermeté… Ces changements sont réels, très fréquents, et surtout : **en grande partie temporaires**.
