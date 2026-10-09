@@ -448,7 +448,7 @@ const RoutineRenderer = (() => {
     });
 
     for (const step of allSteps) {
-      const p = _userChoice(keyOf.get(step)) || findBestProductForStep(step.step, usedIds, step);
+      const p = _isRemoved(keyOf.get(step)) ? null : (_userChoice(keyOf.get(step)) || findBestProductForStep(step.step, usedIds, step));
       if (p) {
         usedIds.add(p.id);
         if (p.price && !seen.has(p.id)) {
@@ -828,6 +828,10 @@ const RoutineRenderer = (() => {
   // Clé stable d'une étape : section | type d'étape | n° d'occurrence. Elle ne dépend ni de la graine
   // ni des produits : une NOUVELLE routine qui contient la même étape retrouve donc le choix enregistré.
   function _stepKey(section, type, n) { return section + '|' + type + '|' + n; }
+  function _isRemoved(key) {
+    try { return (typeof RoutineEdit !== 'undefined' && RoutineEdit.isRemoved) ? RoutineEdit.isRemoved(key) : false; }
+    catch (e) { return false; }
+  }
   function _userChoice(key) {
     try { return (typeof RoutineEdit !== 'undefined' && RoutineEdit.resolve) ? RoutineEdit.resolve(key) : null; }
     catch (e) { return null; }
@@ -845,6 +849,7 @@ const RoutineRenderer = (() => {
     return [...steps].sort((a, b) => a.order - b.order).map(step => {
       const n = occ[step.step] = (occ[step.step] === undefined ? 0 : occ[step.step] + 1);
       const key = _stepKey(section, step.step, n);
+      if (_isRemoved(key)) return { step, key, product: null, overridden: true, kept: null, removed: true };
       const chosen = _userChoice(key);
       if (chosen) { used.add(chosen.id); return { step, key, product: chosen, overridden: true, kept: null }; }
       const kept = hasCR ? CurrentRoutine.getKeptForStep(step.step, usedKept) : null;
@@ -862,6 +867,7 @@ const RoutineRenderer = (() => {
     [...steps].sort((a, b) => a.order - b.order).forEach(step => {
       const n = occ[step.step] = (occ[step.step] === undefined ? 0 : occ[step.step] + 1);
       // Étape choisie par l'utilisatrice : on ne touche pas au titre enregistré (adapté à l'affichage)
+      if (section && _isRemoved(_stepKey(section, step.step, n))) return;
       const chosen = section ? _userChoice(_stepKey(section, step.step, n)) : null;
       if (chosen) { used.add(chosen.id); return; }
       const kept = hasCR ? CurrentRoutine.getKeptForStep(step.step, usedKept) : null;
@@ -899,7 +905,27 @@ const RoutineRenderer = (() => {
     for (const step of sortedSteps) {
       // Choix personnalisé de l'utilisatrice (« Modifier ma routine ») : il passe avant tout le reste
       const n = occ[step.step] = (occ[step.step] === undefined ? 0 : occ[step.step] + 1);
-      const chosen = _userChoice(_stepKey(sectionName, step.step, n));
+      const _k = _stepKey(sectionName, step.step, n);
+      if (_isRemoved(_k)) {
+        // Étape volontairement vidée (« Retirer ce produit ») : on garde l'étape, sans produit
+        stepIndex++;
+        blocks.push(`
+        <div class="cg-step">
+          <div class="cg-step-meta">
+            <span class="cg-step-num">${String(stepIndex).padStart(2, '0')}</span>
+            <div class="cg-step-info"><h2 class="cg-step-title">${step.step === 'serum' ? 'Sérum' : step.label}</h2></div>
+          </div>
+          <div class="cg-step-right">
+            <div class="cg-step-card" style="padding:16px;text-align:center;">
+              <p style="margin:0 0 10px;"><strong>Étape libre</strong> — aucun produit pour l'instant.</p>
+              <p style="margin:0 0 12px;font-size:.9rem;">Scanne un produit que tu aimes pour le mettre ici, ou choisis-en un.</p>
+              <button type="button" class="btn btn-outline" onclick="RoutineEdit.open('${sectionName}')">✏️ Modifier cette étape</button>
+            </div>
+          </div>
+        </div>`);
+        continue;
+      }
+      const chosen = _userChoice(_k);
       // Produit que l'utilisatrice utilise déjà ET adapté → on le garde à sa place
       const kept = (!chosen && hasCR) ? CurrentRoutine.getKeptForStep(step.step, usedKept) : null;
       let product = null, replaced = null;

@@ -73,7 +73,7 @@ const RoutineEdit = (() => {
 
   function resolve(key) {
     const e = _load()[key];
-    if (!e || e.reset) return null;        // « reset » = choix annulé (marque conservée pour que l'annulation se synchronise)
+    if (!e || e.reset || e.removed) return null;        // « reset » = choix annulé (marque conservée pour que l'annulation se synchronise)
     if (e.id) {
       const p = ((AppState.products && AppState.products.catalog) || []).find(x => x.id === e.id && x.active !== false);
       return p ? { ...p, userChoice: true } : null;      // produit retiré du catalogue → retour au choix Glow Up
@@ -95,6 +95,15 @@ const RoutineEdit = (() => {
     _refreshScreens();
   }
   function hasChoice(key) { const e = _load()[key]; return !!e && !e.reset; }
+  // Étape volontairement vidée par l'utilisatrice (« Retirer ce produit ») : l'étape reste, sans produit
+  function isRemoved(key) { const e = _load()[key]; return !!e && !!e.removed && !e.reset; }
+  function remove(key) {
+    if (!key) return;
+    _load()[key] = { removed: true };
+    _persist();
+    if (typeof showToast === 'function') showToast('Produit retiré. Tu peux maintenant scanner un produit pour remplir cette étape ✦', 'success', 3600);
+    _renderList(); _refreshScreens();
+  }
 
   // ─── Rafraîchir l'écran visible après un changement ──────────
   function _refreshScreens() {
@@ -134,6 +143,20 @@ const RoutineEdit = (() => {
     const rows = RoutineRenderer.resolveSection(_moment);
     const body = rows.length ? rows.map((r, i) => {
       const p = r.product;
+      if (r.removed) {
+        return `
+        <div class="re-row re-row--mine">
+          <span class="re-num">${String(i + 1).padStart(2, '0')}</span>
+          <div class="re-row-main">
+            <div class="re-step">${_esc(r.step.step === 'serum' ? 'Sérum' : r.step.label)} <em class="re-badge">Étape libre</em></div>
+            <div class="re-prod"><span class="re-thumb">🧴</span><span class="re-prod-txt"><span class="re-prod-name re-muted">Aucun produit pour l'instant</span><span class="re-prod-sub">Scanne un produit pour le mettre ici, ou choisis-en un.</span></span></div>
+          </div>
+          <div class="re-row-actions">
+            <button type="button" class="re-btn" data-key="${_esc(r.key)}" onclick="RoutineEdit.pick(this.dataset.key)">Choisir</button>
+            <button type="button" class="re-link" data-key="${_esc(r.key)}" onclick="RoutineEdit.reset(this.dataset.key)">Remettre la suggestion</button>
+          </div>
+        </div>`;
+      }
       const who = r.kept
         ? `<span class="re-prod-name">Ton produit actuel</span><span class="re-prod-sub">${_esc((r.kept.brand ? r.kept.brand + ' ' : '') + (r.kept.name || ''))}</span>`
         : p
@@ -149,6 +172,7 @@ const RoutineEdit = (() => {
           <div class="re-row-actions">
             <button type="button" class="re-btn" data-key="${_esc(r.key)}" onclick="RoutineEdit.pick(this.dataset.key)">Changer</button>
             ${r.overridden ? `<button type="button" class="re-link" data-key="${_esc(r.key)}" onclick="RoutineEdit.reset(this.dataset.key)">Rétablir</button>` : ''}
+            <button type="button" class="re-link" data-key="${_esc(r.key)}" onclick="RoutineEdit.remove(this.dataset.key)">Retirer</button>
           </div>
         </div>`;
     }).join('') : '<p class="re-muted">Aucune étape pour ce moment de la journée.</p>';
@@ -157,7 +181,7 @@ const RoutineEdit = (() => {
       <button class="modal-close" onclick="RoutineEdit.close()" aria-label="Fermer">×</button>
       <div class="re-wrap">
         <h2 class="re-title">Modifier ma routine</h2>
-        <p class="re-sub">Choisis l'étape à changer. Ta routine et tes autres produits ne bougent pas, et ton choix est enregistré.</p>
+        <p class="re-sub">Change ou retire le produit d'une étape. Ta routine et tes autres produits ne bougent pas, et ton choix est enregistré.</p>
         <div class="re-tabs">
           <button type="button" class="re-tab${_moment === 'matin' ? ' active' : ''}" onclick="RoutineEdit.setMoment('matin')">☀️ Matin</button>
           <button type="button" class="re-tab${_moment === 'soir' ? ' active' : ''}" onclick="RoutineEdit.setMoment('soir')">🌙 Soir</button>
@@ -279,7 +303,7 @@ const RoutineEdit = (() => {
   }
 
   return { open, close, setMoment, pick, back, search, choose, useCustom, reset,
-           resolve, hasChoice, setChoice, exportAll, importAll, migrateGuestToUser };
+           resolve, hasChoice, isRemoved, remove, setChoice, exportAll, importAll, migrateGuestToUser };
 })();
 
 if (typeof window !== 'undefined') window.RoutineEdit = RoutineEdit;
