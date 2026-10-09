@@ -8,16 +8,24 @@
   <meta property="og:title" content="Glow Up — Routine skincare après 30 ans, peaux matures">
   <meta property="og:description" content="Analyse de peau + routine skincare personnalisée anti-âge pour les femmes de +30 ans. Des recommandations indépendantes, pensées pour toi.">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.glowupskin.app/">
+  <meta property="og:image" content="https://www.glowupskin.app/assets/og-default.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Glow Up — Routine skincare après 30 ans, peaux matures">
   <meta name="twitter:description" content="Analyse de peau + routine skincare personnalisée anti-âge pour les femmes de +30 ans.">
+  <meta name="twitter:image" content="https://www.glowupskin.app/assets/og-default.jpg">
   <link rel="canonical" href="https://www.glowupskin.app/">
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"Organization","name":"Glow Up","url":"https://www.glowupskin.app/","logo":"https://www.glowupskin.app/icons/icon-512.png","description":"Agent IA skincare pour les femmes de +30 ans : analyse de peau, routine personnalisée anti-âge et produits adaptés aux peaux matures.","sameAs":["https://www.instagram.com/glowupandshiny"]}
   </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebSite","name":"Glow Up","url":"https://www.glowupskin.app/"}
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=275">
+  <link rel="stylesheet" href="style.css?v=276">
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#C9A98A">
@@ -42,7 +50,7 @@
       </button>
     </div>
 
-    <a class="nav-logo" href="#" onclick="showScreen('home'); return false;" aria-label="Glow Up — accueil">
+    <a class="nav-logo" href="#" onclick="showScreen('home'); return false;" aria-label="Glow Up">
       <img class="nav-logo-g" src="assets/logo-g-symbol.png?v=1" alt="" aria-hidden="true">
       <span class="nav-logo-word">low up</span>
     </a>
@@ -147,7 +155,7 @@
         <div class="hero-bg"></div>
         <div class="hero-content">
           <span class="eyebrow">Skincare après 30 ans</span>
-          <h1 class="hero-title">La bonne routine,<br>pour <em>ta</em> peau.</h1>
+          <h1 class="hero-title">La bonne routine,<br>pour <em>ta</em> peau. <span class="sr-only">Routine skincare après 30 ans</span></h1>
           <p class="hero-reassure">Des recommandations indépendantes, pensées pour toi — on cherche <em>ce qui te convient</em>, pas la marque du moment.</p>
           <div class="hero-cta-wrap">
             <button class="btn btn-hero" onclick="startGlowUp()">Créer ma routine skincare</button>
@@ -271,7 +279,7 @@
       <div class="capture-container">
         <div class="section-head" style="margin-bottom:32px">
           <span class="section-tag">Étape 1</span>
-          <h1>Prends ta photo</h1>
+          <h2 class="as-h1">Prends ta photo</h2>
           <p>Ta photo permet d'analyser ta peau et ta morphologie pour une routine vraiment personnalisée. L'analyse démarre sur ton appareil ; avec ton accord, ta photo est aussi envoyée à notre IA pour l'affiner (nos serveurs ne la stockent pas).</p>
         </div>
 
@@ -342,7 +350,7 @@
       <div class="routine-choice-container">
 
         <div class="routine-choice-header">
-          <h1>Choisis ta routine offerte ✨</h1>
+          <h2 class="as-h1">Choisis ta routine offerte ✨</h2>
           <p>Une routine gratuite, personnalisée pour toi.<br>Tu pourras débloquer l'autre ensuite si tu veux.</p>
         </div>
 
@@ -428,7 +436,7 @@
       <div class="products-screen-container">
         <div class="section-head">
           <span class="section-tag">Étape 3 / 3</span>
-          <h1>Produits Recommandés</h1>
+          <h2 class="as-h1">Produits Recommandés</h2>
           <p>Sélectionnés selon ton profil et ta routine.</p>
           <p class="affiliate-note">Les liens « Acheter » sont des liens affiliés Amazon : le prix reste le même pour toi, et nous recevons une petite commission, au même taux pour tous les produits.</p>
         </div>
@@ -450,7 +458,7 @@
         <div class="tryon-canvas-side">
           <div class="section-head" style="text-align:left; padding:0 0 16px;">
             <span class="section-tag">Essai virtuel</span>
-            <h1>Try-On Maquillage</h1>
+            <h2 class="as-h1">Try-On Maquillage</h2>
           </div>
 
           <div class="tryon-canvas-wrap" id="tryOnCanvasWrap">
@@ -502,7 +510,7 @@
     <div class="screen" id="screen-shop">
       <div class="shop-hero">
         <span class="eyebrow">Collection complète</span>
-        <h1>Catalogue</h1>
+        <h2 class="as-h1">Catalogue</h2>
         <p>Tous nos produits, sélectionnés sans favoritisme</p>
       </div>
 
