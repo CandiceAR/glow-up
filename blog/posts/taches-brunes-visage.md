@@ -2,10 +2,11 @@
 title: Taches brunes sur le visage : d'où viennent-elles et comment les atténuer
 slug: taches-brunes-visage
 titre_seo: Taches brunes sur le visage : causes et solutions douces
+sante: true
 date: 2026-10-02
 excerpt: Soleil, hormones, âge… Les taches brunes ont plusieurs origines. On explique pourquoi elles apparaissent sur le visage et les gestes qui aident vraiment à les atténuer.
 metaDescription: Taches brunes sur le visage : causes (soleil, hormones, âge), types de taches et solutions douces pour les atténuer et unifier le teint après 40 ans.
-author: Candice COHEN
+author: Candice Arav
 related:
   - skincare-grossesse
   - menopause-et-peau

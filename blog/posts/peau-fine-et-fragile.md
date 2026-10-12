@@ -7,7 +7,7 @@ excerpt: Rougeurs, tiraillements, réactivité… Après 35 ans, la peau devient
 metaDescription: Peau fine, qui rougit, qui tiraille ? Voici les signes qui ne trompent pas et pourquoi la peau devient plus fragile après 35 ans.
 image: /assets/blog/peau-fine-et-fragile.jpg
 image_alt: Femme vue de dos, accoudée à une balustrade au-dessus d'une terrasse éclairée le soir, avec le titre « Après 35 ans, la peau change »
-author: Candice COHEN
+author: Candice Arav
 related:
   - routine-skincare-peau-fine-35-45-ans
   - pourquoi-les-rides-apparaissent-apres-35-ans

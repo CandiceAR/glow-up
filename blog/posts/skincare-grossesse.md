@@ -2,10 +2,11 @@
 title: Skincare et grossesse : quels actifs éviter, lesquels privilégier
 slug: skincare-grossesse
 titre_seo: Skincare et grossesse : actifs à éviter et à privilégier
+sante: true
 date: 2026-09-30
 excerpt: Certains actifs skincare sont déconseillés pendant la grossesse. Le point sur ce qu'on évite, ce qu'on privilégie, et comment reprendre sa routine après l'accouchement.
 metaDescription: Rétinol, acides, huiles essentielles : quels actifs éviter pendant la grossesse, lesquels privilégier, et comment retrouver sa routine skincare après l'accouchement.
-author: Candice COHEN
+author: Candice Arav
 related:
   - peau-apres-la-grossesse
   - taches-brunes-visage

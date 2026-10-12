@@ -2,10 +2,11 @@
 title: Ménopause et peau : ce qui change et comment adapter sa routine
 slug: menopause-et-peau
 titre_seo: Ménopause et peau : changements et routine adaptée
+sante: true
 date: 2026-10-04
 excerpt: Sécheresse, perte de fermeté, rides plus marquées… À la ménopause, la chute des œstrogènes transforme la peau. Voici ce qui change et comment adapter sa routine.
 metaDescription: Ménopause et peau : pourquoi la peau change (sécheresse, perte de fermeté, rides), et comment adapter sa routine skincare avec les bons actifs après 50 ans.
-author: Candice COHEN
+author: Candice Arav
 related:
   - skincare-apres-50-ans
   - retinol-apres-40-ans

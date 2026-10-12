@@ -18,7 +18,7 @@ const SITE      = 'https://www.glowupskin.app';   // domaine canonique (l'apex r
 // Auteure des articles (Person dans les données structurées + ligne « Par … » sous le titre).
 // Nom de l'auteure (utilisé aussi pour les articles sans champ « author »). Si un texte entre crochets y est remis,
 // le script refuse de tourner sur GitHub Actions (garde-fou contre un faux nom).
-const AUTHOR_NAME = 'Candice COHEN';
+const AUTHOR_NAME = 'Candice Arav';
 const AUTHOR_URL  = SITE + '/a-propos/';
 // Image de partage par défaut (1200 x 630) quand un article n'a pas sa propre image
 const DEFAULT_SHARE = { path: '/assets/og-default.jpg', width: 1200, height: 630 };
@@ -140,6 +140,7 @@ a{color:var(--terra);}
 .sources h2{font-family:var(--serif);font-weight:600;font-size:22px;color:var(--espresso);margin-bottom:10px;}
 .sources ol{padding-left:1.3em;}
 .sources li+li{margin-top:6px;}
+.prose .sante{border-top:1px solid var(--line);padding-top:18px;margin-top:36px;font-size:16px;font-style:italic;color:var(--muted);}
 .related{max-width:680px;margin:44px auto 0;}
 .related h2{font-family:var(--serif);font-weight:600;font-size:26px;color:var(--espresso);margin-bottom:14px;}
 .related ul{list-style:none;display:grid;gap:12px;}
@@ -186,7 +187,7 @@ const NAV = `<nav class="bnav"><div class="wrap">
 
 const FOOT = `<footer class="foot"><div class="wrap">
 <div class="fb">glow up</div>
-<div class="fl"><a href="/">Accueil</a><a href="/blog/">Conseils</a><a href="/a-propos/">À propos</a><a href="/confidentialite/">Confidentialité</a><a href="https://www.instagram.com/glowupandshiny" target="_blank" rel="noopener">Instagram</a></div>
+<div class="fl"><a href="/">Accueil</a><a href="/blog/">Conseils</a><a href="/a-propos/">À propos</a><a href="/mentions-legales/">Mentions légales</a><a href="/confidentialite/">Confidentialité</a><a href="/contact/">Contact</a><a href="https://www.instagram.com/glowupandshiny" target="_blank" rel="noopener">Instagram</a></div>
 <div class="copy">© ${new Date().getFullYear()} Glow Up · Ton agent IA skincare</div>
 </div></footer></body></html>`;
 
@@ -249,6 +250,7 @@ async function main() {
       excerpt: data.excerpt || '', desc: data.metaDescription || data.excerpt || '',
       image, imageAlt: data.image_alt || '', imgW: size && size.width, imgH: size && size.height,
       author: data.author && data.author !== 'Glow Up' ? data.author : AUTHOR_NAME,
+      sante: String(data.sante || '').toLowerCase() === 'true',   // « sante: true » → mention « ne remplace pas l'avis d'un professionnel de santé »
       sources, relatedManual: Array.isArray(data.related) ? data.related : String(data.related || '').split(',').map(x => x.trim()).filter(Boolean),
       tok: tokens(title + ' ' + (data.excerpt || '') + ' ' + (data.metaDescription || '')), body,
     });
@@ -318,7 +320,7 @@ async function main() {
           ${byline}
         </div></div>
         ${e.image ? `<div class="wrap"><div class="inner">${coverHTML(e.image,'cover',altTxt,e.imgW,e.imgH)}</div></div>` : ''}
-        <article class="prose">${contentHTML}</article>
+        <article class="prose">${contentHTML}${e.sante ? `<p class="sante">Cet article est informatif et ne remplace pas l'avis d'un professionnel de santé.</p>` : ''}</article>
         ${sourcesHTML}
         ${relatedHTML}
         <div class="backcta">
@@ -376,6 +378,10 @@ async function main() {
       <article class="prose">
         <p>Glow Up est un agent beauté nouvelle génération, pensé pour les femmes de plus de 30&nbsp;ans. Notre but&nbsp;: t'aider à <strong>comprendre ta peau</strong> et à construire une <strong>routine skincare vraiment adaptée</strong> — sans jargon, sans pression, et sans te vendre la marque du moment.</p>
 
+        <h2>Qui écrit</h2>
+        <p>Je m'appelle Candice Arav. J'ai créé Glow Up parce que, dans la skincare, les conseils sont trop souvent orientés par les commissions que les marques versent à ceux qui recommandent leurs produits, sans que personne ne te demande tes habitudes, tes problèmes de peau ou ton budget. Après quatre grossesses, je vois moi aussi ma peau changer&nbsp;: c'est pour les femmes de plus de 30&nbsp;ans que j'ai voulu des recommandations fondées sur leur profil.</p>
+        <p>Tu me retrouves aussi sur Instagram&nbsp;: <a href="https://www.instagram.com/glowupandshiny" target="_blank" rel="noopener">@glowupandshiny</a>.</p>
+
         <h2>Pourquoi Glow Up existe</h2>
         <p>Le skincare est devenu un labyrinthe&nbsp;: des milliers de produits, des promesses partout, un marketing omniprésent. Et passé 30&nbsp;ans, quand la peau évolue — fermeté, éclat, hydratation, premières rides —, il devient encore plus difficile de savoir quoi choisir.</p>
         <p>Glow Up est né de cette frustration. Plutôt qu'une énième boutique, on a voulu un outil qui part de <strong>ta</strong> peau&nbsp;: ton type, tes préoccupations, ton âge, ton budget — pour te proposer une routine claire et des produits qui te correspondent vraiment.</p>
@@ -401,6 +407,9 @@ async function main() {
           <li><strong>Le respect de tes données</strong> personnelles (voir notre <a href="/confidentialite/">politique de confidentialité</a>).</li>
         </ul>
 
+        <h2>Comment nos articles sont écrits</h2>
+        <p>Je choisis chaque sujet et ce que je veux en dire, puis je rédige l'article avec l'aide d'une intelligence artificielle. Quand un article s'appuie sur des sources, elles sont listées à la fin. Ces articles sont informatifs et ne remplacent pas l'avis d'un professionnel de santé.</p>
+
         <h2>Pour qui&nbsp;?</h2>
         <p>Glow Up s'adresse à toutes les femmes de <strong>30 à 70&nbsp;ans</strong> qui veulent prendre soin de leur peau simplement — qu'elles débutent ou s'y connaissent déjà. Peaux matures, peaux sensibles, premières rides ou envie d'éclat&nbsp;: chaque routine part de ta peau, pas d'un modèle unique.</p>
 
@@ -417,12 +426,65 @@ async function main() {
   fs.writeFileSync(path.join(ROOT, 'a-propos', 'index.html'), aproposPage);
   console.log('✓ page À propos');
 
+  // ── Page « Mentions légales » (uniquement les informations fournies par l'éditrice, rien d'ajouté) ──
+  const mlDesc = "Mentions légales de Glow Up : éditrice, directrice de la publication, hébergeur.";
+  const mlPage = head('Mentions légales · Glow Up', mlDesc, `${SITE}/mentions-legales/`, '', { ogType: 'website' })
+    + NAV
+    + `<main class="article">
+      <div class="wrap"><div class="inner">
+        <p class="meta">Informations légales</p>
+        <h1>Mentions légales</h1>
+      </div></div>
+      <article class="prose">
+        <h2>Éditrice du site</h2>
+        <p>Le site et l'application Glow Up sont édités par <strong>Candice ARAV</strong>, entrepreneur individuel (EI), micro-entreprise.</p>
+        <ul>
+          <li>SIRET&nbsp;: 852&nbsp;825&nbsp;793&nbsp;00015</li>
+          <li>Adresse&nbsp;: 49 avenue Joffre, 92420 Vaucresson</li>
+          <li>Email&nbsp;: <a href="mailto:candice_arav@hotmail.com">candice_arav@hotmail.com</a></li>
+        </ul>
+
+        <h2>Directrice de la publication</h2>
+        <p>Candice ARAV.</p>
+
+        <h2>Hébergeur</h2>
+        <p>Vercel Inc.<br>440 N Barranca Avenue #4133<br>Covina, CA 91723<br>États-Unis</p>
+      </article>
+      <div class="wrap" style="max-width:680px;margin:0 auto;"><a class="backlink" href="/">← Retour à l'accueil</a></div>
+      </main>`
+    + FOOT;
+  fs.mkdirSync(path.join(ROOT, 'mentions-legales'), { recursive: true });
+  fs.writeFileSync(path.join(ROOT, 'mentions-legales', 'index.html'), mlPage);
+  console.log('✓ page Mentions légales');
+
+  // ── Page « Contact » ──
+  const ctDesc = "Contacter Glow Up : une question, une remarque ou une suggestion, écris-nous par email.";
+  const ctPage = head('Contact · Glow Up', ctDesc, `${SITE}/contact/`, '', { ogType: 'website' })
+    + NAV
+    + `<main class="article">
+      <div class="wrap"><div class="inner">
+        <p class="meta">Contact</p>
+        <h1>Nous écrire</h1>
+      </div></div>
+      <article class="prose">
+        <p>Une question, une remarque ou une suggestion sur Glow Up&nbsp;? Écris-nous à <a href="mailto:contact@glowupskin.app"><strong>contact@glowupskin.app</strong></a>.</p>
+        <p>Pour les informations légales, consulte les <a href="/mentions-legales/">mentions légales</a>. Pour tout ce qui concerne tes données personnelles, voir la <a href="/confidentialite/">politique de confidentialité</a>.</p>
+      </article>
+      <div class="wrap" style="max-width:680px;margin:0 auto;"><a class="backlink" href="/">← Retour à l'accueil</a></div>
+      </main>`
+    + FOOT;
+  fs.mkdirSync(path.join(ROOT, 'contact'), { recursive: true });
+  fs.writeFileSync(path.join(ROOT, 'contact', 'index.html'), ctPage);
+  console.log('✓ page Contact');
+
   // ── sitemap.xml + robots.txt (à la racine du site) ──
   const today = new Date().toISOString().slice(0, 10);
   const urls = [
     { loc: SITE + '/', lastmod: today, priority: '1.0' },
     { loc: SITE + '/blog/', lastmod: today, priority: '0.8' },
     { loc: SITE + '/a-propos/', lastmod: today, priority: '0.5' },
+    { loc: SITE + '/contact/', lastmod: '2026-10-12', priority: '0.3' },
+    { loc: SITE + '/mentions-legales/', lastmod: '2026-10-12', priority: '0.3' },
     ...posts.map(p => ({ loc: SITE + p.url, lastmod: (p.updated || p.date || today).slice(0, 10), priority: '0.7' })),
     { loc: SITE + '/confidentialite/', lastmod: today, priority: '0.3' },
   ];

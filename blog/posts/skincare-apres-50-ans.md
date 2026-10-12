@@ -2,10 +2,11 @@
 title: Skincare après 50 ans : la routine qui change tout
 slug: skincare-apres-50-ans
 titre_seo: Skincare après 50 ans : la routine matin et soir
+sante: true
 date: 2026-10-08
 excerpt: Après 50 ans, la peau a de nouveaux besoins : nourrir, raffermir, protéger. Voici une routine simple et efficace pour une peau souple, confortable et lumineuse.
 metaDescription: Skincare après 50 ans : les besoins de la peau (sécheresse, fermeté, taches) et une routine matin/soir simple avec les bons actifs pour une peau éclatante.
-author: Candice COHEN
+author: Candice Arav
 related:
   - menopause-et-peau
   - skincare-coreenne-peau-mature

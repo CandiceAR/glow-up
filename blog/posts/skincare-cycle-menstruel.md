@@ -2,10 +2,11 @@
 title: Skincare et cycle menstruel : adapter sa routine phase par phase
 slug: skincare-cycle-menstruel
 titre_seo: Skincare et cycle menstruel : adapter sa routine
+sante: true
 date: 2026-09-28
 excerpt: Peau terne, éclatante ou couverte de boutons selon les jours ? Ta peau suit ton cycle menstruel. Voici comment adapter ta skincare phase par phase, avec un mini calendrier.
 metaDescription: Ta peau change à chaque phase du cycle menstruel. Le guide pour adapter ta routine skincare (règles, phase folliculaire, ovulation, SPM), avec un mini calendrier.
-author: Candice COHEN
+author: Candice Arav
 image: /assets/blog/skincare-cycle-menstruel.jpg
 image_alt: Flacon compte-gouttes en verre dépoli et pot de crème posés sur un tissu beige, avec une lune décorative et des fleurs séchées
 related:

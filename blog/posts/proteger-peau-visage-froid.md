@@ -5,7 +5,7 @@ titre_seo: Protéger la peau du visage du froid : bons gestes
 date: 2026-11-06
 excerpt: Tiraillements, rougeurs, peau qui pèle… Le froid met la peau à rude épreuve, surtout après 40 ans. Voici les bons gestes pour garder un visage confortable et lumineux tout l'hiver.
 metaDescription: Comment protéger la peau de son visage du froid : pourquoi l'hiver dessèche la peau et les bons gestes (hydratation, barrière, SPF) pour un visage confortable.
-author: Candice COHEN
+author: Candice Arav
 ---
 
 Dès que les températures chutent, la peau du visage le fait savoir : elle tiraille, rougit, devient rêche, parfois elle pèle. Le froid est l'un des pires ennemis de la peau — surtout quand elle est **mature ou sensible**. Voici comment la protéger pour garder un visage confortable et lumineux tout l'hiver.

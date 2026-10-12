@@ -5,7 +5,7 @@ titre_seo: Rides après 35 ans : causes et prévention
 date: 2026-09-23
 excerpt: Collagène, élastine, hormones, soleil… Après 35 ans, plusieurs mécanismes expliquent l'apparition des rides. Comprendre pourquoi pour mieux les prévenir.
 metaDescription: Découvrez pourquoi les rides apparaissent après 35 ans : causes biologiques, types de rides et conseils de prévention pour garder une peau souple et éclatante.
-author: Candice COHEN
+author: Candice Arav
 image: /assets/blog/pourquoi-les-rides-apparaissent-apres-35-ans.jpg
 image_alt: Portrait d'une femme d'une quarantaine d'années au léger sourire, à la peau lumineuse, dans une lumière chaude
 related:

@@ -2,12 +2,13 @@
 title: Routine skincare peau fine 35-45 ans : les bons gestes matin et soir
 slug: routine-skincare-peau-fine-35-45-ans
 titre_seo: Routine skincare peau fine 35-45 ans : matin et soir
+sante: true
 date: 2026-09-10
 excerpt: Une routine matin/soir pensée spécifiquement pour renforcer une peau fine et réactive après 35 ans — étape par étape, sans l'agresser.
 metaDescription: Peau fine, réactive, qui tiraille ? Voici une routine matin/soir pensée spécifiquement pour renforcer une peau fine après 35 ans, étape par étape.
 image: /assets/blog/routine-skincare-peau-fine-35-45-ans.jpg
 image_alt: Femme appliquant un sérum au compte-gouttes devant un miroir rond, avec des produits de soin posés sur le lavabo
-author: Candice COHEN
+author: Candice Arav
 related:
   - peau-fine-et-fragile
   - pourquoi-les-rides-apparaissent-apres-35-ans

@@ -707,7 +707,7 @@ const Subscription = (() => {
         <!-- DIFFÉRENCIATION -->
         <section class="pv-diff pv-reveal">
           <span class="pv-diff-eyebrow">Pourquoi nous faire confiance</span>
-          <h2 class="pv-section-title">La beauté sans conflit d'intérêt</h2>
+          <h2 class="pv-section-title">La beauté sans favoritisme de marque</h2>
           <div class="pv-diff-grid">
             <div class="pv-diff-card"><span class="pv-diff-i">🤍</span><p>Aucun intérêt à te vendre un produit plutôt qu'un autre.</p></div>
             <div class="pv-diff-card"><span class="pv-diff-i">🌍</span><p>On référence <strong>tous</strong> les produits du marché.</p></div>
