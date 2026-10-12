@@ -140,6 +140,10 @@ a{color:var(--terra);}
 .sources h2{font-family:var(--serif);font-weight:600;font-size:22px;color:var(--espresso);margin-bottom:10px;}
 .sources ol{padding-left:1.3em;}
 .sources li+li{margin-top:6px;}
+.prose table{display:block;overflow-x:auto;border-collapse:collapse;font-size:15px;line-height:1.5;}
+.prose th,.prose td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top;}
+.prose th{background:var(--peach);color:var(--espresso);font-weight:600;}
+.prose td{background:var(--white);}
 .prose .sante{border-top:1px solid var(--line);padding-top:18px;margin-top:36px;font-size:16px;font-style:italic;color:var(--muted);}
 .related{max-width:680px;margin:44px auto 0;}
 .related h2{font-family:var(--serif);font-weight:600;font-size:26px;color:var(--espresso);margin-bottom:14px;}
@@ -243,6 +247,11 @@ async function main() {
       return { title: t, url: u };
     }).filter(Boolean);
 
+    // Garde-fou : un article contenant « [À VÉRIFIER] » ne doit jamais partir en ligne (bloque la publication automatique)
+    if (body.includes('[À VÉRIFIER]')) {
+      console.warn('⚠️ « [À VÉRIFIER] » restant dans', slug, ': à compléter avant publication');
+      if (process.env.GITHUB_ACTIONS) { console.error('ERREUR : article avec [À VÉRIFIER] : publication bloquée (' + slug + ')'); process.exit(1); }
+    }
     if (data.titre_seo && data.titre_seo.length > 60) console.warn('⚠️ titre_seo > 60 caractères dans', slug, '(' + data.titre_seo.length + ')');
     entries.push({
       slug, title, titreSeo: data.titre_seo || '', date: ISO(data.date), updated: ISO(data.updated) || ISO(data.date),
