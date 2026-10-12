@@ -1069,7 +1069,7 @@ const RoutineRenderer = (() => {
     if (!r || r.status !== 'found' || !r.dupe) return '';
     const d = r.dupe;
     const url = d.amazonUrl || d.shopUrl || '#';
-    return `<a class="dupe-cta" href="${url}" target="_blank" rel="noopener nofollow" onclick="event.stopPropagation()">
+    return `<a class="dupe-cta" href="${url}" target="_blank" rel="noopener nofollow${d.amazonUrl ? ' sponsored' : ''}" onclick="event.stopPropagation()">
       <span class="dupe-cta-badge">💸 Dupe</span>
       <span class="dupe-cta-txt">−${r.pct}% · ${r.savings} € économisés</span>
       <span class="dupe-cta-arrow">→</span>
