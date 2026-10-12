@@ -19,7 +19,7 @@ C'est sans doute la question skincare la plus posée passé la quarantaine : **f
 
 Le rétinol est un dérivé de la vitamine A. Il agit en profondeur : il **accélère le renouvellement des cellules** et **stimule la production de collagène**, qui diminue naturellement avec l'âge. Résultat sur une peau de plus de 40 ans : des **rides lissées**, un grain de peau affiné, un teint plus lumineux et des **taches** atténuées.
 
-C'est aussi pour ça qu'on le retrouve au cœur de nombreuses [routines pensées pour les peaux matures](/blog/pourquoi-les-rides-apparaissent-apres-35-ans/) : peu d'actifs cochent autant de cases à la fois.
+C'est aussi pour ça qu'on le retrouve au cœur de nombreuses [routines pensées pour les peaux matures](/blog/routine-skincare-peau-fine-35-45-ans/) : peu d'actifs cochent autant de cases à la fois.
 
 ## Comment l'introduire progressivement
 

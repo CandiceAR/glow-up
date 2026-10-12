@@ -478,19 +478,26 @@ async function main() {
   console.log('✓ page Contact');
 
   // ── sitemap.xml + robots.txt (à la racine du site) ──
-  const today = new Date().toISOString().slice(0, 10);
+  // lastmod = date de VRAIE modification. Pages fixes : fichier tenu à la main (data/sitemap-dates.json) ;
+  // /blog/ : date de l'article publié le plus récent ; articles : champ « updated », sinon date de publication.
+  // (Ni date du jour, qui changerait chaque jour sans raison, ni date Git : le clone de GitHub Actions est partiel.)
+  let manualDates = {};
+  try { manualDates = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'sitemap-dates.json'), 'utf8')); }
+  catch (e) { console.warn('⚠️ data/sitemap-dates.json introuvable ou invalide : pages fixes sans lastmod'); }
+  const fixed = key => { const d = manualDates[key]; if (!d) console.warn('⚠️ pas de date pour', key, 'dans data/sitemap-dates.json'); return d || ''; };
+  const latestPost = posts.reduce((m, p) => { const d = (p.updated || p.date || '').slice(0, 10); return d > m ? d : m; }, '');
   const urls = [
-    { loc: SITE + '/', lastmod: today, priority: '1.0' },
-    { loc: SITE + '/blog/', lastmod: today, priority: '0.8' },
-    { loc: SITE + '/a-propos/', lastmod: today, priority: '0.5' },
-    { loc: SITE + '/contact/', lastmod: '2026-10-12', priority: '0.3' },
-    { loc: SITE + '/mentions-legales/', lastmod: '2026-10-12', priority: '0.3' },
-    ...posts.map(p => ({ loc: SITE + p.url, lastmod: (p.updated || p.date || today).slice(0, 10), priority: '0.7' })),
-    { loc: SITE + '/confidentialite/', lastmod: today, priority: '0.3' },
+    { loc: SITE + '/', lastmod: fixed('/') },
+    { loc: SITE + '/blog/', lastmod: latestPost },
+    { loc: SITE + '/a-propos/', lastmod: fixed('/a-propos/') },
+    { loc: SITE + '/contact/', lastmod: fixed('/contact/') },
+    { loc: SITE + '/mentions-legales/', lastmod: fixed('/mentions-legales/') },
+    ...posts.map(p => ({ loc: SITE + p.url, lastmod: (p.updated || p.date || '').slice(0, 10) })),
+    { loc: SITE + '/confidentialite/', lastmod: fixed('/confidentialite/') },
   ];
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n`
     + `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`
-    + urls.map(u => `  <url><loc>${u.loc}</loc><lastmod>${u.lastmod}</lastmod><priority>${u.priority}</priority></url>`).join('\n')
+    + urls.map(u => `  <url><loc>${u.loc}</loc>${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ''}</url>`).join('\n')
     + `\n</urlset>\n`;
   fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), sitemap);
 

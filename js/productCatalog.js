@@ -312,7 +312,7 @@ const ProductCatalog = (() => {
             <p class="modal-paired-name">${paired.name}</p>
             <span class="modal-paired-price">${paired.price.toFixed(2)} €</span>
           </div>
-          <a class="btn btn-amazon btn-amazon-sm" href="${paired.amazonUrl || paired.shopUrl || '#'}" target="_blank" rel="noopener">Acheter</a>
+          <a class="btn btn-amazon btn-amazon-sm" href="${paired.amazonUrl || paired.shopUrl || '#'}" target="_blank" rel="noopener nofollow sponsored">Acheter</a>
         </div>
       </div>` : '';
 
@@ -423,7 +423,7 @@ const ProductCatalog = (() => {
       return `<div class="dupe-block">
         <div class="dupe-head"><span class="dupe-badge">💸 Le dupe de ce produit</span><span class="dupe-save">−${r.pct}% · économise ${r.savings} €</span></div>
         <div class="dupe-card">${cardInner}</div>
-        <a class="dupe-buy" href="${url}" target="_blank" rel="noopener nofollow" onclick="event.stopPropagation()">Voir le dupe →</a>
+        <a class="dupe-buy" href="${url}" target="_blank" rel="noopener nofollow${d.amazonUrl ? ' sponsored' : ''}" onclick="event.stopPropagation()">Voir le dupe →</a>
       </div>`;
     }
     return `<div class="dupe-block dupe-block--locked" onclick="Subscription.openLock('dupe')" role="button" tabindex="0">
