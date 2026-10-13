@@ -1,9 +1,9 @@
 {
   "redirects": [
     {
-      "source": "/:path*",
+      "source": "/(.*)",
       "has": [{ "type": "host", "value": "glow-up-pi.vercel.app" }],
-      "destination": "https://www.glowupskin.app/:path*",
+      "destination": "https://www.glowupskin.app/$1",
       "permanent": true
     }
   ],
