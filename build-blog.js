@@ -191,7 +191,7 @@ const NAV = `<nav class="bnav"><div class="wrap">
 
 const FOOT = `<footer class="foot"><div class="wrap">
 <div class="fb">glow up</div>
-<div class="fl"><a href="/">Accueil</a><a href="/blog/">Conseils</a><a href="/a-propos/">À propos</a><a href="/mentions-legales/">Mentions légales</a><a href="/confidentialite/">Confidentialité</a><a href="/contact/">Contact</a><a href="https://www.instagram.com/glowupandshiny" target="_blank" rel="noopener">Instagram</a></div>
+<div class="fl"><a href="/">Accueil</a><a href="/blog/">Conseils</a><a href="/a-propos/">À propos</a><a href="/skinpedia/">Skinpedia</a><a href="/mentions-legales/">Mentions légales</a><a href="/confidentialite/">Confidentialité</a><a href="/contact/">Contact</a><a href="https://www.instagram.com/glowupandshiny" target="_blank" rel="noopener">Instagram</a></div>
 <div class="copy">© ${new Date().getFullYear()} Glow Up · Ton agent IA skincare</div>
 </div></footer></body></html>`;
 
@@ -503,6 +503,8 @@ async function main() {
     { loc: SITE + '/mentions-legales/', lastmod: fixed('/mentions-legales/') },
     ...posts.map(p => ({ loc: SITE + p.url, lastmod: (p.updated || p.date || '').slice(0, 10) })),
     { loc: SITE + '/confidentialite/', lastmod: fixed('/confidentialite/') },
+    // Pages générées par build-pages.js (Skinpedia) : lastmod = date de dernière vraie modification du contenu
+    ...require('./build-pages.js').build(),
   ];
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n`
     + `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`

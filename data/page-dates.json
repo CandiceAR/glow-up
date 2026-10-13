@@ -1,0 +1,57 @@
+{
+  "_note": "Date de dernière vraie modification de chaque page générée (build-pages.js). La date ne change que si l'empreinte du contenu change.",
+  "urls": {
+    "https://www.glowupskin.app/skinpedia/retinol/": {
+      "hash": "6bc4d304b384ab2d",
+      "date": "2026-10-13"
+    },
+    "https://www.glowupskin.app/skinpedia/niacinamide/": {
+      "hash": "86b30c604dd1d55a",
+      "date": "2026-10-13"
+    },
+    "https://www.glowupskin.app/skinpedia/acide-hyaluronique/": {
+      "hash": "31c03ddc697775e5",
+      "date": "2026-10-13"
+    },
+    "https://www.glowupskin.app/skinpedia/vitamine-c/": {
+      "hash": "bc6c94f3156b8084",
+      "date": "2026-10-13"
+    },
+    "https://www.glowupskin.app/skinpedia/peptides/": {
+      "hash": "b993ff35d5170e6e",
+      "date": "2026-10-13"
+    },
+    "https://www.glowupskin.app/skinpedia/acide-salicylique/": {
+      "hash": "dd7a6df7d897bf51",
+      "date": "2026-10-13"
+    },
+    "https://www.glowupskin.app/skinpedia/aha/": {
+      "hash": "613362482da8f8cf",
+      "date": "2026-10-13"
+    },
+    "https://www.glowupskin.app/skinpedia/zinc-pca/": {
+      "hash": "a6894ccbaf1e5956",
+      "date": "2026-10-13"
+    },
+    "https://www.glowupskin.app/skinpedia/ceramides/": {
+      "hash": "363caccec6d731ce",
+      "date": "2026-10-13"
+    },
+    "https://www.glowupskin.app/skinpedia/alcool-denature/": {
+      "hash": "561115ab841776c3",
+      "date": "2026-10-13"
+    },
+    "https://www.glowupskin.app/skinpedia/parfum-fragrance/": {
+      "hash": "55ff7ac628e025c0",
+      "date": "2026-10-13"
+    },
+    "https://www.glowupskin.app/skinpedia/huiles-comedogenes/": {
+      "hash": "ffd31f9ed5543348",
+      "date": "2026-10-13"
+    },
+    "https://www.glowupskin.app/skinpedia/": {
+      "hash": "26cf136284033db1",
+      "date": "2026-10-13"
+    }
+  }
+}
