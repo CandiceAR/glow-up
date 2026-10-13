@@ -502,7 +502,7 @@ const Subscription = (() => {
       const count   = ref.count || 0;
       const credit  = ref.credit || 0;
       const pendingRewards = ref.pendingRewards || 0;
-      const link    = `https://glowupskin.app?ref=${code}`;
+      const link    = `https://www.glowupskin.app?ref=${code}`;
       const THRESHOLD = 10;
       const inCycle    = credit % THRESHOLD;            // crédit dans le palier courant
       const remaining  = THRESHOLD - inCycle;           // € restants avant la carte

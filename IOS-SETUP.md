@@ -56,7 +56,7 @@ Le code est prêt (`Auth.signInWithApple()` + boutons). Il reste la config :
 
 ### B. App Store Connect (appstoreconnect.apple.com)
 4. **Mes apps → + → Nouvelle app** : plateforme iOS, nom **Glow Up**, langue FR, Bundle ID **app.glowupskin**, SKU (ex. `glowup-ios`).
-5. Remplir la **fiche** (voir `app-store/listing-fr.md`) : sous-titre, description, mots-clés, catégorie (Style de vie), URL confidentialité = **https://glowupskin.app/confidentialite/**.
+5. Remplir la **fiche** (voir `app-store/listing-fr.md`) : sous-titre, description, mots-clés, catégorie (Style de vie), URL confidentialité = **https://www.glowupskin.app/confidentialite/**.
 6. Ajouter les **captures d'écran** (iPhone 6.7"). *(je peux te les générer)*
 7. **App Privacy** : déclarer email, photos, données d'usage (voir la fiche).
 8. **Compte de démo** pour la review Apple : créer un compte test (email + mot de passe) et le renseigner dans « App Review Information ».

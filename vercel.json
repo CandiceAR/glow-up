@@ -1,4 +1,12 @@
 {
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "glow-up-pi.vercel.app" }],
+      "destination": "https://www.glowupskin.app/:path*",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     { "source": "/favicon.ico", "destination": "/icons/icon-192.png" },
     { "source": "/admin", "destination": "/admin.html" }

@@ -50,8 +50,8 @@ exports.handler = async (event) => {
       line_items: [{ price: priceId, quantity: 1 }],
       customer_email: email || undefined,
       client_reference_id: uid,
-      success_url: 'https://glowupskin.app/?checkout=success',
-      cancel_url:  'https://glowupskin.app/?checkout=cancel',
+      success_url: 'https://www.glowupskin.app/?checkout=success',
+      cancel_url:  'https://www.glowupskin.app/?checkout=cancel',
       metadata: { uid, priceKey }
     });
 

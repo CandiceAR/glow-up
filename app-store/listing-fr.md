@@ -42,9 +42,9 @@ Analyse, comprends, rayonne. ✦
 skincare,routine,peau,analyse,soin,visage,dupe,beauté,sérum,crème,acné,hydratation,anti-âge,IA,teint
 
 ## URLs
-- **URL marketing** : https://glowupskin.app
-- **URL d'assistance** : https://glowupskin.app  *(prévoir une page contact/support)*
-- **Politique de confidentialité** : https://glowupskin.app/confidentialite/  ✅ (page en ligne)
+- **URL marketing** : https://www.glowupskin.app
+- **URL d'assistance** : https://www.glowupskin.app/contact/  ✅ (page en ligne)
+- **Politique de confidentialité** : https://www.glowupskin.app/confidentialite/  ✅ (page en ligne)
 
 ## Confidentialité (App Privacy — à déclarer dans App Store Connect)
 - **E-mail** : pour la création de compte (Firebase Auth) — lié à l'utilisateur.
