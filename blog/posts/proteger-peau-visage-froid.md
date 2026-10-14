@@ -2,7 +2,7 @@
 title: Comment protéger la peau de son visage du froid
 slug: proteger-peau-visage-froid
 titre_seo: Protéger la peau du visage du froid : bons gestes
-date: 2026-11-06
+date: 2026-12-01
 excerpt: Tiraillements, rougeurs, peau qui pèle… Le froid met la peau à rude épreuve, surtout après 40 ans. Voici les bons gestes pour garder un visage confortable et lumineux tout l'hiver.
 metaDescription: Comment protéger la peau de son visage du froid : pourquoi l'hiver dessèche la peau et les bons gestes (hydratation, barrière, SPF) pour un visage confortable.
 author: Candice Arav
