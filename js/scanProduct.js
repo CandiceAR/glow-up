@@ -138,6 +138,7 @@ const ScanProduct = (() => {
     const v = S.verdict;
     const badge = v === 'green'  ? { cls: 'green',  ic: '🟢' }
                 : v === 'orange' ? { cls: 'orange', ic: '🟠' }
+                : v === 'unknown' ? { cls: 'unknown', ic: '⚪' }
                 :                  { cls: 'red',    ic: '🔴' };
     const f = S.facts || {};
     const canAdd = v === 'green' && !f.replaceOffer;
@@ -150,6 +151,7 @@ const ScanProduct = (() => {
           <div class="scan-prod-id">
             <span class="scan-prod-brand">${p.brand || ''}</span>
             <span class="scan-prod-name">${p.name || 'Produit'}</span>
+            ${f.activesVerified ? '' : '<span class="scan-unverified">Actifs non vérifiés</span>'}
           </div>
         </div>
 
@@ -168,7 +170,7 @@ const ScanProduct = (() => {
             ${r.expected.forYou ? `<p class="scan-line"><span class="scan-line-ic">👤</span> <span><strong>Pour toi :</strong> ${r.expected.forYou}</span></p>` : ''}
           </div>` : ''}
 
-        ${(v !== 'red' && (r.timing || r.step)) ? `
+        ${(v !== 'red' && v !== 'unknown' && (r.timing || r.step)) ? `
           <div class="scan-block">
             <h3 class="scan-block-h">Comment l'utiliser</h3>
             ${r.timing ? `<p class="scan-line"><span class="scan-line-ic">⏰</span> ${r.timing}</p>` : ''}
@@ -329,14 +331,21 @@ const ScanProduct = (() => {
         age: (typeof AgeGuard !== 'undefined' && AgeGuard.age) ? AgeGuard.age(a) : null,
         pregnant: Array.isArray(a.labels) && a.labels.includes('grossesse')
       };
-      try {
-        const vResp = await fetch(apiUrl('/api/identifyProduct'), {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ mode: 'verdict', product: prod, verdict: facts.verdict, facts, profile })
-        });
-        S.result = await vResp.json().catch(() => null);
-      } catch (e) { S.result = null; }
-      if (!S.result || !S.result.title) S.result = _localText(prod, facts);
+      // Actifs non vérifiés : pas de verdict tranché, donc pas de texte rédigé par l'IA (texte fixe)
+      if (facts.verdict === 'unknown') {
+        S.result = _localText(prod, facts);
+      } else {
+        try {
+          // L'IA ne reçoit plus les « actifs connus » de sa propre mémoire quand ils ne sont pas vérifiés
+          const sendProd = facts.activesVerified ? prod : Object.assign({}, prod, { keyActives: [] });
+          const vResp = await fetch(apiUrl('/api/identifyProduct'), {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mode: 'verdict', product: sendProd, verdict: facts.verdict, facts, profile })
+          });
+          S.result = await vResp.json().catch(() => null);
+        } catch (e) { S.result = null; }
+        if (!S.result || !S.result.title) S.result = _localText(prod, facts);
+      }
 
       // analytics (funnel)
       try { if (window.Analytics && Analytics.event) Analytics.event('scan_product', { verdict: facts.verdict }); } catch (e) {}
@@ -376,6 +385,12 @@ const ScanProduct = (() => {
 
   // Repli texte local si l'IA échoue (toujours cohérent avec les faits)
   function _localText(product, facts) {
+    if (facts.verdict === 'unknown') {
+      const reasons = ["Nous n'avons pas pu vérifier la composition de ce produit : nous ne savons pas avec certitude quels actifs il contient.",
+        "Lis la liste d'ingrédients sur l'emballage avant de l'utiliser, surtout si ta peau est sensible ou si tu es enceinte."];
+      if (facts.safety) reasons.unshift(facts.safety);
+      return { title: 'Actifs non vérifiés : pas de verdict tranché', reasons: reasons.slice(0, 3), timing: '', step: '', note: '' };
+    }
     const title = facts.verdict === 'green'  ? 'Oui, ce produit peut te convenir'
                 : facts.verdict === 'orange' ? 'Oui, mais avec quelques précautions'
                 :                              "Non, ce produit n'est pas idéal pour toi";
@@ -390,11 +405,12 @@ const ScanProduct = (() => {
   }
 
   // ─── Calcul des FAITS (cœur fiable) ───────────────────────────
-  function _pseudo(prod) {
+  // tags = actifs retenus comme FAITS (catalogue). Les « actifs connus » de l'IA (mémoire) n'en font pas partie.
+  function _pseudo(prod, tags) {
     return {
       name: (prod.brand || '') + ' ' + (prod.name || ''),
       brand: prod.brand || '', category: prod.category || 'other',
-      ingredientTags: (prod.keyActives || []).map(s => String(s))
+      ingredientTags: (tags || []).map(s => String(s))
     };
   }
 
@@ -473,8 +489,17 @@ const ScanProduct = (() => {
 
   function computeFacts(prod) {
     const a = _answers();
-    const pseudo = _pseudo(prod);
-    const prodActives = _actives(pseudo.name + ' ' + (prod.keyActives || []).join(' '));
+    // Les actifs ne sont un FAIT que s'ils viennent de notre catalogue (fiche du produit) ou du NOM écrit sur
+    // l'emballage. Les « actifs connus » donnés par l'IA depuis sa mémoire ne fondent plus aucun verdict.
+    let own = null;
+    try {
+      if (typeof SameProduct !== 'undefined') own = ((AppState.products && AppState.products.catalog) || []).find(p => SameProduct.same(prod, p)) || null;
+    } catch (e) {}
+    const factTags = (own && Array.isArray(own.ingredientTags)) ? own.ingredientTags : [];
+    const activesVerified = factTags.length > 0;
+    const aiActives = (prod.keyActives || []).map(String);   // mémoire de l'IA : sert seulement à signaler une précaution
+    const pseudo = _pseudo(prod, factTags);
+    const prodActives = _actives(pseudo.name + ' ' + factTags.join(' '));
     const curActives  = _actives(_currentHay());
     const owned = _ownedInfo();
     const ownedActives = _actives(owned.hay);
@@ -507,7 +532,7 @@ const ScanProduct = (() => {
     const avoid = Array.isArray(a.avoidIngredients) ? a.avoidIngredients : [];
     const AVOID = { parfum: /parfum|fragrance/, alcool: /alcool|alcohol denat/, silicones: /silicone|dimethicone/, parabens: /paraben/ };
     let avoidHit = null;
-    const prodHay = _norm(pseudo.name + ' ' + (prod.keyActives || []).join(' '));
+    const prodHay = _norm(pseudo.name + ' ' + factTags.join(' '));
     avoid.forEach(x => { if (AVOID[x] && AVOID[x].test(prodHay)) avoidHit = x; });
     if (avoidHit && !safety) safety = "Ce produit contient " + avoidHit + ", que tu préfères éviter.";
 
@@ -550,9 +575,26 @@ const ScanProduct = (() => {
     if (isBasic && sensitive && !safety) {
       safety = "Peau sensible : vérifie sur l'emballage qu'il est sans parfum ni alcool — Glow Up n'a pas pu vérifier sa composition.";
     }
+    // Précaution (jamais un fait) : l'IA a cité de mémoire un actif sensible alors que nous ne l'avons pas vérifié
+    let aiCaution = null;
+    if (!activesVerified && aiActives.length && !restricted) {
+      const ai = _actives(aiActives.join(' '));
+      if (pregnant && (ai.retinol || ai.exfo)) aiCaution = "Grossesse : ce produit pourrait contenir du rétinol ou des acides (information non vérifiée). Vérifie la liste d'ingrédients sur l'emballage et demande l'avis de ton médecin.";
+      else if (typeof AgeGuard !== 'undefined' && AgeGuard.isRestricted) {
+        try {
+          const rr = AgeGuard.isRestricted(_pseudo(prod, aiActives), AgeGuard.age ? AgeGuard.age(a) : null);
+          if (rr && rr.restricted) aiCaution = (AgeGuard.scanMessage && AgeGuard.scanMessage()) || "Ce produit pourrait ne pas être adapté à ton âge (information non vérifiée).";
+        } catch (e) {}
+      }
+    }
+    if (aiCaution && !safety) safety = aiCaution;
+
     // Verdict : UNIQUEMENT selon la personne (sécurité, préférences, besoins, sensibilité), jamais selon sa routine enregistrée
+    // Actifs non vérifiés (produit hors catalogue, actifs seulement « connus » de l'IA) : pas de verdict tranché.
+    const needsActives = !isBasic;
     let verdict;
     if (restricted || avoidHit)                                                   verdict = 'red';
+    else if (!activesVerified && needsActives)                                    verdict = 'unknown';
     else if (prodActives.retinol && (a.skinType === 'sensible'))                  verdict = 'orange';
     else if (isBasic)                                                             verdict = sensitive ? 'orange' : 'green';
     else if (addresses.length)                                                    verdict = 'green';
@@ -560,7 +602,9 @@ const ScanProduct = (() => {
 
     return { verdict, addresses, duplicateOf, conflicts, safety, moment: place.moment, stepText: place.stepText, section: place.section, pos: place.pos,
              basic: isBasic, kindFr: _kindFr(prod), replaceKey: place.replaceKey || null, replacesLabel: place.replacesLabel || null,
-             replaceOffer: !!(place.replaceKey && verdict !== 'red' && (slotState === 'mine' || slotState === 'suggestion')), slotState };
+             activesVerified,
+             // pas de proposition « remplacer » tant que le verdict n'est pas établi
+             replaceOffer: !!(place.replaceKey && verdict !== 'red' && verdict !== 'unknown' && (slotState === 'mine' || slotState === 'suggestion')), slotState };
   }
 
   const _STEP_ORDER = ['cleanser', 'toner', 'exfoliant', 'serum', 'treatment', 'eye', 'moisturizer', 'oil', 'spf'];

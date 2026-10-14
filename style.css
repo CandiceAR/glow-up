@@ -10714,6 +10714,8 @@ body.drawer-open{ overflow: hidden; }   /* blocage du défilement arrière-plan 
 .scan-verdict--green{background:#eaf6ed;}
 .scan-verdict--orange{background:#fdf3e6;}
 .scan-verdict--red{background:#fbeaea;}
+.scan-verdict--unknown{background:#f1eeea;}
+.scan-unverified{display:block;margin-top:2px;font-size:12px;font-style:italic;color:var(--muted,#6b6560);}
 .scan-verdict-ic{font-size:1.6rem;}
 .scan-verdict-title{font-size:1.1rem;margin:0;line-height:1.35;}
 .scan-block{margin:0 0 16px;}

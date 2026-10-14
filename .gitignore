@@ -31,3 +31,8 @@ recapitulatif_*.pdf
 ios/
 android/
 www/
+
+# Sauvegardes Firestore et clés (jamais dans le dépôt)
+backups/
+cle-firebase*.json
+*serviceAccount*.json

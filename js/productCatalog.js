@@ -362,13 +362,22 @@ const ProductCatalog = (() => {
   function findDupe(product) {
     if (!product) return { status: 'none' };
     // 0) Ce produit EST un dupe culte curé → on le valorise (non gated)
+    // Les prix de référence et pourcentages de data/dupes.json n'ont pas de source : on ne les affiche plus
+    // (lots de vérification à venir). La paire n'est montrée que si le produit partage l'ACTIF PRINCIPAL de la
+    // référence, lu dans le NOM de la référence (jamais deviné) ; sinon, on retombe sur la recherche ci-dessous.
     const cur = _dupeMap[product.id];
-    if (cur) return { status: 'isDupe', hero: cur.hero, savings: cur.savings, pct: cur.savingsPct, reason: cur.reason };
+    if (cur && typeof MainActive !== 'undefined' && cur.hero) {
+      const heroFam = MainActive.fromName(cur.hero.name);
+      const own = MainActive.resolve({ name: product.name, tags: product.ingredientTags });
+      if (heroFam && own && own.family === heroFam) return { status: 'isDupe', hero: cur.hero, reason: cur.reason, mainLabel: own.label };
+    }
     if (product.price == null) return { status: 'none' };
-    // Override curé prioritaire (Lot Dupe 2)
-    if (product.dupeId) {
+    // Override curé prioritaire (Lot Dupe 2) — même règle : l'actif principal doit être le même
+    if (product.dupeId && typeof MainActive !== 'undefined') {
       const d = (AppState.products.catalog || []).find(p => p.id === product.dupeId);
-      if (d && d.price != null && d.price < product.price) {
+      const m1 = MainActive.resolve({ name: product.name, tags: product.ingredientTags });
+      const m2 = d && MainActive.resolve({ name: d.name, tags: d.ingredientTags });
+      if (d && d.price != null && d.price < product.price && m1 && m2 && m1.family === m2.family) {
         const savings = +(product.price - d.price).toFixed(2);
         return { status: 'found', dupe: d, savings, pct: Math.round(savings / product.price * 100), shared: [], curated: true };
       }
@@ -404,8 +413,8 @@ const ProductCatalog = (() => {
     // Ce produit EST le dupe d'un produit culte → mise en valeur (non gated)
     if (r.status === 'isDupe') {
       return `<div class="dupe-block dupe-block--is">
-        <div class="dupe-head"><span class="dupe-badge">💸 C'est un dupe culte</span><span class="dupe-save">−${r.pct}% vs ${r.hero.brand}</span></div>
-        <p class="dupe-is-text">Tu paies <strong>${product.price != null ? product.price.toFixed(2) + ' €' : '—'}</strong> au lieu de <s>${Number(r.hero.price).toFixed(2)} €</s> — c'est le dupe de <strong>${r.hero.brand} ${r.hero.name}</strong>. ${r.reason}.</p>
+        <div class="dupe-head"><span class="dupe-badge">💸 C'est un dupe culte</span></div>
+        <p class="dupe-is-text">C'est un dupe de <strong>${r.hero.brand} ${r.hero.name}</strong> : même actif principal (${r.mainLabel}).</p>
       </div>`;
     }
     if (r.status === 'cheapest') {
