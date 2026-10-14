@@ -76,7 +76,7 @@ function clean(text) {
 // Textes de remplacement explicites (la source reste js/skinpedia.js, non modifiée).
 const OVERRIDE = {
   'retinol': { tip: "À utiliser le soir, et à éviter avant une exposition solaire. Associer à un SPF chaque matin." },
-  'niacinamide': { tip: "Utiliser matin et/ou soir." },
+  'niacinamide': { definition: "La niacinamide est une forme de vitamine B3.", tip: "Utiliser matin et/ou soir." },
   'vitamin-c': { definition: "Antioxydant, la vitamine C neutralise les radicaux libres générés par les UV et la pollution avant qu'ils n'endommagent les cellules cutanées." },
   'peptides': { tip: "S'utilisent en sérum ou en crème." },
   'salicylic-acid': { tip: "Suivre d'un SPF le matin. Peut assécher si utilisé trop souvent." },
