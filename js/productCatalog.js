@@ -374,6 +374,10 @@ const ProductCatalog = (() => {
       }
     }
     const catalog  = AppState.products.catalog || [];
+    // Règle Glow Up : un dupe partage l'ACTIF PRINCIPAL du produit (d'après son nom ou sa fiche).
+    // Si on ne sait pas dire quel est cet actif, on n'affiche aucun dupe (et aucun « déjà le moins cher »).
+    const refMain = (typeof MainActive !== 'undefined') ? MainActive.resolve({ name: product.name, tags: product.ingredientTags }) : null;
+    if (!refMain) return { status: 'none' };
     const myActives = new Set((product.ingredientTags || []).map(t => String(t).toLowerCase()));
     const mySkin    = new Set(product.skinTypeTags || []);
     const MIN_SAVE  = Math.max(3, product.price * 0.2);
@@ -381,14 +385,17 @@ const ProductCatalog = (() => {
     for (const p of catalog) {
       if (p.id === product.id || p.category !== product.category || p.price == null) continue;
       if ((product.price - p.price) < MIN_SAVE) continue;
+      const pm = MainActive.resolve({ name: p.name, tags: p.ingredientTags });
+      if (!pm || pm.family !== refMain.family) continue;
       const shared    = (p.ingredientTags || []).map(t => String(t).toLowerCase()).filter(t => myActives.has(t));
       const sharedSkin = (p.skinTypeTags || []).filter(t => mySkin.has(t)).length;
       const score = shared.length * 12 + sharedSkin * 3 + (p.rating || 0) + (product.price - p.price) / product.price * 6;
       if (score > bestScore) { bestScore = score; best = { p, shared }; }
     }
-    if (!best) return { status: 'cheapest' };
+    // Aucun produit moins cher qui partage l'actif principal : on n'affirme rien (pas de « meilleur rapport qualité-prix »)
+    if (!best) return { status: 'none' };
     const savings = +(product.price - best.p.price).toFixed(2);
-    return { status: 'found', dupe: best.p, savings, pct: Math.round(savings / product.price * 100), shared: best.shared };
+    return { status: 'found', dupe: best.p, savings, pct: Math.round(savings / product.price * 100), shared: best.shared, mainLabel: refMain.label };
   }
 
   function renderDupe(product) {
@@ -408,7 +415,7 @@ const ProductCatalog = (() => {
     const url = d.amazonUrl || d.shopUrl || '#';
     const reason = r.curated ? 'Le dupe culte : même résultat, une fraction du prix.'
       : (r.shared.length ? `Mêmes actifs clés (${r.shared.slice(0, 2).join(', ')}) — bien moins cher.`
-                         : 'Même type de produit, résultat similaire — bien moins cher.');
+                         : `Même actif principal (${r.mainLabel}) — moins cher.`);
     const plan  = typeof Subscription !== 'undefined' ? Subscription.getPlan() : 'free';
     const isSub = plan === 'glow' || plan === 'glowplus';
     const cardInner = `

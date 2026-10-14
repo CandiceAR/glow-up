@@ -274,7 +274,7 @@ const CurrentRoutine = (() => {
         const ref = db.collection('userProducts').doc();
         batch.set(ref, {
           brand: e.brand || '', name: e.name || '', category: e.category || 'other',
-          loved: !!e.loved, uid, email: AppState?.user?.email || null,
+          loved: !!e.loved, uid,   // relié au compte par l'uid seulement (l'e-mail reste dans Firebase Auth)
           createdAt: new Date().toISOString(), status: 'pending_review'
         });
       });

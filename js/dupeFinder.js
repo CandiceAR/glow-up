@@ -201,24 +201,17 @@ const DupeFinder = (() => {
   };
   const ROLE_LABEL = { closest: '🎯 Le dupe le plus proche', value: '💛 Meilleur rapport qualité-prix', cheapest: '🌱 L\'alternative la moins chère' };
 
-  // Palier de qualité selon la similarité estimée (section 12)
-  function _tier(sim) {
-    if (!sim || sim <= 0) return '';
-    if (sim >= 80) return '<span class="df-tier df-tier-top">✨ Dupe très proche</span>';
-    if (sim >= 70) return '<span class="df-tier df-tier-good">✅ Bonne alternative</span>';
-    return '<span class="df-tier df-tier-ok">≈ Alternative fonctionnelle</span>';
-  }
+  // (Phase 1) Plus de pourcentage ni de palier « très proche » : ces notes venaient en partie de
+  // l'estimation de l'IA. On indique à la place si les compositions ont été comparées ou non.
 
-  // Niveau de confiance du résultat (section 13) — basé sur la dispo des INCI
-  function _confTag(conf) {
-    const map = { high: ['✅', 'Confiance élevée'], medium: ['◐', 'Confiance moyenne'], low: ['○', 'Confiance à confirmer'] };
-    const m = map[conf];
-    return m ? `<span class="df-conf df-conf-${conf}">${m[0]} ${m[1]}</span>` : '';
+  // Le prix du produit scanné n'est un FAIT que s'il vient de notre catalogue (jamais de l'estimation de l'IA)
+  function _refPrice() {
+    const id = S.identified || {};
+    return (id.priceVerified && id.estPrice > 0) ? id.estPrice : 0;
   }
 
   function _catalogProduct(id) { return (AppState.products.catalog || []).find(p => p.id === id); }
   function _compareUrl(p) { return `https://www.google.com/search?q=${encodeURIComponent((p.brand || '') + ' ' + (p.name || ''))}&tbm=shop`; }
-  function _amazonSearch(brand, name) { return `https://www.amazon.fr/s?k=${encodeURIComponent(((brand || '') + ' ' + (name || '')).trim())}&tag=glowupapp-21`; }
 
   // ─── Lignes compactes repliables : photo + nom + prix, détail au clic ──
   // Un seul menu ouvert à la fois (ouvrir un menu referme les autres).
@@ -245,7 +238,6 @@ const DupeFinder = (() => {
     const r = o.r, fit = FIT[r.skinFit] || FIT.caution;
     return `
       <div class="df-row-pills">
-        ${r.similarity > 0 ? `<span class="df-pill df-pill-sim">📊 ${r.similarity}% similaire</span>` : ''}
         <span class="df-pill df-fit ${fit.cls}">${fit.icon} ${fit.label}</span>
       </div>
       ${o.savings ? `<p class="df-row-save">💰 ${o.savings}</p>` : ''}
@@ -256,36 +248,21 @@ const DupeFinder = (() => {
       ${r.commonPoints?.length ? `<p class="df-why-h">✓ Points communs</p><ul class="df-row-ul">${r.commonPoints.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}
       ${r.differences?.length ? `<p class="df-why-h">≠ Différences</p><ul class="df-row-ul">${r.differences.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}
       ${r.skinNote ? `<p class="df-why-h">🧴 Pour ta peau</p><p class="df-skinnote">${r.skinNote}</p>` : ''}
-      <p class="df-row-meta">${_tier(r.similarity)} ${_confTag(r.confidence)}</p>
-      ${o.extNote ? `<p class="df-ext-note">${o.extNote}</p>` : ''}
+      ${r.compositionNote ? `<p class="df-row-meta df-compo-note">${r.compositionNote}</p>` : ''}
       <div class="df-result-ctas">
         <a class="pc-cta pc-cta--compare" href="${o.compareUrl}" target="_blank" rel="noopener">🔍 Comparer les prix</a>
         <a class="pc-cta pc-cta--buy" href="${o.buyUrl}" target="_blank" rel="noopener nofollow${o.isAff ? ' sponsored' : ''}"${o.buyAttrs || ''}>Acheter →</a>
       </div>`;
   }
 
-  // Dupe HORS catalogue (proposé par l'IA, lien Amazon affilié)
-  function _externalCard(r) {
-    const est = S.identified?.estPrice || 0;
-    const sv = (est > 0 && r.approxPrice > 0 && r.approxPrice < est) ? (est - r.approxPrice) : 0;
-    return _row({
-      ext: true,
-      img: '<span class="df-row-noimg">🔎</span>',
-      brand: r.brand, name: r.name,
-      price: r.approxPrice > 0 ? '≈ ' + r.approxPrice.toFixed(2) + ' €' : 'Prix à vérifier',
-      body: _rowBody({
-        r, savings: sv > 0 ? `≈ ${sv.toFixed(2)} € d'économie` : '',
-        compareUrl: _compareUrl(r), buyUrl: _amazonSearch(r.brand, r.name), isAff: true,
-        extNote: '✨ Ce dupe ne fait pas encore partie de notre sélection — prix indicatif, à confirmer sur la boutique.'
-      })
-    });
-  }
+  // (Phase 1) Plus aucun dupe « hors catalogue » proposé de mémoire par l'IA : seuls les produits
+  // de notre catalogue (prix et fiches connus) sont affichés comme dupes.
 
   // Dupe du catalogue
   function _resultCard(r, idx) {
     const p = _catalogProduct(r.id);
     if (!p) return '';
-    const est = S.identified?.estPrice || 0;
+    const est = _refPrice();
     let savings = (est > 0 && p.price != null && p.price < est) ? (est - p.price) : 0;
     const isAff = !!p.amazonUrl;
     // Prix à volume égal — uniquement si les 2 contenances sont connues
@@ -325,17 +302,13 @@ const DupeFinder = (() => {
     return `<div class="df-agenote">💛 ${AgeGuard.scanMessage()}</div>`;
   }
 
-  // Badge « niveau de confiance de la composition » (INCI Open Beauty Facts)
+  // Badge « composition » : seule une liste lue via le code-barres (Open Beauty Facts) est dite vérifiée.
+  // Une liste trouvée seulement d'après le nom peut concerner un autre produit : on ne l'affiche pas comme un fait.
   function _inciBadge(id) {
-    if (!id || !id.inciConfidence || id.inciConfidence === 'none') return '';
-    const map = {
-      high:   ['✅', 'Composition vérifiée (Open Beauty Facts)'],
-      medium: ['✅', 'Composition récupérée'],
-      low:    ['⚠️', 'Composition à confirmer']
-    };
-    const m = map[id.inciConfidence];
-    if (!m) return '';
-    return `<span class="df-inci-badge df-inci-${id.inciConfidence}">${m[0]} ${m[1]}</span>`;
+    if (id && id.inciConfidence === 'high') {
+      return '<span class="df-inci-badge df-inci-high">✅ Composition vérifiée (Open Beauty Facts)</span>';
+    }
+    return '<span class="df-inci-badge df-inci-low">ℹ️ Composition non vérifiée</span>';
   }
 
   function _vResults() {
@@ -348,13 +321,13 @@ const DupeFinder = (() => {
         <div>
           <span class="df-orig-label">Ton produit</span>
           <h2 class="df-orig-name">${(id.brand ? id.brand + ' ' : '') + (id.name || '')}</h2>
-          ${id.estPrice > 0 ? `<span class="df-orig-price">~${id.estPrice.toFixed(2)} €</span>` : ''}
+          ${_refPrice() > 0 ? `<span class="df-orig-price">${_refPrice().toFixed(2)} € <small>(prix de notre catalogue)</small></span>` : '<span class="df-orig-price df-price-unverified">Prix non vérifié</span>'}
           ${_inciBadge(id)}
         </div>
       </div>`;
 
     const catRes = S.results || [];
-    const extRes = S.externalResults || [];
+    const extRes = [];   // plus de dupes hors catalogue (phase 1)
 
     // Le produit scanné est lui-même une alternative abordable à un produit plus cher
     const sd = S.selfDupe;
@@ -372,8 +345,9 @@ const DupeFinder = (() => {
     if (!S.trueDupe || (!catRes.length && !extRes.length)) {
       const alt = S.bestAltId ? _catalogProduct(S.bestAltId) : null;
       // Produit déjà peu cher : on le dit clairement (pas de dupe car rien de moins cher à qualité comparable)
-      const cheapMsg = (id.estPrice > 0 && id.estPrice <= 20)
-        ? `Ce produit n'a pas de dupe : il est déjà peu cher (~${id.estPrice.toFixed(2).replace('.', ',')} €), il est difficile de trouver moins cher à qualité équivalente.`
+      // Seulement si le prix vient de notre catalogue ET que la recherche a pu se faire (statut « none »)
+      const cheapMsg = (_refPrice() > 0 && _refPrice() <= 20 && S.status === 'none')
+        ? `Ce produit n'a pas de dupe : il est déjà peu cher (${_refPrice().toFixed(2).replace('.', ',')} €), il est difficile de trouver moins cher à qualité équivalente.`
         : '';
       return `
         <div class="df-results">
@@ -393,9 +367,7 @@ const DupeFinder = (() => {
       ? `<div class="df-warn">⚠️ C'est le dupe le plus proche de ton produit, mais il ne semble pas idéal pour ta peau.</div>` : '';
 
     const catHtml = catRes.map((r, i) => _resultCard(r, i)).join('');
-    const extHtml = extRes.length
-      ? `<div class="df-altsep"><span>Trouvés au-delà de notre sélection</span></div>${extRes.map(r => _externalCard(r)).join('')}`
-      : '';
+    const extHtml = '';
 
     // Alternative peau distincte du meilleur dupe (catalogue)
     let altBlock = '';
@@ -416,7 +388,7 @@ const DupeFinder = (() => {
         <div class="df-dupes-title">
           <span class="df-dupes-eyebrow">✦ Les dupes de ✦</span>
           <h3 class="df-dupes-h">« ${_t} »</h3>
-          <p class="df-dupes-sub">Des produits à la formule proche, souvent moins chers.</p>
+          <p class="df-dupes-sub">Des produits de notre sélection qui partagent l'actif principal de ton produit.</p>
           <span class="df-dupes-count">${_count} alternative${_count > 1 ? 's' : ''} trouvée${_count > 1 ? 's' : ''}${_from ? ' · à partir de ' + _from.toFixed(2).replace('.', ',') + ' €' : ''}</span>
         </div>` : '';
 
@@ -592,11 +564,15 @@ const DupeFinder = (() => {
     if (!pool.length) pool = catalog.filter(p => p.category === id.category);
     if (!pool.length) return [];
     const acts = (id.keyActives || []).map(_slug).filter(Boolean);
+    // Actif principal du produit scanné d'après son NOM (ou sa fiche catalogue) : les produits qui le
+    // partagent passent en tête de liste. Le serveur applique ensuite la règle de façon stricte.
+    const refMain = (typeof MainActive !== 'undefined') ? MainActive.resolve({ name: id.name, tags: id.catalogTags }) : null;
     const scored = pool.map(p => {
       let s = 0;
       const ptags = (p.ingredientTags || []).map(_slug);
       s += acts.filter(a => ptags.some(t => t.includes(a) || a.includes(t))).length * 3;
-      if (id.estPrice > 0 && p.price > 0 && p.price < id.estPrice) s += 2;
+      if (refMain) { const m = MainActive.resolve({ name: p.name, tags: p.ingredientTags }); if (m && m.family === refMain.family) s += 20; }
+      if (_refPrice() > 0 && p.price > 0 && p.price < _refPrice()) s += 2;
       s += (p.rating || 0) * 0.3;
       return { p, s };
     }).sort((a, b) => b.s - a.s).slice(0, 20).map(x => x.p);
@@ -636,23 +612,33 @@ const DupeFinder = (() => {
     if (inci && inci.found) {
       id.inci = inci.inci; id.inciList = inci.inciList || [];
       id.inciSource = inci.source; id.inciConfidence = inci.confidence;
-      if (inci.volumeMl) id.volumeMl = inci.volumeMl;
+      // La contenance n'est retenue que pour une fiche trouvée par code-barres (même produit à coup sûr)
+      if (inci.volumeMl && inci.confidence === 'high') id.volumeMl = inci.volumeMl;
       console.info('[DupeFinder] INCI référence:', inci.confidence, '·', (inci.inciList || []).length, 'ingrédients');
     } else {
       id.inciConfidence = 'none';
       console.info('[DupeFinder] INCI référence: non trouvé');
     }
 
-    // Si le produit scanné est déjà dans notre catalogue, on se fie à SON prix réel
-    // (l'estimation de l'IA peut être très fausse → « tu économises X € » trompeur).
+    // Prix : seul le prix de NOTRE catalogue est un fait. L'estimation de l'IA n'est jamais affichée
+    // (« prix non vérifié »). Si le produit est dans le catalogue, on récupère aussi sa fiche
+    // (mots-clés d'actifs, composition vérifiée) pour déterminer son actif principal.
+    id.priceVerified = false; id.estPrice = 0; id.catalogTags = undefined; id.catalogInci = undefined;
     try {
       if (typeof SameProduct !== 'undefined') {
-        const own = (AppState.products.catalog || []).find(p => SameProduct.same(id, p) && p.price > 0);
-        if (own) { id.estPrice = own.price; id.catalogId = own.id; }
+        const own = (AppState.products.catalog || []).find(p => SameProduct.same(id, p));
+        if (own) {
+          id.catalogId = own.id;
+          if (own.price > 0) { id.estPrice = own.price; id.priceVerified = true; }
+          id.catalogTags = own.ingredientTags || [];
+          if (Array.isArray(own.inciNormalized) && own.inciNormalized.length && (!own.inciVerificationStatus || own.inciVerificationStatus === 'verified')) {
+            id.catalogInci = own.inciNormalized.slice(0, 45);
+          }
+        }
       }
     } catch (e) {}
 
-    // Pré-filtre catalogue ; même vide, l'IA peut proposer un dupe hors catalogue
+    // Pré-filtre catalogue (le serveur ne propose que des produits du catalogue)
     const candidates = _shortlist(id);
     console.info('[DupeFinder] shortlist:', candidates.length, 'candidat(s) catalogue');
     _saveScan(id, candidates.length > 0);
@@ -684,15 +670,16 @@ const DupeFinder = (() => {
     // ── SUCCÈS HTTP : distinguer « résultats » vs « aucun dupe fiable » ──
     S.trueDupe        = !!data.trueDupeExists;
     S.results         = Array.isArray(data.results) ? data.results : [];
-    S.externalResults = Array.isArray(data.externalResults) ? data.externalResults : [];
+    S.externalResults = [];   // plus de dupes hors catalogue proposés de mémoire (phase 1)
+    S.status          = data.status || '';
     S.noDupeMsg       = data.noDupeMessage || '';
     S.bestAltId       = data.bestSkinAlternativeId || null;
-    S.selfDupe        = (data.selfDupe && data.selfDupe.ofName) ? data.selfDupe : null;
+    S.selfDupe        = null; // plus de « ce produit est un dupe de… » issu de la mémoire de l'IA (phase 1)
     _inc();
 
-    const hasResults = S.trueDupe && (S.results.length > 0 || S.externalResults.length > 0);
+    const hasResults = S.trueDupe && S.results.length > 0;
     if (hasResults) {
-      console.info('[DupeFinder] resultats:', S.results.length, 'catalogue +', S.externalResults.length, 'externe(s)');
+      console.info('[DupeFinder] resultats:', S.results.length, 'produit(s) du catalogue');
       S.view = 'results';
     } else {
       console.info('[DupeFinder] aucun dupe fiable (trueDupe=' + S.trueDupe + ')');
@@ -709,9 +696,10 @@ const DupeFinder = (() => {
       await db.collection('scannedProducts').add({
         brand: id.brand || '', name: id.name || '', category: id.category || 'other',
         productType: id.productType || 'skincare', shade: id.shade || '',
-        keyActives: id.keyActives || [], estPrice: id.estPrice || 0,
+        keyActives: id.keyActives || [], estPrice: id.priceVerified ? id.estPrice : 0,
         matchedInCatalog: !!matched, source: id.confidence === 'manual' ? 'manual' : 'photo',
-        uid: AppState?.user?.uid || null, email: AppState?.user?.email || null,
+        // Le scan est relié au compte par son identifiant (uid) uniquement : l'e-mail reste dans le compte (Firebase Auth)
+        uid: AppState?.user?.uid || null,
         createdAt: new Date().toISOString(), status: 'pending_review'
       });
     } catch (err) { console.warn('[DupeFinder] saveScan échoué:', err.message); }
@@ -766,7 +754,8 @@ const DupeFinder = (() => {
           recognized: true, brand: (pr.brands || '').split(',')[0].trim(),
           name: pr.product_name || pr.generic_name || '', range: '',
           category: 'other', productType: 'skincare', shade: '',
-          keyActives: [], texture: '', finish: '', coverage: '', estPrice: 0, confidence: 'barcode'
+          keyActives: [], texture: '', finish: '', coverage: '', estPrice: 0, confidence: 'barcode',
+          barcode: String(code)
         };
         S.photo = pr.image_front_url || null;
         S.view = 'confirm'; render();

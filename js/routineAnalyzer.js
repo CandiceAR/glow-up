@@ -594,7 +594,7 @@ const RoutineAnalyzer = (() => {
       manual.forEach(p => {
         const ref = db.collection('userProducts').doc();
         batch.set(ref, { brand: p.brand || '', name: p.name || '', category: p.category || 'other',
-          source: 'routine-analysis', uid: AppState?.user?.uid || null, email: AppState?.user?.email || null,
+          source: 'routine-analysis', uid: AppState?.user?.uid || null,   // uid seulement : l'e-mail reste dans Firebase Auth
           createdAt: new Date().toISOString(), status: 'pending_review' });
       });
       await batch.commit();
