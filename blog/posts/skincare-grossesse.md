@@ -6,7 +6,7 @@ sante: true
 date: 2026-09-30
 updated: 2026-10-15
 excerpt: Certains actifs skincare sont déconseillés pendant la grossesse. Le point sur ce qu'on évite, ce qu'on privilégie, et comment reprendre sa routine après l'accouchement.
-metaDescription: Rétinol, acides, huiles essentielles : quels actifs éviter pendant la grossesse, lesquels privilégier, et comment retrouver sa routine skincare après l'accouchement.
+metaDescription: Rétinoïdes, hydroquinone, huiles essentielles : quels actifs éviter pendant la grossesse, lesquels privilégier, et comment retrouver sa routine skincare après l'accouchement.
 author: Candice Arav
 related:
   - peau-apres-la-grossesse
@@ -18,6 +18,8 @@ sources:
   - Safety of skin care products during pregnancy, Bozzo et al., Canadian Family Physician (2011) | https://pmc.ncbi.nlm.nih.gov/articles/PMC3114665
   - Skin care, hair care and cosmetic treatments in pregnancy, MotherSafe, Royal Hospital for Women (2021) | https://www.seslhd.health.nsw.gov.au/sites/default/files/groups/Royal_Hospital_for_Women/Mothersafe/documents/skinhaircareandcosmetictreatmentsapril2021.pdf
   - An overview of the safety of skin care products during pregnancy, InfantRisk Center (2020) | https://infantrisk.com/content/overview-safety-skin-care-products-during-pregnancy
+  - Comment utiliser les huiles essentielles en toute sécurité, DGCCRF, ministère de l'Économie (2020) | https://www.economie.gouv.fr/particuliers/comment-utiliser-huiles-essentielles-en-toute-securite
+  - Traitement des verrues, Le CRAT (mise à jour du 12 janvier 2024) | https://www.lecrat.fr/10899/
 ---
 
 La grossesse change la peau autant que les hormones qui l'accompagnent : hydratation différente, sensibilité accrue, apparition parfois de taches ou de vergetures. C'est aussi le moment où la question des actifs devient importante, car certains ingrédients couramment utilisés en skincare sont déconseillés pendant la grossesse. Voici ce qu'il faut savoir pour adapter sa routine, pendant et après.
@@ -37,32 +39,29 @@ Les bouleversements hormonaux de la grossesse (hausse des œstrogènes et de la 
 
 Certains ingrédients skincare sont à éviter ou à limiter pendant la grossesse, car leur effet sur le développement du fœtus n'est pas suffisamment documenté ou est jugé à risque. Cette liste est indicative : elle doit être confirmée avec un professionnel de santé avant toute décision.
 
-- **Le rétinol et les autres dérivés de la vitamine A** (rétinoïdes), couramment déconseillés pendant la grossesse.
-- **L'acide salicylique à forte concentration**, notamment dans les soins destinés à l'acné.
-- **Certaines huiles essentielles**, dont plusieurs sont contre-indiquées pendant la grossesse, en application cutanée comme par voie orale.
+- **Les rétinoïdes sur ordonnance** (trétinoïne, adapalène, isotrétinoïne, tazarotène) : ces médicaments appliqués sur la peau sont contre-indiqués pendant la grossesse et le projet de grossesse, selon l'ANSM.
+- **Le rétinol des cosmétiques** : les avis sont partagés. InfantRisk et Bozzo et al. conseillent d'éviter les rétinoïdes appliqués sur la peau, tandis que MotherSafe juge acceptables les cosmétiques contenant de la vitamine A. Par précaution, demande l'avis de ton médecin ou de ta sage-femme.
+- **Les huiles essentielles** : la DGCCRF déconseille leur usage chez la femme enceinte ou allaitante.
 - **L'hydroquinone**, utilisée pour éclaircir les taches pigmentaires.
 
-Le doute le plus fréquent porte sur le rétinol : beaucoup de femmes l'utilisaient avant leur grossesse et se demandent quand le reprendre. La règle générale est d'arrêter dès le désir de grossesse ou dès son annonce, et de ne pas le reprendre pendant l'allaitement sans avis médical — mais seul un professionnel peut donner une réponse adaptée à chaque situation.
+**Et l'acide salicylique ?** Il ne figure pas dans cette liste. Selon les sources consultées (Bozzo 2011, MotherSafe 2021, InfantRisk 2020), l'acide salicylique appliqué sur le visage dans un soin cosmétique n'est pas jugé à risque. La prudence concerne certaines situations où les quantités absorbées peuvent être plus élevées, comme certains médicaments appliqués sur la peau. En France, le CRAT (Centre de référence sur les agents tératogènes) indique, à propos des traitements des verrues, que l'acide salicylique appliqué localement peut être utilisé à tout moment de la grossesse, lorsque la surface traitée est faible.
+
+Le doute le plus fréquent porte sur le rétinol : beaucoup de femmes l'utilisaient avant leur grossesse et se demandent quand le reprendre. Pendant la grossesse, demande l'avis de ton médecin ou de ta sage-femme. Pendant l'allaitement, MotherSafe juge les soins cosmétiques généralement sûrs, sauf l'hydroquinone. Pour le rétinol, demande l'avis de ton médecin.
 
 ## Les actifs considérés comme sûrs pendant la grossesse
 
 Certains ingrédients skincare restent utilisables pendant la grossesse et permettent de maintenir une routine efficace :
 
-- **L'acide hyaluronique**, pour l'hydratation, sans contre-indication connue.
-- **La niacinamide**, utile contre les taches et pour apaiser une peau sensibilisée.
-- **La vitamine C**, un antioxydant généralement bien toléré.
 - **L'acide azélaïque**, une alternative douce pour les taches et les imperfections, souvent citée comme option pendant la grossesse.
 - **Le SPF**, plus important que jamais : la peau enceinte est plus sujette au mélasma, et une protection solaire quotidienne limite l'aggravation des taches.
 
+Selon Bozzo et al. (2011), à l'exception de l'hydroquinone et de la trétinoïne (pour laquelle les données sont controversées), les produits utilisés pour les petits problèmes de peau (acné, poils indésirables, taches) agissent localement et passent très peu dans le sang : dans la plupart des cas, ils ne compromettent pas la sécurité du bébé. L'acide hyaluronique, la niacinamide et la vitamine C n'y sont pas étudiés un par un.
+
 Là encore, en cas de doute sur un produit précis, le plus sûr est de vérifier sa composition avec une sage-femme, un gynécologue ou un dermatologue.
 
-## Vergetures : prévenir plutôt que traiter
+## Vergetures : prendre soin de sa peau
 
-Les vergetures apparaissent quand la peau s'étire plus vite qu'elle ne peut s'adapter, en particulier au troisième trimestre. Il n'existe pas de solution garantissant leur absence totale, la prédisposition étant en grande partie génétique, mais certains gestes aident à limiter leur intensité :
-
-- Masser régulièrement le ventre et la poitrine avec une huile ou une crème nourrissante, dès le début de la grossesse.
-- Maintenir une bonne hydratation générale, y compris en buvant suffisamment d'eau.
-- Éviter les prises de poids trop rapides quand c'est possible, en accord avec le suivi médical.
+Les vergetures apparaissent quand la peau s'étire plus vite qu'elle ne peut s'adapter, en particulier au troisième trimestre. Une crème ou une huile nourrissante peut rendre la peau plus confortable, sans que l'on puisse promettre d'effet sur les vergetures.
 
 ## Retrouver sa routine skincare après la grossesse
 
@@ -75,6 +74,6 @@ Après l'accouchement, la peau continue d'évoluer, notamment à cause de l'alla
 
 ---
 
-**En résumé :** la grossesse transforme la peau et impose de revoir certains actifs skincare, en particulier le rétinol et l'acide salicylique. Miser sur l'hydratation, le SPF et des alternatives douces comme la niacinamide ou l'acide azélaïque permet de garder une routine efficace, en complément d'un suivi médical adapté à chaque grossesse.
+**En résumé :** la grossesse transforme la peau et impose de revoir certains actifs skincare, en particulier les rétinoïdes, l'hydroquinone et les huiles essentielles. Miser sur l'hydratation, le SPF et l'acide azélaïque permet de garder une routine simple, en complément d'un suivi médical adapté à chaque grossesse.
 
 *Tu veux une routine adaptée à ta peau pendant ou après la grossesse ? L'analyse gratuite de [Glow Up](/) identifie tes besoins précis, sans recommandation de marque.*
