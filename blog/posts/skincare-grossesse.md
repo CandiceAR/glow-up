@@ -4,6 +4,7 @@ slug: skincare-grossesse
 titre_seo: Skincare et grossesse : actifs à éviter et à privilégier
 sante: true
 date: 2026-09-30
+updated: 2026-10-15
 excerpt: Certains actifs skincare sont déconseillés pendant la grossesse. Le point sur ce qu'on évite, ce qu'on privilégie, et comment reprendre sa routine après l'accouchement.
 metaDescription: Rétinol, acides, huiles essentielles : quels actifs éviter pendant la grossesse, lesquels privilégier, et comment retrouver sa routine skincare après l'accouchement.
 author: Candice Arav
@@ -11,6 +12,12 @@ related:
   - peau-apres-la-grossesse
   - taches-brunes-visage
   - retinol-apres-40-ans
+sources:
+  - Rétinoïdes par voie cutanée et grossesse : contre-indication, ANSM (2018, mise à jour 2021) | https://ansm.sante.fr/actualites/nouvelle-contre-indication-pendant-la-grossesse-pour-les-retinoides-utilises-par-voie-cutanee-dans-le-traitement-de-lacne
+  - Fiche Acné chez la femme enceinte, Centre de preuves de la Société française de dermatologie | https://document.sfdermato.org/groupe/centre-de-preuves/outils/fiches-grossesses/pathologies/acne.pdf
+  - Safety of skin care products during pregnancy, Bozzo et al., Canadian Family Physician (2011) | https://pmc.ncbi.nlm.nih.gov/articles/PMC3114665
+  - Skin care, hair care and cosmetic treatments in pregnancy, MotherSafe, Royal Hospital for Women (2021) | https://www.seslhd.health.nsw.gov.au/sites/default/files/groups/Royal_Hospital_for_Women/Mothersafe/documents/skinhaircareandcosmetictreatmentsapril2021.pdf
+  - An overview of the safety of skin care products during pregnancy, InfantRisk Center (2020) | https://infantrisk.com/content/overview-safety-skin-care-products-during-pregnancy
 ---
 
 La grossesse change la peau autant que les hormones qui l'accompagnent : hydratation différente, sensibilité accrue, apparition parfois de taches ou de vergetures. C'est aussi le moment où la question des actifs devient importante, car certains ingrédients couramment utilisés en skincare sont déconseillés pendant la grossesse. Voici ce qu'il faut savoir pour adapter sa routine, pendant et après.
