@@ -41,6 +41,9 @@ const MainActive = require('../lib/mainActive.js');
 // Messages affichés quand on ne peut pas (ou ne doit pas) proposer de dupe
 const MSG_UNVERIFIED = "Nous n'avons pas pu vérifier la composition de ce produit ni identifier son actif principal. Nous préférons ne pas te proposer de dupe plutôt que de te donner une information non vérifiée.";
 const msgNoShared = (label) => `Aucun produit de notre sélection ne partage l'actif principal de ce produit (${label}). Nous préférons ne pas te proposer une alternative qui ne ferait pas la même chose.`;
+const MSG_MAKEUP = 'Les dupes maquillage arrivent bientôt.';
+const MAKEUP_CATS = new Set(['foundation', 'concealer', 'corrector', 'powder', 'primer', 'blush', 'bronzer', 'highlighter',
+  'mascara', 'eyeliner', 'eyebrow', 'eyeshadow', 'lipstick', 'lipgloss', 'lipliner']);
 const NOTE_UNVERIFIED = "Composition non vérifiée : les formules n'ont pas été comparées. L'actif principal indiqué est celui annoncé sur la fiche du produit.";
 const NOTE_VERIFIED = 'Compositions comparées (liste INCI de ton produit vérifiée sur Open Beauty Facts, liste de ce produit issue de notre catalogue).';
 
@@ -106,6 +109,8 @@ module.exports = async (req, res) => {
 
   const { product, candidates, userSkin, ageConstraint } = req.body || {};
   if (!product) return res.status(400).json({ error: 'product manquant' });
+  // Maquillage : pas d'actif principal, donc pas de dupe pour l'instant (phase 6 du plan) — l'IA n'est pas appelée
+  if (product.productType === 'makeup' || MAKEUP_CATS.has(product.category)) return _none(res, 'makeup-soon', MSG_MAKEUP);
   const ageBlock = (ageConstraint && ageConstraint.age)
     ? `\n\nRÈGLE ÂGE (PRIORITAIRE) : utilisatrice de ${ageConstraint.age} ans (moins de 15). ${ageConstraint.guidance || ''} Ne propose JAMAIS un produit dont l'actif vedette est : ${(ageConstraint.restricted || []).join(', ')}. Privilégie des produits doux adaptés à une peau jeune.`
     : '';

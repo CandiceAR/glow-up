@@ -43,6 +43,8 @@ const DupeFinder = (() => {
     lipgloss: 'Gloss', lipliner: 'Crayon lèvres', set: 'Coffret', tools: 'Accessoire',
     multi_usage: 'Multi-usage', other: 'Autre'
   };
+  const MAKEUP_CATS = ['foundation', 'concealer', 'corrector', 'powder', 'primer', 'blush', 'bronzer', 'highlighter',
+    'mascara', 'eyeliner', 'eyebrow', 'eyeshadow', 'lipstick', 'lipgloss', 'lipliner'];
   const MANUAL_CATS = ['cleanser','toner','serum','exfoliant','moisturizer','oil','mask','eye','spf','lipbalm',
     'foundation','concealer','powder','primer','blush','bronzer','highlighter','mascara','eyeliner','eyebrow','lipstick','lipgloss','other'];
 
@@ -604,6 +606,16 @@ const DupeFinder = (() => {
     }
 
     if (_left() <= 0) { S.view = 'blocked'; render(); return; }  // inerte tant que l'app est gratuite
+
+    // Maquillage : pas d'actif principal, donc pas de dupe pour l'instant (à venir). On garde la demande
+    // (scan enregistré, sans e-mail) pour savoir quels produits sont recherchés, mais on n'appelle pas l'IA.
+    if (id.productType === 'makeup' || MAKEUP_CATS.indexOf(id.category) >= 0) {
+      S.trueDupe = false; S.results = []; S.externalResults = []; S.bestAltId = null; S.selfDupe = null;
+      S.status = 'makeup-soon'; S.noDupeMsg = 'Les dupes maquillage arrivent bientôt.';
+      id.priceVerified = false; id.estPrice = 0;
+      _saveScan(id, false);
+      S.view = 'nodupe'; render(); return;
+    }
 
     S.view = 'searching'; S.lastError = null; S.selfDupe = null; render();
 
