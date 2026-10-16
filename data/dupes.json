@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "count": 104,
+  "count": 103,
   "dupes": [
     {
       "hero": {
@@ -393,20 +393,6 @@
       "savings": 40.1,
       "savingsPct": 73,
       "reason": "Sérum éclat anti-taches (arbutine)"
-    },
-    {
-      "hero": {
-        "brand": "Medik8",
-        "name": "Crystal Retinal",
-        "price": 50
-      },
-      "dupeId": "m171",
-      "dupeBrand": "Some By Mi",
-      "dupeName": "Some By Mi Retinol Intense Reactivating Sérum",
-      "dupePrice": 23.97,
-      "savings": 26.03,
-      "savingsPct": 52,
-      "reason": "Rétinol renouvellement anti-âge"
     },
     {
       "hero": {

@@ -13,7 +13,7 @@ const ProductCatalog = (() => {
   let _dupeMap = {};
   async function _loadDupes() {
     try {
-      const r = await fetch('data/dupes.json?v=2');
+      const r = await fetch('data/dupes.json?v=3');
       if (!r.ok) return;
       const d = await r.json();
       (d.dupes || []).forEach(x => { _dupeMap[x.dupeId] = x; });
