@@ -1,0 +1,4 @@
+{
+  "_note": "dupesLive : tant que false, les pages /dupes/ ne sont ni générées ni publiées (le lien « Dupes » du pied de page n apparaît pas non plus).",
+  "dupesLive": true
+}

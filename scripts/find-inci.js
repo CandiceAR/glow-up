@@ -151,7 +151,9 @@ async function findOne(p) {
     brandMatch: b.brandMatch, percentMatch: b.percentMatch, retrievedAt: TODAY, inci: b.inci, inciRaw: b.inciRaw };
 }
 
-(async () => {
+module.exports = { get, tokens, dice, grade, dec, sleep, ZW, TODAY, splitInci };
+
+if (require.main === module) (async () => {
   const all = require(path.join(ROOT, 'data', 'products-manual.json')).products.filter(p => p.active !== false);
   let todo = all.filter(p => !(p.inciNormalized && p.inciNormalized.length));
   if (IDS.length) todo = todo.filter(p => IDS.includes(p.id));

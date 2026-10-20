@@ -20,6 +20,9 @@ const SITE      = 'https://www.glowupskin.app';   // domaine canonique (l'apex r
 // le script refuse de tourner sur GitHub Actions (garde-fou contre un faux nom).
 const AUTHOR_NAME = 'Candice Arav';
 const AUTHOR_URL  = SITE + '/a-propos/';
+// Lien « Dupes » du pied de page : seulement quand les pages existent (data/site-flags.json)
+let DUPES_LINK = '';
+try { if (JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'site-flags.json'), 'utf8')).dupesLive) DUPES_LINK = '<a href="/dupes/">Dupes</a>'; } catch (e) { /* pas de fichier = pas de lien */ }
 // Image de partage par défaut (1200 x 630) quand un article n'a pas sa propre image
 const DEFAULT_SHARE = { path: '/assets/og-default.jpg', width: 1200, height: 630 };
 
@@ -191,7 +194,7 @@ const NAV = `<nav class="bnav"><div class="wrap">
 
 const FOOT = `<footer class="foot"><div class="wrap">
 <div class="fb">glow up</div>
-<div class="fl"><a href="/">Accueil</a><a href="/blog/">Conseils</a><a href="/a-propos/">À propos</a><a href="/skinpedia/">Skinpedia</a><a href="/mentions-legales/">Mentions légales</a><a href="/confidentialite/">Confidentialité</a><a href="/contact/">Contact</a><a href="https://www.instagram.com/glowupandshiny" target="_blank" rel="noopener">Instagram</a></div>
+<div class="fl"><a href="/">Accueil</a><a href="/blog/">Conseils</a><a href="/a-propos/">À propos</a><a href="/skinpedia/">Skinpedia</a>${DUPES_LINK}<a href="/mentions-legales/">Mentions légales</a><a href="/confidentialite/">Confidentialité</a><a href="/contact/">Contact</a><a href="https://www.instagram.com/glowupandshiny" target="_blank" rel="noopener">Instagram</a></div>
 <div class="copy">© ${new Date().getFullYear()} Glow Up · Ton agent IA skincare</div>
 </div></footer></body></html>`;
 

@@ -1,0 +1,450 @@
+{
+ "_note": "Compositions INCI des dupes absents de data/products-manual.json, relevées pour calculer la similarité. Nouveau fichier : le catalogue n'est pas modifié.",
+ "retrievedAt": "2026-10-13",
+ "dupes": [
+  {
+   "dupeId": "m256",
+   "catalogName": "La Roche-Posay | La Roche-Posay Pure Vitamin C10 Sérum Concentré",
+   "inci": [
+    "Aqua/Water",
+    "Ascorbic Acid",
+    "Cyclohexasiloxane",
+    "Glycerin",
+    "Alcohol Denat",
+    "Potassium Hydroxide",
+    "Polymethylsilsesquioxane",
+    "Polysilicone-11",
+    "Dimethicone",
+    "Propylene Glycol",
+    "Pentaerythrityl Tetraethylhexanoate",
+    "C13-14 Isoparaffin",
+    "PEG-20 Methyl Glucose Sesquistearate",
+    "Sodium Hyaluronate",
+    "Adenosine",
+    "Poloxamer 338",
+    "Ammonium Polyacryloyldimethyl Taurate",
+    "Disodium EDTA",
+    "Hydrolyzed Hyaluronic Acid",
+    "Caprylyl Glycol",
+    "Laureth-7",
+    "Acetyl Dipeptide-1 Cetyl Ester",
+    "Xanthan Gum",
+    "Toluene Sulfonic Acid",
+    "Polyacrylamide",
+    "Tocopherol",
+    "Salicylic Acid",
+    "Parfum/Fragrance"
+   ],
+   "source": {
+    "type": "incidecoder",
+    "url": "https://incidecoder.com/products/la-roche-posay-pure-vitamin-c10",
+    "productTitle": "La Roche-Posay Pure Vitamin C10",
+    "nameMatchScore": 0.86
+   },
+   "retrievedAt": "2026-10-13"
+  },
+  {
+   "dupeId": "m139",
+   "catalogName": "The Ordinary | The Ordinary Niacinamide 10% + Zinc 1%",
+   "inci": [
+    "Aqua (Water)",
+    "Niacinamide",
+    "Pentylene Glycol",
+    "Zinc Pca",
+    "Dimethyl Isosorbide",
+    "Tamarindus Indica Seed Gum",
+    "Xanthan Gum",
+    "Isoceteth-20",
+    "Ethoxydiglycol",
+    "Phenoxyethanol",
+    "Chlorphenesin"
+   ],
+   "source": {
+    "type": "incidecoder",
+    "url": "https://incidecoder.com/products/the-ordinary-niacinamide-10-zinc-1-serum1",
+    "productTitle": "The Ordinary Niacinamide 10% + Zinc 1%",
+    "nameMatchScore": 1
+   },
+   "retrievedAt": "2026-10-13"
+  },
+  {
+   "dupeId": "m141",
+   "catalogName": "Médicube | Médicube PDRN Pink Peptide Sérum",
+   "inci": [
+    "Water",
+    "Disodium EDTA",
+    "Niacinamide",
+    "Hydrolyzed Collagen",
+    "Sodium Dna",
+    "Millet Extract",
+    "Copper Tripeptide-1",
+    "Acetyl Hexapeptide-8",
+    "Palmitoyl Pentapeptide-4",
+    "Palmitoyl Tripeptide-1",
+    "Palmitoyl Tetrapeptide-7",
+    "Butylene Glycol",
+    "1,2-Hexanediol",
+    "Glycerin",
+    "Dipropylene Glycol",
+    "Polyglycerin-3",
+    "Glyceryl Acrylate/Acrylic Acid Copolymer",
+    "Pvm/Ma Copolymer",
+    "Sodium Hyaluronate",
+    "Ethylhexylglycerin",
+    "Glycereth-26",
+    "Adenosine",
+    "Acrylates/C10-30 Alkyl Acrylate Crosspolymer",
+    "Isopropyl Myristate",
+    "Ubiquinone",
+    "Fragrance",
+    "Caprylyl Glycol",
+    "Tromethamine",
+    "Sodium Acrylate/Sodium Acryloyldimethyl Taurate Copolymer",
+    "Polyisobutene",
+    "Caprylyl/Capryl Glucoside",
+    "Sorbitan Oleate",
+    "Atelocollagen",
+    "Salmon Egg Extract",
+    "Cyanocobalamin",
+    "Melia Azadirachta Leaf Extract",
+    "Melia Azadirachta Flower Extract",
+    "Curcuma Longa (Turmeric) Root Extract",
+    "Ocimum Sanctum Leaf Extract",
+    "Corallina Officinalis Extract"
+   ],
+   "source": {
+    "type": "incidecoder",
+    "url": "https://incidecoder.com/products/medicube-pdrn-pink-peptide-serum",
+    "productTitle": "Medicube Pdrn Pink Peptide Serum",
+    "nameMatchScore": 1
+   },
+   "retrievedAt": "2026-10-13"
+  },
+  {
+   "dupeId": "m296",
+   "catalogName": "Neutrogena | Neutrogena Hydro Boost Sérum Ultra Hydratant 30ml",
+   "inci": [
+    "Aqua",
+    "Glycerin",
+    "Butylene Glycol",
+    "Panthenol",
+    "Phenoxyethanol",
+    "Chlorphenesin",
+    "Acrylates/C10-30 Alkyl Acrylate Crosspolymer",
+    "Sodium Hyaluronate",
+    "Disodium EDTA",
+    "Sodium Hydroxide",
+    "Chondrus Crispus",
+    "Agar",
+    "Potassium Chloride",
+    "Xanthan Gum",
+    "Ci 77007"
+   ],
+   "source": {
+    "type": "incidecoder",
+    "url": "https://incidecoder.com/products/neutrogena-hydro-boost-serum-hidratante",
+    "productTitle": "Neutrogena Hydro Boost Sérum Hidratante",
+    "nameMatchScore": 1
+   },
+   "retrievedAt": "2026-10-13",
+   "verification": "à confirmer : version espagnole « Sérum Hidratante » de Neutrogena Hydro Boost sur INCIDecoder"
+  },
+  {
+   "dupeId": "m285",
+   "catalogName": "COSRX | COSRX Advanced Snail 96% Mucin Power Essence 100ml",
+   "inci": [
+    "Snail Secretion Filtrate",
+    "Betaine",
+    "Butylene Glycol",
+    "1,2-Hexanediol",
+    "Sodium Polyacrylate",
+    "Phenoxyethanol",
+    "Sodium Hyaluronate",
+    "Allantoin",
+    "Ethyl Hexanediol",
+    "Carbomer",
+    "Panthenol",
+    "Arginine"
+   ],
+   "source": {
+    "type": "incidecoder",
+    "url": "https://incidecoder.com/products/cosrx-advanced-snail-96-mucin-power-essence-3",
+    "productTitle": "COSRX Advanced Snail 96 Mucin Power Essence",
+    "nameMatchScore": 1
+   },
+   "retrievedAt": "2026-10-13"
+  },
+  {
+   "dupeId": "m396",
+   "catalogName": "The Ordinary | Retinol 0.5% in Squalane",
+   "inci": [
+    "Squalane",
+    "Caprylic/Capric Triglyceride",
+    "Simmondsia Chinensis (Jojoba) Seed Oil",
+    "Retinol",
+    "Solanum Lycopersicum (Tomato) Fruit Extract",
+    "Rosmarinus Officinalis (Rosemary) Leaf Extract",
+    "Hydroxymethoxyphenyl Decanone",
+    "BHT"
+   ],
+   "source": {
+    "type": "incidecoder",
+    "url": "https://incidecoder.com/products/the-ordinary-retinol-0-5-in-squalane",
+    "productTitle": "The Ordinary Retinol 0.5% In Squalane",
+    "nameMatchScore": 1
+   },
+   "retrievedAt": "2026-10-13"
+  },
+  {
+   "dupeId": "m402",
+   "catalogName": "The Ordinary | Vitamin C Suspension 23% + HA",
+   "inci": [
+    "Ascorbic Acid",
+    "Squalane",
+    "Isodecyl Neopentanoate",
+    "Isononyl Isononanoate",
+    "Coconut Alkanes",
+    "Ethylene/Propylene/Styrene Copolymer",
+    "Ethylhexyl Palmitate",
+    "Silica Dimethyl Silylate",
+    "Sodium Hyaluronate",
+    "Glucomannan",
+    "Coco-Caprylate/Caprate",
+    "Butylene/Ethylene/Styrene Copolymer",
+    "Acrylates/Ethylhexyl Acrylate Crosspolymer",
+    "Trihydroxystearin",
+    "Bht"
+   ],
+   "source": {
+    "type": "incidecoder",
+    "url": "https://incidecoder.com/products/the-ordinary-vitamin-c-suspension-23-ha-spheres-2",
+    "productTitle": "The Ordinary Vitamin C Suspension 23% + Ha Spheres 2%",
+    "nameMatchScore": 1
+   },
+   "retrievedAt": "2026-10-13"
+  },
+  {
+   "dupeId": "m293",
+   "catalogName": "Neutrogena | Neutrogena Hydro Boost Aqua-Gel 50ml",
+   "inci": [
+    "Water",
+    "Dimethicone",
+    "Glycerin",
+    "Dimethicone/Vinyl Dimethicone Crosspolymer",
+    "Phenoxyethanol",
+    "Polyacrylamide",
+    "Cetearyl Olivate",
+    "Sorbitan Olivate",
+    "Dimethiconol",
+    "C13-14 Isoparaffin",
+    "Dimethicone Crosspolymer",
+    "Chlorphenesin",
+    "Carbomer",
+    "Laureth-7",
+    "Sodium Hyaluronate",
+    "Ethylhexylglycerin",
+    "Fragrance",
+    "C12-14 Pareth -12",
+    "Sodium Hydroxide",
+    "Blue 1"
+   ],
+   "source": {
+    "type": "incidecoder",
+    "url": "https://incidecoder.com/products/neutrogena-hydro-boost-water-gel",
+    "productTitle": "Neutrogena Hydro Boost Water Gel",
+    "nameMatchScore": 1
+   },
+   "retrievedAt": "2026-10-13"
+  },
+  {
+   "dupeId": "m264",
+   "catalogName": "CeraVe | CeraVe Pommade Réparatrice Intensive 90ml",
+   "inci": [
+    "PETROLATUM",
+    "PARAFFINUM LIQUIDUM / MINERAL OIL",
+    "CERA MICROCRISTALLINA / MICROCRYSTALLINE WAX",
+    "PARAFFIN",
+    "CAPRYLIC/CAPRIC TRIGLYCERIDE",
+    "DIMETHICONE",
+    "AQUA / WATER",
+    "CERAMIDE NP",
+    "CERAMIDE AP",
+    "CERAMIDE EOP",
+    "CARBOMER",
+    "TRIETHYL CITRATE",
+    "SODIUM LAUROYL LACTYLATE",
+    "SODIUM HYALURONATE",
+    "CHOLESTEROL",
+    "TOCOPHERYL ACETATE",
+    "OCOPHEROL",
+    "CAPRYLYL GLYCOL",
+    "SYNTHETIC WAX",
+    "PANTHENOL",
+    "PHYTOSPHINGOSINE",
+    "XANTHAN GUM",
+    "BENZOIC ACID"
+   ],
+   "source": {
+    "type": "official",
+    "url": "https://www.cerave.fr/nos-produits/hydratants/pommade-reparatrice-intensive",
+    "productTitle": "CeraVe Pommade Réparatrice Intensive (cerave.fr)",
+    "note": "Liste publiée par la marque sur sa page officielle, recopiée telle quelle (« OCOPHEROL » figure ainsi sur la page, vraisemblablement une coquille pour Tocopherol). Elle diffère de CeraVe Healing Ointment (INCIDecoder, formule américaine)."
+   },
+   "retrievedAt": "2026-10-13",
+   "verification": "confirmé : liste officielle cerave.fr (13/22 éléments seulement en commun avec la formule américaine d'INCIDecoder, qui n'est donc PAS utilisée)"
+  },
+  {
+   "dupeId": "m134",
+   "catalogName": "Pyunkang Yul | Pyunkang Yul Essence Toner Hydratation Apaisante",
+   "inci": [
+    "Water",
+    "1,2-Hexanediol",
+    "Butylene Glycol",
+    "Astragalus Membranaceus Root Extract(10,000Ppm)",
+    "Bis-PEG-18 Methyl Ether Dimethyl Silane",
+    "Glycerin",
+    "Hydroxyethylcellulose",
+    "Allantoin",
+    "Sodium Phosphate",
+    "Disodium Phosphate",
+    "Polysorbate 60",
+    "Sodium Hyaluronate",
+    "Lecithin",
+    "Caprylic/Capric Triglyceride",
+    "Salix Alba (Willow) Bark Extract",
+    "Houttuynia Cordata Extract",
+    "Centella Asiatica Extract",
+    "Ceramide NP"
+   ],
+   "source": {
+    "type": "incidecoder",
+    "url": "https://incidecoder.com/products/pyunkang-yul-essence-toner-pad",
+    "productTitle": "Pyunkang Yul Essence Toner Pad",
+    "nameMatchScore": 1
+   },
+   "retrievedAt": "2026-10-13"
+  },
+  {
+   "dupeId": "m253",
+   "catalogName": "Vichy | Vichy Liftactiv Specialist B3 Sérum Anti-Rides Anti-Taches",
+   "inci": [
+    "Aqua/Water/Eau",
+    "Butylene Glycol",
+    "Niacinamide",
+    "Hydroxyethylpiperazine Ethane Sulfonic Acid",
+    "Glycerin",
+    "Hydroxyethyl Urea",
+    "Propylene Glycol",
+    "Glycolic Acid",
+    "Tranexamic Acid",
+    "Allantoin",
+    "Sodium Hydroxide",
+    "Phenoxyethanol",
+    "Chlorphenesin",
+    "Ascorbyl Glucoside",
+    "Caprylyl Glycol",
+    "Hydrolyzed Rice Protein",
+    "Vitreoscilla Ferment",
+    "Trisodium Ethylenediamine Disuccinate",
+    "Xanthan Gum",
+    "Pentylene Glycol"
+   ],
+   "source": {
+    "type": "incidecoder",
+    "url": "https://incidecoder.com/products/vichy-liftactiv-specialist-serum-b3",
+    "productTitle": "Vichy Liftactiv Specialist B3 Serum",
+    "nameMatchScore": 1
+   },
+   "retrievedAt": "2026-10-13"
+  },
+  {
+   "dupeId": "m392",
+   "catalogName": "The Ordinary | Hyaluronic Acid 2% + B5",
+   "inci": [
+    "Aqua (Water)",
+    "Sodium Hyaluronate",
+    "Pentylene Glycol",
+    "Propanediol",
+    "Sodium Hyaluronate Crosspolymer",
+    "Panthenol",
+    "Ahnfeltia Concinna Extract",
+    "Glycerin",
+    "Trisodium Ethylenediamine Disuccinate",
+    "Citric Acid",
+    "Isoceteth-20",
+    "Ethoxydiglycol",
+    "Ethylhexylglycerin",
+    "Hexylene Glycol",
+    "1,2-Hexanediol",
+    "Phenoxyethanol",
+    "Caprylyl Glycol"
+   ],
+   "source": {
+    "type": "incidecoder",
+    "url": "https://incidecoder.com/products/the-ordinary-hyaluronic-acid-2-b5",
+    "productTitle": "The Ordinary Hyaluronic Acid 2% + B5",
+    "nameMatchScore": 1
+   },
+   "retrievedAt": "2026-10-13"
+  },
+  {
+   "dupeId": "m183",
+   "catalogName": "SKIN1004 | Madagascar Centella Light Cleansing Oil",
+   "inci": [
+    "Ethylhexyl Stearate",
+    "Cetyl Ethylhexanoate",
+    "Sorbeth-30 Tetraoleate",
+    "Centella Asiatica Extract(10,000Ppm)",
+    "Helianthus Annuus(Sunflower) Seed Oil",
+    "Citrus Aurantium Bergamia(Bergamot) Fruit Oil",
+    "Olea Europaea(Olive) Fruit Oil",
+    "Simmondsia Chinensis(Jojoba) Seed Oil",
+    "Ethylhexylglycerin",
+    "Pelargonium Graveolens Flower Oil",
+    "Rosa Damascena Flower Oil"
+   ],
+   "source": {
+    "type": "incidecoder",
+    "url": "https://incidecoder.com/products/skin1004-madagascar-centella-light-cleansing-oil",
+    "productTitle": "Skin1004 Madagascar Centella Light Cleansing Oil",
+    "nameMatchScore": 1
+   },
+   "retrievedAt": "2026-10-13"
+  },
+  {
+   "dupeId": "m427",
+   "catalogName": "La Roche-Posay | Cicaplast Baume B5+",
+   "inci": [
+    "Aqua/Water",
+    "Hydrogenated Polyisobutene",
+    "Dimethicone",
+    "Glycerin",
+    "Butyrospermum Parkii Butter/Shea Butter",
+    "Panthenol",
+    "Butylene Glycol",
+    "Aluminum Starch Octenylsuccinate",
+    "Propanediol",
+    "Cetyl PEG/PPG-10/1 Dimethicone",
+    "Trihydroxystearin",
+    "Zinc Gluconate",
+    "Madecassoside",
+    "Manganese Gluconate",
+    "Magnesium Sulfate",
+    "Disodium EDTA",
+    "Copper Gluconate",
+    "Acetylated Glycol Stearate",
+    "Polyglyceryl-4 Isostearate",
+    "Sodium Benzoate",
+    "Chlorhexidine Digluconate",
+    "Ci 77891/Titanium Dioxide"
+   ],
+   "source": {
+    "type": "incidecoder",
+    "url": "https://incidecoder.com/products/la-roche-posay-cicaplast-baume-b5",
+    "productTitle": "La Roche-Posay Cicaplast Baume B5",
+    "nameMatchScore": 1
+   },
+   "retrievedAt": "2026-10-13"
+  }
+ ]
+}

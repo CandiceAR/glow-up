@@ -230,6 +230,10 @@ function build() {
   fs.writeFileSync(path.join(ROOT, 'skinpedia', 'index.html'), ihtml);
   out.push({ loc: iloc, lastmod: ildate });
 
+  // Pages dupes (lot 1) : seulement si data/site-flags.json le permet (voir build-dupes.js)
+  const dupesOut = require('./build-dupes.js').build({ head, NAV, FOOT, esc, stamper });
+  out.push(...dupesOut);
+
   stamper.save();
   console.log(`✓ Skinpedia : ${pages.length} fiches + index`);
   if (process.env.SHOW_CLEAN_REPORT || !process.env.GITHUB_ACTIONS) { if (report.length) console.log('  Retiré des fiches :\n   - ' + report.join('\n   - ')); }

@@ -23,7 +23,7 @@ const MakeupRoutine = (() => {
         allProducts = await FirestoreProducts.loadAll();
       }
       if (!allProducts) {
-        const res  = await fetch('data/products-manual.json?v=100');
+        const res  = await fetch('data/products-manual.json?v=101');
         const data = await res.json();
         allProducts = Array.isArray(data) ? data : (data.products || []);
       }
