@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "count": 103,
+  "count": 104,
   "dupes": [
     {
       "hero": {
@@ -316,10 +316,10 @@
         "name": "C E Ferulic",
         "price": 166
       },
-      "dupeId": "m256",
+      "dupeId": "m001",
       "dupeBrand": "La Roche-Posay",
-      "dupeName": "La Roche-Posay Pure Vitamin C10 Sérum Concentré",
-      "dupePrice": 28.5,
+      "dupeName": "La Roche-Posay Pure Vitamin C12 Serum",
+      "dupePrice": 39.9,
       "savings": 137.5,
       "savingsPct": 83,
       "reason": "Vitamine C concentrée éclat & antioxydant"
@@ -1444,6 +1444,20 @@
       "savings": 25.61,
       "savingsPct": 64,
       "reason": "Sérum apaisant anti-rougeurs"
+    },
+    {
+      "hero": {
+        "brand": "Lancôme",
+        "name": "Advanced Génifique",
+        "price": 68.43
+      },
+      "dupeId": "m603",
+      "dupeBrand": "L'Oréal Paris",
+      "dupeName": "Collagen Specialist Age Correcting Serum",
+      "dupePrice": 10.3,
+      "savings": 58.13,
+      "savingsPct": 85,
+      "reason": "Ferment bifida"
     }
   ]
 }

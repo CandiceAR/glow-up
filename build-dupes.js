@@ -95,6 +95,13 @@ function build(ctx) {
     else if (cat.inciRaw) { dInci = (cat.inciNormalized && cat.inciNormalized.length) ? cat.inciNormalized : cat.inciRaw.split(','); dSrc = { url: cat.inciSourceUrl, title: cat.name, date: cat.inciLastVerifiedAt, kind: 'incidecoder' }; }
     else throw new Error('composition du dupe absente : ' + pr.slug);
     const a = analyse(ref.hero.name, ref.inci, cat.name, dInci);
+    // Ingrédient « signature » hors taxonomie du moteur (ex. ferment bifida) : défini à la main dans la paire, avec les rangs vérifiables
+    if (pr.mainOverride) {
+      const ix = (list, re) => list.findIndex(x => re.test(x)) + 1, re = new RegExp(pr.mainOverride.pattern, 'i');
+      const rp = ix(ref.inci, re), dp = ix(dInci, re);
+      if (!rp || !dp) throw new Error('ingrédient signature absent d\'une des deux listes : ' + pr.slug);
+      a.common = { family: 'signature', label: pr.mainOverride.label, refItem: ref.inci[rp - 1], dupeItem: dInci[dp - 1], refPos: rp, dupePos: dp, concRef: null, concDupe: null, deriv: null };
+    }
     if (!a.common) throw new Error('aucun actif principal commun : ' + pr.slug);
     const c = a.common;
 
@@ -107,8 +114,13 @@ function build(ctx) {
     const deriv = c.deriv ? ` Il ne s'agit pas exactement de la même forme (${c.deriv[0]} d'un côté, ${c.deriv[1]} de l'autre).` : '';
 
     // ── Contenance et prix ──
-    const refPrice = (pr.ref.price && pr.ref.price.value) || dj.hero.price, dupePrice = cat.price;
+    const refPrice = (pr.ref.price && pr.ref.price.value) || dj.hero.price;
+    const dupePriceOv = pr.dupe.price && pr.dupe.price.value ? pr.dupe.price : null;   // prix relevé chez un revendeur (source + date)
+    const dupePrice = dupePriceOv ? dupePriceOv.value : cat.price;
     const rv = pr.ref.volumeMl, dv = pr.dupe.volumeMl;
+    // Règle du prix au millilitre : jamais de page « dupe » sans contenances connues, ni pour un produit pas moins cher au ml
+    if (!(rv && dv)) throw new Error('contenance manquante (règle du prix au ml) : ' + pr.slug);
+    if (dupePrice / dv >= refPrice / rv) throw new Error('dupe pas moins cher au millilitre : ' + pr.slug + ' — à mettre en attente (hold)');
     const refPriceSrc = pr.ref.price && pr.ref.price.source;
     const refPriceTxt = refPriceSrc ? `Prix constaté le ${frDate(pr.ref.price.retrievedAt)} chez <a href="${esc(refPriceSrc.url)}" target="_blank" rel="noopener nofollow">${esc(refPriceSrc.name)}</a>, susceptible d'évoluer.` : `Prix indicatif issu de nos données de comparaison ; source et date de relevé non renseignées.`;
     let economy, unit = [];
@@ -163,7 +175,7 @@ function build(ctx) {
             <li>${esc(dupeName)} : ${esc(unit[1])}.</li>
           </ul>
           <p>${esc(economy)}</p>
-          <p>${refPriceTxt} Prix du dupe : prix du catalogue Glow Up, qui peut évoluer.${pr.dupe.volumeNote ? ' ' + esc(pr.dupe.volumeNote) : ''}</p>
+          <p>${refPriceTxt} ${dupePriceOv && dupePriceOv.source ? `Prix du dupe constaté le ${frDate(dupePriceOv.retrievedAt)} chez <a href="${esc(dupePriceOv.source.url)}" target="_blank" rel="noopener nofollow">${esc(dupePriceOv.source.name)}</a>, susceptible d'évoluer.` : 'Prix du dupe : prix du catalogue Glow Up, qui peut évoluer.'}${pr.dupe.volumeNote ? ' ' + esc(pr.dupe.volumeNote) : ''}</p>
           <p>${[pr.ref.volumeSource ? `Contenance de ${esc(ref.hero.name)} : ${esc(pr.ref.volumeSource.name)}${pr.ref.volumeSource.url ? ` (<a href="${esc(pr.ref.volumeSource.url)}" target="_blank" rel="noopener">source</a>)` : ''}, relevée le ${frDate(pr.ref.volumeSource.retrievedAt || cfg.retrievedAt)}.` : '', pr.dupe.volumeSource ? `Contenance de ${esc(cat.name)} : ${esc(pr.dupe.volumeSource.name)}${pr.dupe.volumeSource.url ? ` (<a href="${esc(pr.dupe.volumeSource.url)}" target="_blank" rel="noopener">source</a>)` : ''}.` : ''].filter(Boolean).join(' ')}</p>
           <h2>Source de la composition</h2>
           <ul>${srcLine(ref.hero.name, { url: ref.source.url, date: ref.retrievedAt, kind: 'incidecoder' })}${srcLine(cat.name, dSrc)}</ul>

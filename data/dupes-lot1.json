@@ -5,10 +5,10 @@
     {
       "slug": "skinceuticals-c-e-ferulic",
       "refKey": "skinceuticals-c-e-ferulic",
-      "dupeId": "m256",
-      "title": "Dupe de C E Ferulic : La Roche-Posay Pure Vitamin C10",
+      "dupeId": "m001",
+      "title": "Dupe de C E Ferulic : La Roche-Posay Pure Vitamin C12",
       "refShort": "C E Ferulic",
-      "dupeShort": "Pure Vitamin C10",
+      "dupeShort": "Pure Vitamin C12",
       "ref": {
         "volumeMl": 30,
         "volumeSource": {
@@ -28,8 +28,17 @@
       "dupe": {
         "volumeMl": 30,
         "volumeSource": {
-          "name": "Skinlovers (contenance confirmée par Candice)",
-          "url": "https://www.skinlovers.com/products/la-roche-posay-pure-vitamin-c-10-serum-30ml",
+          "name": "Soin et Nature",
+          "url": "https://soin-et-nature.com/en/20001-la-roche-posay-serum-pure-vitamin-c10-30ml.html",
+          "retrievedAt": "2026-10-20"
+        },
+        "price": {
+          "value": 39.9,
+          "currency": "EUR",
+          "source": {
+            "name": "Soin et Nature",
+            "url": "https://soin-et-nature.com/en/20001-la-roche-posay-serum-pure-vitamin-c10-30ml.html"
+          },
           "retrievedAt": "2026-10-20"
         }
       },
@@ -40,7 +49,7 @@
       ],
       "blog": "taches-brunes-visage",
       "hold": true,
-      "holdNote": "La Roche-Posay Pure Vitamin C10 serait arrêté (source non confirmée) : à vérifier avant publication."
+      "holdNote": "Remplace le Pure Vitamin C10 (arrêté) par le Pure Vitamin C12 — page à valider par Candice avant publication."
     },
     {
       "slug": "paulas-choice-10-niacinamide-booster",
@@ -56,23 +65,32 @@
           "url": "https://www.cloud10beauty.com/fr-fr/products/paula-s-choice-resist-10-niacinamide-booster"
         },
         "price": {
-          "value": 47.16,
+          "value": 58.95,
           "currency": "EUR",
           "source": {
-            "name": "Cloud10 Beauty",
+            "name": "Cloud10 Beauty (prix habituel ; produit épuisé chez ce revendeur)",
             "url": "https://www.cloud10beauty.com/fr-fr/products/paula-s-choice-resist-10-niacinamide-booster"
           },
-          "retrievedAt": "2026-10-14"
+          "retrievedAt": "2026-10-20"
         }
       },
       "dupe": {
         "volumeMl": 30,
         "volumeSource": {
-          "name": "Stylevana (contenance confirmée par Candice)",
-          "url": "https://www.stylevana.com/en_US/the-ordinary-niacinamide-10-zinc-1-30ml25376.html",
+          "name": "Atida",
+          "url": "https://www.atida.fr/the-ordinary-niacinamide-10-zinc-1-30ml.html",
           "retrievedAt": "2026-10-20"
         },
-        "volumeNote": "The Ordinary propose ce produit en 30 ml et en 60 ml ; le catalogue Glow Up ne précise pas le format."
+        "volumeNote": "Existe aussi en 60 ml (14,90 € chez Sephora.fr) ; la comparaison porte sur le format 30 ml.",
+        "price": {
+          "value": 5.79,
+          "currency": "EUR",
+          "source": {
+            "name": "Atida",
+            "url": "https://www.atida.fr/the-ordinary-niacinamide-10-zinc-1-30ml.html"
+          },
+          "retrievedAt": "2026-10-20"
+        }
       },
       "near": [
         "glow-recipe-watermelon-niacinamide-dew-drops",
@@ -108,8 +126,17 @@
       "dupe": {
         "volumeMl": 30,
         "volumeSource": {
-          "name": "iHerb (contenance confirmée par Candice)",
-          "url": "https://www.iherb.com/pr/anua-peach-70-niacin-serum-1-01-fl-oz-30-ml/131868",
+          "name": "Notino",
+          "url": "https://www.notino.fr/anua/peach-70-niacin-serum-serum-hydratant-illuminateur-anti-pores-dilates-et-rides/p-16246260/",
+          "retrievedAt": "2026-10-20"
+        },
+        "price": {
+          "value": 28.9,
+          "currency": "EUR",
+          "source": {
+            "name": "Notino (prix remisé)",
+            "url": "https://www.notino.fr/anua/peach-70-niacin-serum-serum-hydratant-illuminateur-anti-pores-dilates-et-rides/p-16246260/"
+          },
           "retrievedAt": "2026-10-20"
         }
       },
@@ -149,8 +176,17 @@
       "dupe": {
         "volumeMl": 30,
         "volumeSource": {
-          "name": "Cult Beauty (contenance confirmée par Candice)",
-          "url": "https://www.cultbeauty.com/p/the-ordinary-lactic-acid-10-ha-2-superficial-peeling-formulation-30ml/11363400/",
+          "name": "Sephora.fr",
+          "url": "https://www.sephora.fr/p/acide-lactique-10%25-ha---serum-de-peeling-502441.html",
+          "retrievedAt": "2026-10-20"
+        },
+        "price": {
+          "value": 13.5,
+          "currency": "EUR",
+          "source": {
+            "name": "Sephora.fr",
+            "url": "https://www.sephora.fr/p/acide-lactique-10%25-ha---serum-de-peeling-502441.html"
+          },
           "retrievedAt": "2026-10-20"
         }
       },
@@ -175,20 +211,30 @@
           "url": "https://www.cloud10beauty.com/fr-fr/products/paula-s-choice-clinical-1-retinol-treatment"
         },
         "price": {
-          "value": 56.76,
+          "value": 70.95,
           "currency": "EUR",
           "source": {
-            "name": "Cloud10 Beauty",
+            "name": "Cloud10 Beauty (prix habituel ; produit épuisé chez ce revendeur)",
             "url": "https://www.cloud10beauty.com/fr-fr/products/paula-s-choice-clinical-1-retinol-treatment"
           },
-          "retrievedAt": "2026-10-14"
+          "retrievedAt": "2026-10-20"
         }
       },
       "dupe": {
         "volumeMl": 30,
         "volumeSource": {
-          "name": "The Ordinary, site officiel, format unique indiqué sur la fiche",
-          "url": "https://theordinary.com/en-hu/retinol-05-in-squalane-serum-100440.html"
+          "name": "Cosmetis",
+          "url": "https://cosmetis.com/fr/the-ordinary-retinol-0-5-in-squalane-30ml",
+          "retrievedAt": "2026-10-20"
+        },
+        "price": {
+          "value": 19.26,
+          "currency": "EUR",
+          "source": {
+            "name": "Cosmetis (15,38 € en promotion le 20 octobre 2026)",
+            "url": "https://cosmetis.com/fr/the-ordinary-retinol-0-5-in-squalane-30ml"
+          },
+          "retrievedAt": "2026-10-20"
         }
       },
       "near": [
@@ -209,7 +255,8 @@
         "volumeMl": 28,
         "volumeSource": {
           "name": "Sephora (fiche produit, contenance indiquée)",
-          "url": "https://www.sephora.fr/p/c-firma%E2%84%A2-fresh-day-serum---serum-visage-P10017929.html"
+          "url": "https://www.sephora.fr/p/c-firma%E2%84%A2-fresh-day-serum---serum-visage-P10017929.html",
+          "retrievedAt": "2026-10-20"
         },
         "price": {
           "value": 81,
@@ -218,14 +265,23 @@
             "name": "Sephora",
             "url": "https://www.sephora.fr/p/c-firma%E2%84%A2-fresh-day-serum---serum-visage-P10017929.html"
           },
-          "retrievedAt": "2026-10-14"
+          "retrievedAt": "2026-10-20"
         }
       },
       "dupe": {
         "volumeMl": 30,
         "volumeSource": {
-          "name": "Cult Beauty (contenance confirmée par Candice)",
-          "url": "https://www.cultbeauty.com/p/the-ordinary-vitamin-c-suspension-23-ha-spheres-30ml/11363392/",
+          "name": "Redcare",
+          "url": "https://www.redcare-pharmacie.fr/beaute/BE04657987/the-ordinary-suspension-de-vitamine-c-23-spheres-de-ha-2.htm",
+          "retrievedAt": "2026-10-20"
+        },
+        "price": {
+          "value": 9.79,
+          "currency": "EUR",
+          "source": {
+            "name": "Redcare",
+            "url": "https://www.redcare-pharmacie.fr/beaute/BE04657987/the-ordinary-suspension-de-vitamine-c-23-spheres-de-ha-2.htm"
+          },
           "retrievedAt": "2026-10-20"
         }
       },
@@ -262,8 +318,17 @@
       "dupe": {
         "volumeMl": 30,
         "volumeSource": {
-          "name": "Lyskin (contenance confirmée par Candice)",
-          "url": "https://lyskin.com/shop/vichy-liftactiv-specialist-b3-anti-dark-spots-serum-30ml/",
+          "name": "Soin et Nature",
+          "url": "https://www.soin-et-nature.com/fr/23649-vichy-liftactiv-specialist-serum-b3-30-ml.html",
+          "retrievedAt": "2026-10-20"
+        },
+        "price": {
+          "value": 43.49,
+          "currency": "EUR",
+          "source": {
+            "name": "Soin et Nature (38,49 € en promotion jusqu'au 30 octobre 2026)",
+            "url": "https://www.soin-et-nature.com/fr/23649-vichy-liftactiv-specialist-serum-b3-30-ml.html"
+          },
           "retrievedAt": "2026-10-20"
         }
       },
@@ -273,6 +338,60 @@
         "skinceuticals-c-e-ferulic"
       ],
       "blog": "taches-brunes-visage"
+    },
+    {
+      "slug": "lancome-advanced-genifique",
+      "refKey": "lancome-advanced-genifique",
+      "dupeId": "m603",
+      "title": "Dupe de Advanced Génifique : L'Oréal Collagen Specialist",
+      "refShort": "Advanced Génifique",
+      "dupeShort": "Collagen Specialist",
+      "ref": {
+        "volumeMl": 30,
+        "volumeSource": {
+          "name": "LookFantastic.fr",
+          "url": "https://www.lookfantastic.fr/p/lancome-advanced-genifique-serum/11185397/",
+          "retrievedAt": "2026-10-15"
+        },
+        "price": {
+          "value": 68.43,
+          "currency": "EUR",
+          "source": {
+            "name": "LookFantastic.fr",
+            "url": "https://www.lookfantastic.fr/p/lancome-advanced-genifique-serum/11185397/"
+          },
+          "retrievedAt": "2026-10-15"
+        }
+      },
+      "dupe": {
+        "volumeMl": 30,
+        "volumeSource": {
+          "name": "Notino",
+          "url": "https://www.notino.fr/loreal-paris/collagen-specialist-age-correcting-serum-serum-visage-rajeunissant/p-16269463/",
+          "retrievedAt": "2026-10-20"
+        },
+        "price": {
+          "value": 10.3,
+          "currency": "EUR",
+          "source": {
+            "name": "Notino (remise de 20 %)",
+            "url": "https://www.notino.fr/loreal-paris/collagen-specialist-age-correcting-serum-serum-visage-rajeunissant/p-16269463/"
+          },
+          "retrievedAt": "2026-10-20"
+        }
+      },
+      "near": [
+        "skinceuticals-discoloration-defense",
+        "drunk-elephant-c-firma-fresh-vitamin-c",
+        "paula-s-choice-10-niacinamide-booster"
+      ],
+      "blog": null,
+      "mainOverride": {
+        "pattern": "bifida ferment",
+        "label": "ferment bifida (Bifida Ferment Lysate)"
+      },
+      "hold": true,
+      "holdNote": "Paire créée à la demande de Candice, à valider avant publication ; le prix de référence (LookFantastic.fr, 15 octobre) n'a pas été reconfirmé ; m603 inactif (photo officielle manquante)."
     }
   ]
 }

@@ -599,7 +599,8 @@
    "hero": {
     "brand": "Drunk Elephant",
     "name": "C-Firma Fresh Vitamin C",
-    "price": 78
+    "price": 78,
+    "volumeMl": 28
    },
    "dupeId": "m402",
    "inci": [
@@ -652,6 +653,11 @@
     "found": 32,
     "ratio": 1,
     "note": "Lecture automatique partielle de la page officielle de la marque, comparée à la liste INCIDecoder"
+   },
+   "crossCheck": {
+    "source": "https://skinsort.com/products/drunk-elephant/c-firma-fresh-day-serum/when-to-use",
+    "date": "2026-10-20",
+    "result": "liste identique (33 ingrédients, même ordre) à celle d'INCIDecoder (reformulation 2021) — fournie par Candice"
    }
   },
   {
@@ -1026,6 +1032,60 @@
     "note": "INCIDecoder reprend la liste d'ingrédients publiée par la marque. Les pages officielles des marques bloquent souvent la lecture automatique : la liste officielle n'a pu être relue que pour certains produits (voir officialCheck)."
    },
    "retrievedAt": "2026-10-13"
+  },
+  {
+   "key": "lancome-advanced-genifique",
+   "hero": {
+    "brand": "Lancôme",
+    "name": "Advanced Génifique",
+    "price": 68.43,
+    "volumeMl": 30
+   },
+   "dupeId": "m603",
+   "inci": [
+    "Aqua/Water",
+    "Bifida Ferment Lysate",
+    "Glycerin",
+    "Alcohol Denat",
+    "Dimethicone",
+    "Hydroxyethylpiperazine Ethane Sulfonic Acid",
+    "Ascorbyl Glucoside",
+    "Lactobacillus",
+    "Tocopherol",
+    "Sodium Hyaluronate",
+    "Sodium Hydroxide",
+    "Sodium Benzoate",
+    "Phenoxyethanol",
+    "Adenosine",
+    "Faex Extract/Yeast Extract",
+    "PEG-20 Methyl Glucose Sesquistearate",
+    "PEG-60 Hydrogenated Castor Oil",
+    "Polymnia Sonchifolia Root Juice",
+    "Maltodextrin",
+    "Salicyloyl Phytosphingosine",
+    "Ammonium Polyacryloyldimethyl Taurate",
+    "Limonene",
+    "Mannose",
+    "Xanthan Gum",
+    "Pentylene Glycol",
+    "Propylene Glycol",
+    "Caprylyl Glycol",
+    "Alpha-Glucan Oligosaccharide",
+    "Sorbitol",
+    "Disodium EDTA",
+    "Rosa Gallica Flower Extract",
+    "Octyldodecanol",
+    "Citronellol",
+    "Parfum/Fragrance"
+   ],
+   "inciRaw": "Aqua/Water, Bifida Ferment Lysate, Glycerin, Alcohol Denat, Dimethicone, Hydroxyethylpiperazine Ethane Sulfonic Acid, Ascorbyl Glucoside, Lactobacillus, Tocopherol, Sodium Hyaluronate, Sodium Hydroxide, Sodium Benzoate, Phenoxyethanol, Adenosine, Faex Extract/Yeast Extract, PEG-20 Methyl Glucose Sesquistearate, PEG-60 Hydrogenated Castor Oil, Polymnia Sonchifolia Root Juice, Maltodextrin, Salicyloyl Phytosphingosine, Ammonium Polyacryloyldimethyl Taurate, Limonene, Mannose, Xanthan Gum, Pentylene Glycol, Propylene Glycol, Caprylyl Glycol, Alpha-Glucan Oligosaccharide, Sorbitol, Disodium EDTA, Rosa Gallica Flower Extract, Octyldodecanol, Citronellol, Parfum/Fragrance",
+   "source": {
+    "type": "incidecoder",
+    "url": "https://incidecoder.com/products/lancome-advanced-genifique-youth-activating-serum-2",
+    "productTitle": "Lancôme Advanced Génifique Youth Activating Serum"
+   },
+   "retrievedAt": "2026-10-15",
+   "verification": "Plusieurs versions existent sur INCIDecoder (concentrate / serum) : version « Youth Activating Serum » retenue ; à confirmer sur la boîte."
   }
  ]
 }

@@ -329,6 +329,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 30,
+      "volumeSource": {
+        "url": "https://www.boots.com/la-roche-posay-vitamin-c12-serum-30ml-10351281",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -754,6 +760,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "netWeightG": 140,
+      "netWeightSource": {
+        "url": "https://www.iherb.com/pr/biodance-cera-nol-gel-toner-pads-60-pads/148061",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -1996,6 +2008,12 @@
         "matchScore": 0.86,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 15,
+      "volumeSource": {
+        "url": "https://www.selfridges.com/US/en/product/clinique-smart-clinical-repair-wrinkle-correcting-eye-cream-15ml_R03886556/",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -2351,6 +2369,12 @@
         "matchScore": 0.86,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 15,
+      "volumeSource": {
+        "url": "https://www.lookfantastic.com/p/clinique-clinique-all-about-eyes-serum-de-puffing-eye-massage-0/11144761/",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -7425,6 +7449,12 @@
         "matchedTitle": "",
         "confidence": "élevée",
         "phase": "lot2-2026-10-20"
+      },
+      "volumeMl": 200,
+      "volumeSource": {
+        "url": "https://www.iherb.com/pr/pyunkang-yul-essence-toner-6-76-fl-oz-200-ml/80173",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -8537,6 +8567,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 30,
+      "volumeSource": {
+        "url": "https://medicube.us/products/ultra-light-pdrn-pink-peptide-serum",
+        "retrievedAt": "2026-10-20",
+        "type": "site officiel de la marque"
       }
     },
     {
@@ -8572,7 +8608,126 @@
       "isFeatured": false,
       "active": true,
       "curatedBy": "admin",
-      "curatedAt": "2026-05-05"
+      "curatedAt": "2026-05-05",
+      "inciRaw": "Aqua (Water), Pentylene Glycol, Dipropylene Glycol, Methyl Gluceth-20, Salicylic Acid, Butylene Glycol, Sarcosine, Allantoin, Sodium Hydroxide, Xanthan Gum, Disodium EDTA",
+      "inciNormalized": [
+        "aqua",
+        "pentylene glycol",
+        "dipropylene glycol",
+        "methyl gluceth-20",
+        "salicylic acid",
+        "butylene glycol",
+        "sarcosine",
+        "allantoin",
+        "sodium hydroxide",
+        "xanthan gum",
+        "disodium edta"
+      ],
+      "inciStructured": [
+        {
+          "inci": "Aqua (Water)",
+          "normalized": "aqua",
+          "position": 1,
+          "family": "solvant",
+          "function": "solvant",
+          "isActive": false
+        },
+        {
+          "inci": "Pentylene Glycol",
+          "normalized": "pentylene glycol",
+          "position": 2,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Dipropylene Glycol",
+          "normalized": "dipropylene glycol",
+          "position": 3,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Methyl Gluceth-20",
+          "normalized": "methyl gluceth-20",
+          "position": 4,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Salicylic Acid",
+          "normalized": "salicylic acid",
+          "position": 5,
+          "family": "bha",
+          "function": "exfoliant BHA",
+          "isActive": true
+        },
+        {
+          "inci": "Butylene Glycol",
+          "normalized": "butylene glycol",
+          "position": 6,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Sarcosine",
+          "normalized": "sarcosine",
+          "position": 7,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Allantoin",
+          "normalized": "allantoin",
+          "position": 8,
+          "family": "soothing",
+          "function": "apaisant",
+          "isActive": true
+        },
+        {
+          "inci": "Sodium Hydroxide",
+          "normalized": "sodium hydroxide",
+          "position": 9,
+          "family": "ph",
+          "function": "pH",
+          "isActive": false
+        },
+        {
+          "inci": "Xanthan Gum",
+          "normalized": "xanthan gum",
+          "position": 10,
+          "family": "texture",
+          "function": "texture",
+          "isActive": false
+        },
+        {
+          "inci": "Disodium EDTA",
+          "normalized": "disodium edta",
+          "position": 11,
+          "family": "chelator",
+          "function": "stabilisant",
+          "isActive": false
+        }
+      ],
+      "actives": [
+        "Salicylic Acid",
+        "Allantoin"
+      ],
+      "inciSourceUrl": "https://incidecoder.com/products/geek-gorgeous-porefectly-clear",
+      "inciLastVerifiedAt": "2026-10-20",
+      "inciVerificationStatus": "verified",
+      "dupeEligible": true,
+      "needsReview": false,
+      "inciMatch": {
+        "source": "incidecoder",
+        "matchedTitle": "Geek & Gorgeous Porefectly Clear",
+        "confidence": "moyenne (validée par Candice le 2026-10-20 : « Clare » = faute pour « Clear »)",
+        "phase": "lot2-2026-10-20"
+      }
     },
     {
       "id": "m143",
@@ -9611,6 +9766,12 @@
         "matchScore": 0.86,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 15,
+      "volumeSource": {
+        "url": "https://www.boots.com/roc-derm-correxion-eye-repair-cream-for-dark-circles-15ml-10386343",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -10113,6 +10274,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 30,
+      "volumeSource": {
+        "url": "https://beautyofjoseon.com/products/revive-eye-serum-ginseng-retinal",
+        "retrievedAt": "2026-10-20",
+        "type": "site officiel de la marque"
       }
     },
     {
@@ -10815,6 +10982,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 30,
+      "volumeSource": {
+        "url": "https://www.iherb.com/pr/some-by-mi-retinol-intense-reactivating-serum-1-01-fl-oz-30-ml/138676",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -11669,6 +11842,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 200,
+      "volumeSource": {
+        "url": "https://www.yesstyle.com/en/skin1004-madagascar-centella-light-cleansing-oil-200ml/info.html/pid.1077182361",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -14085,6 +14264,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 50,
+      "volumeSource": {
+        "url": "https://frenchbeautyhub.com/products/la-roche-posay-anthelios-uvmune-400-invisible-fluid-spf50-50ml-1-69floz/",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -17380,7 +17565,287 @@
         "barriere"
       ],
       "ingredientTags": [],
-      "active": true
+      "active": true,
+      "inciRaw": "Aqua/Water/Eau, Mineral Oil (Paraffinum Liquidum), Glycerin, Tridecyl Trimellitate, Glycol Palmitate, Caprylic/Capric Triglyceride, Canola Oil, Triceteareth-4 Phosphate, Fructooligosaccharides, Mannitol, Xylitol, Rhamnose, Laminaria Ochroleuca Extract, Glycyrrhetinic Acid, Glycine Soja (Soybean) Germ Extract, Allantoin, Ginkgo Biloba Leaf Extract, Camellia Sinensis Leaf Extract, Propylene Glycol, Pentylene Glycol, Caprylyl Glycol, Glycol Stearate, PEG-2 Stearate, Acrylates/C10-30 Alkyl Acrylate Crosspolymer, 1,2-Hexanediol, Citric Acid, Xanthan Gum, Disodium EDTA, Sodium Hydroxide",
+      "inciNormalized": [
+        "aqua/water/eau",
+        "mineral oil",
+        "glycerin",
+        "tridecyl trimellitate",
+        "glycol palmitate",
+        "caprylic/capric triglyceride",
+        "canola oil",
+        "triceteareth-4 phosphate",
+        "fructooligosaccharides",
+        "mannitol",
+        "xylitol",
+        "rhamnose",
+        "laminaria ochroleuca extract",
+        "glycyrrhetinic acid",
+        "glycine soja germ extract",
+        "allantoin",
+        "ginkgo biloba leaf extract",
+        "camellia sinensis leaf extract",
+        "propylene glycol",
+        "pentylene glycol",
+        "caprylyl glycol",
+        "glycol stearate",
+        "peg-2 stearate",
+        "acrylates/c10-30 alkyl acrylate crosspolymer",
+        "1,2-hexanediol",
+        "citric acid",
+        "xanthan gum",
+        "disodium edta",
+        "sodium hydroxide"
+      ],
+      "inciStructured": [
+        {
+          "inci": "Aqua/Water/Eau",
+          "normalized": "aqua/water/eau",
+          "position": 1,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Mineral Oil (Paraffinum Liquidum)",
+          "normalized": "mineral oil",
+          "position": 2,
+          "family": "emollient",
+          "function": "émollient",
+          "isActive": false
+        },
+        {
+          "inci": "Glycerin",
+          "normalized": "glycerin",
+          "position": 3,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Tridecyl Trimellitate",
+          "normalized": "tridecyl trimellitate",
+          "position": 4,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Glycol Palmitate",
+          "normalized": "glycol palmitate",
+          "position": 5,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Caprylic/Capric Triglyceride",
+          "normalized": "caprylic/capric triglyceride",
+          "position": 6,
+          "family": "emollient",
+          "function": "émollient",
+          "isActive": false
+        },
+        {
+          "inci": "Canola Oil",
+          "normalized": "canola oil",
+          "position": 7,
+          "family": "emollient",
+          "function": "émollient",
+          "isActive": false
+        },
+        {
+          "inci": "Triceteareth-4 Phosphate",
+          "normalized": "triceteareth-4 phosphate",
+          "position": 8,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Fructooligosaccharides",
+          "normalized": "fructooligosaccharides",
+          "position": 9,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Mannitol",
+          "normalized": "mannitol",
+          "position": 10,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Xylitol",
+          "normalized": "xylitol",
+          "position": 11,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Rhamnose",
+          "normalized": "rhamnose",
+          "position": 12,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Laminaria Ochroleuca Extract",
+          "normalized": "laminaria ochroleuca extract",
+          "position": 13,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Glycyrrhetinic Acid",
+          "normalized": "glycyrrhetinic acid",
+          "position": 14,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Glycine Soja (Soybean) Germ Extract",
+          "normalized": "glycine soja germ extract",
+          "position": 15,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Allantoin",
+          "normalized": "allantoin",
+          "position": 16,
+          "family": "soothing",
+          "function": "apaisant",
+          "isActive": true
+        },
+        {
+          "inci": "Ginkgo Biloba Leaf Extract",
+          "normalized": "ginkgo biloba leaf extract",
+          "position": 17,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Camellia Sinensis Leaf Extract",
+          "normalized": "camellia sinensis leaf extract",
+          "position": 18,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Propylene Glycol",
+          "normalized": "propylene glycol",
+          "position": 19,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Pentylene Glycol",
+          "normalized": "pentylene glycol",
+          "position": 20,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Caprylyl Glycol",
+          "normalized": "caprylyl glycol",
+          "position": 21,
+          "family": "emollient",
+          "function": "émollient",
+          "isActive": false
+        },
+        {
+          "inci": "Glycol Stearate",
+          "normalized": "glycol stearate",
+          "position": 22,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "PEG-2 Stearate",
+          "normalized": "peg-2 stearate",
+          "position": 23,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Acrylates/C10-30 Alkyl Acrylate Crosspolymer",
+          "normalized": "acrylates/c10-30 alkyl acrylate crosspolymer",
+          "position": 24,
+          "family": "texture",
+          "function": "texture",
+          "isActive": false
+        },
+        {
+          "inci": "1,2-Hexanediol",
+          "normalized": "1,2-hexanediol",
+          "position": 25,
+          "family": "preservative",
+          "function": "conservateur",
+          "isActive": false
+        },
+        {
+          "inci": "Citric Acid",
+          "normalized": "citric acid",
+          "position": 26,
+          "family": "ph",
+          "function": "pH",
+          "isActive": false
+        },
+        {
+          "inci": "Xanthan Gum",
+          "normalized": "xanthan gum",
+          "position": 27,
+          "family": "texture",
+          "function": "texture",
+          "isActive": false
+        },
+        {
+          "inci": "Disodium EDTA",
+          "normalized": "disodium edta",
+          "position": 28,
+          "family": "chelator",
+          "function": "stabilisant",
+          "isActive": false
+        },
+        {
+          "inci": "Sodium Hydroxide",
+          "normalized": "sodium hydroxide",
+          "position": 29,
+          "family": "ph",
+          "function": "pH",
+          "isActive": false
+        }
+      ],
+      "actives": [
+        "Allantoin"
+      ],
+      "inciSourceUrl": "https://incidecoder.com/products/bioderma-sensibio-ar-cream",
+      "inciLastVerifiedAt": "2026-10-20",
+      "inciVerificationStatus": "verified",
+      "dupeEligible": true,
+      "needsReview": false,
+      "inciMatch": {
+        "source": "formule BI 699 fournie par Candice (Sensibio AR 40 ml non teinté), mêmes 29 ingrédients qu'INCIDecoder",
+        "matchedTitle": "Bioderma Sensibio AR Soin Anti-Rougeurs 40 ml",
+        "confidence": "élevée",
+        "phase": "lot2-2026-10-20"
+      }
     },
     {
       "id": "m302",
@@ -20105,6 +20570,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 250,
+      "volumeSource": {
+        "url": "https://anua.com/products/heartleaf-77-soothing-toner",
+        "retrievedAt": "2026-10-20",
+        "type": "site officiel de la marque"
       }
     },
     {
@@ -20377,6 +20848,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 200,
+      "volumeSource": {
+        "url": "https://www.stylevana.com/en_US/anua-heartleaf-pore-control-cleansing-oil-200ml3988.html",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -21303,6 +21780,12 @@
         "matchedTitle": "Beauty of Joseon Glow Deep Serum : Rice + Arbutin",
         "confidence": "élevée",
         "phase": "lot2-2026-10-20"
+      },
+      "volumeMl": 30,
+      "volumeSource": {
+        "url": "https://www.boots.com/beauty-of-joseon-glow-deep-serum--riceandalpha-arbutin-30ml-10352393",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -21801,7 +22284,13 @@
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
       "dupeEligible": true,
-      "needsReview": false
+      "needsReview": false,
+      "volumeMl": 110,
+      "volumeSource": {
+        "url": "https://www.iherb.com/pr/medicube-collagen-jelly-cream-3-71-fl-oz-110-ml/160155",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m356",
@@ -22269,6 +22758,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "netWeightG": 155,
+      "netWeightSource": {
+        "url": "https://www.asos.com/medicube/medicube-zero-pore-pad-20-155g-70pcs/prd/208486130",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -23136,7 +23631,13 @@
       "inciVerificationStatus": "verified",
       "dupeEligible": true,
       "needsReview": false,
-      "needsReviewReason": ""
+      "needsReviewReason": "",
+      "volumeMl": 30,
+      "volumeSource": {
+        "url": "https://www.spacenk.com/us/skincare/eyecare/eye-treatment/caffeine-solution-5-egcg-MUK200029803.html",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m384",
@@ -23499,6 +24000,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 15,
+      "volumeSource": {
+        "url": "https://www.cultbeauty.com/p/the-inkey-list-caffeine-eye-cream-15ml/14272888/",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -23899,7 +24406,13 @@
       "inciVerificationStatus": "verified",
       "dupeEligible": true,
       "needsReview": false,
-      "needsReviewReason": ""
+      "needsReviewReason": "",
+      "volumeMl": 14,
+      "volumeSource": {
+        "url": "https://www.boots.com/cerave-eye-repair-cream-14ml-10258274",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m386",
@@ -25868,6 +26381,12 @@
         "matchScore": 0.89,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 15,
+      "volumeSource": {
+        "url": "https://fr.filorga.com/products/optim-eyes",
+        "retrievedAt": "2026-10-20",
+        "type": "site officiel de la marque"
       }
     },
     {
@@ -26150,6 +26669,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 30,
+      "volumeSource": {
+        "url": "https://www.lookfantastic.com/p/the-ordinary-hyaluronic-acid-2-and-b5-30ml/15061691/",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -26510,6 +27035,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 30,
+      "volumeSource": {
+        "url": "https://www.cultbeauty.com/p/the-ordinary-alpha-arbutin-2-ha-30ml/15464526/",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -26656,6 +27187,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 30,
+      "volumeSource": {
+        "url": "https://www.cultbeauty.com/p/the-ordinary-salicylic-acid-2-solution-30ml/13754943/",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -26771,6 +27308,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 30,
+      "volumeSource": {
+        "url": "https://www.cultbeauty.com/p/the-ordinary-retinol-serum-0.5-in-squalane-30ml/11638502/",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -26912,6 +27455,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 30,
+      "volumeSource": {
+        "url": "https://www.cultbeauty.com/p/the-ordinary-10-argireline-solution-30ml/11416769/",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -27371,6 +27920,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 30,
+      "volumeSource": {
+        "url": "https://www.cultbeauty.com/p/the-ordinary-natural-moisturising-factors-ha-30ml/11396687/",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -27661,6 +28216,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 30,
+      "volumeSource": {
+        "url": "https://www.spacenk.com/us/skincare/treatment/peels/aha-30-bha-2-peeling-solution-MUK200029791.html",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -28082,6 +28643,12 @@
         "matchedTitle": "The Ordinary Glycolic Acid 7% Toning Solution",
         "confidence": "élevée",
         "phase": "lot2-2026-10-20"
+      },
+      "volumeMl": 240,
+      "volumeSource": {
+        "url": "https://www.stylevana.com/en_US/the-ordinary-glycolic-acid-7-exfoliating-toner-240ml30706.html",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -28746,6 +29313,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 30,
+      "volumeSource": {
+        "url": "https://www.cultbeauty.com/p/the-inkey-list-retinol-serum-30ml/12208009/",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -29011,6 +29584,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 30,
+      "volumeSource": {
+        "url": "https://www.cultbeauty.com/p/the-inkey-list-niacinamide-serum-30ml/14272891/",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -29228,6 +29807,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 150,
+      "volumeSource": {
+        "url": "https://www.cultbeauty.com/p/the-inkey-list-oat-cleansing-balm-150ml/12435694/",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -29418,6 +30003,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 100,
+      "volumeSource": {
+        "url": "https://www.theinkeylist.com/products/pha-toner",
+        "retrievedAt": "2026-10-20",
+        "type": "site officiel de la marque"
       }
     },
     {
@@ -31918,6 +32509,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 30,
+      "volumeSource": {
+        "url": "https://thingtesting.com/brands/good-molecules/products/22124",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -32279,6 +32876,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 30,
+      "volumeSource": {
+        "url": "https://www.boots.com/naturium-vitamin-c-complex-serum-30ml-10352824",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -32821,6 +33424,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 50,
+      "volumeSource": {
+        "url": "https://www.harrods.com/en-us/p/clarins-double-serum-light-texture-50ml-000000000007780479",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -33485,6 +34094,12 @@
         "confidence": "élevée",
         "phase": "lot3-2026-10-20",
         "note": ""
+      },
+      "volumeMl": 15,
+      "volumeSource": {
+        "url": "https://www.stylevana.com/en_US/clarins-total-eye-lift-15ml8940.html",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -34231,7 +34846,13 @@
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
       "dupeEligible": true,
-      "needsReview": false
+      "needsReview": false,
+      "volumeMl": 15,
+      "volumeSource": {
+        "url": "https://www.sephora.co.uk/p/Clarins-Total-Eye-Revive-15ml",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m448",
@@ -34681,6 +35302,12 @@
         "matchScore": 0.91,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "volumeMl": 50,
+      "volumeSource": {
+        "url": "https://www.newpharma.fr/clarins/836962/clarins-extra-firming-jour-creme-fermete-anti-rides-toutes-peaux-pot-50ml.html",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -35670,7 +36297,13 @@
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
       "dupeEligible": true,
-      "needsReview": false
+      "needsReview": false,
+      "volumeMl": 200,
+      "volumeSource": {
+        "url": "https://www.newpharma.fr/clarins/860082/clarins-re-move-eau-micellaire-demaquillante-flacon-200ml.html",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m469",
@@ -35930,7 +36563,13 @@
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
       "dupeEligible": true,
-      "needsReview": false
+      "needsReview": false,
+      "volumeMl": 125,
+      "volumeSource": {
+        "url": "https://clarins.fr/my-clarins-re-move-gel-nettoyant-purifiant/C080033106.html",
+        "retrievedAt": "2026-10-20",
+        "type": "site officiel de la marque"
+      }
     },
     {
       "id": "m470",
@@ -37208,7 +37847,7 @@
         "Palmitoyl Tetrapeptide-7"
       ],
       "barcode": null,
-      "volumeMl": null,
+      "volumeMl": 30,
       "inciSourceUrl": "https://incidecoder.com/products/medicube-pdrn-pink-peptide-serum",
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
@@ -37219,7 +37858,12 @@
       "active": true,
       "isFeatured": false,
       "curatedBy": "inci-import",
-      "curatedAt": "2026-09-17"
+      "curatedAt": "2026-09-17",
+      "volumeSource": {
+        "url": "https://www.dodoskin.com/products/medicube-pdrn-pink-peptide-serum-30ml",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m483",
@@ -37654,7 +38298,7 @@
         "Soluble Collagen"
       ],
       "barcode": null,
-      "volumeMl": null,
+      "volumeMl": 55,
       "inciSourceUrl": "https://incidecoder.com/products/medicube-triple-collagen-serum",
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
@@ -37665,7 +38309,12 @@
       "active": true,
       "isFeatured": false,
       "curatedBy": "inci-import",
-      "curatedAt": "2026-09-17"
+      "curatedAt": "2026-09-17",
+      "volumeSource": {
+        "url": "https://medicube.us/products/triple-collagen-serum",
+        "retrievedAt": "2026-10-20",
+        "type": "site officiel de la marque"
+      }
     },
     {
       "id": "m484",
@@ -38103,7 +38752,13 @@
       "isFeatured": false,
       "curatedBy": "inci-import",
       "curatedAt": "2026-09-17",
-      "price": null
+      "price": null,
+      "netWeightG": 55,
+      "netWeightSource": {
+        "url": "https://www.yesstyle.com/en/medicube-deep-vita-c-capsule-cream-55g/info.html/pid.1129945243",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m485",
@@ -38583,7 +39238,13 @@
       "isFeatured": false,
       "curatedBy": "inci-import",
       "curatedAt": "2026-09-17",
-      "price": null
+      "price": null,
+      "netWeightG": 155,
+      "netWeightSource": {
+        "url": "https://www.asos.com/medicube/medicube-zero-pore-pad-20-155g-70pcs/prd/208486130",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m486",
@@ -38863,7 +39524,7 @@
         "Collagen Extract"
       ],
       "barcode": null,
-      "volumeMl": null,
+      "volumeMl": 75,
       "inciSourceUrl": "https://incidecoder.com/products/medicube-collagen-night-wrapping-mask",
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
@@ -38874,7 +39535,12 @@
       "active": true,
       "isFeatured": false,
       "curatedBy": "inci-import",
-      "curatedAt": "2026-09-17"
+      "curatedAt": "2026-09-17",
+      "volumeSource": {
+        "url": "https://www.bleulibellule.com/masque-nuit-collagen-night-wrapping-mask-hydratation-elasticite-regeneration-mdc0058.html",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m487",
@@ -39228,7 +39894,7 @@
         "Acetyl Hexapeptide-8"
       ],
       "barcode": null,
-      "volumeMl": null,
+      "volumeMl": 100,
       "inciSourceUrl": "https://incidecoder.com/products/medicube-pdnr-pink-glutathione-serum-mist",
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
@@ -39239,7 +39905,12 @@
       "active": true,
       "isFeatured": false,
       "curatedBy": "inci-import",
-      "curatedAt": "2026-09-17"
+      "curatedAt": "2026-09-17",
+      "volumeSource": {
+        "url": "https://www.iherb.com/pr/medicube-pdrn-pink-glutathione-serum-mist-3-38-fl-oz-100-ml/148692",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m488",
@@ -39726,7 +40397,13 @@
       "active": true,
       "isFeatured": false,
       "curatedBy": "inci-import",
-      "curatedAt": "2026-09-17"
+      "curatedAt": "2026-09-17",
+      "netWeightG": 112,
+      "netWeightSource": {
+        "url": "https://www.iherb.com/pr/medicube-pdrn-pink-collagen-gel-beauty-mask-4-sheets-0-98-oz-28-g-each/154363",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m490",
@@ -40288,7 +40965,7 @@
         "Hyaluronic Acid"
       ],
       "barcode": null,
-      "volumeMl": null,
+      "volumeMl": 30,
       "inciSourceUrl": "https://incidecoder.com/products/anua-niacinamide-10-txa-4-serum",
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
@@ -40299,7 +40976,12 @@
       "active": true,
       "isFeatured": false,
       "curatedBy": "inci-import",
-      "curatedAt": "2026-09-17"
+      "curatedAt": "2026-09-17",
+      "volumeSource": {
+        "url": "https://www.skincupid.us/products/anua-niacinamide-10-txa-4-dark-spot-correcting-serum-30ml",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m493",
@@ -40699,7 +41381,7 @@
         "Arbutin"
       ],
       "barcode": null,
-      "volumeMl": null,
+      "volumeMl": 250,
       "inciSourceUrl": "https://incidecoder.com/products/anua-rice-70-glow-milky-toner",
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
@@ -40711,7 +41393,12 @@
       "isFeatured": false,
       "curatedBy": "inci-import",
       "curatedAt": "2026-09-17",
-      "priceIsIndicative": true
+      "priceIsIndicative": true,
+      "volumeSource": {
+        "url": "https://us.oliveyoung.com/products/UA66829295",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m494",
@@ -40869,7 +41556,7 @@
         "Sodium Hyaluronate"
       ],
       "barcode": null,
-      "volumeMl": null,
+      "volumeMl": 30,
       "inciSourceUrl": "https://incidecoder.com/products/anua-heartleaf-80-moisture-soothing-ampoule",
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
@@ -40880,7 +41567,12 @@
       "active": true,
       "isFeatured": false,
       "curatedBy": "inci-import",
-      "curatedAt": "2026-09-17"
+      "curatedAt": "2026-09-17",
+      "volumeSource": {
+        "url": "https://www.iherb.com/pr/anua-heartleaf-80-moisture-soothing-ampoule-1-01-fl-oz-30-ml/131862",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m495",
@@ -41243,7 +41935,7 @@
         "Centella Asiatica Root Extract"
       ],
       "barcode": null,
-      "volumeMl": null,
+      "volumeMl": 30,
       "inciSourceUrl": "https://incidecoder.com/products/anua-azelaic-acid-10-hyaluron-redness-soothing-serum",
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
@@ -41254,7 +41946,12 @@
       "active": true,
       "isFeatured": false,
       "curatedBy": "inci-import",
-      "curatedAt": "2026-09-17"
+      "curatedAt": "2026-09-17",
+      "volumeSource": {
+        "url": "https://www.cultbeauty.com/p/anua-azelaic-acid-10-hyaluron-redness-soothing-serum-30ml/16674999/",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m496",
@@ -41729,7 +42426,7 @@
         "Asiatic Acid"
       ],
       "barcode": null,
-      "volumeMl": null,
+      "volumeMl": 50,
       "inciSourceUrl": "https://incidecoder.com/products/vt-cosmetics-reedle-shot-100",
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
@@ -41740,7 +42437,12 @@
       "active": true,
       "isFeatured": false,
       "curatedBy": "inci-import",
-      "curatedAt": "2026-09-17"
+      "curatedAt": "2026-09-17",
+      "volumeSource": {
+        "url": "https://www.skincupid.us/products/vt-cosmetics-vt-reedle-shot-100-50ml",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m498",
@@ -43012,7 +43714,7 @@
         "Sodium Hyaluronate"
       ],
       "barcode": null,
-      "volumeMl": null,
+      "volumeMl": 50,
       "inciSourceUrl": "https://incidecoder.com/products/vt-cosmetics-pdrn-capsule-cream-100",
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
@@ -43023,7 +43725,12 @@
       "active": true,
       "isFeatured": false,
       "curatedBy": "inci-import",
-      "curatedAt": "2026-09-17"
+      "curatedAt": "2026-09-17",
+      "volumeSource": {
+        "url": "https://www.skincupid.us/products/vt-pdrn-capsule-cream-100-50ml",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m501",
@@ -43459,7 +44166,7 @@
         "Bakuchiol"
       ],
       "barcode": null,
-      "volumeMl": null,
+      "volumeMl": 50,
       "inciSourceUrl": "https://incidecoder.com/products/vt-cosmetics-vt-reti-a-reedle-shot-100",
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
@@ -43470,7 +44177,12 @@
       "active": true,
       "isFeatured": false,
       "curatedBy": "inci-import",
-      "curatedAt": "2026-09-17"
+      "curatedAt": "2026-09-17",
+      "volumeSource": {
+        "url": "https://www.skincupid.us/products/vt-reti-a-reedle-shot-100",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m502",
@@ -43843,7 +44555,7 @@
         "Palmitoyl Tripeptide-5"
       ],
       "barcode": null,
-      "volumeMl": null,
+      "volumeMl": 30,
       "inciSourceUrl": "https://incidecoder.com/products/beauty-of-joseon-revive-eye-serum-ginseng-retinal",
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
@@ -43854,7 +44566,12 @@
       "active": true,
       "isFeatured": false,
       "curatedBy": "inci-import",
-      "curatedAt": "2026-09-17"
+      "curatedAt": "2026-09-17",
+      "volumeSource": {
+        "url": "https://beautyofjoseon.com/products/revive-eye-serum-ginseng-retinal",
+        "retrievedAt": "2026-10-20",
+        "type": "site officiel de la marque"
+      }
     },
     {
       "id": "m503",
@@ -44287,7 +45004,7 @@
         "Phytosphingosine"
       ],
       "barcode": null,
-      "volumeMl": null,
+      "volumeMl": 50,
       "inciSourceUrl": "https://incidecoder.com/products/beauty-of-joseon-dynasty-cream",
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
@@ -44299,7 +45016,12 @@
       "isFeatured": false,
       "curatedBy": "inci-import",
       "curatedAt": "2026-09-17",
-      "priceIsIndicative": true
+      "priceIsIndicative": true,
+      "volumeSource": {
+        "url": "https://www.iherb.com/pr/beauty-of-joseon-dynasty-cream-1-69-fl-oz-50-ml/106490",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m504",
@@ -44709,7 +45431,7 @@
       ],
       "vitaminCPercentage": 10,
       "barcode": null,
-      "volumeMl": null,
+      "volumeMl": 30,
       "inciSourceUrl": "https://incidecoder.com/products/beauty-of-joseon-light-on-serum-centella-vita-c-3",
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
@@ -44720,7 +45442,12 @@
       "active": true,
       "isFeatured": false,
       "curatedBy": "inci-import",
-      "curatedAt": "2026-09-17"
+      "curatedAt": "2026-09-17",
+      "volumeSource": {
+        "url": "https://www.iherb.com/pr/beauty-of-joseon-light-on-serum-centella-vita-c-1-01-fl-oz-30-ml/131918",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m505",
@@ -45045,7 +45772,7 @@
         "Sodium Hyaluronate"
       ],
       "barcode": null,
-      "volumeMl": null,
+      "volumeMl": 30,
       "inciSourceUrl": "https://incidecoder.com/products/beauty-of-joseon-repair-serum-2",
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
@@ -45057,7 +45784,12 @@
       "isFeatured": false,
       "curatedBy": "inci-import",
       "curatedAt": "2026-09-17",
-      "priceIsIndicative": true
+      "priceIsIndicative": true,
+      "volumeSource": {
+        "url": "https://www.iherb.com/pr/beauty-of-joseon-revive-serum-ginseng-snail-mucin-1-01-fl-oz-30-ml/115658",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m506",
@@ -45501,7 +46233,7 @@
         "Allantoin"
       ],
       "barcode": null,
-      "volumeMl": null,
+      "volumeMl": 150,
       "inciSourceUrl": "https://incidecoder.com/products/cosrx-the-6-peptide-skin-booster-serum",
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
@@ -45512,7 +46244,12 @@
       "active": true,
       "isFeatured": false,
       "curatedBy": "inci-import",
-      "curatedAt": "2026-09-17"
+      "curatedAt": "2026-09-17",
+      "volumeSource": {
+        "url": "https://www.lookfantastic.com/p/cosrx-the-6-peptide-skin-booster-serum-150ml/15212379/",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m507",
@@ -45965,7 +46702,7 @@
         "3-O-Ethyl Ascorbic Acid"
       ],
       "barcode": null,
-      "volumeMl": null,
+      "volumeMl": 20,
       "inciSourceUrl": "https://incidecoder.com/products/cosrx-the-retinol-0-1-cream-2",
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
@@ -45976,7 +46713,12 @@
       "active": true,
       "isFeatured": false,
       "curatedBy": "inci-import",
-      "curatedAt": "2026-09-17"
+      "curatedAt": "2026-09-17",
+      "volumeSource": {
+        "url": "https://www.cosrx.com/products/the-retinol-0-1-cream-1",
+        "retrievedAt": "2026-10-20",
+        "type": "site officiel de la marque"
+      }
     },
     {
       "id": "m508",
@@ -46834,7 +47576,7 @@
       ],
       "vitaminCPercentage": 23,
       "barcode": null,
-      "volumeMl": null,
+      "volumeMl": 20,
       "inciSourceUrl": "https://incidecoder.com/products/cosrx-advanced-the-vitamin-c-23-serum",
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
@@ -46845,7 +47587,12 @@
       "active": true,
       "isFeatured": false,
       "curatedBy": "inci-import",
-      "curatedAt": "2026-09-17"
+      "curatedAt": "2026-09-17",
+      "volumeSource": {
+        "url": "https://www.cosrx.com/products/the-vitamin-c-23-serum",
+        "retrievedAt": "2026-10-20",
+        "type": "site officiel de la marque"
+      }
     },
     {
       "id": "m510",
@@ -47798,7 +48545,7 @@
         "Ceramide NP"
       ],
       "barcode": null,
-      "volumeMl": null,
+      "volumeMl": 50,
       "inciSourceUrl": "https://incidecoder.com/products/skin1004-madagascar-centella-hyalu-cica-blue-serum",
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
@@ -47809,7 +48556,12 @@
       "active": true,
       "isFeatured": false,
       "curatedBy": "inci-import",
-      "curatedAt": "2026-09-17"
+      "curatedAt": "2026-09-17",
+      "volumeSource": {
+        "url": "https://www.skincupid.us/products/skin1004-madagascar-centella-hyalu-cica-blue-serum-50ml",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m514",
@@ -49594,7 +50346,7 @@
         "Adenosine"
       ],
       "barcode": null,
-      "volumeMl": null,
+      "volumeMl": 50,
       "inciSourceUrl": "https://incidecoder.com/products/numbuzin-no-5-vitamin-concentrated-serum",
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
@@ -49605,7 +50357,12 @@
       "active": true,
       "isFeatured": false,
       "curatedBy": "inci-import",
-      "curatedAt": "2026-09-17"
+      "curatedAt": "2026-09-17",
+      "volumeSource": {
+        "url": "https://kbeautyworld.com/products/numbuzin-no-5-vitamin-concentrated-serum",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m518",
@@ -49901,7 +50658,7 @@
         "Adenosine"
       ],
       "barcode": null,
-      "volumeMl": null,
+      "volumeMl": 50,
       "inciSourceUrl": "https://incidecoder.com/products/numbuzin-no-3-skin-softening-serum",
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
@@ -49912,7 +50669,12 @@
       "active": true,
       "isFeatured": false,
       "curatedBy": "inci-import",
-      "curatedAt": "2026-09-17"
+      "curatedAt": "2026-09-17",
+      "volumeSource": {
+        "url": "https://www.iherb.com/pr/numbuzin-no-3-skin-softening-serum-1-69-fl-oz-50-ml/116646",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m519",
@@ -50906,7 +51668,7 @@
         "Madecassoside"
       ],
       "barcode": null,
-      "volumeMl": null,
+      "volumeMl": 50,
       "inciSourceUrl": "https://incidecoder.com/products/torriden-dive-in-low-molecular-hyaluronic-acid-serum-2026",
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
@@ -50917,7 +51679,12 @@
       "active": true,
       "isFeatured": false,
       "curatedBy": "inci-import",
-      "curatedAt": "2026-09-17"
+      "curatedAt": "2026-09-17",
+      "volumeSource": {
+        "url": "https://www.koreanbeauty.com/products/torriden-dive-in-low-molecule-hyaluronic-acid-serum-50ml",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m522",
@@ -51357,7 +52124,7 @@
         "Sodium Ascorbyl Phosphate"
       ],
       "barcode": null,
-      "volumeMl": null,
+      "volumeMl": 30,
       "inciSourceUrl": "https://incidecoder.com/products/torriden-cellmazing-vita-c-brightening-ampoule",
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
@@ -51368,7 +52135,12 @@
       "active": true,
       "isFeatured": false,
       "curatedBy": "inci-import",
-      "curatedAt": "2026-09-17"
+      "curatedAt": "2026-09-17",
+      "volumeSource": {
+        "url": "https://us.oliveyoung.com/products/UA97355840",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m524",
@@ -52170,7 +52942,7 @@
         "Palmitoyl Tetrapeptide-7"
       ],
       "barcode": null,
-      "volumeMl": null,
+      "volumeMl": 15,
       "inciSourceUrl": "https://incidecoder.com/products/celimax-the-vita-a-retinal-shot-tightening-booster",
       "inciLastVerifiedAt": "2026-09-17",
       "inciVerificationStatus": "verified",
@@ -52181,7 +52953,12 @@
       "active": true,
       "isFeatured": false,
       "curatedBy": "inci-import",
-      "curatedAt": "2026-09-17"
+      "curatedAt": "2026-09-17",
+      "volumeSource": {
+        "url": "https://www.stylevana.com/en_US/celimax-the-vita-a-retinal-shot-tightening-booster-15ml26439.html",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
+      }
     },
     {
       "id": "m526",
@@ -60706,6 +61483,12 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
+      },
+      "netWeightG": 20,
+      "netWeightSource": {
+        "url": "https://www.cultbeauty.com/p/laneige-lip-sleeping-mask-20g-various-options/13319812/",
+        "retrievedAt": "2026-10-20",
+        "type": "fiche produit d'un revendeur"
       }
     },
     {
@@ -62506,6 +63289,376 @@
       "curatedBy": "claude",
       "curatedAt": "2026-10-06",
       "notes": "Lien (ASIN) relevé sur Amazon.fr le 2026-10-06 ; prix/avis indicatifs. "
+    },
+    {
+      "id": "m603",
+      "name": "Collagen Specialist Age Correcting Serum",
+      "brand": "L'Oréal Paris",
+      "category": "serum",
+      "imageUrl": null,
+      "amazonUrl": "https://www.amazon.fr/s?k=L'Or%C3%A9al%20Paris%20Collagen%20Specialist%20Age%20Correcting%20Serum%2030ml&tag=glowupapp-21",
+      "price": 10.3,
+      "rating": null,
+      "reviews": null,
+      "description": "Sérum visage L'Oréal Paris, 30 ml.",
+      "badge": null,
+      "concernTags": [],
+      "ingredientTags": [
+        "adenosine",
+        "peptides"
+      ],
+      "isFeatured": false,
+      "active": false,
+      "volumeMl": 30,
+      "volumeSource": {
+        "url": "https://www.notino.fr/loreal-paris/collagen-specialist-age-correcting-serum-serum-visage-rajeunissant/",
+        "retrievedAt": "2026-10-20",
+        "note": "vendu aussi sous le nom « Collagen Expert »"
+      },
+      "inciRaw": "Aqua/Water, Bifida Ferment Lysate, Glycerin, Alcohol Denat, Dimethicone, Hydroxyethylpiperazine Ethane Sulfonic Acid, Hydrolyzed Soy Protein, Adenosine, Faex Extract/Yeast Extract, Hydroxyacetophenone, Palmitoyl Tetrapeptide-7, Palmitoyl Tripeptide-1, Sodium Hyaluronate, Sodium Hydroxide, Trisodium Ethylenediamine Disuccinate, Ascorbyl Glucoside, Octyldodecanol, Acetic Acid, Ammonium Polyacryloyldimethyl Taurate, Butylene Glycol, Caprylyl Glycol, Carbomer, Ci 77891/Titanium Dioxide, Lactic Acid, Mica, PEG-20 Methyl Glucose Sesquistearate, Pentylene Glycol, Polysorbate 20, Sodium Lactate, Tin Oxide, Tocopherol, Xanthan Gum, Phenoxyethanol, Sodium Benzoate, Parfum/Fragrance",
+      "inciNormalized": [
+        "aqua/water",
+        "bifida ferment lysate",
+        "glycerin",
+        "alcohol denat",
+        "dimethicone",
+        "hydroxyethylpiperazine ethane sulfonic acid",
+        "hydrolyzed soy protein",
+        "adenosine",
+        "faex extract/yeast extract",
+        "hydroxyacetophenone",
+        "palmitoyl tetrapeptide-7",
+        "palmitoyl tripeptide-1",
+        "sodium hyaluronate",
+        "sodium hydroxide",
+        "trisodium ethylenediamine disuccinate",
+        "ascorbyl glucoside",
+        "octyldodecanol",
+        "acetic acid",
+        "ammonium polyacryloyldimethyl taurate",
+        "butylene glycol",
+        "caprylyl glycol",
+        "carbomer",
+        "ci 77891/titanium dioxide",
+        "lactic acid",
+        "mica",
+        "peg-20 methyl glucose sesquistearate",
+        "pentylene glycol",
+        "polysorbate 20",
+        "sodium lactate",
+        "tin oxide",
+        "tocopherol",
+        "xanthan gum",
+        "phenoxyethanol",
+        "sodium benzoate",
+        "parfum/fragrance"
+      ],
+      "inciStructured": [
+        {
+          "inci": "Aqua/Water",
+          "normalized": "aqua/water",
+          "position": 1,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Bifida Ferment Lysate",
+          "normalized": "bifida ferment lysate",
+          "position": 2,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Glycerin",
+          "normalized": "glycerin",
+          "position": 3,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Alcohol Denat",
+          "normalized": "alcohol denat",
+          "position": 4,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Dimethicone",
+          "normalized": "dimethicone",
+          "position": 5,
+          "family": "occlusive",
+          "function": "occlusif",
+          "isActive": false
+        },
+        {
+          "inci": "Hydroxyethylpiperazine Ethane Sulfonic Acid",
+          "normalized": "hydroxyethylpiperazine ethane sulfonic acid",
+          "position": 6,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Hydrolyzed Soy Protein",
+          "normalized": "hydrolyzed soy protein",
+          "position": 7,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Adenosine",
+          "normalized": "adenosine",
+          "position": 8,
+          "family": "antiage",
+          "function": "anti-rides",
+          "isActive": true
+        },
+        {
+          "inci": "Faex Extract/Yeast Extract",
+          "normalized": "faex extract/yeast extract",
+          "position": 9,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Hydroxyacetophenone",
+          "normalized": "hydroxyacetophenone",
+          "position": 10,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Palmitoyl Tetrapeptide-7",
+          "normalized": "palmitoyl tetrapeptide-7",
+          "position": 11,
+          "family": "peptide",
+          "function": "peptide",
+          "isActive": true
+        },
+        {
+          "inci": "Palmitoyl Tripeptide-1",
+          "normalized": "palmitoyl tripeptide-1",
+          "position": 12,
+          "family": "peptide",
+          "function": "peptide",
+          "isActive": true
+        },
+        {
+          "inci": "Sodium Hyaluronate",
+          "normalized": "sodium hyaluronate",
+          "position": 13,
+          "family": "ha",
+          "function": "humectant",
+          "isActive": true
+        },
+        {
+          "inci": "Sodium Hydroxide",
+          "normalized": "sodium hydroxide",
+          "position": 14,
+          "family": "ph",
+          "function": "pH",
+          "isActive": false
+        },
+        {
+          "inci": "Trisodium Ethylenediamine Disuccinate",
+          "normalized": "trisodium ethylenediamine disuccinate",
+          "position": 15,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Ascorbyl Glucoside",
+          "normalized": "ascorbyl glucoside",
+          "position": 16,
+          "family": "vitc",
+          "function": "vitamine C",
+          "isActive": true
+        },
+        {
+          "inci": "Octyldodecanol",
+          "normalized": "octyldodecanol",
+          "position": 17,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Acetic Acid",
+          "normalized": "acetic acid",
+          "position": 18,
+          "family": "ph",
+          "function": "pH",
+          "isActive": false
+        },
+        {
+          "inci": "Ammonium Polyacryloyldimethyl Taurate",
+          "normalized": "ammonium polyacryloyldimethyl taurate",
+          "position": 19,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Butylene Glycol",
+          "normalized": "butylene glycol",
+          "position": 20,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Caprylyl Glycol",
+          "normalized": "caprylyl glycol",
+          "position": 21,
+          "family": "emollient",
+          "function": "émollient",
+          "isActive": false
+        },
+        {
+          "inci": "Carbomer",
+          "normalized": "carbomer",
+          "position": 22,
+          "family": "texture",
+          "function": "texture",
+          "isActive": false
+        },
+        {
+          "inci": "Ci 77891/Titanium Dioxide",
+          "normalized": "ci 77891/titanium dioxide",
+          "position": 23,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Lactic Acid",
+          "normalized": "lactic acid",
+          "position": 24,
+          "family": "aha",
+          "function": "exfoliant AHA",
+          "isActive": true
+        },
+        {
+          "inci": "Mica",
+          "normalized": "mica",
+          "position": 25,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "PEG-20 Methyl Glucose Sesquistearate",
+          "normalized": "peg-20 methyl glucose sesquistearate",
+          "position": 26,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Pentylene Glycol",
+          "normalized": "pentylene glycol",
+          "position": 27,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Polysorbate 20",
+          "normalized": "polysorbate 20",
+          "position": 28,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Sodium Lactate",
+          "normalized": "sodium lactate",
+          "position": 29,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Tin Oxide",
+          "normalized": "tin oxide",
+          "position": 30,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Tocopherol",
+          "normalized": "tocopherol",
+          "position": 31,
+          "family": "antioxidant",
+          "function": "antioxydant",
+          "isActive": true
+        },
+        {
+          "inci": "Xanthan Gum",
+          "normalized": "xanthan gum",
+          "position": 32,
+          "family": "texture",
+          "function": "texture",
+          "isActive": false
+        },
+        {
+          "inci": "Phenoxyethanol",
+          "normalized": "phenoxyethanol",
+          "position": 33,
+          "family": "preservative",
+          "function": "conservateur",
+          "isActive": false
+        },
+        {
+          "inci": "Sodium Benzoate",
+          "normalized": "sodium benzoate",
+          "position": 34,
+          "family": "preservative",
+          "function": "conservateur",
+          "isActive": false
+        },
+        {
+          "inci": "Parfum/Fragrance",
+          "normalized": "parfum/fragrance",
+          "position": 35,
+          "family": "fragrance",
+          "function": "parfum",
+          "isActive": false
+        }
+      ],
+      "actives": [
+        "Adenosine",
+        "Palmitoyl Tetrapeptide-7",
+        "Palmitoyl Tripeptide-1",
+        "Sodium Hyaluronate",
+        "Ascorbyl Glucoside",
+        "Lactic Acid",
+        "Tocopherol"
+      ],
+      "inciSourceUrl": "https://incidecoder.com/products/loreal-collagen-specialist-age-correcting-serum",
+      "inciLastVerifiedAt": "2026-10-20",
+      "inciVerificationStatus": "verified",
+      "dupeEligible": true,
+      "needsReview": true,
+      "inciMatch": {
+        "source": "incidecoder",
+        "matchedTitle": "L'Oreal Collagen Specialist Age Correcting Serum",
+        "confidence": "moyenne",
+        "phase": "ajout-2026-10-20",
+        "note": "prix, photo et lien d'achat à renseigner avant activation"
+      },
+      "priceNote": "Notino, remise de 20 % le 20 octobre 2026",
+      "shopUrl": "https://www.notino.fr/loreal-paris/collagen-specialist-age-correcting-serum-serum-visage-rajeunissant/p-16269463/",
+      "compositionCheck": "Liste INCIDecoder identique (35 ingrédients, même ordre) à celle de Que Choisir pour « L'Oréal Expert collagène – Sérum anti-âge 30 ml » ; page Notino et site L'Oréal Paris inaccessibles (403)."
     }
   ]
 }

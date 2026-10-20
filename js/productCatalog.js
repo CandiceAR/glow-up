@@ -13,7 +13,7 @@ const ProductCatalog = (() => {
   let _dupeMap = {};
   async function _loadDupes() {
     try {
-      const r = await fetch('data/dupes.json?v=4');
+      const r = await fetch('data/dupes.json?v=5');
       if (!r.ok) return;
       const d = await r.json();
       (d.dupes || []).forEach(x => { _dupeMap[x.dupeId] = x; });
@@ -54,7 +54,7 @@ const ProductCatalog = (() => {
         // 2a. JSON statique — toujours chargé (source de vérité pour les nouveaux produits)
         let jsonProducts = [];
         try {
-          const res = await fetch('data/products-manual.json?v=111');
+          const res = await fetch('data/products-manual.json?v=112');
           if (res.ok) {
             const data = await res.json();
             jsonProducts = Array.isArray(data) ? data : (data.products || []);
