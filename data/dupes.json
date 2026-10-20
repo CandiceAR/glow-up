@@ -434,7 +434,8 @@
       "dupePrice": 20.9,
       "savings": 14.1,
       "savingsPct": 40,
-      "reason": "Niacinamide + vitamine C éclat"
+      "reason": "Niacinamide + vitamine C éclat",
+      "level": "close"
     },
     {
       "hero": {

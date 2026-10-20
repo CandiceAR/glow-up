@@ -13,7 +13,7 @@ const ProductCatalog = (() => {
   let _dupeMap = {};
   async function _loadDupes() {
     try {
-      const r = await fetch('data/dupes.json?v=3');
+      const r = await fetch('data/dupes.json?v=4');
       if (!r.ok) return;
       const d = await r.json();
       (d.dupes || []).forEach(x => { _dupeMap[x.dupeId] = x; });
@@ -54,7 +54,7 @@ const ProductCatalog = (() => {
         // 2a. JSON statique — toujours chargé (source de vérité pour les nouveaux produits)
         let jsonProducts = [];
         try {
-          const res = await fetch('data/products-manual.json?v=110');
+          const res = await fetch('data/products-manual.json?v=111');
           if (res.ok) {
             const data = await res.json();
             jsonProducts = Array.isArray(data) ? data : (data.products || []);
@@ -369,7 +369,7 @@ const ProductCatalog = (() => {
     if (cur && typeof MainActive !== 'undefined' && cur.hero) {
       const heroFam = MainActive.fromName(cur.hero.name);
       const own = MainActive.resolve({ name: product.name, tags: product.ingredientTags });
-      if (heroFam && own && own.family === heroFam) return { status: 'isDupe', hero: cur.hero, reason: cur.reason, mainLabel: own.label };
+      if (heroFam && own && own.family === heroFam) return { status: 'isDupe', hero: cur.hero, reason: cur.reason, mainLabel: own.label, level: cur.level || 'dupe' };
     }
     if (product.price == null) return { status: 'none' };
     // Override curé prioritaire (Lot Dupe 2) — même règle : l'actif principal doit être le même
@@ -411,6 +411,13 @@ const ProductCatalog = (() => {
     const r = findDupe(product);
     if (r.status === 'none') return '';
     // Ce produit EST le dupe d'un produit culte → mise en valeur (non gated)
+    if (r.status === 'isDupe' && r.level === 'close') {
+      // Règle du prix au millilitre : un produit pas moins cher au ml que la référence n'est jamais un « dupe »
+      return `<div class="dupe-block dupe-block--is">
+        <div class="dupe-head"><span class="dupe-badge">≈ Alternative proche</span></div>
+        <p class="dupe-is-text">Alternative proche de <strong>${r.hero.brand} ${r.hero.name}</strong> : même actif principal (${r.mainLabel}), mais pas moins chère au millilitre — ce n'est donc pas présenté comme un dupe.</p>
+      </div>`;
+    }
     if (r.status === 'isDupe') {
       return `<div class="dupe-block dupe-block--is">
         <div class="dupe-head"><span class="dupe-badge">💸 C'est un dupe culte</span></div>
