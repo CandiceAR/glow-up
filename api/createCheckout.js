@@ -49,6 +49,12 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST')    return res.status(405).json({ error: 'Method not allowed' });
 
+  // Suppression de compte (Apple 5.1.1) : on réutilise cette fonction (limite de 12 fonctions Vercel).
+  if (req.body && req.body.mode === 'deleteAccount') {
+    const out = await require('../lib/accountDelete').handle(req.body);
+    return res.status(out.status).json(out.json);
+  }
+
   try {
     const { priceKey, uid, email } = req.body || {};
     const priceId = PRICE_IDS[priceKey];

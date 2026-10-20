@@ -515,6 +515,7 @@ Si elle demande un actif non adapté (ex. rétinol), refuse AVEC BIENVEILLANCE e
             </button>
           </div>
         </div>
+        <p class="coach-disclaimer">Conseils cosmétiques, sans valeur médicale.</p>
       </div>`;
   }
 
@@ -560,6 +561,7 @@ Si elle demande un actif non adapté (ex. rétinol), refuse AVEC BIENVEILLANCE e
               </div>`
           }
         </div>
+        <p class="coach-disclaimer">Conseils cosmétiques, sans valeur médicale.</p>
       </div>`;
   }
 

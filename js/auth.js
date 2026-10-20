@@ -163,6 +163,21 @@ const Auth = (() => {
     if (!confirm('Supprimer définitivement ton compte et toutes tes données ? Cette action est irréversible.')) return;
     const uid = user.uid;
     try {
+      // 1) Serveur : détache les scans et produits ajoutés (le lien avec toi est retiré).
+      //    Si ça échoue, on s'arrête : on ne supprime rien à moitié.
+      try {
+        const idToken = await user.getIdToken(true);
+        const r = await fetch(apiUrl('/api/createCheckout'), {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode: 'deleteAccount', idToken })
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+      } catch (e) {
+        console.error('[Auth] détachement des données:', e.message);
+        showToast('La suppression n\'a pas pu aboutir. Vérifie ta connexion et réessaie.', 'error', 5000);
+        return;
+      }
+      // 2) Profil et suivi (users/{uid}), puis le compte de connexion
       try {
         if (typeof firebase !== 'undefined' && firebase.firestore) {
           await firebase.firestore().collection('users').doc(uid).delete();
@@ -363,6 +378,15 @@ const Auth = (() => {
     }
   }
 
+  // Accès caché aux pages de test (7 appuis rapides sur « Mon profil ») — pas de lien visible
+  let _labTaps = 0, _labTimer = null;
+  function _labTap() {
+    _labTaps++;
+    clearTimeout(_labTimer);
+    _labTimer = setTimeout(() => { _labTaps = 0; }, 2000);
+    if (_labTaps >= 7) { _labTaps = 0; window.location.href = '/lab/camera.html'; }
+  }
+
   function openProfileMenu() {
     const { displayName, email } = AppState.user;
     const profile = typeof RoutineSaver !== 'undefined' ? RoutineSaver.loadProfile() : null;
@@ -399,7 +423,7 @@ const Auth = (() => {
     const html = `
       <button class="modal-close" onclick="closeModal()">×</button>
       <div class="auth-modal">
-        <h2>Mon profil</h2>
+        <h2 onclick="Auth._labTap()">Mon profil</h2>
         <p class="profile-email">${displayName || email}</p>
         ${recapHtml}
         ${ambassadorHtml}
@@ -628,7 +652,7 @@ const Auth = (() => {
     } catch (e) { console.warn('[Auth] Analytics non initialisé:', e.message); }
   }
 
-  return { init, signInWithGoogle, signInWithApple, deleteAccount, signInWithEmail, signOut, openAuthModal, continueFlow, submitEmail, submitLogin, submitRegister, submitReset, openProfileMenu, openJourneyAuthModal, journeyGoogle, journeyApple, submitJourney, startJourneyGuest, openRequiredAuthModal, _getFlowCallback, enableAnalytics };
+  return { _labTap, init, signInWithGoogle, signInWithApple, deleteAccount, signInWithEmail, signOut, openAuthModal, continueFlow, submitEmail, submitLogin, submitRegister, submitReset, openProfileMenu, openJourneyAuthModal, journeyGoogle, journeyApple, submitJourney, startJourneyGuest, openRequiredAuthModal, _getFlowCallback, enableAnalytics };
 
 })();
 

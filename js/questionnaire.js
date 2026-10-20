@@ -1099,8 +1099,12 @@ const Questionnaire = (() => {
         <button class="btn-orange-cta ap-continue" onclick="Questionnaire.showSkinDiagnostic()">Voir mon diagnostic de peau →</button>
         <button class="ap-continue-sub" onclick="Questionnaire.next()">Continuer vers ma routine →</button>
       </div>
+      ${_MED_NOTE}
     </div>`;
   }
+
+  // Mention « pas un avis médical » (règle 1.4.1 d'Apple) — affichée sous chaque résultat d'analyse
+  const _MED_NOTE = `<p class="diag-disclaimer"><strong>Indicateurs cosmétiques, à titre informatif.</strong> Glow Up n'est pas un dispositif médical : il ne pose aucun diagnostic et ne remplace pas l'avis d'un médecin ou d'un dermatologue. Si une marque, un grain de beauté ou une irritation te préoccupe ou change, parles-en à un professionnel de santé.</p>`;
 
   // ── Vue 2 : diagnostic de peau détaillé ──
   function _renderSkinDiagnostic(photo) {
@@ -1129,6 +1133,7 @@ const Questionnaire = (() => {
         <button class="btn-orange-cta ap-continue" onclick="Questionnaire.next()">Continuer vers ma routine →</button>
         <button class="ap-continue-sub" onclick="Questionnaire.retakePhoto()">Refaire l'analyse photo</button>
       </div>
+      ${_MED_NOTE}
     </div>`;
   }
 

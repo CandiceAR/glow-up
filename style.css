@@ -3216,12 +3216,18 @@ em { font-style: italic; color: var(--label); }
 }
 .diag-disclaimer {
   text-align: center;
+  font-size: 0.75rem;
+  color: var(--muted);
+  opacity: 0.9;
+  max-width: 520px;
+  margin: 16px auto 0;
+  line-height: 1.5;
+}
+.coach-disclaimer {
+  text-align: center;
   font-size: 0.7rem;
   color: var(--muted);
-  opacity: 0.7;
-  max-width: 520px;
-  margin: 0 auto;
-  line-height: 1.5;
+  margin: 4px 12px 8px;
 }
 
 /* ── Empty / error state ── */

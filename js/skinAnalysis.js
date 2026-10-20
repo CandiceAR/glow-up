@@ -3612,7 +3612,7 @@ const SkinAnalysis = (() => {
           </button>
         </div>
 
-        <p class="diag-disclaimer">Analyse colorimétrique locale par MediaPipe — indicatif, non médical.</p>
+        <p class="diag-disclaimer"><strong>Indicateurs cosmétiques, à titre informatif.</strong> Glow Up n'est pas un dispositif médical : il ne pose aucun diagnostic et ne remplace pas l'avis d'un médecin ou d'un dermatologue. Si une marque, un grain de beauté ou une irritation te préoccupe ou change, parles-en à un professionnel de santé.</p>
       </div>`;
 
     // Phase 2 — overlay zones sur la photo

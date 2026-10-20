@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Test caméra · Glow Up</title>
+<style>
+  :root { --bg:#F5ECE0; --ink:#3A2318; --muted:#8A6E58; --accent:#B4482E; --ok:#2f7d4f; --ko:#b3261e; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+         padding:16px; padding-top:calc(16px + env(safe-area-inset-top, 0px)); padding-bottom:calc(32px + env(safe-area-inset-bottom, 0px)); }
+  h1 { font-size:1.3rem; margin:0 0 4px; }
+  p.sub { color:var(--muted); margin:0 0 16px; font-size:.9rem; line-height:1.4; }
+  .grid { display:grid; gap:10px; margin-bottom:16px; }
+  button { background:var(--accent); color:#fff; border:0; border-radius:28px; padding:14px 20px; font-size:1rem; font-weight:600; }
+  button.ghost { background:transparent; color:var(--accent); border:1.5px solid var(--accent); }
+  .cam { width:100%; max-width:360px; aspect-ratio:3/4; background:#000; border-radius:16px; overflow:hidden; margin:0 auto 16px; display:none; }
+  .cam video { width:100%; height:100%; object-fit:cover; transform:scaleX(-1); }
+  ul { list-style:none; margin:0; padding:0; display:grid; gap:6px; }
+  li { background:#fff; border-radius:10px; padding:9px 12px; font-size:.88rem; line-height:1.35; }
+  li.ok { border-left:4px solid var(--ok); }
+  li.ko { border-left:4px solid var(--ko); }
+  li.info { border-left:4px solid var(--muted); }
+  a { color:var(--accent); }
+</style>
+</head>
+<body>
+<h1>Test caméra et fonctions</h1>
+<p class="sub">Page de test réservée à Candice. Appuie sur chaque bouton, puis fais une capture d'écran de la liste de résultats en bas.</p>
+
+<div class="grid">
+  <button id="bCam">1 · Tester la caméra</button>
+  <button id="bFace">2 · Suivi du visage (5 s) — tourne doucement la tête</button>
+  <button id="bVoice">3 · Tester la voix</button>
+  <button id="bShare">4 · Tester le partage d'une image</button>
+  <button id="bStore">5 · Tester le stockage local</button>
+  <button id="bStop" class="ghost">Arrêter la caméra</button>
+</div>
+
+<div class="cam" id="camBox"><video id="cam" autoplay muted playsinline></video></div>
+
+<h1 style="font-size:1.05rem">Résultats</h1>
+<ul id="out"></ul>
+<p class="sub" style="margin-top:16px"><a href="/">← Retour à Glow Up</a></p>
+
+<script type="module">
+const $ = id => document.getElementById(id);
+const out = $('out');
+function log(msg, state) {
+  const li = document.createElement('li');
+  li.className = state || 'info';
+  li.textContent = (state === 'ok' ? '✅ ' : state === 'ko' ? '❌ ' : '• ') + msg;
+  out.appendChild(li);
+}
+const secs = ms => Math.round(ms / 100) / 10;
+
+// ── Environnement ────────────────────────────────────────────
+const C = window.Capacitor;
+const native = !!(C && (typeof C.isNativePlatform === 'function' ? C.isNativePlatform() : (C.platform && C.platform !== 'web')));
+log('Dans l\'appli iPhone : ' + (native ? 'oui' : 'non (navigateur)'), 'info');
+log('Appareil : ' + navigator.userAgent, 'info');
+log('Connexion sécurisée (https) : ' + (window.isSecureContext ? 'oui' : 'non'), window.isSecureContext ? 'ok' : 'ko');
+log('Vibration : ' + (typeof navigator.vibrate === 'function' ? 'disponible' : 'non disponible (normal sur iPhone)'), 'info');
+
+// ── 1. Caméra ────────────────────────────────────────────────
+let stream = null;
+async function startCam() {
+  if (stream) return true;
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    log('Caméra : getUserMedia absent sur cet appareil', 'ko');
+    return false;
+  }
+  const t0 = performance.now();
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user', width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false
+    });
+  } catch (e) {
+    log('Caméra refusée ou bloquée : ' + (e.name || '') + ' ' + (e.message || ''), 'ko');
+    return false;
+  }
+  const v = $('cam');
+  v.srcObject = stream;
+  $('camBox').style.display = 'block';
+  try { await v.play(); } catch (e) { /* lecture auto déjà demandée */ }
+  await new Promise(r => { if (v.videoWidth) r(); else v.onloadedmetadata = () => r(); });
+  const track = stream.getVideoTracks()[0];
+  const s = track.getSettings ? track.getSettings() : {};
+  log('Caméra ouverte en ' + Math.round(performance.now() - t0) + ' ms — ' + v.videoWidth + '×' + v.videoHeight +
+      ' px, ' + (s.frameRate ? Math.round(s.frameRate) + ' images/s' : 'cadence inconnue'), 'ok');
+  const caps = track.getCapabilities ? track.getCapabilities() : {};
+  log('Réglage de l\'exposition par la page : ' + ('exposureMode' in caps ? 'possible' : 'non possible'), 'info');
+  return true;
+}
+function stopCam() {
+  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+  $('camBox').style.display = 'none';
+}
+$('bCam').onclick = () => startCam();
+$('bStop').onclick = () => { stopCam(); log('Caméra arrêtée', 'info'); };
+
+// ── 3. Voix ──────────────────────────────────────────────────
+function say(text) {
+  return new Promise(res => {
+    if (!('speechSynthesis' in window)) return res('absente');
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'fr-FR';
+    const fr = speechSynthesis.getVoices().filter(v => String(v.lang).toLowerCase().indexOf('fr') === 0);
+    if (fr[0]) u.voice = fr[0];
+    let started = false;
+    u.onstart = () => { started = true; };
+    u.onend = () => res('ok');
+    u.onerror = e => res('erreur ' + (e.error || ''));
+    setTimeout(() => res(started ? 'ok' : 'silence'), 6000);
+    speechSynthesis.speak(u);
+  });
+}
+$('bVoice').onclick = async () => {
+  if (!('speechSynthesis' in window)) { log('Voix : non disponible sur cet appareil', 'ko'); return; }
+  const fr = speechSynthesis.getVoices().filter(v => String(v.lang).toLowerCase().indexOf('fr') === 0);
+  log('Voix françaises trouvées : ' + fr.length + (fr[0] ? ' (' + fr[0].name + ')' : ''), fr.length ? 'ok' : 'info');
+  const r = await say('Tourne doucement à gauche. Parfait, maintenant à droite. C\'est terminé !');
+  log('Voix : ' + r + ' — l\'as-tu entendue ? (si non : vérifie que le mode silencieux est désactivé)', r === 'ok' ? 'ok' : 'ko');
+};
+
+// ── 2. Suivi du visage ───────────────────────────────────────
+const MP = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
+const MODEL = 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
+$('bFace').onclick = async () => {
+  if (!(await startCam())) return;
+  const t0 = performance.now();
+  let landmarker;
+  try {
+    const { FaceLandmarker, FilesetResolver } = await import(MP + '/vision_bundle.mjs');
+    const fileset = await FilesetResolver.forVisionTasks(MP + '/wasm');
+    const make = delegate => FaceLandmarker.createFromOptions(fileset, {
+      baseOptions: { modelAssetPath: MODEL, delegate }, runningMode: 'VIDEO', numFaces: 1
+    });
+    try { landmarker = await make('GPU'); log('Suivi du visage : mode GPU', 'ok'); }
+    catch (e) { landmarker = await make('CPU'); log('Suivi du visage : mode processeur (GPU indisponible)', 'info'); }
+  } catch (e) {
+    log('Suivi du visage impossible : ' + (e.message || e), 'ko');
+    return;
+  }
+  log('Chargement du modèle : ' + secs(performance.now() - t0) + ' s', 'info');
+
+  const v = $('cam');
+  say('Tourne doucement à gauche, puis à droite.');
+  const start = performance.now();
+  let frames = 0, lost = 0, min = 9, max = -9;
+  await new Promise(done => {
+    (function loop() {
+      const now = performance.now();
+      if (now - start > 5000) return done();
+      try {
+        const r = landmarker.detectForVideo(v, now);
+        frames++;
+        const lm = r.faceLandmarks && r.faceLandmarks[0];
+        if (!lm) lost++;
+        else {
+          const w = lm[454].x - lm[234].x;
+          if (w > 0.05) {
+            const idx = ((lm[1].x - lm[234].x) / w - 0.5) * 2;   // 0 = de face, ±1 = presque de profil
+            if (idx < min) min = idx;
+            if (idx > max) max = idx;
+          }
+        }
+      } catch (e) { lost++; }
+      requestAnimationFrame(loop);
+    })();
+  });
+  try { landmarker.close(); } catch (e) {}
+  const fps = Math.round(frames / 5);
+  log('Suivi : ' + fps + ' analyses/s, visage perdu sur ' + lost + ' image(s) sur ' + frames, fps >= 15 ? 'ok' : 'info');
+  if (min <= max) log('Rotation de la tête mesurée : de ' + min.toFixed(2) + ' à ' + max.toFixed(2) + ' (0 = de face, ±1 = presque de profil)', 'info');
+  else log('Aucun visage suivi pendant le test', 'ko');
+};
+
+// ── 4. Partage d'image (carte Story) ─────────────────────────
+$('bShare').onclick = async () => {
+  const c = document.createElement('canvas');
+  c.width = 1080; c.height = 1920;
+  const g = c.getContext('2d');
+  const grad = g.createLinearGradient(0, 0, 0, 1920);
+  grad.addColorStop(0, '#B4482E'); grad.addColorStop(1, '#F5ECE0');
+  g.fillStyle = grad; g.fillRect(0, 0, 1080, 1920);
+  g.fillStyle = '#fff'; g.font = '700 90px sans-serif'; g.textAlign = 'center';
+  g.fillText('Test partage', 540, 900);
+  g.fillText('Glow Up', 540, 1010);
+  const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+  if (!blob) { log('Image : création impossible', 'ko'); return; }
+  log('Image 1080×1920 créée (' + Math.round(blob.size / 1024) + ' Ko)', 'ok');
+  const file = new File([blob], 'glowup-test.png', { type: 'image/png' });
+  const can = !!(navigator.canShare && navigator.canShare({ files: [file] }));
+  log('Partage d\'une image par le menu de l\'appareil : ' + (can ? 'possible' : 'non possible'), can ? 'ok' : 'ko');
+  if (can) {
+    try { await navigator.share({ files: [file], title: 'Glow Up', text: 'Test' }); log('Menu de partage ouvert', 'ok'); }
+    catch (e) { log('Partage annulé ou refusé : ' + (e.name || ''), 'info'); }
+  }
+};
+
+// ── 5. Stockage local (IndexedDB) ────────────────────────────
+$('bStore').onclick = () => {
+  if (!('indexedDB' in window)) { log('Stockage local : IndexedDB absent', 'ko'); return; }
+  const req = indexedDB.open('glow-lab-test', 1);
+  req.onupgradeneeded = () => req.result.createObjectStore('t');
+  req.onerror = () => log('Stockage local : ouverture impossible', 'ko');
+  req.onsuccess = () => {
+    const db = req.result;
+    const blob = new Blob([new Uint8Array(500000)], { type: 'application/octet-stream' });
+    const tx = db.transaction('t', 'readwrite');
+    tx.objectStore('t').put(blob, 'essai');
+    tx.oncomplete = () => {
+      const rd = db.transaction('t').objectStore('t').get('essai');
+      rd.onsuccess = () => {
+        const ok = rd.result && rd.result.size === 500000;
+        log('Stockage local : écriture et relecture de 500 Ko ' + (ok ? 'réussies' : 'échouées'), ok ? 'ok' : 'ko');
+        db.close();
+        indexedDB.deleteDatabase('glow-lab-test');
+      };
+    };
+    tx.onerror = () => log('Stockage local : écriture impossible', 'ko');
+  };
+};
+</script>
+</body>
+</html>

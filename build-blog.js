@@ -515,7 +515,7 @@ async function main() {
     + `\n</urlset>\n`;
   fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), sitemap);
 
-  const robots = `User-agent: *\nAllow: /\nDisallow: /admin.html\nDisallow: /admin\n\nSitemap: ${SITE}/sitemap.xml\n`;
+  const robots = `User-agent: *\nAllow: /\nDisallow: /admin.html\nDisallow: /admin\nDisallow: /lab/\n\nSitemap: ${SITE}/sitemap.xml\n`;
   fs.writeFileSync(path.join(ROOT, 'robots.txt'), robots);
 
   console.log(`\nOK — ${posts.length} article(s) · blog/index.html + posts.json + sitemap.xml + robots.txt générés.`);
