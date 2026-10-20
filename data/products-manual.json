@@ -7240,7 +7240,192 @@
       "isFeatured": false,
       "active": true,
       "curatedBy": "admin",
-      "curatedAt": "2026-05-05"
+      "curatedAt": "2026-05-05",
+      "inciRaw": "Water, 1,2-Hexanediol, Butylene Glycol, Astragalus Membranaceus Root Extract(10,000Ppm), Bis-PEG-18 Methyl Ether Dimethyl Silane, Glycerin, Hydroxyethylcellulose, Allantoin, Sodium Phosphate, Disodium Phosphate, Polysorbate 60, Sodium Hyaluronate, Lecithin, Caprylic/Capric Triglyceride, Salix Alba (Willow) Bark Extract, Houttuynia Cordata Extract, Centella Asiatica Extract, Ceramide NP",
+      "inciNormalized": [
+        "water",
+        "1,2-hexanediol",
+        "butylene glycol",
+        "astragalus membranaceus root extract",
+        "bis-peg-18 methyl ether dimethyl silane",
+        "glycerin",
+        "hydroxyethylcellulose",
+        "allantoin",
+        "sodium phosphate",
+        "disodium phosphate",
+        "polysorbate 60",
+        "sodium hyaluronate",
+        "lecithin",
+        "caprylic/capric triglyceride",
+        "salix alba bark extract",
+        "houttuynia cordata extract",
+        "centella asiatica extract",
+        "ceramide np"
+      ],
+      "inciStructured": [
+        {
+          "inci": "Water",
+          "normalized": "water",
+          "position": 1,
+          "family": "solvant",
+          "function": "solvant",
+          "isActive": false
+        },
+        {
+          "inci": "1,2-Hexanediol",
+          "normalized": "1,2-hexanediol",
+          "position": 2,
+          "family": "preservative",
+          "function": "conservateur",
+          "isActive": false
+        },
+        {
+          "inci": "Butylene Glycol",
+          "normalized": "butylene glycol",
+          "position": 3,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Astragalus Membranaceus Root Extract(10,000Ppm)",
+          "normalized": "astragalus membranaceus root extract",
+          "position": 4,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Bis-PEG-18 Methyl Ether Dimethyl Silane",
+          "normalized": "bis-peg-18 methyl ether dimethyl silane",
+          "position": 5,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Glycerin",
+          "normalized": "glycerin",
+          "position": 6,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Hydroxyethylcellulose",
+          "normalized": "hydroxyethylcellulose",
+          "position": 7,
+          "family": "texture",
+          "function": "texture",
+          "isActive": false
+        },
+        {
+          "inci": "Allantoin",
+          "normalized": "allantoin",
+          "position": 8,
+          "family": "soothing",
+          "function": "apaisant",
+          "isActive": true
+        },
+        {
+          "inci": "Sodium Phosphate",
+          "normalized": "sodium phosphate",
+          "position": 9,
+          "family": "ph",
+          "function": "pH",
+          "isActive": false
+        },
+        {
+          "inci": "Disodium Phosphate",
+          "normalized": "disodium phosphate",
+          "position": 10,
+          "family": "ph",
+          "function": "pH",
+          "isActive": false
+        },
+        {
+          "inci": "Polysorbate 60",
+          "normalized": "polysorbate 60",
+          "position": 11,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Sodium Hyaluronate",
+          "normalized": "sodium hyaluronate",
+          "position": 12,
+          "family": "ha",
+          "function": "humectant",
+          "isActive": true
+        },
+        {
+          "inci": "Lecithin",
+          "normalized": "lecithin",
+          "position": 13,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Caprylic/Capric Triglyceride",
+          "normalized": "caprylic/capric triglyceride",
+          "position": 14,
+          "family": "emollient",
+          "function": "émollient",
+          "isActive": false
+        },
+        {
+          "inci": "Salix Alba (Willow) Bark Extract",
+          "normalized": "salix alba bark extract",
+          "position": 15,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Houttuynia Cordata Extract",
+          "normalized": "houttuynia cordata extract",
+          "position": 16,
+          "family": "soothing",
+          "function": "apaisant",
+          "isActive": true
+        },
+        {
+          "inci": "Centella Asiatica Extract",
+          "normalized": "centella asiatica extract",
+          "position": 17,
+          "family": "soothing",
+          "function": "apaisant",
+          "isActive": true
+        },
+        {
+          "inci": "Ceramide NP",
+          "normalized": "ceramide np",
+          "position": 18,
+          "family": "ceramide",
+          "function": "barrière",
+          "isActive": true
+        }
+      ],
+      "actives": [
+        "Allantoin",
+        "Sodium Hyaluronate",
+        "Houttuynia Cordata Extract",
+        "Centella Asiatica Extract",
+        "Ceramide NP"
+      ],
+      "inciSourceUrl": "https://incidecoder.com/products/pyunkang-yul-essence-toner-pad",
+      "inciLastVerifiedAt": "2026-10-13",
+      "inciVerificationStatus": "verified",
+      "dupeEligible": true,
+      "needsReview": false,
+      "inciMatch": {
+        "source": "incidecoder",
+        "matchedTitle": "",
+        "confidence": "élevée",
+        "phase": "lot2-2026-10-20"
+      }
     },
     {
       "id": "m135",
@@ -14319,7 +14504,210 @@
         "niacinamide",
         "glycolique"
       ],
-      "active": true
+      "active": true,
+      "inciRaw": "Aqua/Water/Eau, Butylene Glycol, Niacinamide, Hydroxyethylpiperazine Ethane Sulfonic Acid, Glycerin, Hydroxyethyl Urea, Propylene Glycol, Glycolic Acid, Tranexamic Acid, Allantoin, Sodium Hydroxide, Phenoxyethanol, Chlorphenesin, Ascorbyl Glucoside, Caprylyl Glycol, Hydrolyzed Rice Protein, Vitreoscilla Ferment, Trisodium Ethylenediamine Disuccinate, Xanthan Gum, Pentylene Glycol",
+      "inciNormalized": [
+        "aqua/water/eau",
+        "butylene glycol",
+        "niacinamide",
+        "hydroxyethylpiperazine ethane sulfonic acid",
+        "glycerin",
+        "hydroxyethyl urea",
+        "propylene glycol",
+        "glycolic acid",
+        "tranexamic acid",
+        "allantoin",
+        "sodium hydroxide",
+        "phenoxyethanol",
+        "chlorphenesin",
+        "ascorbyl glucoside",
+        "caprylyl glycol",
+        "hydrolyzed rice protein",
+        "vitreoscilla ferment",
+        "trisodium ethylenediamine disuccinate",
+        "xanthan gum",
+        "pentylene glycol"
+      ],
+      "inciStructured": [
+        {
+          "inci": "Aqua/Water/Eau",
+          "normalized": "aqua/water/eau",
+          "position": 1,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Butylene Glycol",
+          "normalized": "butylene glycol",
+          "position": 2,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Niacinamide",
+          "normalized": "niacinamide",
+          "position": 3,
+          "family": "niacinamide",
+          "function": "vitamine B3",
+          "isActive": true
+        },
+        {
+          "inci": "Hydroxyethylpiperazine Ethane Sulfonic Acid",
+          "normalized": "hydroxyethylpiperazine ethane sulfonic acid",
+          "position": 4,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Glycerin",
+          "normalized": "glycerin",
+          "position": 5,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Hydroxyethyl Urea",
+          "normalized": "hydroxyethyl urea",
+          "position": 6,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Propylene Glycol",
+          "normalized": "propylene glycol",
+          "position": 7,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Glycolic Acid",
+          "normalized": "glycolic acid",
+          "position": 8,
+          "family": "aha",
+          "function": "exfoliant AHA",
+          "isActive": true
+        },
+        {
+          "inci": "Tranexamic Acid",
+          "normalized": "tranexamic acid",
+          "position": 9,
+          "family": "brightening",
+          "function": "anti-taches",
+          "isActive": true
+        },
+        {
+          "inci": "Allantoin",
+          "normalized": "allantoin",
+          "position": 10,
+          "family": "soothing",
+          "function": "apaisant",
+          "isActive": true
+        },
+        {
+          "inci": "Sodium Hydroxide",
+          "normalized": "sodium hydroxide",
+          "position": 11,
+          "family": "ph",
+          "function": "pH",
+          "isActive": false
+        },
+        {
+          "inci": "Phenoxyethanol",
+          "normalized": "phenoxyethanol",
+          "position": 12,
+          "family": "preservative",
+          "function": "conservateur",
+          "isActive": false
+        },
+        {
+          "inci": "Chlorphenesin",
+          "normalized": "chlorphenesin",
+          "position": 13,
+          "family": "preservative",
+          "function": "conservateur",
+          "isActive": false
+        },
+        {
+          "inci": "Ascorbyl Glucoside",
+          "normalized": "ascorbyl glucoside",
+          "position": 14,
+          "family": "vitc",
+          "function": "vitamine C",
+          "isActive": true
+        },
+        {
+          "inci": "Caprylyl Glycol",
+          "normalized": "caprylyl glycol",
+          "position": 15,
+          "family": "emollient",
+          "function": "émollient",
+          "isActive": false
+        },
+        {
+          "inci": "Hydrolyzed Rice Protein",
+          "normalized": "hydrolyzed rice protein",
+          "position": 16,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Vitreoscilla Ferment",
+          "normalized": "vitreoscilla ferment",
+          "position": 17,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Trisodium Ethylenediamine Disuccinate",
+          "normalized": "trisodium ethylenediamine disuccinate",
+          "position": 18,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Xanthan Gum",
+          "normalized": "xanthan gum",
+          "position": 19,
+          "family": "texture",
+          "function": "texture",
+          "isActive": false
+        },
+        {
+          "inci": "Pentylene Glycol",
+          "normalized": "pentylene glycol",
+          "position": 20,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        }
+      ],
+      "actives": [
+        "Niacinamide",
+        "Glycolic Acid",
+        "Tranexamic Acid",
+        "Allantoin",
+        "Ascorbyl Glucoside"
+      ],
+      "inciSourceUrl": "https://incidecoder.com/products/vichy-liftactiv-specialist-serum-b3",
+      "inciLastVerifiedAt": "2026-10-13",
+      "inciVerificationStatus": "verified",
+      "dupeEligible": true,
+      "needsReview": false,
+      "inciMatch": {
+        "source": "incidecoder",
+        "matchedTitle": "",
+        "confidence": "élevée",
+        "phase": "lot2-2026-10-20"
+      }
     },
     {
       "id": "m254",
@@ -14386,7 +14774,284 @@
         "vitaminec",
         "salicylique"
       ],
-      "active": true
+      "active": true,
+      "inciRaw": "Aqua/Water, Ascorbic Acid, Cyclohexasiloxane, Glycerin, Alcohol Denat, Potassium Hydroxide, Polymethylsilsesquioxane, Polysilicone-11, Dimethicone, Propylene Glycol, Pentaerythrityl Tetraethylhexanoate, C13-14 Isoparaffin, PEG-20 Methyl Glucose Sesquistearate, Sodium Hyaluronate, Adenosine, Poloxamer 338, Ammonium Polyacryloyldimethyl Taurate, Disodium EDTA, Hydrolyzed Hyaluronic Acid, Caprylyl Glycol, Laureth-7, Acetyl Dipeptide-1 Cetyl Ester, Xanthan Gum, Toluene Sulfonic Acid, Polyacrylamide, Tocopherol, Salicylic Acid, Parfum/Fragrance",
+      "inciNormalized": [
+        "aqua/water",
+        "ascorbic acid",
+        "cyclohexasiloxane",
+        "glycerin",
+        "alcohol denat",
+        "potassium hydroxide",
+        "polymethylsilsesquioxane",
+        "polysilicone-11",
+        "dimethicone",
+        "propylene glycol",
+        "pentaerythrityl tetraethylhexanoate",
+        "c13-14 isoparaffin",
+        "peg-20 methyl glucose sesquistearate",
+        "sodium hyaluronate",
+        "adenosine",
+        "poloxamer 338",
+        "ammonium polyacryloyldimethyl taurate",
+        "disodium edta",
+        "hydrolyzed hyaluronic acid",
+        "caprylyl glycol",
+        "laureth-7",
+        "acetyl dipeptide-1 cetyl ester",
+        "xanthan gum",
+        "toluene sulfonic acid",
+        "polyacrylamide",
+        "tocopherol",
+        "salicylic acid",
+        "parfum/fragrance"
+      ],
+      "inciStructured": [
+        {
+          "inci": "Aqua/Water",
+          "normalized": "aqua/water",
+          "position": 1,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Ascorbic Acid",
+          "normalized": "ascorbic acid",
+          "position": 2,
+          "family": "vitc",
+          "function": "vitamine C",
+          "isActive": true
+        },
+        {
+          "inci": "Cyclohexasiloxane",
+          "normalized": "cyclohexasiloxane",
+          "position": 3,
+          "family": "occlusive",
+          "function": "occlusif",
+          "isActive": false
+        },
+        {
+          "inci": "Glycerin",
+          "normalized": "glycerin",
+          "position": 4,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Alcohol Denat",
+          "normalized": "alcohol denat",
+          "position": 5,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Potassium Hydroxide",
+          "normalized": "potassium hydroxide",
+          "position": 6,
+          "family": "ph",
+          "function": "pH",
+          "isActive": false
+        },
+        {
+          "inci": "Polymethylsilsesquioxane",
+          "normalized": "polymethylsilsesquioxane",
+          "position": 7,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Polysilicone-11",
+          "normalized": "polysilicone-11",
+          "position": 8,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Dimethicone",
+          "normalized": "dimethicone",
+          "position": 9,
+          "family": "occlusive",
+          "function": "occlusif",
+          "isActive": false
+        },
+        {
+          "inci": "Propylene Glycol",
+          "normalized": "propylene glycol",
+          "position": 10,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Pentaerythrityl Tetraethylhexanoate",
+          "normalized": "pentaerythrityl tetraethylhexanoate",
+          "position": 11,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "C13-14 Isoparaffin",
+          "normalized": "c13-14 isoparaffin",
+          "position": 12,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "PEG-20 Methyl Glucose Sesquistearate",
+          "normalized": "peg-20 methyl glucose sesquistearate",
+          "position": 13,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Sodium Hyaluronate",
+          "normalized": "sodium hyaluronate",
+          "position": 14,
+          "family": "ha",
+          "function": "humectant",
+          "isActive": true
+        },
+        {
+          "inci": "Adenosine",
+          "normalized": "adenosine",
+          "position": 15,
+          "family": "antiage",
+          "function": "anti-rides",
+          "isActive": true
+        },
+        {
+          "inci": "Poloxamer 338",
+          "normalized": "poloxamer 338",
+          "position": 16,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Ammonium Polyacryloyldimethyl Taurate",
+          "normalized": "ammonium polyacryloyldimethyl taurate",
+          "position": 17,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Disodium EDTA",
+          "normalized": "disodium edta",
+          "position": 18,
+          "family": "chelator",
+          "function": "stabilisant",
+          "isActive": false
+        },
+        {
+          "inci": "Hydrolyzed Hyaluronic Acid",
+          "normalized": "hydrolyzed hyaluronic acid",
+          "position": 19,
+          "family": "ha",
+          "function": "humectant",
+          "isActive": true
+        },
+        {
+          "inci": "Caprylyl Glycol",
+          "normalized": "caprylyl glycol",
+          "position": 20,
+          "family": "emollient",
+          "function": "émollient",
+          "isActive": false
+        },
+        {
+          "inci": "Laureth-7",
+          "normalized": "laureth-7",
+          "position": 21,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Acetyl Dipeptide-1 Cetyl Ester",
+          "normalized": "acetyl dipeptide-1 cetyl ester",
+          "position": 22,
+          "family": "peptide",
+          "function": "peptide",
+          "isActive": true
+        },
+        {
+          "inci": "Xanthan Gum",
+          "normalized": "xanthan gum",
+          "position": 23,
+          "family": "texture",
+          "function": "texture",
+          "isActive": false
+        },
+        {
+          "inci": "Toluene Sulfonic Acid",
+          "normalized": "toluene sulfonic acid",
+          "position": 24,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Polyacrylamide",
+          "normalized": "polyacrylamide",
+          "position": 25,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Tocopherol",
+          "normalized": "tocopherol",
+          "position": 26,
+          "family": "antioxidant",
+          "function": "antioxydant",
+          "isActive": true
+        },
+        {
+          "inci": "Salicylic Acid",
+          "normalized": "salicylic acid",
+          "position": 27,
+          "family": "bha",
+          "function": "exfoliant BHA",
+          "isActive": true
+        },
+        {
+          "inci": "Parfum/Fragrance",
+          "normalized": "parfum/fragrance",
+          "position": 28,
+          "family": "fragrance",
+          "function": "parfum",
+          "isActive": false
+        }
+      ],
+      "actives": [
+        "Ascorbic Acid",
+        "Sodium Hyaluronate",
+        "Adenosine",
+        "Hydrolyzed Hyaluronic Acid",
+        "Acetyl Dipeptide-1 Cetyl Ester",
+        "Tocopherol",
+        "Salicylic Acid"
+      ],
+      "inciSourceUrl": "https://incidecoder.com/products/la-roche-posay-pure-vitamin-c10",
+      "inciLastVerifiedAt": "2026-10-13",
+      "inciVerificationStatus": "verified",
+      "dupeEligible": true,
+      "needsReview": false,
+      "inciMatch": {
+        "source": "incidecoder",
+        "matchedTitle": "",
+        "confidence": "élevée",
+        "phase": "lot2-2026-10-20"
+      }
     },
     {
       "id": "m257",
@@ -14564,7 +15229,239 @@
         "ceramides",
         "hyaluronique"
       ],
-      "active": true
+      "active": true,
+      "inciRaw": "PETROLATUM, PARAFFINUM LIQUIDUM / MINERAL OIL, CERA MICROCRISTALLINA / MICROCRYSTALLINE WAX, PARAFFIN, CAPRYLIC/CAPRIC TRIGLYCERIDE, DIMETHICONE, AQUA / WATER, CERAMIDE NP, CERAMIDE AP, CERAMIDE EOP, CARBOMER, TRIETHYL CITRATE, SODIUM LAUROYL LACTYLATE, SODIUM HYALURONATE, CHOLESTEROL, TOCOPHERYL ACETATE, OCOPHEROL, CAPRYLYL GLYCOL, SYNTHETIC WAX, PANTHENOL, PHYTOSPHINGOSINE, XANTHAN GUM, BENZOIC ACID",
+      "inciNormalized": [
+        "petrolatum",
+        "paraffinum liquidum / mineral oil",
+        "cera microcristallina / microcrystalline wax",
+        "paraffin",
+        "caprylic/capric triglyceride",
+        "dimethicone",
+        "aqua / water",
+        "ceramide np",
+        "ceramide ap",
+        "ceramide eop",
+        "carbomer",
+        "triethyl citrate",
+        "sodium lauroyl lactylate",
+        "sodium hyaluronate",
+        "cholesterol",
+        "tocopheryl acetate",
+        "ocopherol",
+        "caprylyl glycol",
+        "synthetic wax",
+        "panthenol",
+        "phytosphingosine",
+        "xanthan gum",
+        "benzoic acid"
+      ],
+      "inciStructured": [
+        {
+          "inci": "PETROLATUM",
+          "normalized": "petrolatum",
+          "position": 1,
+          "family": "occlusive",
+          "function": "occlusif",
+          "isActive": false
+        },
+        {
+          "inci": "PARAFFINUM LIQUIDUM / MINERAL OIL",
+          "normalized": "paraffinum liquidum / mineral oil",
+          "position": 2,
+          "family": "emollient",
+          "function": "émollient",
+          "isActive": false
+        },
+        {
+          "inci": "CERA MICROCRISTALLINA / MICROCRYSTALLINE WAX",
+          "normalized": "cera microcristallina / microcrystalline wax",
+          "position": 3,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "PARAFFIN",
+          "normalized": "paraffin",
+          "position": 4,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "CAPRYLIC/CAPRIC TRIGLYCERIDE",
+          "normalized": "caprylic/capric triglyceride",
+          "position": 5,
+          "family": "emollient",
+          "function": "émollient",
+          "isActive": false
+        },
+        {
+          "inci": "DIMETHICONE",
+          "normalized": "dimethicone",
+          "position": 6,
+          "family": "occlusive",
+          "function": "occlusif",
+          "isActive": false
+        },
+        {
+          "inci": "AQUA / WATER",
+          "normalized": "aqua / water",
+          "position": 7,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "CERAMIDE NP",
+          "normalized": "ceramide np",
+          "position": 8,
+          "family": "ceramide",
+          "function": "barrière",
+          "isActive": true
+        },
+        {
+          "inci": "CERAMIDE AP",
+          "normalized": "ceramide ap",
+          "position": 9,
+          "family": "ceramide",
+          "function": "barrière",
+          "isActive": true
+        },
+        {
+          "inci": "CERAMIDE EOP",
+          "normalized": "ceramide eop",
+          "position": 10,
+          "family": "ceramide",
+          "function": "barrière",
+          "isActive": true
+        },
+        {
+          "inci": "CARBOMER",
+          "normalized": "carbomer",
+          "position": 11,
+          "family": "texture",
+          "function": "texture",
+          "isActive": false
+        },
+        {
+          "inci": "TRIETHYL CITRATE",
+          "normalized": "triethyl citrate",
+          "position": 12,
+          "family": "ph",
+          "function": "pH",
+          "isActive": false
+        },
+        {
+          "inci": "SODIUM LAUROYL LACTYLATE",
+          "normalized": "sodium lauroyl lactylate",
+          "position": 13,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "SODIUM HYALURONATE",
+          "normalized": "sodium hyaluronate",
+          "position": 14,
+          "family": "ha",
+          "function": "humectant",
+          "isActive": true
+        },
+        {
+          "inci": "CHOLESTEROL",
+          "normalized": "cholesterol",
+          "position": 15,
+          "family": "lipid",
+          "function": "barrière",
+          "isActive": false
+        },
+        {
+          "inci": "TOCOPHERYL ACETATE",
+          "normalized": "tocopheryl acetate",
+          "position": 16,
+          "family": "antioxidant",
+          "function": "antioxydant",
+          "isActive": true
+        },
+        {
+          "inci": "OCOPHEROL",
+          "normalized": "ocopherol",
+          "position": 17,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "CAPRYLYL GLYCOL",
+          "normalized": "caprylyl glycol",
+          "position": 18,
+          "family": "emollient",
+          "function": "émollient",
+          "isActive": false
+        },
+        {
+          "inci": "SYNTHETIC WAX",
+          "normalized": "synthetic wax",
+          "position": 19,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "PANTHENOL",
+          "normalized": "panthenol",
+          "position": 20,
+          "family": "soothing",
+          "function": "apaisant",
+          "isActive": true
+        },
+        {
+          "inci": "PHYTOSPHINGOSINE",
+          "normalized": "phytosphingosine",
+          "position": 21,
+          "family": "ceramide",
+          "function": "barrière",
+          "isActive": true
+        },
+        {
+          "inci": "XANTHAN GUM",
+          "normalized": "xanthan gum",
+          "position": 22,
+          "family": "texture",
+          "function": "texture",
+          "isActive": false
+        },
+        {
+          "inci": "BENZOIC ACID",
+          "normalized": "benzoic acid",
+          "position": 23,
+          "family": "",
+          "function": "",
+          "isActive": false
+        }
+      ],
+      "actives": [
+        "CERAMIDE NP",
+        "CERAMIDE AP",
+        "CERAMIDE EOP",
+        "SODIUM HYALURONATE",
+        "TOCOPHERYL ACETATE",
+        "PANTHENOL",
+        "PHYTOSPHINGOSINE"
+      ],
+      "inciSourceUrl": "https://www.cerave.fr/nos-produits/hydratants/pommade-reparatrice-intensive",
+      "inciLastVerifiedAt": "2026-10-13",
+      "inciVerificationStatus": "verified",
+      "dupeEligible": true,
+      "needsReview": false,
+      "inciMatch": {
+        "source": "official",
+        "matchedTitle": "",
+        "confidence": "élevée",
+        "phase": "lot2-2026-10-20"
+      }
     },
     {
       "id": "m265",
@@ -15319,7 +16216,137 @@
       "ingredientTags": [
         "snail"
       ],
-      "active": true
+      "active": true,
+      "inciRaw": "Snail Secretion Filtrate, Betaine, Butylene Glycol, 1,2-Hexanediol, Sodium Polyacrylate, Phenoxyethanol, Sodium Hyaluronate, Allantoin, Ethyl Hexanediol, Carbomer, Panthenol, Arginine",
+      "inciNormalized": [
+        "snail secretion filtrate",
+        "betaine",
+        "butylene glycol",
+        "1,2-hexanediol",
+        "sodium polyacrylate",
+        "phenoxyethanol",
+        "sodium hyaluronate",
+        "allantoin",
+        "ethyl hexanediol",
+        "carbomer",
+        "panthenol",
+        "arginine"
+      ],
+      "inciStructured": [
+        {
+          "inci": "Snail Secretion Filtrate",
+          "normalized": "snail secretion filtrate",
+          "position": 1,
+          "family": "snail",
+          "function": "réparateur",
+          "isActive": true
+        },
+        {
+          "inci": "Betaine",
+          "normalized": "betaine",
+          "position": 2,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Butylene Glycol",
+          "normalized": "butylene glycol",
+          "position": 3,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "1,2-Hexanediol",
+          "normalized": "1,2-hexanediol",
+          "position": 4,
+          "family": "preservative",
+          "function": "conservateur",
+          "isActive": false
+        },
+        {
+          "inci": "Sodium Polyacrylate",
+          "normalized": "sodium polyacrylate",
+          "position": 5,
+          "family": "texture",
+          "function": "texture",
+          "isActive": false
+        },
+        {
+          "inci": "Phenoxyethanol",
+          "normalized": "phenoxyethanol",
+          "position": 6,
+          "family": "preservative",
+          "function": "conservateur",
+          "isActive": false
+        },
+        {
+          "inci": "Sodium Hyaluronate",
+          "normalized": "sodium hyaluronate",
+          "position": 7,
+          "family": "ha",
+          "function": "humectant",
+          "isActive": true
+        },
+        {
+          "inci": "Allantoin",
+          "normalized": "allantoin",
+          "position": 8,
+          "family": "soothing",
+          "function": "apaisant",
+          "isActive": true
+        },
+        {
+          "inci": "Ethyl Hexanediol",
+          "normalized": "ethyl hexanediol",
+          "position": 9,
+          "family": "preservative",
+          "function": "conservateur",
+          "isActive": false
+        },
+        {
+          "inci": "Carbomer",
+          "normalized": "carbomer",
+          "position": 10,
+          "family": "texture",
+          "function": "texture",
+          "isActive": false
+        },
+        {
+          "inci": "Panthenol",
+          "normalized": "panthenol",
+          "position": 11,
+          "family": "soothing",
+          "function": "apaisant",
+          "isActive": true
+        },
+        {
+          "inci": "Arginine",
+          "normalized": "arginine",
+          "position": 12,
+          "family": "ph",
+          "function": "pH",
+          "isActive": false
+        }
+      ],
+      "actives": [
+        "Snail Secretion Filtrate",
+        "Sodium Hyaluronate",
+        "Allantoin",
+        "Panthenol"
+      ],
+      "inciSourceUrl": "https://incidecoder.com/products/cosrx-advanced-snail-96-mucin-power-essence-3",
+      "inciLastVerifiedAt": "2026-10-13",
+      "inciVerificationStatus": "verified",
+      "dupeEligible": true,
+      "needsReview": false,
+      "inciMatch": {
+        "source": "incidecoder",
+        "matchedTitle": "",
+        "confidence": "élevée",
+        "phase": "lot2-2026-10-20"
+      }
     },
     {
       "id": "m286",
@@ -19854,7 +20881,315 @@
         "extrait-riz",
         "niacinamide"
       ],
-      "active": true
+      "active": true,
+      "inciRaw": "Oryza Sativa (Rice) Bran Water, Water, Glycerin, Butylene Glycol, 1,2-Hexanediol, Dipropylene Glycol, Arbutin, Methyl Gluceth-20, Panthenol, Polyglycerin-3, Trehalose, Glyceryl Glucoside, Hydrolyzed Jojoba Esters, Hydroxyethyl Acrylate/Sodium Acryloyldimethyl Taurate Copolymer, Ethylhexylglycerin, Hydroxyethylcellulose, Xanthan Gum, Arginine, Acrylates/C10-30 Alkyl Acrylate Crosspolymer, Disodium EDTA, Coptis Japonica Root Extract, Sorbitan Isostearate, Glucose, Cyclohexane, Coix Lacryma-Jobi Ma-Yuen Seed Extract, Glycine Soja (Soybean) Seed Extract, Hordeum Distichon (Barley) Extract, Oryza Sativa (Rice) Extract, Sesamum Indicum (Sesame) Seed Extract, Triticum Vulgare (Wheat) Seed Extract, Vigna Radiata Seed Extract, Zea Mays (Corn) Kernel Extract",
+      "inciNormalized": [
+        "oryza sativa bran water",
+        "water",
+        "glycerin",
+        "butylene glycol",
+        "1,2-hexanediol",
+        "dipropylene glycol",
+        "arbutin",
+        "methyl gluceth-20",
+        "panthenol",
+        "polyglycerin-3",
+        "trehalose",
+        "glyceryl glucoside",
+        "hydrolyzed jojoba esters",
+        "hydroxyethyl acrylate/sodium acryloyldimethyl taurate copolymer",
+        "ethylhexylglycerin",
+        "hydroxyethylcellulose",
+        "xanthan gum",
+        "arginine",
+        "acrylates/c10-30 alkyl acrylate crosspolymer",
+        "disodium edta",
+        "coptis japonica root extract",
+        "sorbitan isostearate",
+        "glucose",
+        "cyclohexane",
+        "coix lacryma-jobi ma-yuen seed extract",
+        "glycine soja seed extract",
+        "hordeum distichon extract",
+        "oryza sativa extract",
+        "sesamum indicum seed extract",
+        "triticum vulgare seed extract",
+        "vigna radiata seed extract",
+        "zea mays kernel extract"
+      ],
+      "inciStructured": [
+        {
+          "inci": "Oryza Sativa (Rice) Bran Water",
+          "normalized": "oryza sativa bran water",
+          "position": 1,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Water",
+          "normalized": "water",
+          "position": 2,
+          "family": "solvant",
+          "function": "solvant",
+          "isActive": false
+        },
+        {
+          "inci": "Glycerin",
+          "normalized": "glycerin",
+          "position": 3,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Butylene Glycol",
+          "normalized": "butylene glycol",
+          "position": 4,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "1,2-Hexanediol",
+          "normalized": "1,2-hexanediol",
+          "position": 5,
+          "family": "preservative",
+          "function": "conservateur",
+          "isActive": false
+        },
+        {
+          "inci": "Dipropylene Glycol",
+          "normalized": "dipropylene glycol",
+          "position": 6,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Arbutin",
+          "normalized": "arbutin",
+          "position": 7,
+          "family": "brightening",
+          "function": "anti-taches",
+          "isActive": true
+        },
+        {
+          "inci": "Methyl Gluceth-20",
+          "normalized": "methyl gluceth-20",
+          "position": 8,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Panthenol",
+          "normalized": "panthenol",
+          "position": 9,
+          "family": "soothing",
+          "function": "apaisant",
+          "isActive": true
+        },
+        {
+          "inci": "Polyglycerin-3",
+          "normalized": "polyglycerin-3",
+          "position": 10,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Trehalose",
+          "normalized": "trehalose",
+          "position": 11,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Glyceryl Glucoside",
+          "normalized": "glyceryl glucoside",
+          "position": 12,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Hydrolyzed Jojoba Esters",
+          "normalized": "hydrolyzed jojoba esters",
+          "position": 13,
+          "family": "emollient",
+          "function": "émollient",
+          "isActive": false
+        },
+        {
+          "inci": "Hydroxyethyl Acrylate/Sodium Acryloyldimethyl Taurate Copolymer",
+          "normalized": "hydroxyethyl acrylate/sodium acryloyldimethyl taurate copolymer",
+          "position": 14,
+          "family": "texture",
+          "function": "texture",
+          "isActive": false
+        },
+        {
+          "inci": "Ethylhexylglycerin",
+          "normalized": "ethylhexylglycerin",
+          "position": 15,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Hydroxyethylcellulose",
+          "normalized": "hydroxyethylcellulose",
+          "position": 16,
+          "family": "texture",
+          "function": "texture",
+          "isActive": false
+        },
+        {
+          "inci": "Xanthan Gum",
+          "normalized": "xanthan gum",
+          "position": 17,
+          "family": "texture",
+          "function": "texture",
+          "isActive": false
+        },
+        {
+          "inci": "Arginine",
+          "normalized": "arginine",
+          "position": 18,
+          "family": "ph",
+          "function": "pH",
+          "isActive": false
+        },
+        {
+          "inci": "Acrylates/C10-30 Alkyl Acrylate Crosspolymer",
+          "normalized": "acrylates/c10-30 alkyl acrylate crosspolymer",
+          "position": 19,
+          "family": "texture",
+          "function": "texture",
+          "isActive": false
+        },
+        {
+          "inci": "Disodium EDTA",
+          "normalized": "disodium edta",
+          "position": 20,
+          "family": "chelator",
+          "function": "stabilisant",
+          "isActive": false
+        },
+        {
+          "inci": "Coptis Japonica Root Extract",
+          "normalized": "coptis japonica root extract",
+          "position": 21,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Sorbitan Isostearate",
+          "normalized": "sorbitan isostearate",
+          "position": 22,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Glucose",
+          "normalized": "glucose",
+          "position": 23,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Cyclohexane",
+          "normalized": "cyclohexane",
+          "position": 24,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Coix Lacryma-Jobi Ma-Yuen Seed Extract",
+          "normalized": "coix lacryma-jobi ma-yuen seed extract",
+          "position": 25,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Glycine Soja (Soybean) Seed Extract",
+          "normalized": "glycine soja seed extract",
+          "position": 26,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Hordeum Distichon (Barley) Extract",
+          "normalized": "hordeum distichon extract",
+          "position": 27,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Oryza Sativa (Rice) Extract",
+          "normalized": "oryza sativa extract",
+          "position": 28,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Sesamum Indicum (Sesame) Seed Extract",
+          "normalized": "sesamum indicum seed extract",
+          "position": 29,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Triticum Vulgare (Wheat) Seed Extract",
+          "normalized": "triticum vulgare seed extract",
+          "position": 30,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Vigna Radiata Seed Extract",
+          "normalized": "vigna radiata seed extract",
+          "position": 31,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Zea Mays (Corn) Kernel Extract",
+          "normalized": "zea mays kernel extract",
+          "position": 32,
+          "family": "",
+          "function": "",
+          "isActive": false
+        }
+      ],
+      "actives": [
+        "Arbutin",
+        "Panthenol"
+      ],
+      "inciSourceUrl": "https://incidecoder.com/products/beauty-of-joseon-glow-deep-serum-rice-arbutin",
+      "inciLastVerifiedAt": "2026-10-20",
+      "inciVerificationStatus": "verified",
+      "dupeEligible": true,
+      "needsReview": false,
+      "inciMatch": {
+        "source": "incidecoder",
+        "matchedTitle": "Beauty of Joseon Glow Deep Serum : Rice + Arbutin",
+        "confidence": "élevée",
+        "phase": "lot2-2026-10-20"
+      }
     },
     {
       "id": "m354",
@@ -22502,7 +23837,352 @@
       "skinTypeTags": [],
       "whyPitch": "Cernes bruns + teint terne ? L'actif qu'il te faut, c'est la vitamine C : cette crème illumine et unifie le contour de l'œil.",
       "isFeatured": false,
-      "active": true
+      "active": true,
+      "inciRaw": "Water (Aqua/Eau), Cyclopentasiloxane, Coco-Caprylate/Caprate, Glycerin, Caprylic/Capric Triglyceride, Glyceryl Stearate, Candelilla/Jojoba/Rice Bran Polyglyceryl-3 Esters, Trichilia Emetica (Mafura) Seed Butter, Ethylhexyl Palmitate, Mica, Phenoxyethanol, Cetearyl Alcohol, Sodium Stearoyl Lactylate, Benzyl Alcohol, Hydroxyacetophenone, Sodium Stearoyl Glutamate, Tocopheryl Acetate, Polysilicone-11, Acrylates/C10-30 Alkyl Acrylate Crosspolymer, Aminobutyric Acid, Barium Sulfate, Sodium Gluconate, Sodium Hydroxide, Ethylhexylglycerin, Silica, Dehydroacetic Acid, Centella Asiatica, Panax Ginseng Root Extract, Portulaca Oleracea Extract, Diglucosyl Gallic Acid, Trihydroxystearin, Tin Oxide, Sodium Benzoate, Sodium Hyaluronate, Glucomannan, Ci 77891 (Titanium Dioxide)",
+      "inciNormalized": [
+        "water",
+        "cyclopentasiloxane",
+        "coco-caprylate/caprate",
+        "glycerin",
+        "caprylic/capric triglyceride",
+        "glyceryl stearate",
+        "candelilla/jojoba/rice bran polyglyceryl-3 esters",
+        "trichilia emetica seed butter",
+        "ethylhexyl palmitate",
+        "mica",
+        "phenoxyethanol",
+        "cetearyl alcohol",
+        "sodium stearoyl lactylate",
+        "benzyl alcohol",
+        "hydroxyacetophenone",
+        "sodium stearoyl glutamate",
+        "tocopheryl acetate",
+        "polysilicone-11",
+        "acrylates/c10-30 alkyl acrylate crosspolymer",
+        "aminobutyric acid",
+        "barium sulfate",
+        "sodium gluconate",
+        "sodium hydroxide",
+        "ethylhexylglycerin",
+        "silica",
+        "dehydroacetic acid",
+        "centella asiatica",
+        "panax ginseng root extract",
+        "portulaca oleracea extract",
+        "diglucosyl gallic acid",
+        "trihydroxystearin",
+        "tin oxide",
+        "sodium benzoate",
+        "sodium hyaluronate",
+        "glucomannan",
+        "ci 77891"
+      ],
+      "inciStructured": [
+        {
+          "inci": "Water (Aqua/Eau)",
+          "normalized": "water",
+          "position": 1,
+          "family": "solvant",
+          "function": "solvant",
+          "isActive": false
+        },
+        {
+          "inci": "Cyclopentasiloxane",
+          "normalized": "cyclopentasiloxane",
+          "position": 2,
+          "family": "occlusive",
+          "function": "occlusif",
+          "isActive": false
+        },
+        {
+          "inci": "Coco-Caprylate/Caprate",
+          "normalized": "coco-caprylate/caprate",
+          "position": 3,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Glycerin",
+          "normalized": "glycerin",
+          "position": 4,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Caprylic/Capric Triglyceride",
+          "normalized": "caprylic/capric triglyceride",
+          "position": 5,
+          "family": "emollient",
+          "function": "émollient",
+          "isActive": false
+        },
+        {
+          "inci": "Glyceryl Stearate",
+          "normalized": "glyceryl stearate",
+          "position": 6,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Candelilla/Jojoba/Rice Bran Polyglyceryl-3 Esters",
+          "normalized": "candelilla/jojoba/rice bran polyglyceryl-3 esters",
+          "position": 7,
+          "family": "emollient",
+          "function": "émollient",
+          "isActive": false
+        },
+        {
+          "inci": "Trichilia Emetica (Mafura) Seed Butter",
+          "normalized": "trichilia emetica seed butter",
+          "position": 8,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Ethylhexyl Palmitate",
+          "normalized": "ethylhexyl palmitate",
+          "position": 9,
+          "family": "emollient",
+          "function": "émollient",
+          "isActive": false
+        },
+        {
+          "inci": "Mica",
+          "normalized": "mica",
+          "position": 10,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Phenoxyethanol",
+          "normalized": "phenoxyethanol",
+          "position": 11,
+          "family": "preservative",
+          "function": "conservateur",
+          "isActive": false
+        },
+        {
+          "inci": "Cetearyl Alcohol",
+          "normalized": "cetearyl alcohol",
+          "position": 12,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Sodium Stearoyl Lactylate",
+          "normalized": "sodium stearoyl lactylate",
+          "position": 13,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Benzyl Alcohol",
+          "normalized": "benzyl alcohol",
+          "position": 14,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Hydroxyacetophenone",
+          "normalized": "hydroxyacetophenone",
+          "position": 15,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Sodium Stearoyl Glutamate",
+          "normalized": "sodium stearoyl glutamate",
+          "position": 16,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Tocopheryl Acetate",
+          "normalized": "tocopheryl acetate",
+          "position": 17,
+          "family": "antioxidant",
+          "function": "antioxydant",
+          "isActive": true
+        },
+        {
+          "inci": "Polysilicone-11",
+          "normalized": "polysilicone-11",
+          "position": 18,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Acrylates/C10-30 Alkyl Acrylate Crosspolymer",
+          "normalized": "acrylates/c10-30 alkyl acrylate crosspolymer",
+          "position": 19,
+          "family": "texture",
+          "function": "texture",
+          "isActive": false
+        },
+        {
+          "inci": "Aminobutyric Acid",
+          "normalized": "aminobutyric acid",
+          "position": 20,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Barium Sulfate",
+          "normalized": "barium sulfate",
+          "position": 21,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Sodium Gluconate",
+          "normalized": "sodium gluconate",
+          "position": 22,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Sodium Hydroxide",
+          "normalized": "sodium hydroxide",
+          "position": 23,
+          "family": "ph",
+          "function": "pH",
+          "isActive": false
+        },
+        {
+          "inci": "Ethylhexylglycerin",
+          "normalized": "ethylhexylglycerin",
+          "position": 24,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Silica",
+          "normalized": "silica",
+          "position": 25,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Dehydroacetic Acid",
+          "normalized": "dehydroacetic acid",
+          "position": 26,
+          "family": "ph",
+          "function": "pH",
+          "isActive": false
+        },
+        {
+          "inci": "Centella Asiatica",
+          "normalized": "centella asiatica",
+          "position": 27,
+          "family": "soothing",
+          "function": "apaisant",
+          "isActive": true
+        },
+        {
+          "inci": "Panax Ginseng Root Extract",
+          "normalized": "panax ginseng root extract",
+          "position": 28,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Portulaca Oleracea Extract",
+          "normalized": "portulaca oleracea extract",
+          "position": 29,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Diglucosyl Gallic Acid",
+          "normalized": "diglucosyl gallic acid",
+          "position": 30,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Trihydroxystearin",
+          "normalized": "trihydroxystearin",
+          "position": 31,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Tin Oxide",
+          "normalized": "tin oxide",
+          "position": 32,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Sodium Benzoate",
+          "normalized": "sodium benzoate",
+          "position": 33,
+          "family": "preservative",
+          "function": "conservateur",
+          "isActive": false
+        },
+        {
+          "inci": "Sodium Hyaluronate",
+          "normalized": "sodium hyaluronate",
+          "position": 34,
+          "family": "ha",
+          "function": "humectant",
+          "isActive": true
+        },
+        {
+          "inci": "Glucomannan",
+          "normalized": "glucomannan",
+          "position": 35,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Ci 77891 (Titanium Dioxide)",
+          "normalized": "ci 77891",
+          "position": 36,
+          "family": "",
+          "function": "",
+          "isActive": false
+        }
+      ],
+      "actives": [
+        "Tocopheryl Acetate",
+        "Centella Asiatica",
+        "Sodium Hyaluronate"
+      ],
+      "inciSourceUrl": "https://incidecoder.com/products/the-inkey-list-brighten-i-eye-cream",
+      "inciLastVerifiedAt": "2026-10-20",
+      "inciVerificationStatus": "verified",
+      "dupeEligible": true,
+      "needsReview": false,
+      "inciMatch": {
+        "source": "incidecoder",
+        "matchedTitle": "The Inkey List Brighten-I Eye Cream",
+        "confidence": "élevée",
+        "phase": "lot2-2026-10-20"
+      }
     },
     {
       "id": "m388",
@@ -25885,7 +27565,404 @@
       "skinTypeTags": [],
       "dupeStar": true,
       "isFeatured": false,
-      "active": true
+      "active": true,
+      "inciRaw": "Aqua (Water), Glycolic Acid, Rosa Damascena Flower Water, Centaurea Cyanus Flower Water, Aloe Barbadensis Leaf Water, Propanediol, Glycerin, Triethanolamine, Aminomethyl Propanol, Panax Ginseng Root Extract, Tasmannia Lanceolata Fruit/Leaf Extract, Aspartic Acid, Alanine, Glycine, Serine, Valine, Isoleucine, Proline, Threonine, Histidine, Phenylalanine, Glutamic Acid, Arginine, Pca, Sodium Pca, Sodium Lactate, Fructose, Glucose, Sucrose, Urea, Hexyl Nicotinate, Dextrin, Citric Acid, Polysorbate 20, Gellan Gum, Trisodium Ethylenediamine Disuccinate, Sodium Chloride, Hexylene Glycol, Potassium Sorbate, Sodium Benzoate, 1,2-Hexanediol, Caprylyl Glycol",
+      "inciNormalized": [
+        "aqua",
+        "glycolic acid",
+        "rosa damascena flower water",
+        "centaurea cyanus flower water",
+        "aloe barbadensis leaf water",
+        "propanediol",
+        "glycerin",
+        "triethanolamine",
+        "aminomethyl propanol",
+        "panax ginseng root extract",
+        "tasmannia lanceolata fruit/leaf extract",
+        "aspartic acid",
+        "alanine",
+        "glycine",
+        "serine",
+        "valine",
+        "isoleucine",
+        "proline",
+        "threonine",
+        "histidine",
+        "phenylalanine",
+        "glutamic acid",
+        "arginine",
+        "pca",
+        "sodium pca",
+        "sodium lactate",
+        "fructose",
+        "glucose",
+        "sucrose",
+        "urea",
+        "hexyl nicotinate",
+        "dextrin",
+        "citric acid",
+        "polysorbate 20",
+        "gellan gum",
+        "trisodium ethylenediamine disuccinate",
+        "sodium chloride",
+        "hexylene glycol",
+        "potassium sorbate",
+        "sodium benzoate",
+        "1,2-hexanediol",
+        "caprylyl glycol"
+      ],
+      "inciStructured": [
+        {
+          "inci": "Aqua (Water)",
+          "normalized": "aqua",
+          "position": 1,
+          "family": "solvant",
+          "function": "solvant",
+          "isActive": false
+        },
+        {
+          "inci": "Glycolic Acid",
+          "normalized": "glycolic acid",
+          "position": 2,
+          "family": "aha",
+          "function": "exfoliant AHA",
+          "isActive": true
+        },
+        {
+          "inci": "Rosa Damascena Flower Water",
+          "normalized": "rosa damascena flower water",
+          "position": 3,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Centaurea Cyanus Flower Water",
+          "normalized": "centaurea cyanus flower water",
+          "position": 4,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Aloe Barbadensis Leaf Water",
+          "normalized": "aloe barbadensis leaf water",
+          "position": 5,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Propanediol",
+          "normalized": "propanediol",
+          "position": 6,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Glycerin",
+          "normalized": "glycerin",
+          "position": 7,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Triethanolamine",
+          "normalized": "triethanolamine",
+          "position": 8,
+          "family": "ph",
+          "function": "pH",
+          "isActive": false
+        },
+        {
+          "inci": "Aminomethyl Propanol",
+          "normalized": "aminomethyl propanol",
+          "position": 9,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Panax Ginseng Root Extract",
+          "normalized": "panax ginseng root extract",
+          "position": 10,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Tasmannia Lanceolata Fruit/Leaf Extract",
+          "normalized": "tasmannia lanceolata fruit/leaf extract",
+          "position": 11,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Aspartic Acid",
+          "normalized": "aspartic acid",
+          "position": 12,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Alanine",
+          "normalized": "alanine",
+          "position": 13,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Glycine",
+          "normalized": "glycine",
+          "position": 14,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Serine",
+          "normalized": "serine",
+          "position": 15,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Valine",
+          "normalized": "valine",
+          "position": 16,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Isoleucine",
+          "normalized": "isoleucine",
+          "position": 17,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Proline",
+          "normalized": "proline",
+          "position": 18,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Threonine",
+          "normalized": "threonine",
+          "position": 19,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Histidine",
+          "normalized": "histidine",
+          "position": 20,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Phenylalanine",
+          "normalized": "phenylalanine",
+          "position": 21,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Glutamic Acid",
+          "normalized": "glutamic acid",
+          "position": 22,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Arginine",
+          "normalized": "arginine",
+          "position": 23,
+          "family": "ph",
+          "function": "pH",
+          "isActive": false
+        },
+        {
+          "inci": "Pca",
+          "normalized": "pca",
+          "position": 24,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Sodium Pca",
+          "normalized": "sodium pca",
+          "position": 25,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
+          "inci": "Sodium Lactate",
+          "normalized": "sodium lactate",
+          "position": 26,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Fructose",
+          "normalized": "fructose",
+          "position": 27,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Glucose",
+          "normalized": "glucose",
+          "position": 28,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Sucrose",
+          "normalized": "sucrose",
+          "position": 29,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Urea",
+          "normalized": "urea",
+          "position": 30,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Hexyl Nicotinate",
+          "normalized": "hexyl nicotinate",
+          "position": 31,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Dextrin",
+          "normalized": "dextrin",
+          "position": 32,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Citric Acid",
+          "normalized": "citric acid",
+          "position": 33,
+          "family": "ph",
+          "function": "pH",
+          "isActive": false
+        },
+        {
+          "inci": "Polysorbate 20",
+          "normalized": "polysorbate 20",
+          "position": 34,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Gellan Gum",
+          "normalized": "gellan gum",
+          "position": 35,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Trisodium Ethylenediamine Disuccinate",
+          "normalized": "trisodium ethylenediamine disuccinate",
+          "position": 36,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Sodium Chloride",
+          "normalized": "sodium chloride",
+          "position": 37,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Hexylene Glycol",
+          "normalized": "hexylene glycol",
+          "position": 38,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Potassium Sorbate",
+          "normalized": "potassium sorbate",
+          "position": 39,
+          "family": "preservative",
+          "function": "conservateur",
+          "isActive": false
+        },
+        {
+          "inci": "Sodium Benzoate",
+          "normalized": "sodium benzoate",
+          "position": 40,
+          "family": "preservative",
+          "function": "conservateur",
+          "isActive": false
+        },
+        {
+          "inci": "1,2-Hexanediol",
+          "normalized": "1,2-hexanediol",
+          "position": 41,
+          "family": "preservative",
+          "function": "conservateur",
+          "isActive": false
+        },
+        {
+          "inci": "Caprylyl Glycol",
+          "normalized": "caprylyl glycol",
+          "position": 42,
+          "family": "emollient",
+          "function": "émollient",
+          "isActive": false
+        }
+      ],
+      "actives": [
+        "Glycolic Acid"
+      ],
+      "inciSourceUrl": "https://incidecoder.com/products/the-ordinary-glycolic-acid-7-toning-solution",
+      "inciLastVerifiedAt": "2026-10-20",
+      "inciVerificationStatus": "verified",
+      "dupeEligible": true,
+      "needsReview": false,
+      "inciMatch": {
+        "source": "incidecoder",
+        "matchedTitle": "The Ordinary Glycolic Acid 7% Toning Solution",
+        "confidence": "élevée",
+        "phase": "lot2-2026-10-20"
+      }
     },
     {
       "id": "m402",
@@ -25907,7 +27984,162 @@
       "skinTypeTags": [],
       "dupeStar": true,
       "isFeatured": false,
-      "active": true
+      "active": true,
+      "inciRaw": "Ascorbic Acid, Squalane, Isodecyl Neopentanoate, Isononyl Isononanoate, Coconut Alkanes, Ethylene/Propylene/Styrene Copolymer, Ethylhexyl Palmitate, Silica Dimethyl Silylate, Sodium Hyaluronate, Glucomannan, Coco-Caprylate/Caprate, Butylene/Ethylene/Styrene Copolymer, Acrylates/Ethylhexyl Acrylate Crosspolymer, Trihydroxystearin, Bht",
+      "inciNormalized": [
+        "ascorbic acid",
+        "squalane",
+        "isodecyl neopentanoate",
+        "isononyl isononanoate",
+        "coconut alkanes",
+        "ethylene/propylene/styrene copolymer",
+        "ethylhexyl palmitate",
+        "silica dimethyl silylate",
+        "sodium hyaluronate",
+        "glucomannan",
+        "coco-caprylate/caprate",
+        "butylene/ethylene/styrene copolymer",
+        "acrylates/ethylhexyl acrylate crosspolymer",
+        "trihydroxystearin",
+        "bht"
+      ],
+      "inciStructured": [
+        {
+          "inci": "Ascorbic Acid",
+          "normalized": "ascorbic acid",
+          "position": 1,
+          "family": "vitc",
+          "function": "vitamine C",
+          "isActive": true
+        },
+        {
+          "inci": "Squalane",
+          "normalized": "squalane",
+          "position": 2,
+          "family": "emollient",
+          "function": "émollient",
+          "isActive": false
+        },
+        {
+          "inci": "Isodecyl Neopentanoate",
+          "normalized": "isodecyl neopentanoate",
+          "position": 3,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Isononyl Isononanoate",
+          "normalized": "isononyl isononanoate",
+          "position": 4,
+          "family": "emollient",
+          "function": "émollient",
+          "isActive": false
+        },
+        {
+          "inci": "Coconut Alkanes",
+          "normalized": "coconut alkanes",
+          "position": 5,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Ethylene/Propylene/Styrene Copolymer",
+          "normalized": "ethylene/propylene/styrene copolymer",
+          "position": 6,
+          "family": "texture",
+          "function": "texture",
+          "isActive": false
+        },
+        {
+          "inci": "Ethylhexyl Palmitate",
+          "normalized": "ethylhexyl palmitate",
+          "position": 7,
+          "family": "emollient",
+          "function": "émollient",
+          "isActive": false
+        },
+        {
+          "inci": "Silica Dimethyl Silylate",
+          "normalized": "silica dimethyl silylate",
+          "position": 8,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Sodium Hyaluronate",
+          "normalized": "sodium hyaluronate",
+          "position": 9,
+          "family": "ha",
+          "function": "humectant",
+          "isActive": true
+        },
+        {
+          "inci": "Glucomannan",
+          "normalized": "glucomannan",
+          "position": 10,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Coco-Caprylate/Caprate",
+          "normalized": "coco-caprylate/caprate",
+          "position": 11,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Butylene/Ethylene/Styrene Copolymer",
+          "normalized": "butylene/ethylene/styrene copolymer",
+          "position": 12,
+          "family": "texture",
+          "function": "texture",
+          "isActive": false
+        },
+        {
+          "inci": "Acrylates/Ethylhexyl Acrylate Crosspolymer",
+          "normalized": "acrylates/ethylhexyl acrylate crosspolymer",
+          "position": 13,
+          "family": "texture",
+          "function": "texture",
+          "isActive": false
+        },
+        {
+          "inci": "Trihydroxystearin",
+          "normalized": "trihydroxystearin",
+          "position": 14,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Bht",
+          "normalized": "bht",
+          "position": 15,
+          "family": "",
+          "function": "",
+          "isActive": false
+        }
+      ],
+      "actives": [
+        "Ascorbic Acid",
+        "Sodium Hyaluronate"
+      ],
+      "inciSourceUrl": "https://incidecoder.com/products/the-ordinary-vitamin-c-suspension-23-ha-spheres-2",
+      "inciLastVerifiedAt": "2026-10-13",
+      "inciVerificationStatus": "verified",
+      "dupeEligible": true,
+      "needsReview": false,
+      "inciMatch": {
+        "source": "incidecoder",
+        "matchedTitle": "",
+        "confidence": "élevée",
+        "phase": "lot2-2026-10-20"
+      }
     },
     {
       "id": "m403",
