@@ -51,7 +51,7 @@
       "maxDuration": 45
     },
     "api/inci.js": {
-      "maxDuration": 20
+      "maxDuration": 30
     },
     "api/analyzeRoutine.js": {
       "maxDuration": 60

@@ -10496,6 +10496,18 @@ em { font-style: italic; color: var(--label); }
 .df-price-unverified { font-style: italic; }
 .df-compo-note { display: block; font-size: 12px; line-height: 1.45; color: var(--muted, #6b6560); }
 
+/* Trouver son dupe — niveaux (règle du prix au ml), saisie du prix, liste lue sur photo */
+.df-lv { font-weight: 700; }
+.df-lv-reliable { background: #E7F3EA; color: #2f7a46; }
+.df-lv-similar  { background: #FBF3E3; color: #9a6b12; }
+.df-lv-other    { background: #F0EAE2; color: #7E6552; }
+.df-priceform { margin: 18px 0 8px; padding: 14px; border: 1px solid var(--line, #E3D3BE); border-radius: 14px; background: rgba(255,255,255,.6); }
+.df-priceform p { font-size: 13px; line-height: 1.45; margin: 0 0 10px; }
+.df-priceform-row { display: grid; grid-template-columns: 1.2fr 1.2fr .8fr; gap: 8px; margin-bottom: 10px; }
+.df-priceform-row .df-input { width: 100%; min-width: 0; }
+.df-inci-read { margin-top: 6px; font-size: 12px; color: var(--muted, #6b6560); }
+.df-inci-read p { margin: 6px 0 0; line-height: 1.5; word-break: break-word; }
+
 /* Trouver son dupe — paliers de qualité (section 12) */
 .df-tier { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 12px; margin-left: 4px; }
 .df-tier-top  { background: #E7F3EA; color: #2f7a46; }

@@ -1,68 +1,78 @@
 /* ============================================================
-   api/inci.js — Récupère la liste INCI d'un produit via Open Beauty Facts.
-   Entrée (POST JSON) : { barcode?, brand?, name? }
-   Priorité : code-barres (fiable) → recherche par nom (secours, moins fiable).
-   Sortie : {
-     found: boolean,
-     inci: "texte INCI brut",
-     inciList: ["aqua","glycerin",...],   // normalisé, minuscules
-     source: "openbeautyfacts" | null,
-     confidence: "high" | "medium" | "low" | "none",
-     matchedName: "nom du produit trouvé",
-     barcode: "..."          // code-barres réellement utilisé si trouvé par nom
-   }
-   Ne renvoie JAMAIS d'ingrédient inventé : uniquement ce qu'OBF fournit.
+   api/inci.js — Composition (liste INCI) d'un produit, sans rien inventer.
+   Deux modes (un seul fichier : limite de 12 fonctions Vercel) :
+
+   1) mode « lookup » (par défaut) — Entrée : { barcode?, brand?, name? }
+      Cherche dans : nos fiches vérifiées → cache → Open Beauty Facts (code-barres, nom) → INCIDecoder.
+      Voir lib/inciLookup.js. Sortie :
+      { found, inci, inciList[], confidence: 'high'|'medium'|'none', source, sourceUrl, sourceLabel,
+        retrievedAt, matchedName, barcode, quantity, volumeMl }
+        • high   : utilisable tel quel
+        • medium : nom proche mais pas identique → l'appli demande de CONFIRMER le produit
+        • none   : rien de fiable → l'appli demande la photo de la liste d'ingrédients
+
+   2) mode « photo » — Entrée : { mode:'photo', photo:'data:image/jpeg;base64,…' }
+      Lit la liste d'ingrédients PHOTOGRAPHIÉE par l'utilisatrice (modèle de vision Haiku), mot pour mot.
+      Sortie : mêmes champs, confidence 'photo', source 'photo' → affichée « Lue sur ta photo, à vérifier ».
+      L'IA ne fait que recopier ce qui est écrit : si la photo est illisible, elle ne renvoie rien.
    ============================================================ */
+
+const { lookup, splitInci, cleanList, EMPTY } = require('../lib/inciLookup.js');
+const MainActive = require('../lib/mainActive.js');
+const _sim = require('../lib/inciSim.js');
+
+// Actif principal déduit de la composition (jamais de l'IA) : sert à choisir les produits à comparer
+function withActive(r) {
+  if (!r || !r.found || !Array.isArray(r.inciList)) return r;
+  const fam = MainActive.fromInci(r.inciList, _sim);
+  return Object.assign({}, r, { mainFamily: fam || null, mainLabel: fam ? MainActive.label(fam) : '' });
+}
 
 const CORS = {
   'Access-Control-Allow-Origin':  '*',
   'Access-Control-Allow-Headers': 'Content-Type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS'
 };
-const OBF_UA = 'GlowUp/1.0 (skincare dupe finder; contact@glowupskin.app)';
-const FIELDS = 'code,product_name,brands,ingredients_text,ingredients_text_fr,quantity';
 
-// Contenance -> ml (gère ml / cl / l). null si non exprimé en volume (ex. g, oz).
-function _parseMl(q) {
-  if (!q || typeof q !== 'string') return null;
-  const m = q.toLowerCase().replace(',', '.').match(/([\d.]+)\s*(ml|cl|l)\b/);
-  if (!m) return null;
-  const n = parseFloat(m[1]);
-  if (!isFinite(n) || n <= 0) return null;
-  return m[2] === 'l' ? Math.round(n * 1000) : m[2] === 'cl' ? Math.round(n * 10) : Math.round(n);
-}
+async function readPhoto(photo, apiKey) {
+  const m = String(photo || '').match(/^data:(image\/(?:jpeg|jpg|png|webp));base64,(.+)$/s);
+  if (!m) return { error: 'Format photo invalide', status: 400 };
+  if (m[2].length > 5000000) return { error: 'Image trop grande', status: 413 };
 
-function _normList(text) {
-  if (!text || typeof text !== 'string') return [];
-  return text
-    .replace(/\([^)]*\)/g, ' ')          // retire (parenthèses / %)
-    .replace(/\[[^\]]*\]/g, ' ')
-    .replace(/['’‘]/g, ',')              // certaines fiches OBF utilisent ' comme séparateur
-    .split(/[,•\n;]+/)
-    .map(s => s.trim().toLowerCase().replace(/\.$/, '').replace(/\s{2,}/g, ' '))
-    .filter(s => s.length > 1 && s.length < 60)
-    .slice(0, 80);
-}
+  const prompt = `Cette photo montre la liste d'ingrédients (liste INCI) imprimée sur l'emballage d'un produit cosmétique.
 
-function _inciText(p) {
-  return (p.ingredients_text_fr && p.ingredients_text_fr.trim())
-      || (p.ingredients_text && p.ingredients_text.trim())
-      || '';
-}
+Recopie EXACTEMENT les ingrédients, dans l'ordre où ils sont écrits, un par élément de la liste.
+RÈGLES IMPÉRATIVES :
+- Ne corrige rien, ne complète rien, n'ajoute aucun ingrédient, ne traduis pas.
+- Si un passage est illisible, arrête-toi avant plutôt que de deviner.
+- Si la photo ne montre pas une liste d'ingrédients lisible, réponds avec une liste vide.
+- Ignore tout ce qui n'est pas la liste (marque, conseils d'utilisation, adresse…).
 
-// Le nom/marque du produit trouvé contient-il des mots de la requête ?
-function _looseMatch(p, q) {
-  const hay = ((p.product_name || '') + ' ' + (p.brands || '')).toLowerCase();
-  const words = q.toLowerCase().split(/\s+/).filter(w => w.length >= 3);
-  if (!words.length) return true;
-  const hits = words.filter(w => hay.includes(w)).length;
-  return hits >= Math.min(2, words.length);   // au moins 2 mots (ou tous si <2)
-}
+Réponds UNIQUEMENT avec ce JSON :
+{ "readable": true ou false, "ingredients": ["Aqua", "Glycerin", ...] }`;
 
-async function _fetchJson(url) {
-  const r = await fetch(url, { headers: { 'User-Agent': OBF_UA } });
-  if (!r.ok) return null;
-  return r.json().catch(() => null);
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 1500,
+      messages: [{ role: 'user', content: [
+        { type: 'image', source: { type: 'base64', media_type: m[1], data: m[2] } },
+        { type: 'text', text: prompt }
+      ] }]
+    })
+  });
+  if (!resp.ok) return { error: 'API Anthropic indisponible', status: 502 };
+  const ai = await resp.json();
+  const raw = (ai && ai.content && ai.content[0] && ai.content[0].text || '').trim();
+  let parsed;
+  try { parsed = JSON.parse(raw); }
+  catch (e) {
+    const j = raw.match(/\{[\s\S]*\}/);
+    try { parsed = j ? JSON.parse(j[0]) : null; } catch (e2) { parsed = null; }
+  }
+  return { parsed };
 }
 
 module.exports = async (req, res) => {
@@ -70,60 +80,31 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST')    return res.status(405).json({ error: 'Method Not Allowed' });
 
-  const { barcode, brand, name } = req.body || {};
-  const empty = { found: false, inci: '', inciList: [], source: null, confidence: 'none', matchedName: '', barcode: '', quantity: '', volumeMl: null };
+  const body = req.body || {};
 
-  try {
-    // 1) Par code-barres (fiable)
-    const code = (barcode || '').replace(/\D/g, '');
-    if (code.length >= 8) {
-      const data = await _fetchJson(`https://world.openbeautyfacts.org/api/v2/product/${code}.json?fields=${FIELDS}`);
-      const p = data && data.product;
-      const text = p ? _inciText(p) : '';
-      if (text) {
-        return res.status(200).json({
-          found: true, inci: text, inciList: _normList(text),
-          source: 'openbeautyfacts', confidence: 'high',
-          matchedName: p.product_name || '', barcode: code,
-          quantity: p.quantity || '', volumeMl: _parseMl(p.quantity)
-        });
-      }
+  if (body.mode === 'photo') {
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) return res.status(503).json({ error: 'ANTHROPIC_API_KEY manquante' });
+    try {
+      const out = await readPhoto(body.photo, apiKey);
+      if (out.error) return res.status(out.status).json({ error: out.error });
+      const items = out.parsed && out.parsed.readable && Array.isArray(out.parsed.ingredients)
+        ? out.parsed.ingredients.filter(x => typeof x === 'string').map(x => x.trim()).filter(x => x.length > 1 && x.length < 90).slice(0, 80)
+        : [];
+      // moins de 5 éléments : ce n'est pas une vraie liste lue → on ne s'en sert pas
+      if (items.length < 5) return res.status(200).json(Object.assign({}, EMPTY, { readable: false }));
+      return res.status(200).json(withActive({
+        found: true, readable: true, inci: items.join(', '), inciList: cleanList(items), confidence: 'photo',
+        source: 'photo', sourceUrl: '', sourceLabel: 'lue sur ta photo (à vérifier)',
+        retrievedAt: new Date().toISOString().slice(0, 10), matchedName: '', barcode: '', quantity: '', volumeMl: null
+      }));
+    } catch (e) {
+      console.error('[inci photo] erreur:', e.message);
+      return res.status(500).json({ error: 'Lecture de la photo échouée' });
     }
-
-    // 2) Par nom (secours, moins fiable)
-    const q = [brand, name].filter(Boolean).join(' ').trim();
-    if (q.length >= 3) {
-      const enc = encodeURIComponent(q);
-      const data = await _fetchJson(`https://world.openbeautyfacts.org/cgi/search.pl?search_terms=${enc}&search_simple=1&action=process&json=1&page_size=6&fields=${FIELDS}`);
-      const products = (data && data.products) || [];
-      // On garde le 1er résultat AVEC INCI et dont le nom/marque correspond vraiment
-      for (const p of products) {
-        const text = _inciText(p);
-        if (text && _looseMatch(p, q)) {
-          return res.status(200).json({
-            found: true, inci: text, inciList: _normList(text),
-            source: 'openbeautyfacts', confidence: 'medium',
-            matchedName: p.product_name || '', barcode: p.code || '',
-            quantity: p.quantity || '', volumeMl: _parseMl(p.quantity)
-          });
-        }
-      }
-      // Un résultat avec INCI mais correspondance faible → confiance basse
-      const weak = products.find(p => _inciText(p));
-      if (weak) {
-        const text = _inciText(weak);
-        return res.status(200).json({
-          found: true, inci: text, inciList: _normList(text),
-          source: 'openbeautyfacts', confidence: 'low',
-          matchedName: weak.product_name || '', barcode: weak.code || '',
-          quantity: weak.quantity || '', volumeMl: _parseMl(weak.quantity)
-        });
-      }
-    }
-
-    return res.status(200).json(empty);
-  } catch (err) {
-    console.error('[inci] erreur:', err.message);
-    return res.status(200).json(empty);   // jamais bloquant : pas d'INCI = confiance none
   }
+
+  // mode « lookup » : ne lève jamais d'erreur (pas de composition = confiance « none »)
+  const r = await lookup({ barcode: body.barcode, brand: body.brand, name: body.name });
+  return res.status(200).json(withActive(r));
 };

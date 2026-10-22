@@ -45,7 +45,29 @@ const MSG_MAKEUP = 'Les dupes maquillage arrivent bientôt.';
 const MAKEUP_CATS = new Set(['foundation', 'concealer', 'corrector', 'powder', 'primer', 'blush', 'bronzer', 'highlighter',
   'mascara', 'eyeliner', 'eyebrow', 'eyeshadow', 'lipstick', 'lipgloss', 'lipliner']);
 const NOTE_UNVERIFIED = "Composition non vérifiée : les formules n'ont pas été comparées. L'actif principal indiqué est celui annoncé sur la fiche du produit.";
-const NOTE_VERIFIED = 'Compositions comparées (liste INCI de ton produit vérifiée sur Open Beauty Facts, liste de ce produit issue de notre catalogue).';
+const NOTE_VERIFIED = 'Compositions comparées (liste de ton produit trouvée sur une page source, liste de ce produit issue de notre catalogue).';
+const NOTE_PHOTO = "Compositions comparées. La liste de ton produit a été lue sur ta photo : à vérifier. Celle de ce produit vient de notre catalogue.";
+
+// ── Règle du prix au millilitre (ou au gramme pour les baumes) ──
+// Un produit n'est « dupe » que s'il coûte moins cher à l'unité que la référence. Sans prix ou sans contenance
+// des deux côtés, on ne peut pas le prouver : « autre option ».
+const STRONG = new Set(['retinoid', 'retinoid_like', 'vitc', 'aha', 'bha', 'pha', 'brightening', 'peptide', 'pdrn_nad', 'collagen', 'niacinamide']);
+function _unit(price, volumeMl, weightG) {
+  const p = Number(price), v = Number(volumeMl), w = Number(weightG);
+  if (!(p > 0 && p < 5000)) return null;
+  if (v > 0 && v < 5000) return { unit: 'ml', per100: p / v * 100 };
+  if (w > 0 && w < 5000) return { unit: 'g', per100: p / w * 100 };
+  return null;
+}
+// Niveaux (seuils à valider avec Candice) :
+//   reliable = actif fort partagé + formule proche (≥ 70) + les 2 compositions vérifiées + moins cher à l'unité prouvé
+//   similar  = moins cher à l'unité prouvé, mais formule moyenne, composition non vérifiée ou actif de soutien
+//   other    = pas prouvé moins cher (prix ou contenance manquants, ou plus cher) → jamais appelé « dupe »
+function _level(o) {
+  if (!o.cheaper) return 'other';
+  if (o.sim >= 70 && o.refVerified && o.candVerified && STRONG.has(o.family)) return 'reliable';
+  return 'similar';
+}
 
 // ─── INCI candidats + recouvrement de composition (B-3, déterministe) ──
 const OBF_UA = 'GlowUp/1.0 (dupe finder)';
@@ -117,10 +139,16 @@ module.exports = async (req, res) => {
   // On retire des candidats tout produit qui EST le produit scanné (même fiche sous un autre nom)
   const cands0 = (Array.isArray(candidates) ? candidates : []).filter(c => !_sameProduct(product, c));
 
-  // ── Composition de la RÉFÉRENCE : utilisée seulement si elle est VÉRIFIÉE ──
-  //    (code-barres → Open Beauty Facts = confiance « high » ; une recherche par nom n'est pas assez sûre)
-  const refInciList = (product.inciConfidence === 'high' && Array.isArray(product.inciList) && product.inciList.length >= 3)
-    ? product.inciList.slice(0, 40) : [];
+  // ── Composition de la RÉFÉRENCE ──
+  //    • 'high'      : trouvée sur une page source (nos fiches, code-barres, nom identique) → vérifiée
+  //    • 'confirmed' : trouvée sur une page au nom proche et CONFIRMÉE par l'utilisatrice → vérifiée
+  //    • 'photo'     : lue sur la photo de l'utilisatrice → utilisée, mais jamais dite « vérifiée »
+  //    Toute autre valeur (nom seulement, rien) : la composition n'est pas utilisée.
+  const refConf = product.inciConfidence;
+  const refTrusted = (refConf === 'high' || refConf === 'confirmed' || refConf === 'photo')
+    && Array.isArray(product.inciList) && product.inciList.length >= 3;
+  const refInciList = refTrusted ? product.inciList.slice(0, 40) : [];
+  const refVerified = refTrusted && refConf !== 'photo';
   const ownInci = (Array.isArray(product.catalogInci) && product.catalogInci.length >= 3) ? product.catalogInci : null;
 
   // ── Actif principal de la référence (nom > INCI vérifiée > fiche catalogue) ──
@@ -272,14 +300,27 @@ Retourne UNIQUEMENT ce JSON, sans texte avant/après :
       return { common: common.slice(0, 4), diffs: diffs.slice(0, 3), formula: !!(f && f.cmp && !f.cmp.eliminated) };
     };
 
+    const refUnit = _unit(product.refPrice, product.volumeMl, product.netWeightG);
+    const candById = {}; cands.forEach(c => { candById[c.id] = c; });
+
     const results = Array.isArray(parsed.results) ? parsed.results
       .filter(r => r && validIds.has(r.id))
       .slice(0, 3)
       .map(r => {
         const t = _templates(r.id);
+        const sim = _reconcile(r.id, Math.max(0, Math.min(100, parseInt(r.similarity, 10) || 0)));
+        const c = candById[r.id] || {};
+        const cu = _unit(c.price, c.volumeMl, c.netWeightG);
+        const cheaper = !!(refUnit && cu && refUnit.unit === cu.unit && cu.per100 < refUnit.per100);
+        const f = formulaMap[r.id];
+        const candVerified = !!(f && f.status === 'verified' && f.cmp && !f.cmp.eliminated);
+        const level = _level({ cheaper, sim, refVerified, candVerified, family: refMain.family });
         return {
           id:              r.id,
-          similarity:      _reconcile(r.id, Math.max(0, Math.min(100, parseInt(r.similarity, 10) || 0))),
+          level,
+          unitPrice:       (refUnit && cu && refUnit.unit === cu.unit)
+            ? { unit: refUnit.unit, ref: Math.round(refUnit.per100 * 100) / 100, cand: Math.round(cu.per100 * 100) / 100 } : null,
+          similarity:      sim,
           commonPoints:    t.common,
           differences:     t.diffs,
           why:             `Même actif principal que ton produit : ${refMain.label}.`,
@@ -288,13 +329,15 @@ Retourne UNIQUEMENT ce JSON, sans texte avant/après :
           skinNote:        typeof r.skinNote === 'string' ? r.skinNote.slice(0, 200) : '',
           source:          'catalog',
           formula:         t.formula,
-          compositionNote: t.formula ? NOTE_VERIFIED : NOTE_UNVERIFIED,
+          compositionNote: t.formula ? (refVerified ? NOTE_VERIFIED : NOTE_PHOTO) : NOTE_UNVERIFIED,
           mainActive:      refMain.label,
           confidence:      t.formula ? 'high' : 'low'
         };
       }) : [];
 
-    results.sort((a, b) => b.similarity - a.similarity);
+    // Les dupes prouvés moins chers passent devant, puis les « autres options » ; à niveau égal, la formule la plus proche
+    const LV = { reliable: 0, similar: 1, other: 2 };
+    results.sort((a, b) => (LV[a.level] - LV[b.level]) || (b.similarity - a.similarity));
 
     // Seuil minimum : en dessous, ce n'est pas un vrai dupe → on ne le propose pas
     const MIN_SIM = 55;
