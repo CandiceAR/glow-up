@@ -129,6 +129,7 @@
               <button class="drawer-sublink" onclick="closeDrawer(); showScreen('profil'); if(window.Profil&&Profil.setTab)Profil.setTab('dupe')">Mes dupes</button>
               <button class="drawer-sublink" onclick="closeDrawer(); goToSkinJourney()">Évolution de ma peau</button>
               <button class="drawer-sublink" onclick="closeDrawer(); showScreen('profil')">Mon profil</button>
+              <button class="drawer-sublink" onclick="closeDrawer(); (AppState.user &amp;&amp; AppState.user.uid) ? openProfileMenu() : openAuthModal()">Mon compte (suppression, déconnexion)</button>
             </div>
           </div>
         </div>
