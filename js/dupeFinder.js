@@ -127,9 +127,10 @@ const DupeFinder = (() => {
       case 'confirm':   html = _vConfirm(); break;
       case 'manual':    html = _vManual(); break;
       case 'notfound':  html = _vNotFound(); break;
-      case 'searching': html = _vLoading('✨ Recherche du meilleur dupe…', 'On cherche la composition de ton produit, puis on la compare'); break;
+      case 'searching': html = _vLoading('✨ Recherche du meilleur dupe…', 'On cherche la composition et on relève les prix chez les revendeurs. Cela peut prendre quelques secondes.'); break;
       case 'compoConfirm': html = _vCompoConfirm(); break;
       case 'compoPhoto':   html = _vCompoPhoto(); break;
+      case 'priceAsk':     html = _vPriceAsk(); break;
       case 'reading':      html = _vLoading('📷 Lecture de la liste d\'ingrédients…', 'On recopie ce qui est écrit sur ta photo'); break;
       case 'results':   html = _vResults(); break;
       case 'nodupe':    html = _vResults(); break;   // aucun dupe fiable (branche dédiée dans _vResults)
@@ -258,6 +259,7 @@ const DupeFinder = (() => {
   const LEVEL = {
     reliable: { icon: '🎯', label: 'Dupe fiable',                         cls: 'df-lv-reliable' },
     similar:  { icon: '≈',  label: 'Dupe similaire',                      cls: 'df-lv-similar' },
+    probable: { icon: '≈',  label: 'Dupe probable · composition non vérifiée', cls: 'df-lv-probable' },
     other:    { icon: '•',  label: 'Autre option · pas prouvée moins chère', cls: 'df-lv-other' }
   };
   // POURQUOI une « Autre option » n'est pas un dupe : s = court (sur la carte), l = long (dans le détail). Dit toujours la vraie raison.
@@ -356,7 +358,7 @@ const DupeFinder = (() => {
       ${o.savings ? `<p class="df-row-save">💰 ${o.savings}</p>` : ''}
       ${o.volLine || ''}
       ${o.descr ? `<p class="df-row-h">Le produit</p><p class="df-row-txt">${o.descr}</p>` : ''}
-      <p class="df-row-h">${(r.level === 'reliable' || r.level === 'similar') ? 'Pourquoi est-ce un dupe&nbsp;?' : 'Pourquoi cette option&nbsp;?'}</p>
+      <p class="df-row-h">${(r.level === 'reliable' || r.level === 'similar') ? 'Pourquoi est-ce un dupe&nbsp;?' : (r.level === 'probable' ? 'Pourquoi est-ce un dupe probable&nbsp;?' : 'Pourquoi cette option&nbsp;?')}</p>
       ${r.why ? `<p class="df-row-txt">${r.why}</p>` : ''}
       ${r.commonPoints?.length ? `<p class="df-why-h">✓ Points communs</p><ul class="df-row-ul">${r.commonPoints.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}
       ${r.differences?.length ? `<p class="df-why-h">≠ Différences</p><ul class="df-row-ul">${r.differences.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}
@@ -375,8 +377,10 @@ const DupeFinder = (() => {
   function _resultCard(r, idx) {
     const p = _catalogProduct(r.id);
     if (!p) return '';
+    // Prix affiché : celui relevé par le serveur (revendeur + date) s'il existe, sinon celui du catalogue
+    const price = (r.priceInfo && r.priceInfo.verified && r.priceInfo.value > 0) ? r.priceInfo.value : p.price;
     const est = _refPrice();
-    let savings = (est > 0 && p.price != null && p.price < est) ? (est - p.price) : 0;
+    let savings = (est > 0 && price != null && price < est) ? (est - price) : 0;
     const isAff = !!p.amazonUrl;
     // Prix à volume égal — uniquement si les 2 contenances sont connues
     const refVol  = (S.identified && S.identified.volumeMl) || 0;
@@ -384,16 +388,16 @@ const DupeFinder = (() => {
     let volLine = '';
     // Format différent (pads ↔ lotion) : pas de comparaison de prix, donc pas d'« économie »
     if (r.formatDiff) savings = 0;
-    else if (refVol > 0 && candVol > 0 && p.price != null) {
-      const normCand = p.price / candVol * refVol;
-      volLine = `<div class="df-vol">${_eur(p.price)} / ${candVol} ml → ≈ <strong>${_eur(normCand)}</strong> pour ${refVol} ml</div>`;
+    else if (refVol > 0 && candVol > 0 && price != null) {
+      const normCand = price / candVol * refVol;
+      volLine = `<div class="df-vol">${_eur(price)} / ${candVol} ml → ≈ <strong>${_eur(normCand)}</strong> pour ${refVol} ml</div>`;
       if (est > 0 && normCand < est) savings = est - normCand;
     }
     const descr = (p.description || '').length > 220 ? p.description.slice(0, 219) + '…' : (p.description || '');
     // Sous le nom : niveau · contenance · prix au millilitre (visibles sans ouvrir la carte)
     const lvInfo = r.level ? (LEVEL[r.level] || LEVEL.other) : null;
     const amount = p.volumeMl > 0 ? `${p.volumeMl} ml` : (p.netWeightG > 0 ? `${p.netWeightG} g` : 'contenance non renseignée');
-    const cu = r.candUnit || (p.price > 0 && p.volumeMl > 0 ? { unit: 'ml', per100: p.price / p.volumeMl * 100 } : (p.price > 0 && p.netWeightG > 0 ? { unit: 'g', per100: p.price / p.netWeightG * 100 } : null));
+    const cu = r.candUnit || (price > 0 && p.volumeMl > 0 ? { unit: 'ml', per100: price / p.volumeMl * 100 } : (price > 0 && p.netWeightG > 0 ? { unit: 'g', per100: price / p.netWeightG * 100 } : null));
     const meta = [
       lvInfo ? `<span class="df-meta-lv ${lvInfo.cls}">${lvInfo.icon} ${_esc(_lvLabel(r))}</span>` : '',
       `<span>${amount}</span>`,
@@ -402,7 +406,7 @@ const DupeFinder = (() => {
     return _row({
       img: _cleanImg(p.imageUrl) ? `<img src="${_cleanImg(p.imageUrl)}" alt="${_esc(p.name)}" loading="lazy" onerror="this.style.display='none'">` : '<span class="df-row-noimg">🧴</span>',
       brand: p.brand, name: p.name, meta,
-      price: p.price != null ? _eur(p.price) : '—',
+      price: price != null ? _eur(price) : '—',
       body: _rowBody({
         r, descr, volLine,
         savings: savings > 0 ? `Tu économises ${_eur(savings)}${volLine ? ' (à volume égal)' : ''}` : '',
@@ -443,6 +447,10 @@ const DupeFinder = (() => {
     if (c === 'photo') {
       return `<span class="df-inci-badge df-inci-low">📷 Lue sur ta photo, à vérifier</span>
         <details class="df-inci-read"><summary>Voir la liste lue</summary><p>${_esc((id.inciList || []).join(', '))}</p></details>`;
+    }
+    // Niveau 3 : aucune composition vérifiée, seulement un actif probable (estimation)
+    if (id && id.estimateFamily && typeof MainActive !== 'undefined') {
+      return `<span class="df-inci-badge df-inci-low">ℹ️ Composition non vérifiée · actif probable : ${_esc(MainActive.label(id.estimateFamily))}</span>`;
     }
     return '<span class="df-inci-badge df-inci-low">ℹ️ Composition non vérifiée</span>';
   }
@@ -529,10 +537,21 @@ const DupeFinder = (() => {
 
     // Les dupes prouvés moins chers d'abord, puis les « autres options » (jamais appelées « dupes »)
     const realDupes = catRes.filter(r => r.level === 'reliable' || r.level === 'similar');
-    const others    = catRes.filter(r => !(r.level === 'reliable' || r.level === 'similar'));
+    const probables = catRes.filter(r => r.level === 'probable');
+    const others    = catRes.filter(r => !(r.level === 'reliable' || r.level === 'similar' || r.level === 'probable'));
+    // Dupes probables : même actif et moins chers (prix relevé), mais la composition n'a pas pu être vérifiée
+    const probHtml = probables.length
+      ? `${realDupes.length ? '<div class="df-altsep"><span>Dupes probables</span></div>' : ''}
+         <p class="df-alt-h">Même type de produit et moins chers au ${probables.some(o => o.unitPrice && o.unitPrice.unit === 'g') ? 'gramme' : 'millilitre'}, mais nous n'avons pas pu vérifier la composition. Regarde la liste d'ingrédients avant d'acheter.</p>`
+        + probables.map((r, i) => _resultCard(r, realDupes.length + i)).join('')
+      : '';
+    // La personne a le produit en main : la photo de la liste d'ingrédients rend le résultat plus précis (facultatif)
+    const preciseCta = (!(id.inciList || []).length && id.inciConfidence !== 'photo')
+      ? `<p class="df-precise">Tu as le produit en main&nbsp;? <a href="#" onclick="DupeFinder.goPhoto();return false;">Photographie sa liste d'ingrédients</a> pour un résultat plus précis.</p>` : '';
     const catHtml = realDupes.map((r, i) => _resultCard(r, i)).join('')
+      + probHtml
       + (others.length
-        ? (realDupes.length
+        ? ((realDupes.length || probables.length)
             ? `<div class="df-altsep"><span>Autres options</span></div>
                <p class="df-alt-h">Même actif principal, mais nous ne pouvons pas prouver qu'elles coûtent moins cher au ${others.some(o => o.unitPrice && o.unitPrice.unit === 'g') ? 'gramme' : 'millilitre'} que ton produit.</p>`
             : '')
@@ -564,6 +583,12 @@ const DupeFinder = (() => {
           <h3 class="df-dupes-h">« ${_t} »</h3>
           <p class="df-dupes-sub">Des produits de notre sélection qui partagent l'actif principal de ton produit, s'utilisent de la même façon et coûtent moins cher à l'unité.</p>
           <span class="df-dupes-count">${_count} dupe${_count > 1 ? 's' : ''} trouvé${_count > 1 ? 's' : ''}${_from ? ' · à partir de ' + _eur(_from) : ''}</span>
+        </div>` : probables.length ? `
+        <div class="df-dupes-title">
+          <span class="df-dupes-eyebrow">✦ Des dupes probables de ✦</span>
+          <h3 class="df-dupes-h">« ${_t} »</h3>
+          <p class="df-dupes-sub">Moins chers que ton produit et du même type, mais sa composition n'a pas pu être vérifiée : ce sont des dupes <strong>probables</strong>, pas des dupes confirmés.</p>
+          <span class="df-dupes-count">${probables.length} dupe${probables.length > 1 ? 's' : ''} probable${probables.length > 1 ? 's' : ''}${(function () { const pp = probables.map(r => { const cp = _catalogProduct(r.id); return cp && cp.price > 0 ? cp.price : null; }).filter(Boolean); return pp.length ? ' · à partir de ' + _eur(Math.min.apply(null, pp)) : ''; })()}</span>
         </div>` : (catRes.length ? `
         <div class="df-dupes-title">
           <span class="df-dupes-eyebrow">✦ Des options avec le même actif que ✦</span>
@@ -580,6 +605,7 @@ const DupeFinder = (() => {
         ${_vPriceForm()}
         ${dupesTitle}
         <div class="df-list">${catHtml}${extHtml}</div>
+        ${preciseCta}
         ${altBlock}
         ${_footer(left)}
       </div>`;
@@ -668,8 +694,9 @@ const DupeFinder = (() => {
   function confirmCompo(yes) {
     const id = S.identified;
     if (!id) { goHome(); return; }
-    if (yes) { id.inciConfidence = 'confirmed'; _runMatch(); return; }
-    id.inciConfidence = 'none'; id.inciList = []; id.mainFamily = null; S.photoMsg = ''; S.view = 'compoPhoto'; render();
+    if (yes) { id.inciConfidence = 'confirmed'; _afterCompo(); return; }
+    // « Ce n'est pas le même » : on n'utilise pas cette fiche, et on ne demande pas de photo → recherche avec l'actif probable
+    id.inciConfidence = 'none'; id.inciList = []; id.mainFamily = null; id.inci = ''; _afterCompo();
   }
 
   function goPhoto() { S.photoMsg = ''; S.view = 'compoPhoto'; render(); }
@@ -677,7 +704,7 @@ const DupeFinder = (() => {
   function skipCompo() {
     const id = S.identified;
     if (id) { id.inciConfidence = 'none'; id.inciList = []; id.mainFamily = null; }
-    _runMatch();
+    _afterCompo();
   }
 
   function onIngredientsPhoto(input) {
@@ -708,7 +735,7 @@ const DupeFinder = (() => {
       const id = S.identified;
       id.inci = d.inci; id.inciList = d.inciList; id.mainFamily = d.mainFamily || null; id.inciConfidence = 'photo'; id.inciSource = 'photo';
       id.inciSourceLabel = d.sourceLabel || 'lue sur ta photo'; id.inciDate = d.retrievedAt || ''; id.inciSourceUrl = ''; id.inciTitle = '';
-      _runMatch();
+      _afterCompo();
     } catch (e) {
       S.photoMsg = 'Lecture impossible pour le moment. Réessaie dans un instant.'; S.view = 'compoPhoto'; render();
     }
@@ -740,6 +767,35 @@ const DupeFinder = (() => {
         <p class="df-priceform-note">Ce prix sert uniquement à calculer : il n'est enregistré nulle part.</p>
       </div>`;
   }
+  // ─── Étape « prix » : avant les résultats, on demande le prix payé (et la contenance si on ne la connaît pas) ───
+  // Sans le prix de SON produit, impossible de prouver qu'un autre est moins cher : c'est la clé pour obtenir de vrais dupes.
+  function _afterCompo() {
+    const id = S.identified;
+    if (!id) { S.view = 'home'; render(); return; }
+    _applyUserRef(id);
+    if (!_refUnitKnown() && !S.priceSkipped) { S.view = 'priceAsk'; render(); return; }
+    return _runMatch();
+  }
+  function _vPriceAsk() {
+    const id = S.identified || {};
+    const needPrice  = !(_refPrice() > 0);
+    const needAmount = !(id.volumeMl > 0 || id.netWeightG > 0);
+    return `
+      <div class="df-priceask">
+        <span class="df-hero-emoji">💶</span>
+        <h2>Combien as-tu payé ce produit&nbsp;?</h2>
+        <p class="df-ask-name">${_esc((id.brand ? id.brand + ' ' : '') + (id.name || ''))}</p>
+        <p>C'est ce prix qui permet de <strong>prouver</strong> qu'un autre produit coûte moins cher. Sans lui, nous ne pouvons pas te proposer de vrais dupes.</p>
+        <div class="df-priceform-row">
+          ${needPrice ? '<input id="dfRefPrice" type="number" inputmode="decimal" step="0.01" min="0" class="df-input" placeholder="Prix (€)">' : ''}
+          ${needAmount ? '<input id="dfRefAmount" type="number" inputmode="decimal" step="0.1" min="0" class="df-input" placeholder="Contenance"><select id="dfRefUnit" class="df-input df-unit"><option value="ml">ml</option><option value="g">g</option></select>' : ''}
+        </div>
+        <button class="btn btn-dark df-btn-main" onclick="DupeFinder.recompute()">Voir les dupes</button>
+        <button class="btn btn-ghost df-btn-alt" onclick="DupeFinder.skipPrice()">Je ne connais pas le prix</button>
+        <p class="df-priceform-note">Le prix sert uniquement à calculer : il n'est enregistré nulle part.</p>
+      </div>`;
+  }
+  function skipPrice() { S.priceSkipped = true; _runMatch(); }
   function recompute() {
     const id = S.identified || {};
     const pEl = document.getElementById('dfRefPrice'), aEl = document.getElementById('dfRefAmount');
@@ -851,7 +907,7 @@ const DupeFinder = (() => {
   async function _fetchInci(id) {
     try {
       // la recherche de composition sur le web peut prendre quelques secondes
-      const r = await _post('/api/inci', { barcode: id.barcode || '', brand: id.brand || '', name: id.name || '' }, 25000);
+      const r = await _post('/api/inci', { barcode: id.barcode || '', brand: id.brand || '', name: id.name || '' }, 50000);
       if (_limitFrom(r)) return { limited: true };     // compte requis, quota épuisé, limite de produits inconnus du jour…
       if (!r.ok) return null;
       return r.data;
@@ -893,12 +949,15 @@ const DupeFinder = (() => {
     // partagent passent en tête de liste. Le serveur applique ensuite la règle de façon stricte.
     const refMain = (typeof MainActive !== 'undefined') ? MainActive.resolve({ name: id.name, tags: id.catalogTags }) : null;
     // Famille d'actif : d'après le nom / la fiche catalogue, sinon d'après la composition trouvée (calculée par le serveur)
-    const refFam = (refMain && refMain.family) || id.mainFamily || null;
+    const refFam = (refMain && refMain.family) || id.mainFamily || id.estimateFamily || null;
+    // Produit sans actif vedette (crème de base, huile…) : on privilégie les produits qui n'en ont pas non plus
+    const generic = !refFam && (id.estimated === true || (id.inciList || []).length >= 3);
     const scored = pool.map(p => {
       let s = 0;
       const ptags = (p.ingredientTags || []).map(_slug);
       s += acts.filter(a => ptags.some(t => t.includes(a) || a.includes(t))).length * 3;
       if (refFam && typeof MainActive !== 'undefined') { const m = MainActive.resolve({ name: p.name, tags: p.ingredientTags }); if (m && m.family === refFam) s += 20; }
+      if (generic && typeof MainActive !== 'undefined') { const m = MainActive.resolve({ name: p.name, tags: p.ingredientTags }); if (!m || !MainActive.isHero(m.family)) s += 20; }
       if (_refPrice() > 0 && p.price > 0 && p.price < _refPrice()) s += 2;
       s += (p.rating || 0) * 0.3;
       return { p, s };
@@ -931,6 +990,7 @@ const DupeFinder = (() => {
       S.view = 'insufficient'; render(); return;
     }
 
+    S.priceSkipped = false;
     if (!id._searchId) id._searchId = 'r' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);   // une recherche = un seul décompte
     if (_left() <= 0 && !id._counted) {
       S.limitMsg = 'Tu as utilisé tous tes dupes ce mois-ci. Ils reviennent le 1er du mois prochain.';
@@ -960,9 +1020,9 @@ const DupeFinder = (() => {
 
     // Page au nom proche mais pas identique (ex. version « baby », « nuit ») : on demande de CONFIRMER
     if (id.inciConfidence === 'medium') { S.view = 'compoConfirm'; render(); return; }
-    // Rien de fiable et aucun actif connu par ailleurs : on demande la photo de la liste d'ingrédients
-    if (id.inciConfidence === 'none' && !_knowsActive(id)) { S.photoMsg = ''; S.view = 'compoPhoto'; render(); return; }
-    return _runMatch();
+    // Rien de vérifié : on ne demande RIEN à la personne. Le serveur a cherché la composition sur le web ; à défaut, on
+    // continue avec l'actif probable (« dupe probable »). La photo de la liste reste proposée, mais facultative.
+    return _afterCompo();
   }
 
   // ─── Fiche catalogue du produit scanné ────────────────────────
@@ -1009,6 +1069,8 @@ const DupeFinder = (() => {
 
   function _applyInci(id, inci) {
     id.inciSourceUrl = ''; id.inciSourceLabel = ''; id.inciDate = ''; id.inciTitle = ''; id.mainFamily = null;
+    // Niveau 3 : actif principal PROBABLE estimé par le serveur (jamais une composition). `estimated` = le serveur a répondu, même « aucun actif vedette ».
+    id.estimated = !!(inci && inci.estimate); id.estimateFamily = (inci && inci.estimate && inci.estimate.family) || '';
     if (inci && inci.found && inci.inciList && inci.inciList.length >= 3) {
       id.inci = inci.inci; id.inciList = inci.inciList; id.mainFamily = inci.mainFamily || null;
       id.inciSource = inci.source; id.inciConfidence = inci.confidence;   // 'high' | 'medium'
@@ -1049,7 +1111,7 @@ const DupeFinder = (() => {
     try {
       const t0  = Date.now();
       const r = await _post('/api/dupeMatch', { product: id, candidates, userSkin: _userSkin(),
-        ageConstraint: (typeof AgeGuard !== 'undefined') ? AgeGuard.aiConstraint(AppState.questionnaire?.answers) : null }, 45000);
+        ageConstraint: (typeof AgeGuard !== 'undefined') ? AgeGuard.aiConstraint(AppState.questionnaire?.answers) : null }, 60000);
       console.info('[DupeFinder] dupeMatch HTTP', r.status, '·', (Date.now() - t0) + 'ms');
       if (_limitFrom(r)) return;                       // compte requis, quota épuisé, trop de demandes, plafond du jour
       data = r.data;
@@ -1188,7 +1250,7 @@ const DupeFinder = (() => {
   return {
     initScreen, render, goHome, goManual, goBarcode,
     pickCamera, pickGallery, onPhoto, submitManual, startSearch, retry,
-    confirmCompo, skipCompo, goPhoto, onIngredientsPhoto, recompute, editPrice
+    confirmCompo, skipCompo, skipPrice, goPhoto, onIngredientsPhoto, recompute, editPrice
   };
 })();
 

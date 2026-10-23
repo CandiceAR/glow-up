@@ -48,10 +48,10 @@
       "maxDuration": 30
     },
     "api/dupeMatch.js": {
-      "maxDuration": 45
+      "maxDuration": 60
     },
     "api/inci.js": {
-      "maxDuration": 30
+      "maxDuration": 60
     },
     "api/analyzeRoutine.js": {
       "maxDuration": 60

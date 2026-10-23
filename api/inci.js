@@ -19,6 +19,7 @@
 
 const { lookup, queueProduct, cleanList, EMPTY } = require('../lib/inciLookup.js');
 const MainActive = require('../lib/mainActive.js');
+const WebCompo = require('../lib/webCompo.js');   // recherche web de la composition (niveau 2) et actif probable (niveau 3)
 const _sim = require('../lib/inciSim.js');
 const AI = require('../lib/aiGuard.js');   // limite par IP, plafond de coût, quotas par compte
 
@@ -144,9 +145,14 @@ module.exports = async (req, res) => {
   if (_quotaBlocked(res, await AI.quotaStatus(uid, G.cfg, searchId))) return;
 
   // ne lève jamais d'erreur (pas de composition = confiance « none »)
+  // Si les bases ouvertes n'ont rien : recherche web vérifiée (niveau 2), puis actif probable (niveau 3) — sans rien demander à la personne
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const web = (apiKey && G.cfg.webSearch !== false)
+    ? (brand, name) => WebCompo.find(brand, name, { anthropic: (route, b) => AI.anthropic(route, apiKey, b) })
+    : null;
   const r = await lookup(
     { barcode: body.barcode, brand: body.brand, name: body.name },
-    { gate: () => AI.gateUnknown(uid, searchId, G.cfg), useIncidecoder: G.cfg.incidecoder !== false }
+    { gate: () => AI.gateUnknown(uid, searchId, G.cfg), useIncidecoder: G.cfg.incidecoder !== false, web }
   );
   if (r && r.limited) return res.status(429).json({ error: 'unknown-limit', message: MSG_UNKNOWN_LIMIT });
   return res.status(200).json(withActive(r));

@@ -45,6 +45,8 @@ const { similarity: _formulaSim } = _sim;
 const SameProduct = require('../lib/sameProduct.js');
 // Type d'usage (pads ≠ peeling à rincer ≠ sérum…) et règle de concentration des exfoliants / rétinoïdes
 const UsageType = require('../lib/usageType.js');
+// Relevé automatique du prix des produits proposés (page retéléchargée et vérifiée)
+const WebPrice = require('../lib/webPrice.js');
 // Rang (position INCI) du 1er exfoliant / rétinoïde dans une composition : plus petit = plus concentré
 function _ranks(list) {
   const out = {};
@@ -67,6 +69,7 @@ const MSG_MAKEUP = 'Les dupes maquillage arrivent bientôt.';
 const MAKEUP_CATS = new Set(['foundation', 'concealer', 'corrector', 'powder', 'primer', 'blush', 'bronzer', 'highlighter',
   'mascara', 'eyeliner', 'eyebrow', 'eyeshadow', 'lipstick', 'lipgloss', 'lipliner']);
 const NOTE_UNVERIFIED = "Composition non vérifiée : les formules n'ont pas été comparées. L'actif principal indiqué est celui annoncé sur la fiche du produit.";
+const NOTE_ESTIMATE = "Composition de ton produit non vérifiée : nous n'avons pas pu comparer les formules. Avant d'acheter, regarde la liste d'ingrédients sur l'emballage.";
 const NOTE_VERIFIED = 'Compositions comparées (liste de ton produit trouvée sur une page source, liste de ce produit issue de notre catalogue).';
 const NOTE_PHOTO = "Compositions comparées. La liste de ton produit a été lue sur ta photo : à vérifier. Celle de ce produit vient de notre catalogue.";
 
@@ -226,12 +229,22 @@ module.exports = async (req, res) => {
   const ownInci = (Array.isArray(product.catalogInci) && product.catalogInci.length >= 3) ? product.catalogInci : null;
 
   // ── Actif principal de la référence (nom > INCI vérifiée > fiche catalogue) ──
-  const refMain = MainActive.resolve({
+  const refMain0 = MainActive.resolve({
     name: product.name,
     inci: refInciList.length ? refInciList : ownInci,
     tags: product.catalogTags
   }, _sim);
-  if (!refMain) return _none(res, 'unverified', MSG_UNVERIFIED, quota);
+  // Composition de la référence NON vérifiée (niveau 3) : l'actif peut venir d'une estimation (lib/webCompo.js), jamais d'une composition inventée.
+  // Les dupes sont alors au mieux « probables » (jamais « fiables » ni « similaires »).
+  const estimateMode = !refTrusted;
+  const estFam = (typeof product.estimateFamily === 'string' && MainActive.FAMILIES.indexOf(product.estimateFamily) >= 0) ? product.estimateFamily : null;
+  let refMain = refMain0;
+  if (!refMain && estFam) refMain = { family: estFam, label: MainActive.label(estFam), via: 'estimate' };
+  // Produit sans actif vedette (crème de base, huile…) : composition trouvée sans actif, ou estimation « aucun actif vedette ».
+  // On propose alors des produits du même usage qui n'ont pas non plus d'actif vedette (jamais un rétinol pour une crème de base).
+  const generic = !refMain && (refTrusted || product.estimated === true);
+  if (!refMain && !generic) return _none(res, 'unverified', MSG_UNVERIFIED, quota);
+  if (generic) refMain = { family: null, label: 'produit de base, sans actif vedette', via: 'generic' };
 
   // ── Un dupe partage l'actif principal : on écarte tous les autres candidats AVANT toute IA ──
   const candMain = {};
@@ -240,6 +253,7 @@ module.exports = async (req, res) => {
       && (!c.inciVerificationStatus || c.inciVerificationStatus === 'verified');
     const m = MainActive.resolve({ name: c.name, inci: trusted ? c.inciNormalized : null, tags: c.ingredientTags }, _sim);
     if (m) candMain[c.id] = m;
+    if (generic) return !m || !MainActive.isHero(m.family);
     return m && m.family === refMain.family;
   });
   if (!candsActive.length) return _none(res, 'no-shared-active', msgNoShared(refMain.label), quota);
@@ -268,6 +282,39 @@ module.exports = async (req, res) => {
     concerns: (c.concernTags || []).slice(0, 8),
     desc: (c.description || '').slice(0, 160)
   }));
+
+  // ── Prix des produits proposés : relevé AUTOMATIQUE chez un revendeur (page retéléchargée et vérifiée, voir lib/webPrice.js).
+  //    Lancé en parallèle du classement par l'IA. Seuls les produits qui ont une chance d'être moins chers sont cherchés
+  //    (prix du catalogue indicatif), 4 par recherche au plus, et chaque résultat est gardé 7 jours.
+  const refUnit0 = _unit(product.refPrice, product.volumeMl, product.netWeightG);
+  const _applyPrice = (c, r) => Object.assign(c, { price: r.price, priceVerified: true, priceSource: { name: r.host, url: r.url }, priceRetrievedAt: r.date, priceNote: 'relevé automatiquement' });
+  const pricesP = (async () => {
+    if (!refUnit0 || G.cfg.webPrice === false) return;
+    const need = cands.filter(c => {
+      if (c.priceVerified) return false;
+      const cu = _unit(c.price, c.volumeMl, c.netWeightG) || _unit(1, c.volumeMl, c.netWeightG);   // 2e forme : contenance connue, prix inconnu
+      const fd = !!(usageInfo[c.id] && usageInfo[c.id].formatDiff);
+      return cu && cu.unit === refUnit0.unit && !fd;
+    }).map(c => ({ c, hint: Number(c.price) > 0 ? (_unit(c.price, c.volumeMl, c.netWeightG) || {}).per100 : null }))
+      // indicatif seulement : on écarte ceux dont le prix du catalogue est très au-dessus du produit de la personne
+      .filter(x => x.hint == null || x.hint < refUnit0.per100 * 1.5)
+      .sort((a, b) => (a.hint == null ? 1e9 : a.hint) - (b.hint == null ? 1e9 : b.hint));
+    const hits = await Promise.all(need.map(x => WebPrice.cacheGet(x.c.id)));
+    const toSearch = [];
+    need.forEach((x, i) => {
+      const h = hits[i];
+      if (h && (!h.volumeMl || !x.c.volumeMl || h.volumeMl === x.c.volumeMl)) _applyPrice(x.c, h);
+      else if (h === undefined) toSearch.push(x.c);          // jamais cherché (ou trop ancien)
+    });                                                     // h === null : déjà cherché récemment, introuvable → on ne repaie pas
+    const max = Number(G.cfg.webPricePerSearch) >= 0 ? Number(G.cfg.webPricePerSearch) : 4;
+    const deps = { anthropic: (route, b) => AI.anthropic(route, apiKey, b) };
+    await Promise.all(toSearch.slice(0, max).map(async c => {
+      const r = await WebPrice.findPrice(c, deps);
+      await WebPrice.cacheSet(c, r);
+      if (r) _applyPrice(c, r);
+    }));
+  })().catch(e => console.error('[dupeMatch] relevé de prix en erreur :', e.message));
+  const pricesDone = Promise.race([pricesP, new Promise(r => setTimeout(r, 32000))]);
 
   // ── Similarité de FORMULE (déterministe) : seulement si la composition de la référence est utilisable
   //    ET que le candidat a un INCI structuré vérifié en catalogue. ──
@@ -355,6 +402,8 @@ Retourne UNIQUEMENT ce JSON, sans texte avant/après :
     console.error('[dupeMatch] classement IA en erreur :', err.message);
   }
 
+  await pricesDone;    // les prix relevés sont prêts (ou le délai est dépassé : ces produits restent « prix non vérifié »)
+
   const FITS = ['adapted', 'caution', 'unfit'];
   const ROLES = ['closest', 'value', 'cheapest'];
 
@@ -372,7 +421,8 @@ Retourne UNIQUEMENT ce JSON, sans texte avant/après :
   // Phrases à MODÈLE FIXE à partir de données vérifiées (jamais la prose de l'IA)
   const _templates = (id) => {
     const f = formulaMap[id];
-    const common = [`Même actif principal : ${refMain.label}`];
+    const common = [generic ? 'Même type de produit, sans actif vedette'
+      : (refMain.via === 'estimate' ? `Actif principal probable (estimé) : ${refMain.label}` : `Même actif principal : ${refMain.label}`)];
     const diffs = [];
     if (f && f.cmp && !f.cmp.eliminated) {
       const c = f.cmp;
@@ -396,9 +446,10 @@ Retourne UNIQUEMENT ce JSON, sans texte avant/après :
   // et les « autres options ». r = choix de l'IA ou null.
   const build = (c, r) => {
     const t = _templates(c.id), f = formulaMap[c.id];
-    const sim = r
+    // La note de l'IA n'a de valeur que s'il existe une vraie comparaison de formules : sans elle, pas de similarité (donc au mieux « dupe probable »)
+    const sim = !f ? null : (r
       ? _reconcile(c.id, Math.max(0, Math.min(100, parseInt(r.similarity, 10) || 0)))
-      : (f ? (f.eliminated ? Math.min(f.sim, 20) : f.sim) : null);
+      : (f.eliminated ? Math.min(f.sim, 20) : f.sim));
     const cu = _unit(c.price, c.volumeMl, c.netWeightG);
     // Pads et lotion ne se comparent pas au millilitre : format différent → au mieux « autre option »
     const formatDiff = !!(usageInfo[c.id] && usageInfo[c.id].formatDiff);
@@ -408,7 +459,10 @@ Retourne UNIQUEMENT ce JSON, sans texte avant/après :
     const cheaper = comparable && priceOk && cu.per100 < refUnit.per100;
     const candVerified = !!(f && f.status === 'verified' && f.cmp && !f.cmp.eliminated);
     // Un dupe exige une formule connue et assez proche ; sinon c'est une « autre option »
-    const level = (sim != null && sim >= MIN_SIM) ? _level({ cheaper, sim, refVerified, candVerified, family: refMain.family }) : 'other';
+    // « Dupe probable » : même actif (ou même type de produit) et même usage, moins cher à l'unité PROUVÉ (prix sourcé et daté),
+    // mais les formules ne peuvent pas être comparées (composition de l'un des deux non vérifiée).
+    const level = (sim != null && sim >= MIN_SIM) ? _level({ cheaper, sim, refVerified, candVerified, family: refMain.family })
+      : (sim == null && cheaper ? 'probable' : 'other');
     // POURQUOI ce n'est pas un dupe (affiché sur la carte) — du plus important au moins important
     const reasons = [];
     if (level === 'other') {
@@ -437,23 +491,25 @@ Retourne UNIQUEMENT ce JSON, sans texte avant/après :
       sortUnit: cu ? cu.per100 : null, sortPrice: Number(c.price) > 0 ? Number(c.price) : null,
       similarity: sim == null ? 0 : sim,
       commonPoints: t.common, differences: diffs.slice(0, 4),
-      why: `Même actif principal que ton produit : ${refMain.label}.`,
+      why: generic ? 'Même type de produit que le tien (crème ou soin de base, sans actif vedette).'
+        : (refMain.via === 'estimate' ? `Actif principal probable de ton produit : ${refMain.label} (estimation, sa composition n'a pas pu être vérifiée).`
+          : `Même actif principal que ton produit : ${refMain.label}.`),
       role: r && ROLES.includes(r.role) ? r.role : 'closest',
       skinFit: r && FITS.includes(r.skinFit) ? r.skinFit : null,        // null : l'IA ne s'est pas prononcée
       skinNote: r && typeof r.skinNote === 'string' ? r.skinNote.slice(0, 200) : '',
       source: 'catalog', formula: t.formula,
-      compositionNote: t.formula ? (refVerified ? NOTE_VERIFIED : NOTE_PHOTO) : NOTE_UNVERIFIED,
+      compositionNote: t.formula ? (refVerified ? NOTE_VERIFIED : NOTE_PHOTO) : (estimateMode ? NOTE_ESTIMATE : NOTE_UNVERIFIED),
       mainActive: refMain.label, confidence: t.formula ? 'high' : 'low'
     };
   };
 
   const all = cands.slice(0, 25).map(c => build(c, picked.get(c.id) || null));
-  const LV = { reliable: 0, similar: 1, other: 2 };
+  const LV = { reliable: 0, similar: 1, probable: 2, other: 3 };
   const INF = Number.POSITIVE_INFINITY;
   all.sort((a, b) => {
     if (LV[a.level] !== LV[b.level]) return LV[a.level] - LV[b.level];
-    if (a.level !== 'other') return b.similarity - a.similarity;                 // dupes : formule la plus proche d'abord
-    // autres options : du moins cher au plus cher à l'unité (au millilitre / gramme) quand on le sait, sinon au prix
+    if (a.level === 'reliable' || a.level === 'similar') return b.similarity - a.similarity;   // dupes : formule la plus proche d'abord
+    // dupes probables et autres options : du moins cher au plus cher à l'unité (au millilitre / gramme) quand on le sait, sinon au prix
     const ua = a.sortUnit == null ? INF : a.sortUnit, ub = b.sortUnit == null ? INF : b.sortUnit;
     if (ua !== ub) return ua - ub;
     return (a.sortPrice == null ? INF : a.sortPrice) - (b.sortPrice == null ? INF : b.sortPrice);
@@ -474,7 +530,8 @@ Retourne UNIQUEMENT ce JSON, sans texte avant/après :
 
   return res.status(200).json({
     status: results.length ? 'ok' : 'none',
-    trueDupeExists: dupes.length > 0,
+    trueDupeExists: dupes.some(r => r.level === 'reliable' || r.level === 'similar'),
+    probableDupeExists: dupes.some(r => r.level === 'probable'),
     noDupeMessage: '',
     results, externalResults: [], bestSkinAlternativeId: bestAlt, selfDupe: null,
     quota: _pub(quotaOut)
