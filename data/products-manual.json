@@ -15,7 +15,7 @@
       "category": "serum",
       "imageUrl": "assets/vitamin-c12.jpg",
       "amazonUrl": "https://amzn.to/4cwn1Xm?tag=glowupapp-21",
-      "price": 50,
+      "price": 39.9,
       "rating": 4.6,
       "reviews": 3000,
       "description": "Sérum concentré à la vitamine C pure qui illumine la peau, lisse les rides et améliore l'éclat du teint.",
@@ -335,7 +335,13 @@
         "url": "https://www.boots.com/la-roche-posay-vitamin-c12-serum-30ml-10351281",
         "retrievedAt": "2026-10-20",
         "type": "fiche produit d'un revendeur"
-      }
+      },
+      "priceVerified": true,
+      "priceSource": {
+        "name": "Soin et Nature",
+        "url": "https://soin-et-nature.com/en/20001-la-roche-posay-serum-pure-vitamin-c10-30ml.html"
+      },
+      "priceRetrievedAt": "2026-10-20"
     },
     {
       "id": "m002",
@@ -7953,7 +7959,7 @@
       "category": "serum",
       "imageUrl": "assets/THEORDINARY-Niaciamide.jpg",
       "amazonUrl": "https://www.amazon.fr/Ordinary-Niacinamide-10-Zinc-30ml/dp/B01MDTVZTZ?linkCode=ll2&tag=glowupapp-21&linkId=b459c38f6b95263cae6ab3cc9756b25c&ref_=as_li_ss_tl",
-      "price": 7.9,
+      "price": 5.79,
       "currency": "EUR",
       "rating": 4.5,
       "reviews": 45000,
@@ -8103,7 +8109,13 @@
         "url": "https://www.stylevana.com/en_US/the-ordinary-niacinamide-10-zinc-1-30ml25376.html",
         "retrievedAt": "2026-10-20",
         "validatedBy": "Candice 2026-10-20"
-      }
+      },
+      "priceVerified": true,
+      "priceSource": {
+        "name": "Atida",
+        "url": "https://www.atida.fr/the-ordinary-niacinamide-10-zinc-1-30ml.html"
+      },
+      "priceRetrievedAt": "2026-10-20"
     },
     {
       "id": "m140",
@@ -14770,7 +14782,7 @@
       "category": "serum",
       "imageUrl": "https://m.media-amazon.com/images/P/B09L5SNZ6N.01.MZZZZZZZ.jpg",
       "amazonUrl": "https://www.amazon.fr/dp/B09L5SNZ6N?tag=glowupapp-21",
-      "price": 28.5,
+      "price": 43.49,
       "rating": 4.6,
       "reviews": 3200,
       "description": "Sérum expert anti-rides et anti-taches avec niacinamide 5% et acide glycolique 8%.",
@@ -14994,7 +15006,14 @@
         "url": "https://lyskin.com/shop/vichy-liftactiv-specialist-b3-anti-dark-spots-serum-30ml/",
         "retrievedAt": "2026-10-20",
         "validatedBy": "Candice 2026-10-20"
-      }
+      },
+      "priceVerified": true,
+      "priceSource": {
+        "name": "Soin et Nature",
+        "url": "https://www.soin-et-nature.com/fr/23649-vichy-liftactiv-specialist-serum-b3-30-ml.html"
+      },
+      "priceRetrievedAt": "2026-10-20",
+      "priceNote": "38,49 € en promotion jusqu'au 30 octobre 2026"
     },
     {
       "id": "m254",
@@ -15344,7 +15363,11 @@
         "url": "https://www.skinlovers.com/products/la-roche-posay-pure-vitamin-c-10-serum-30ml",
         "retrievedAt": "2026-10-20",
         "validatedBy": "Candice 2026-10-20"
-      }
+      },
+      "discontinued": true,
+      "discontinuedNote": "La Roche-Posay Pure Vitamin C10 n'est plus vendu.",
+      "discontinuedReportedAt": "2026-10-23",
+      "discontinuedSource": "signalé par Candice"
     },
     {
       "id": "m257",
@@ -15353,7 +15376,7 @@
       "category": "serum",
       "imageUrl": "",
       "amazonUrl": "https://www.amazon.fr/dp/B07QCWTYJ2?tag=glowupapp-21",
-      "price": 38,
+      "price": 58.95,
       "rating": 4.7,
       "reviews": 4800,
       "description": "Booster niacinamide 10% qui réduit pores dilatés, taches sombres et imperfections pour tous types de peaux.",
@@ -15366,7 +15389,14 @@
       "ingredientTags": [
         "niacinamide"
       ],
-      "active": false
+      "active": false,
+      "priceVerified": true,
+      "priceSource": {
+        "name": "Cloud10 Beauty",
+        "url": "https://www.cloud10beauty.com/fr-fr/products/paula-s-choice-resist-10-niacinamide-booster"
+      },
+      "priceRetrievedAt": "2026-10-20",
+      "priceNote": "prix habituel ; produit épuisé chez ce revendeur"
     },
     {
       "id": "m258",
@@ -20863,7 +20893,7 @@
       "category": "serum",
       "imageUrl": "https://m.media-amazon.com/images/P/B0BT7KY271.01.MZZZZZZZ.jpg",
       "amazonUrl": "https://www.amazon.fr/dp/B0BT7KY271?tag=glowupapp-21",
-      "price": 20.9,
+      "price": 28.9,
       "rating": 4.5,
       "reviews": 2100,
       "description": "Sérum à 70% d'extrait de pêche et niacinamide pour hydrater, éclaircir et unifier le teint. Texture légère et absorption rapide.",
@@ -21332,7 +21362,14 @@
         "url": "https://www.iherb.com/pr/anua-peach-70-niacin-serum-1-01-fl-oz-30-ml/131868",
         "retrievedAt": "2026-10-20",
         "validatedBy": "Candice 2026-10-20"
-      }
+      },
+      "priceVerified": true,
+      "priceSource": {
+        "name": "Notino",
+        "url": "https://www.notino.fr/anua/peach-70-niacin-serum-serum-hydratant-illuminateur-anti-pores-dilates-et-rides/p-16246260/"
+      },
+      "priceRetrievedAt": "2026-10-20",
+      "priceNote": "prix remisé"
     },
     {
       "id": "m349",
@@ -26684,7 +26721,7 @@
       "category": "exfoliant",
       "imageUrl": "assets/products/m393.jpg",
       "amazonUrl": "https://www.amazon.fr/s?k=The%20Ordinary%20Lactic%20Acid%2010%25%20%2B%20HA&tag=glowupapp-21",
-      "price": 8.5,
+      "price": 13.5,
       "rating": 4.4,
       "reviews": 12000,
       "description": "Lactic Acid 10% + HA.",
@@ -26855,7 +26892,13 @@
         "url": "https://www.cultbeauty.com/p/the-ordinary-lactic-acid-10-ha-2-superficial-peeling-formulation-30ml/11363400/",
         "retrievedAt": "2026-10-20",
         "validatedBy": "Candice 2026-10-20"
-      }
+      },
+      "priceVerified": true,
+      "priceSource": {
+        "name": "Sephora.fr",
+        "url": "https://www.sephora.fr/p/acide-lactique-10%25-ha---serum-de-peeling-502441.html"
+      },
+      "priceRetrievedAt": "2026-10-20"
     },
     {
       "id": "m394",
@@ -27202,7 +27245,7 @@
       "category": "serum",
       "imageUrl": "assets/products/m396.jpg",
       "amazonUrl": "https://www.amazon.fr/s?k=The%20Ordinary%20Retinol%200.5%25%20in%20Squalane&tag=glowupapp-21",
-      "price": 8.9,
+      "price": 19.26,
       "rating": 4.4,
       "reviews": 10000,
       "description": "Retinol 0.5% in Squalane.",
@@ -27314,7 +27357,14 @@
         "url": "https://www.cultbeauty.com/p/the-ordinary-retinol-serum-0.5-in-squalane-30ml/11638502/",
         "retrievedAt": "2026-10-20",
         "type": "fiche produit d'un revendeur"
-      }
+      },
+      "priceVerified": true,
+      "priceSource": {
+        "name": "Cosmetis",
+        "url": "https://cosmetis.com/fr/the-ordinary-retinol-0-5-in-squalane-30ml"
+      },
+      "priceRetrievedAt": "2026-10-20",
+      "priceNote": "15,38 € en promotion le 20 octobre 2026"
     },
     {
       "id": "m397",
@@ -28658,7 +28708,7 @@
       "category": "serum",
       "imageUrl": "assets/products/m402.jpg",
       "amazonUrl": "https://www.amazon.fr/s?k=The%20Ordinary%20Vitamin%20C%20Suspension%2023%25%20%2B%20HA&tag=glowupapp-21",
-      "price": 6.9,
+      "price": 9.79,
       "rating": 4.1,
       "reviews": 6000,
       "description": "Vitamin C Suspension 23% + HA.",
@@ -28832,7 +28882,13 @@
         "url": "https://www.cultbeauty.com/p/the-ordinary-vitamin-c-suspension-23-ha-spheres-30ml/11363392/",
         "retrievedAt": "2026-10-20",
         "validatedBy": "Candice 2026-10-20"
-      }
+      },
+      "priceVerified": true,
+      "priceSource": {
+        "name": "Redcare",
+        "url": "https://www.redcare-pharmacie.fr/beaute/BE04657987/the-ordinary-suspension-de-vitamine-c-23-spheres-de-ha-2.htm"
+      },
+      "priceRetrievedAt": "2026-10-20"
     },
     {
       "id": "m403",
@@ -63656,9 +63712,15 @@
         "phase": "ajout-2026-10-20",
         "note": "prix, photo et lien d'achat à renseigner avant activation"
       },
-      "priceNote": "Notino, remise de 20 % le 20 octobre 2026",
+      "priceNote": "remise de 20 %",
       "shopUrl": "https://www.notino.fr/loreal-paris/collagen-specialist-age-correcting-serum-serum-visage-rajeunissant/p-16269463/",
-      "compositionCheck": "Liste INCIDecoder identique (35 ingrédients, même ordre) à celle de Que Choisir pour « L'Oréal Expert collagène – Sérum anti-âge 30 ml » ; page Notino et site L'Oréal Paris inaccessibles (403)."
+      "compositionCheck": "Liste INCIDecoder identique (35 ingrédients, même ordre) à celle de Que Choisir pour « L'Oréal Expert collagène – Sérum anti-âge 30 ml » ; page Notino et site L'Oréal Paris inaccessibles (403).",
+      "priceVerified": true,
+      "priceSource": {
+        "name": "Notino",
+        "url": "https://www.notino.fr/loreal-paris/collagen-specialist-age-correcting-serum-serum-visage-rajeunissant/p-16269463/"
+      },
+      "priceRetrievedAt": "2026-10-20"
     }
   ]
 }

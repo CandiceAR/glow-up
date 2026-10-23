@@ -138,6 +138,26 @@ function _overlap(refList, candList) {
   return Math.round(num / den * 100);
 }
 
+// ── Catalogue du serveur : fait foi pour les prix, contenances et statuts ──
+let _CAT = null;
+function _catalog() {
+  if (_CAT) return _CAT;
+  _CAT = new Map();
+  try { (require('../data/products-manual.json').products || []).forEach(p => _CAT.set(p.id, p)); } catch (e) { /* fichier absent : aucun prix vérifié */ }
+  return _CAT;
+}
+// Un prix est « vérifié » seulement s'il a un revendeur ET une date de relevé (ex. « Redcare, 20/10/2026 »)
+function _authoritative(c) {
+  const f = _catalog().get(c.id);
+  if (!f) return Object.assign({}, c, { priceVerified: false, priceSource: null, priceRetrievedAt: '', discontinued: false });
+  const verified = !!(f.priceVerified && f.priceSource && f.priceSource.name && f.priceRetrievedAt && f.price > 0);
+  return Object.assign({}, c, {
+    price: f.price, volumeMl: f.volumeMl, netWeightG: f.netWeightG, active: f.active,
+    priceVerified: verified, priceSource: verified ? f.priceSource : null, priceRetrievedAt: verified ? f.priceRetrievedAt : '',
+    priceNote: verified ? (f.priceNote || '') : '', discontinued: f.discontinued === true
+  });
+}
+
 // Quota tel que l'appli peut l'afficher (« Il te reste N dupes ce mois-ci »)
 const _pub = (q) => q ? { plan: q.plan, limit: q.limit, used: q.used, remaining: q.remaining } : null;
 
@@ -185,7 +205,12 @@ module.exports = async (req, res) => {
   // format…), ou même marque + composition identique ou presque (au moins 90 % d'ingrédients en commun).
   const refListAny = (Array.isArray(product.inciList) && product.inciList.length >= 8) ? product.inciList
     : ((Array.isArray(product.catalogInci) && product.catalogInci.length >= 8) ? product.catalogInci : null);
+  // Les prix, contenances, statut « plus vendu » et « prix vérifié » viennent du catalogue DU SERVEUR (data/products-manual.json),
+  // jamais de ce que le navigateur envoie : un prix non sourcé ne peut pas faire d'un produit un « dupe ».
+  // Les produits plus vendus ou désactivés ne sont jamais proposés.
   const cands0 = (Array.isArray(candidates) ? candidates : [])
+    .map(_authoritative)
+    .filter(c => !c.discontinued && c.active !== false)
     .filter(c => !SameProduct.sameWithCompo(product, c, refListAny, c.inciNormalized));
 
   // ── Composition de la RÉFÉRENCE ──
@@ -377,17 +402,35 @@ Retourne UNIQUEMENT ce JSON, sans texte avant/après :
     const cu = _unit(c.price, c.volumeMl, c.netWeightG);
     // Pads et lotion ne se comparent pas au millilitre : format différent → au mieux « autre option »
     const formatDiff = !!(usageInfo[c.id] && usageInfo[c.id].formatDiff);
-    const cheaper = !formatDiff && !!(refUnit && cu && refUnit.unit === cu.unit && cu.per100 < refUnit.per100);
+    // Un dupe repose sur un prix SOURCÉ et DATÉ (celui du produit proposé) : sinon, on ne prouve rien
+    const priceOk = !!c.priceVerified;
+    const comparable = !formatDiff && !!(refUnit && cu && refUnit.unit === cu.unit);
+    const cheaper = comparable && priceOk && cu.per100 < refUnit.per100;
     const candVerified = !!(f && f.status === 'verified' && f.cmp && !f.cmp.eliminated);
     // Un dupe exige une formule connue et assez proche ; sinon c'est une « autre option »
     const level = (sim != null && sim >= MIN_SIM) ? _level({ cheaper, sim, refVerified, candVerified, family: refMain.family }) : 'other';
+    // POURQUOI ce n'est pas un dupe (affiché sur la carte) — du plus important au moins important
+    const reasons = [];
+    if (level === 'other') {
+      if (formatDiff) reasons.push('format');
+      else if (!refUnit) reasons.push(Number(product.refPrice) > 0 ? 'ref_amount' : 'ref_price');
+      if (!(Number(c.price) > 0)) reasons.push('cand_price_missing');
+      else if (!cu) reasons.push('cand_amount');
+      else if (!priceOk) reasons.push('cand_price_unverified');
+      if (!formatDiff && refUnit && cu && refUnit.unit !== cu.unit) reasons.push('unit_mismatch');
+      if (comparable && priceOk && !cheaper) reasons.push('not_cheaper');
+      if (sim == null) reasons.push('formula_unknown'); else if (sim < MIN_SIM) reasons.push('formula_far');
+    }
     const diffs = t.diffs.slice();
     if (formatDiff) {
       const cu2 = UsageType.usageOf(c);
       diffs.unshift(`Format différent : ${UsageType.FORMAT_LABEL[refUsage.format] || refUsage.format} (ton produit) / ${UsageType.FORMAT_LABEL[cu2.format] || cu2.format} (celui-ci)`);
     }
     return {
-      id: c.id, level, formatDiff,
+      id: c.id, level, formatDiff, reasons,
+      // « Prix relevé le [date] chez [revendeur] » : seulement si le prix est sourcé et daté
+      priceInfo: priceOk ? { verified: true, value: Number(c.price), source: c.priceSource.name, url: c.priceSource.url || '', date: c.priceRetrievedAt, note: c.priceNote || '' }
+                         : { verified: false },
       unitPrice: (!formatDiff && refUnit && cu && refUnit.unit === cu.unit)
         ? { unit: refUnit.unit, ref: Math.round(refUnit.per100 * 100) / 100, cand: Math.round(cu.per100 * 100) / 100 } : null,
       candUnit: cu ? { unit: cu.unit, per100: Math.round(cu.per100 * 100) / 100 } : null,     // prix de ce produit à l'unité (affiché sur la carte)

@@ -12,6 +12,7 @@ const UsageType = require(path.join(ROOT, 'lib', 'usageType.js'));
 const L = require(path.join(ROOT, 'lib', 'inciLookup.js'));
 
 const fake = makeFake(); fake.install();
+fake.store.set('users/alice', { subscription: { plan: 'glowplus' } });   // ces tests enchaînent beaucoup de recherches : compte illimité
 installFakeAI();
 const handler = require(path.join(ROOT, 'api', 'dupeMatch.js'));
 
@@ -80,6 +81,28 @@ const ids = o => (o.results || []).map(r => r.id);
   r1 = await search(Object.assign({}, cfBase, { refPrice: 81, volumeMl: 28 }));
   check('avec 81 € / 28 ml : des dupes fiables, prouvés moins chers au millilitre', r1.o.trueDupeExists && r1.o.results.filter(r => r.level === 'reliable').length >= 1 && r1.o.results.filter(r => r.level !== 'other').every(r => r.unitPrice && r.unitPrice.cand < r.unitPrice.ref), r1.o.results.map(r => r.level[0] + ':' + r.id).join(' '));
   check('ne propose que des sérums (même usage)', r1.o.results.every(r => (UsageType.usageOf(g(r.id)) || {}).group === 'serum'));
+
+  console.log('\n── Produit plus vendu, prix sourcés et raison de chaque « Autre option » (cas C-Firma) ──');
+  check('La Roche-Posay Pure Vitamin C10 (plus vendu) n\'est JAMAIS proposé', !ids(r1.o).includes('m256') && g('m256').discontinued === true);
+  check('C10 exclu aussi quand le navigateur ne le signale pas comme « plus vendu » (le serveur a le dernier mot)', !ids(r1.o).includes('m256'));
+  const dupesOnly = r1.o.results.filter(r => r.level !== 'other');
+  check('tout « dupe fiable / similaire » repose sur un prix sourcé et daté', dupesOnly.length > 0 && dupesOnly.every(r => r.priceInfo && r.priceInfo.verified && r.priceInfo.source && /^\d{4}-\d{2}-\d{2}$/.test(r.priceInfo.date)));
+  const byId = id => r1.o.results.find(r => r.id === id);
+  check('The Ordinary Vitamin C 23 % : 9,79 € relevé chez Redcare le 2026-10-20', byId('m402') && byId('m402').priceInfo.value === 9.79 && byId('m402').priceInfo.source === 'Redcare' && byId('m402').priceInfo.date === '2026-10-20');
+  check('La Roche-Posay Pure Vitamin C12 : 39,90 € relevé chez Soin et Nature le 2026-10-20', byId('m001') && byId('m001').priceInfo.value === 39.9 && byId('m001').priceInfo.source === 'Soin et Nature');
+  const nat = byId('m429');
+  check('Naturium (0,67 €/ml mais prix non sourcé) : « Autre option » avec la VRAIE raison', nat && nat.level === 'other' && nat.reasons[0] === 'cand_price_unverified', nat && nat.reasons.join(', '));
+  check('chaque « Autre option » donne au moins une raison', r1.o.results.filter(r => r.level === 'other').every(r => Array.isArray(r.reasons) && r.reasons.length > 0));
+  // un navigateur qui tricherait (prix très bas, « vérifié ») ne peut pas fabriquer un dupe
+  const cheat = cands.map(c => c.id === 'm429' ? Object.assign({}, c, { price: 0.5, priceVerified: true, priceSource: { name: 'Faux' }, priceRetrievedAt: '2026-10-23' }) : c);
+  const rc = await call(handler, { product: Object.assign({}, cfBase, { refPrice: 81, volumeMl: 28 }), candidates: cheat, userSkin: {}, idToken: 'tok', searchId: 'test-cheat-abcdef' }, '198.51.100.250');
+  check('prix « vérifié » envoyé par le navigateur : ignoré (le catalogue du serveur fait foi)', rc.o.results.find(r => r.id === 'm429').level === 'other');
+  const rm = await search(Object.assign({}, base));
+  check('Medicube : les lotions sont « Autre option » pour la raison « Format différent »', rm.o.results.filter(r => r.formatDiff).every(r => r.reasons[0] === 'format'));
+  const rnp = await search(cfBase);
+  check('sans prix de la personne : la raison est « prix de ton produit non renseigné »', rnp.o.results.every(r => r.reasons.indexOf('ref_price') >= 0));
+  const lk2 = await L.lookup({ brand: 'Drunk Elephant', name: 'C-Firma Fresh Day Serum' });
+  check('C-Firma : prix de référence 81 € relevé chez Sephora le 2026-10-20, repris automatiquement', lk2.refPrice === 81 && lk2.refPriceSource.name === 'Sephora' && lk2.refPriceDate === '2026-10-20');
   check('chaque résultat donne son prix à l\'unité (contenance connue)', r1.o.results.filter(r => g(r.id).volumeMl).every(r => r.candUnit && r.candUnit.per100 > 0));
 
   done('Trouver son dupe');

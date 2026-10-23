@@ -32,7 +32,18 @@
     "nameMatchScore": 1,
     "note": "INCIDecoder reprend la liste d'ingrédients publiée par la marque. Les pages officielles des marques bloquent souvent la lecture automatique : la liste officielle n'a pu être relue que pour certains produits (voir officialCheck)."
    },
-   "retrievedAt": "2026-10-13"
+   "retrievedAt": "2026-10-13",
+   "verified": {
+    "price": 127.89,
+    "currency": "EUR",
+    "volumeMl": 30,
+    "priceSource": {
+     "name": "Pharma GDD",
+     "url": "https://www.pharma-gdd.com/fr/skinceuticals-ce-ferulic-serum-anti-oxydant-30-ml"
+    },
+    "priceRetrievedAt": "2026-10-14",
+    "priceNote": ""
+   }
   },
   {
    "key": "paula-s-choice-10-niacinamide-booster",
@@ -86,6 +97,17 @@
     "found": 26,
     "ratio": 1,
     "note": "Lecture automatique partielle de la page officielle de la marque, comparée à la liste INCIDecoder"
+   },
+   "verified": {
+    "price": 58.95,
+    "currency": "EUR",
+    "volumeMl": 20,
+    "priceSource": {
+     "name": "Cloud10 Beauty",
+     "url": "https://www.cloud10beauty.com/fr-fr/products/paula-s-choice-resist-10-niacinamide-booster"
+    },
+    "priceRetrievedAt": "2026-10-20",
+    "priceNote": "prix habituel ; produit épuisé chez ce revendeur"
    }
   },
   {
@@ -350,6 +372,17 @@
     "found": 20,
     "ratio": 0.83,
     "note": "Lecture automatique partielle de la page officielle de la marque, comparée à la liste INCIDecoder"
+   },
+   "verified": {
+    "price": 36.5,
+    "currency": "EUR",
+    "volumeMl": 40,
+    "priceSource": {
+     "name": "Sephora.fr",
+     "url": "https://www.sephora.fr/p/watermelon-glow-niacinamide-dew-drops-P10018696.html"
+    },
+    "priceRetrievedAt": "2026-10-20",
+    "priceNote": ""
    }
   },
   {
@@ -513,7 +546,18 @@
     "nameMatchScore": 1,
     "note": "INCIDecoder reprend la liste d'ingrédients publiée par la marque. Les pages officielles des marques bloquent souvent la lecture automatique : la liste officielle n'a pu être relue que pour certains produits (voir officialCheck)."
    },
-   "retrievedAt": "2026-10-13"
+   "retrievedAt": "2026-10-13",
+   "verified": {
+    "price": 94,
+    "currency": "EUR",
+    "volumeMl": 30,
+    "priceSource": {
+     "name": "Free People France",
+     "url": "https://www.freepeople.com/france/shop/sunday-riley-good-genes-30ml/"
+    },
+    "priceRetrievedAt": "2026-10-20",
+    "priceNote": ""
+   }
   },
   {
    "key": "paula-s-choice-1-retinol-treatment",
@@ -592,6 +636,17 @@
     "found": 25,
     "ratio": 0.89,
     "note": "Lecture automatique partielle de la page officielle de la marque, comparée à la liste INCIDecoder"
+   },
+   "verified": {
+    "price": 70.95,
+    "currency": "EUR",
+    "volumeMl": 30,
+    "priceSource": {
+     "name": "Cloud10 Beauty",
+     "url": "https://www.cloud10beauty.com/fr-fr/products/paula-s-choice-clinical-1-retinol-treatment"
+    },
+    "priceRetrievedAt": "2026-10-20",
+    "priceNote": "prix habituel ; produit épuisé chez ce revendeur"
    }
   },
   {
@@ -662,7 +717,18 @@
    "aliases": [
     "C-Firma Fresh Day Serum",
     "C-Firma Day Serum"
-   ]
+   ],
+   "verified": {
+    "price": 81,
+    "currency": "EUR",
+    "volumeMl": 28,
+    "priceSource": {
+     "name": "Sephora",
+     "url": "https://www.sephora.fr/p/c-firma%E2%84%A2-fresh-day-serum---serum-visage-P10017929.html"
+    },
+    "priceRetrievedAt": "2026-10-20",
+    "priceNote": ""
+   }
   },
   {
    "key": "first-aid-beauty-ultra-repair-cream",
@@ -937,7 +1003,18 @@
     "nameMatchScore": 1,
     "note": "INCIDecoder reprend la liste d'ingrédients publiée par la marque. Les pages officielles des marques bloquent souvent la lecture automatique : la liste officielle n'a pu être relue que pour certains produits (voir officialCheck)."
    },
-   "retrievedAt": "2026-10-13"
+   "retrievedAt": "2026-10-13",
+   "verified": {
+    "price": 78.49,
+    "currency": "EUR",
+    "volumeMl": 30,
+    "priceSource": {
+     "name": "Pharma GDD",
+     "url": "https://www.pharma-gdd.com/fr/skinceuticals-discoloration-defense-serum-30-ml"
+    },
+    "priceRetrievedAt": "2026-10-14",
+    "priceNote": ""
+   }
   },
   {
    "key": "vichy-mineral-89",
@@ -1089,7 +1166,18 @@
     "productTitle": "Lancôme Advanced Génifique Youth Activating Serum"
    },
    "retrievedAt": "2026-10-15",
-   "verification": "Plusieurs versions existent sur INCIDecoder (concentrate / serum) : version « Youth Activating Serum » retenue ; à confirmer sur la boîte."
+   "verification": "Plusieurs versions existent sur INCIDecoder (concentrate / serum) : version « Youth Activating Serum » retenue ; à confirmer sur la boîte.",
+   "verified": {
+    "price": 68.43,
+    "currency": "EUR",
+    "volumeMl": 30,
+    "priceSource": {
+     "name": "LookFantastic.fr",
+     "url": "https://www.lookfantastic.fr/p/lancome-advanced-genifique-serum/11185397/"
+    },
+    "priceRetrievedAt": "2026-10-15",
+    "priceNote": ""
+   }
   }
  ]
 }

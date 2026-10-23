@@ -260,6 +260,24 @@ const DupeFinder = (() => {
     similar:  { icon: '≈',  label: 'Dupe similaire',                      cls: 'df-lv-similar' },
     other:    { icon: '•',  label: 'Autre option · pas prouvée moins chère', cls: 'df-lv-other' }
   };
+  // POURQUOI une « Autre option » n'est pas un dupe : s = court (sur la carte), l = long (dans le détail). Dit toujours la vraie raison.
+  const REASON = {
+    format:                { s: 'Format différent', l: 'Format différent : ton produit et celui-ci ne se présentent pas sous la même forme, le prix au millilitre n\'est pas comparable.' },
+    ref_price:             { s: 'Prix de ton produit non renseigné', l: 'Tu n\'as pas indiqué le prix de ton produit : nous ne pouvons pas comparer les prix.' },
+    ref_amount:            { s: 'Contenance de ton produit non renseignée', l: 'La contenance de ton produit n\'est pas renseignée : nous ne pouvons pas calculer son prix au millilitre.' },
+    cand_price_missing:    { s: 'Prix non renseigné', l: 'Le prix de ce produit n\'est pas renseigné.' },
+    cand_amount:           { s: 'Contenance non renseignée', l: 'La contenance de ce produit n\'est pas renseignée : pas de prix au millilitre.' },
+    cand_price_unverified: { s: 'Prix non vérifié', l: 'Le prix de ce produit n\'a pas été relevé chez un revendeur (avec sa source et sa date) : nous ne pouvons pas affirmer qu\'il est moins cher.' },
+    unit_mismatch:         { s: 'Unités différentes (ml / g)', l: 'L\'un se mesure en millilitres, l\'autre en grammes : pas de comparaison possible.' },
+    not_cheaper:           { s: 'Plus cher au ml', l: 'Il coûte plus cher à l\'unité que ton produit.' },
+    formula_unknown:       { s: 'Composition non vérifiée', l: 'La composition de ce produit n\'est pas vérifiée : les formules n\'ont pas été comparées.' },
+    formula_far:           { s: 'Formule moins proche', l: 'La formule est trop différente de celle de ton produit pour parler de dupe.' }
+  };
+  function _lvLabel(r) {
+    if (r.level !== 'other') return (LEVEL[r.level] || LEVEL.other).label;
+    const first = (r.reasons || [])[0];
+    return 'Autre option · ' + ((REASON[first] && REASON[first].s) || 'pas prouvée moins chère');
+  }
   const ROLE_LABEL = { closest: '🎯 Le dupe le plus proche', value: '💛 Meilleur rapport qualité-prix', cheapest: '🌱 L\'alternative la moins chère' };
 
   // (Phase 1) Plus de pourcentage ni de palier « très proche » : ces notes venaient en partie de
@@ -318,18 +336,22 @@ const DupeFinder = (() => {
     const unitLine = up
       ? `<div class="df-vol">${_perUnit(up.cand, up.unit)} <small>contre</small> ${_perUnit(up.ref, up.unit)} <small>pour ton produit</small></div>`
       : '';
-    const proofLine = r.formatDiff
-      ? `<p class="df-compo-note"><strong>Format différent</strong> (ton produit et celui-ci ne se présentent pas sous la même forme) : le prix au millilitre n'est pas comparable, donc nous ne pouvons pas le présenter comme un dupe.</p>`
-      : (r.level === 'other')
-      ? `<p class="df-compo-note">Nous ne pouvons pas prouver que ce produit coûte moins cher au ${up && up.unit === 'g' ? 'gramme' : 'millilitre'} que le tien (prix ou contenance manquants, ou plus cher) : nous ne le présentons donc pas comme un dupe.</p>`
+    // Raison(s) pour lesquelles ce n'est pas un dupe : jamais une phrase vague
+    const proofLine = (r.level === 'other' && (r.reasons || []).length)
+      ? `<p class="df-why-h">Pourquoi ce n'est pas un dupe</p><ul class="df-row-ul">${r.reasons.map(k => `<li>${_esc((REASON[k] && REASON[k].l) || k)}</li>`).join('')}</ul>`
       : '';
+    // « Prix relevé le [date] chez [revendeur] » (prix sourcé et daté), sinon « Prix non vérifié »
+    const pi = r.priceInfo;
+    const priceLine = !pi ? '' : (pi.verified
+      ? `<p class="df-row-meta df-price-src">🏷️ Prix relevé le ${_frDate(pi.date)} chez ${pi.url ? `<a href="${_esc(pi.url)}" target="_blank" rel="noopener">${_esc(pi.source)}</a>` : _esc(pi.source)}${pi.note ? ` <small>(${_esc(pi.note)})</small>` : ''}</p>`
+      : '<p class="df-row-meta df-price-src">🏷️ Prix non vérifié (indicatif)</p>');
     return `
       <div class="df-row-pills">
-        ${lv ? `<span class="df-pill df-lv ${lv.cls}">${lv.icon} ${lv.label}</span>` : ''}
-        ${r.formatDiff ? '<span class="df-pill df-lv df-lv-format">Format différent</span>' : ''}
+        ${lv ? `<span class="df-pill df-lv ${lv.cls}">${lv.icon} ${_esc(_lvLabel(r))}</span>` : ''}
         ${fit ? `<span class="df-pill df-fit ${fit.cls}">${fit.icon} ${fit.label}</span>` : ''}
       </div>
       ${unitLine}
+      ${priceLine}
       ${proofLine}
       ${o.savings ? `<p class="df-row-save">💰 ${o.savings}</p>` : ''}
       ${o.volLine || ''}
@@ -373,8 +395,7 @@ const DupeFinder = (() => {
     const amount = p.volumeMl > 0 ? `${p.volumeMl} ml` : (p.netWeightG > 0 ? `${p.netWeightG} g` : 'contenance non renseignée');
     const cu = r.candUnit || (p.price > 0 && p.volumeMl > 0 ? { unit: 'ml', per100: p.price / p.volumeMl * 100 } : (p.price > 0 && p.netWeightG > 0 ? { unit: 'g', per100: p.price / p.netWeightG * 100 } : null));
     const meta = [
-      lvInfo ? `<span class="df-meta-lv ${lvInfo.cls}">${lvInfo.icon} ${lvInfo.label}</span>` : '',
-      r.formatDiff ? '<span class="df-meta-lv df-lv-format">Format différent</span>' : '',
+      lvInfo ? `<span class="df-meta-lv ${lvInfo.cls}">${lvInfo.icon} ${_esc(_lvLabel(r))}</span>` : '',
       `<span>${amount}</span>`,
       cu ? `<span>${_perUnit(cu.per100, cu.unit)}</span>` : ''
     ].filter(Boolean).join(' · ');
@@ -426,6 +447,19 @@ const DupeFinder = (() => {
     return '<span class="df-inci-badge df-inci-low">ℹ️ Composition non vérifiée</span>';
   }
 
+  // Prix du produit de la personne, avec sa source : « Prix relevé le 20/10/2026 chez Sephora » ou « prix indiqué par toi »
+  function _headerPrice(id) {
+    const edit = ' <a href="#" class="df-edit-price" onclick="DupeFinder.editPrice();return false;">Modifier</a>';
+    if (_refPrice() > 0) {
+      const lbl = id.priceSource === 'user'
+        ? 'prix indiqué par toi'
+        : `Prix relevé le ${_frDate(id.priceDate)} chez ${id.priceSourceUrl ? `<a href="${_esc(id.priceSourceUrl)}" target="_blank" rel="noopener">${_esc(id.priceSourceName)}</a>` : _esc(id.priceSourceName)}${id.priceNote ? ' · ' + _esc(id.priceNote) : ''}`;
+      return `<span class="df-orig-price">${_eur(_refPrice())} <small>(${lbl})</small>${edit}</span>`;
+    }
+    if (id.catalogPriceHint > 0) return `<span class="df-orig-price df-price-unverified">≈ ${_eur(id.catalogPriceHint)} <small>(prix indicatif, non vérifié)</small></span>`;
+    return '<span class="df-orig-price df-price-unverified">Prix non renseigné</span>';
+  }
+
   function _vResults() {
     const id = S.identified || {};
     const left = _left();
@@ -436,7 +470,7 @@ const DupeFinder = (() => {
         <div>
           <span class="df-orig-label">Ton produit</span>
           <h2 class="df-orig-name">${(id.brand ? id.brand + ' ' : '') + (id.name || '')}</h2>
-          ${_refPrice() > 0 ? `<span class="df-orig-price">${_eur(_refPrice())} <small>(${id.priceSource === 'user' ? 'prix indiqué par toi' : 'prix de notre catalogue'})</small></span>` : '<span class="df-orig-price df-price-unverified">Prix non renseigné</span>'}
+          ${_headerPrice(id)}
           ${_inciBadge(id)}
         </div>
       </div>`;
@@ -689,7 +723,7 @@ const DupeFinder = (() => {
   // (La contenance n'est demandée que si aucune fiche ne l'indique.)
   function _vPriceForm() {
     const id = S.identified || {};
-    const needPrice  = !(_refPrice() > 0);
+    const needPrice  = !(_refPrice() > 0) || !!S.forcePriceForm;    // « Modifier » rouvre le champ prix
     const needAmount = !(id.volumeMl > 0 || id.netWeightG > 0);
     if (!needPrice && !needAmount) return '';
     const intro = needPrice
@@ -718,8 +752,11 @@ const DupeFinder = (() => {
       return;
     }
     S.userRef = { price, amount, unit };
+    S.forcePriceForm = false;
     _runMatch();
   }
+  // « Modifier » : ce n'est pas le prix que la personne a payé → on rouvre le champ prix
+  function editPrice() { S.forcePriceForm = true; render(); }
 
   // Contenance écrite dans le nom du produit (« … 30 ml ») : remplie automatiquement
   function _volumeFromName(name) {
@@ -841,7 +878,8 @@ const DupeFinder = (() => {
     const refList = (id.inciList && id.inciList.length >= 8) ? id.inciList : (id.catalogInci && id.catalogInci.length >= 8 ? id.catalogInci : null);
     const _notSelf = p => !(typeof SameProduct !== 'undefined' &&
       (SameProduct.sameWithCompo ? SameProduct.sameWithCompo(id, p, refList, p.inciNormalized) : SameProduct.same(id, p)));
-    const catalog = (AppState.products.catalog || []).filter(_notSelf);
+    // Les produits « plus vendus » ou désactivés ne sont jamais proposés
+    const catalog = (AppState.products.catalog || []).filter(p => !p.discontinued && p.active !== false).filter(_notSelf);
     // Même USAGE que le produit de la personne (pads / lotion, sérum, crème, masque à rincer, peeling…) :
     // plus précis que la catégorie, qui range pads, peelings et sérums dans le même « bucket ».
     const refUsage = (typeof UsageType !== 'undefined') ? UsageType.usageOf({ name: id.name, category: id.category }) : null;
@@ -932,6 +970,7 @@ const DupeFinder = (() => {
   // l'IA n'est jamais affichée.
   function _applyCatalogOwn(id) {
     id.priceVerified = false; id.estPrice = 0; id.priceSource = ''; id.catalogTags = undefined; id.catalogInci = undefined;
+    id.priceSourceName = ''; id.priceSourceUrl = ''; id.priceDate = ''; id.priceNote = ''; id.catalogPriceHint = 0;
     const vn = _volumeFromName(id.name);
     if (vn && !id.volumeMl && !id.netWeightG) { if (vn.unit === 'g') id.netWeightG = vn.amount; else id.volumeMl = vn.amount; }
     try {
@@ -939,7 +978,13 @@ const DupeFinder = (() => {
         const own = (AppState.products.catalog || []).find(p => SameProduct.same(id, p));
         if (own) {
           id.catalogId = own.id;
-          if (own.price > 0) { id.estPrice = own.price; id.priceVerified = true; id.priceSource = 'catalogue'; }
+          // Le prix du catalogue ne sert de référence QUE s'il est sourcé et daté (revendeur + date). Sinon : indicatif seulement.
+          if (own.price > 0) {
+            if (own.priceVerified && own.priceSource && own.priceSource.name && own.priceRetrievedAt) {
+              id.estPrice = own.price; id.priceVerified = true; id.priceSource = 'catalogue';
+              id.priceSourceName = own.priceSource.name; id.priceSourceUrl = own.priceSource.url || ''; id.priceDate = own.priceRetrievedAt; id.priceNote = own.priceNote || '';
+            } else { id.catalogPriceHint = own.price; }
+          }
           if (own.volumeMl > 0 && !id.volumeMl) id.volumeMl = own.volumeMl;
           if (own.netWeightG > 0 && !id.netWeightG) id.netWeightG = own.netWeightG;
           id.catalogTags = own.ingredientTags || [];
@@ -956,7 +1001,7 @@ const DupeFinder = (() => {
   function _applyUserRef(id) {
     const u = S.userRef;
     if (!u) return;
-    if (u.price > 0) { id.estPrice = u.price; id.priceVerified = true; id.priceSource = 'user'; }
+    if (u.price > 0) { id.estPrice = u.price; id.priceVerified = true; id.priceSource = 'user'; id.priceSourceName = ''; id.priceDate = ''; id.priceNote = ''; }
     if (u.amount > 0) {
       if (u.unit === 'g') { id.netWeightG = u.amount; id.volumeMl = 0; } else { id.volumeMl = u.amount; id.netWeightG = 0; }
     }
@@ -970,6 +1015,11 @@ const DupeFinder = (() => {
       id.inciSourceUrl = inci.sourceUrl || ''; id.inciSourceLabel = inci.sourceLabel || ''; id.inciDate = inci.retrievedAt || ''; id.inciTitle = inci.matchedName || '';
       // La contenance n'est retenue que si la fiche est sûre (même produit à coup sûr)
       if (inci.volumeMl && inci.confidence === 'high' && !id.volumeMl && !id.netWeightG) id.volumeMl = inci.volumeMl;
+      // Prix de référence relevé (revendeur + date) dans nos fiches : repris tel quel, la personne peut le modifier
+      if (!id.priceVerified && inci.refPrice > 0 && inci.refPriceSource && inci.refPriceDate) {
+        id.estPrice = inci.refPrice; id.priceVerified = true; id.priceSource = 'fiche';
+        id.priceSourceName = inci.refPriceSource.name || ''; id.priceSourceUrl = inci.refPriceSource.url || ''; id.priceDate = inci.refPriceDate; id.priceNote = inci.refPriceNote || '';
+      }
       console.info('[DupeFinder] INCI référence:', inci.confidence, '·', inci.source, '·', inci.inciList.length, 'ingrédients');
     } else {
       id.inciConfidence = 'none'; id.inciList = [];
@@ -1138,7 +1188,7 @@ const DupeFinder = (() => {
   return {
     initScreen, render, goHome, goManual, goBarcode,
     pickCamera, pickGallery, onPhoto, submitManual, startSearch, retry,
-    confirmCompo, skipCompo, goPhoto, onIngredientsPhoto, recompute
+    confirmCompo, skipCompo, goPhoto, onIngredientsPhoto, recompute, editPrice
   };
 })();
 
