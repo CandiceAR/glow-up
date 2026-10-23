@@ -2026,7 +2026,7 @@ const SkinAnalysis = (() => {
             <div class="prob-prod-info">
               <span class="prob-prod-brand">${p.brand}</span>
               <p class="prob-prod-name">${p.name}</p>
-              ${p.price ? `<span class="prob-prod-price">${p.price.toFixed(2)} €</span>` : ''}
+              ${p.price ? `<span class="prob-prod-price">${p.price.toFixed(2).replace('.', ',')} €</span>` : ''}
             </div>
             <a class="btn btn-amazon prob-prod-buy"
                href="${p.amazonUrl}" target="_blank" rel="noopener nofollow sponsored"
@@ -2079,7 +2079,7 @@ const SkinAnalysis = (() => {
           ${p.shadeName ? `<span class="budget-item-shade">${p.shadeName}</span>` : ''}
         </div>
         <div class="budget-item-right">
-          <span class="budget-item-price">${p.price ? p.price.toFixed(2) + ' €' : '—'}</span>
+          <span class="budget-item-price">${p.price ? p.price.toFixed(2).replace('.', ',') + ' €' : '—'}</span>
           <a class="btn btn-amazon budget-item-buy"
              href="${p.amazonUrl}" target="_blank" rel="noopener nofollow sponsored"
              onclick="if(typeof Tracker!=='undefined') Tracker.trackBuyClick('${p.id}')">
@@ -3469,7 +3469,7 @@ const SkinAnalysis = (() => {
             <span class="mkr-reco-brand">${p.brand}</span>
             <p class="mkr-reco-name">${p.name}</p>
             ${p.shadeName ? `<span class="mkr-reco-shade">${p.shadeName}</span>` : ''}
-            <span class="mkr-reco-price">${p.price ? p.price.toFixed(2) + ' €' : ''}</span>
+            <span class="mkr-reco-price">${p.price ? p.price.toFixed(2).replace('.', ',') + ' €' : ''}</span>
             ${reason ? `<p class="mkr-reco-reason">${reason}</p>` : ''}
           </div>
           <a class="btn btn-amazon mkr-reco-buy"

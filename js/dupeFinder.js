@@ -7,7 +7,7 @@
 
 const DupeFinder = (() => {
 
-  const FREE_LIMIT = 3;
+
 
   // Vue courante + données de la session de scan
   let S = { view: 'home', photo: null, identified: null,
@@ -15,11 +15,52 @@ const DupeFinder = (() => {
 
   let _barcodeStream = null, _barcodeStop = false;
 
-  // ─── Quota ────────────────────────────────────────────────────
-  function _count()   { return parseInt(localStorage.getItem('glow_dupe_count') || '0', 10) || 0; }
-  function _inc()      { localStorage.setItem('glow_dupe_count', String(_count() + 1)); }
-  function _isPremium(){ return typeof Subscription !== 'undefined' && Subscription.getPlan && Subscription.getPlan() !== 'free'; }
-  function _left()     { return _isPremium() ? Infinity : Math.max(0, FREE_LIMIT - _count()); }
+  // ─── Quota (décidé et contrôlé par le SERVEUR : lib/aiGuard.js) ─
+  // Gratuit 5 dupes/mois · Premium 15 · Premium+ illimité. Un dupe n'est décompté que si un résultat s'affiche.
+  // S.quota = { plan, limit (null = illimité), used, remaining (null = illimité) } renvoyé par le serveur.
+  function _left() { return (S.quota && S.quota.remaining != null) ? S.quota.remaining : Infinity; }
+  function _quotaLine() {
+    const q = S.quota;
+    if (!q || q.limit == null || q.remaining == null) return '';
+    const n = q.remaining;
+    return `<p class="df-quota">${n > 0 ? `Il te reste <strong>${n}</strong> dupe${n > 1 ? 's' : ''} ce mois-ci` : 'Tu as utilisé tous tes dupes ce mois-ci'}</p>`;
+  }
+
+  // Jeton d'identité Firebase : les routes protégées vérifient le compte (et lui appliquent son quota)
+  async function _idToken() {
+    try { const u = (typeof firebase !== 'undefined') && firebase.auth && firebase.auth().currentUser; return u ? await u.getIdToken() : null; }
+    catch (e) { return null; }
+  }
+  // Appel d'une route protégée : ajoute jeton + identifiant de recherche. Retourne { status, data }.
+  async function _post(path, payload, timeoutMs) {
+    const controller = new AbortController();
+    const tid = setTimeout(() => controller.abort(), timeoutMs || 30000);
+    try {
+      const idToken = await _idToken();
+      const resp = await fetch(apiUrl(path), {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Object.assign({}, payload, { idToken, searchId: S.identified && S.identified._searchId })),
+        signal: controller.signal
+      });
+      const data = await resp.json().catch(() => null);
+      if (data && data.quota) S.quota = data.quota;
+      return { status: resp.status, ok: resp.ok, data };
+    } finally { clearTimeout(tid); }
+  }
+  // Réponses « limite » : 401 (compte), 429 (quota, produits inconnus, trop de demandes), 503 (plafond de coût du jour)
+  function _limitFrom(r) {
+    if (!r || r.ok) return false;
+    if (r.status === 401) {
+      if (typeof Auth !== 'undefined' && Auth.openRequiredAuthModal) Auth.openRequiredAuthModal(() => startSearch());
+      return true;
+    }
+    if (r.status === 429 || r.status === 503) {
+      S.limitMsg = (r.data && r.data.message) || 'Réessaie dans quelques instants.';
+      S.view = 'limit'; render();
+      return true;
+    }
+    return false;
+  }
 
   // ─── Catégories : normalisation vers un « bucket » ────────────
   const NORM = {
@@ -60,10 +101,20 @@ const DupeFinder = (() => {
   // ─── Rendu ────────────────────────────────────────────────────
   function initScreen() {
     _stopBarcode();
+    const q = S && S.quota;
     // Nouvelle session propre à chaque entrée
     S = { view: 'home', photo: null, identified: null, results: null, externalResults: [],
-          noDupeMsg: '', bestAltId: null, trueDupe: false, busy: false };
+          noDupeMsg: '', bestAltId: null, trueDupe: false, busy: false, quota: q || null };
     render();
+    _loadQuota();
+  }
+
+  // Où en est le compte ce mois-ci : « Il te reste N dupes ce mois-ci » (donnée du serveur)
+  async function _loadQuota() {
+    try {
+      const r = await _post('/api/inci', { mode: 'quota' }, 8000);
+      if (r.ok && r.data && r.data.quota) { S.quota = r.data.quota; if (S.view === 'home') render(); }
+    } catch (e) { /* le compteur est un confort */ }
   }
 
   function render() {
@@ -86,6 +137,7 @@ const DupeFinder = (() => {
       case 'insufficient': html = _vInsufficient(); break; // infos produit insuffisantes
       case 'barcode':   html = _vBarcode(); break;
       case 'blocked':   html = _vBlocked(); break;
+      case 'limit':     html = _vLimit(); break;
       default:          html = _vHome();
     }
     c.innerHTML = html;
@@ -93,9 +145,7 @@ const DupeFinder = (() => {
   }
 
   function _vHome() {
-    const left = _left();
-    const quota = _isPremium() ? '' :
-      `<p class="df-quota">${left > 0 ? `Il te reste <strong>${left}</strong> recherche${left > 1 ? 's' : ''} gratuite${left > 1 ? 's' : ''}` : 'Tu as utilisé tes 3 recherches gratuites'}</p>`;
+    const quota = _quotaLine();
     return `
       <div class="df-home">
         <div class="df-hero">
@@ -215,6 +265,21 @@ const DupeFinder = (() => {
   // (Phase 1) Plus de pourcentage ni de palier « très proche » : ces notes venaient en partie de
   // l'estimation de l'IA. On indique à la place si les compositions ont été comparées ou non.
 
+  // Prix à la française : « 19,90 € » ; prix à l'unité : « 0,23 €/ml » (per100 = prix pour 100 ml ou 100 g)
+  function _eur(n) { return Number(n).toFixed(2).replace('.', ',') + ' €'; }
+  function _perUnit(per100, unit) { const v = Number(per100) / 100; return (v < 0.1 ? v.toFixed(3) : v.toFixed(2)).replace('.', ',') + ' €/' + unit; }
+  // Images propres seulement : fichiers de notre site, site de la marque ou Open Beauty Facts.
+  // Les images Amazon peuvent contenir des bandeaux publicitaires (« Sponsored Products ») → icône neutre à la place.
+  function _cleanImg(u) {
+    if (!u) return '';
+    if (/^assets\//.test(u)) return u;
+    try {
+      const h = new URL(u, location.origin).hostname;
+      if (/(^|\.)openbeautyfacts\.org$/.test(h) || /(^|\.)dlaparis\.com$/.test(h) || /(^|\.)victoriabeckhambeauty\.com$/.test(h)) return u;
+    } catch (e) { /* adresse illisible : pas d'image */ }
+    return '';
+  }
+
   // Le prix du produit scanné n'est un FAIT que s'il vient de notre catalogue (jamais de l'estimation de l'IA)
   function _refPrice() {
     const id = S.identified || {};
@@ -236,6 +301,7 @@ const DupeFinder = (() => {
           <span class="df-row-main">
             <span class="df-row-brand">${o.brand || ''}</span>
             <span class="df-row-name">${o.name || ''}</span>
+            ${o.meta ? `<span class="df-row-meta2">${o.meta}</span>` : ''}
           </span>
           <span class="df-row-price">${o.price}</span>
           <svg class="df-row-chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
@@ -246,19 +312,22 @@ const DupeFinder = (() => {
 
   // Contenu du menu déroulant (identique pour catalogue et hors catalogue)
   function _rowBody(o) {
-    const r = o.r, fit = FIT[r.skinFit] || FIT.caution;
+    const r = o.r, fit = r.skinFit ? (FIT[r.skinFit] || FIT.caution) : null;   // pas de pastille « peau » si l'IA ne s'est pas prononcée
     const lv = r.level ? (LEVEL[r.level] || LEVEL.other) : null;   // pas de niveau pour « l'alternative adaptée à ta peau »
     const up = r.unitPrice;
     const unitLine = up
-      ? `<div class="df-vol">${up.cand.toFixed(2).replace('.', ',')} € / 100 ${up.unit} <small>contre</small> ${up.ref.toFixed(2).replace('.', ',')} € / 100 ${up.unit} <small>pour ton produit</small></div>`
+      ? `<div class="df-vol">${_perUnit(up.cand, up.unit)} <small>contre</small> ${_perUnit(up.ref, up.unit)} <small>pour ton produit</small></div>`
       : '';
-    const proofLine = (r.level === 'other')
+    const proofLine = r.formatDiff
+      ? `<p class="df-compo-note"><strong>Format différent</strong> (ton produit et celui-ci ne se présentent pas sous la même forme) : le prix au millilitre n'est pas comparable, donc nous ne pouvons pas le présenter comme un dupe.</p>`
+      : (r.level === 'other')
       ? `<p class="df-compo-note">Nous ne pouvons pas prouver que ce produit coûte moins cher au ${up && up.unit === 'g' ? 'gramme' : 'millilitre'} que le tien (prix ou contenance manquants, ou plus cher) : nous ne le présentons donc pas comme un dupe.</p>`
       : '';
     return `
       <div class="df-row-pills">
         ${lv ? `<span class="df-pill df-lv ${lv.cls}">${lv.icon} ${lv.label}</span>` : ''}
-        <span class="df-pill df-fit ${fit.cls}">${fit.icon} ${fit.label}</span>
+        ${r.formatDiff ? '<span class="df-pill df-lv df-lv-format">Format différent</span>' : ''}
+        ${fit ? `<span class="df-pill df-fit ${fit.cls}">${fit.icon} ${fit.label}</span>` : ''}
       </div>
       ${unitLine}
       ${proofLine}
@@ -291,19 +360,31 @@ const DupeFinder = (() => {
     const refVol  = (S.identified && S.identified.volumeMl) || 0;
     const candVol = p.volumeMl || 0;
     let volLine = '';
-    if (refVol > 0 && candVol > 0 && p.price != null) {
+    // Format différent (pads ↔ lotion) : pas de comparaison de prix, donc pas d'« économie »
+    if (r.formatDiff) savings = 0;
+    else if (refVol > 0 && candVol > 0 && p.price != null) {
       const normCand = p.price / candVol * refVol;
-      volLine = `<div class="df-vol">${p.price.toFixed(2)} € / ${candVol} ml → ≈ <strong>${normCand.toFixed(2)} €</strong> pour ${refVol} ml</div>`;
+      volLine = `<div class="df-vol">${_eur(p.price)} / ${candVol} ml → ≈ <strong>${_eur(normCand)}</strong> pour ${refVol} ml</div>`;
       if (est > 0 && normCand < est) savings = est - normCand;
     }
     const descr = (p.description || '').length > 220 ? p.description.slice(0, 219) + '…' : (p.description || '');
+    // Sous le nom : niveau · contenance · prix au millilitre (visibles sans ouvrir la carte)
+    const lvInfo = r.level ? (LEVEL[r.level] || LEVEL.other) : null;
+    const amount = p.volumeMl > 0 ? `${p.volumeMl} ml` : (p.netWeightG > 0 ? `${p.netWeightG} g` : 'contenance non renseignée');
+    const cu = r.candUnit || (p.price > 0 && p.volumeMl > 0 ? { unit: 'ml', per100: p.price / p.volumeMl * 100 } : (p.price > 0 && p.netWeightG > 0 ? { unit: 'g', per100: p.price / p.netWeightG * 100 } : null));
+    const meta = [
+      lvInfo ? `<span class="df-meta-lv ${lvInfo.cls}">${lvInfo.icon} ${lvInfo.label}</span>` : '',
+      r.formatDiff ? '<span class="df-meta-lv df-lv-format">Format différent</span>' : '',
+      `<span>${amount}</span>`,
+      cu ? `<span>${_perUnit(cu.per100, cu.unit)}</span>` : ''
+    ].filter(Boolean).join(' · ');
     return _row({
-      img: p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">` : '<span class="df-row-noimg">🧴</span>',
-      brand: p.brand, name: p.name,
-      price: p.price != null ? p.price.toFixed(2) + ' €' : '—',
+      img: _cleanImg(p.imageUrl) ? `<img src="${_cleanImg(p.imageUrl)}" alt="${_esc(p.name)}" loading="lazy" onerror="this.style.display='none'">` : '<span class="df-row-noimg">🧴</span>',
+      brand: p.brand, name: p.name, meta,
+      price: p.price != null ? _eur(p.price) : '—',
       body: _rowBody({
         r, descr, volLine,
-        savings: savings > 0 ? `Tu économises ${savings.toFixed(2)} €${volLine ? ' (à volume égal)' : ''}` : '',
+        savings: savings > 0 ? `Tu économises ${_eur(savings)}${volLine ? ' (à volume égal)' : ''}` : '',
         compareUrl: _compareUrl(p), buyUrl: p.amazonUrl || p.shopUrl || '#', isAff,
         buyAttrs: isAff ? ` onclick="if(typeof trackAmazonClick==='function')trackAmazonClick('${p.id}')"` : ''
       })
@@ -332,8 +413,12 @@ const DupeFinder = (() => {
       ? `<a href="${_esc(id.inciSourceUrl)}" target="_blank" rel="noopener">${_esc(id.inciSourceLabel || 'source')}</a>`
       : _esc((id && id.inciSourceLabel) || 'source');
     const dt = id && id.inciDate ? ' · ' + _frDate(id.inciDate) : '';
-    if (c === 'high')      return `<span class="df-inci-badge df-inci-high">✅ Composition trouvée : ${src}${dt}</span>`;
-    if (c === 'confirmed') return `<span class="df-inci-badge df-inci-high">✅ Composition confirmée par toi : ${src}${dt}</span>`;
+    // Open Beauty Facts est une base collaborative : on ne dit jamais « vérifiée », on cite la source et la date
+    const lic = (id && id.inciSource === 'openbeautyfacts') ? ' <small>(licence ODbL)</small>' : '';
+    const own = id && id.inciSource === 'glowup';
+    if (c === 'high' && own) return `<span class="df-inci-badge df-inci-high">✅ Composition issue de notre fiche (${src})${dt}</span>`;
+    if (c === 'high')      return `<span class="df-inci-badge df-inci-high">✅ Composition trouvée sur ${src}${lic}${dt}</span>`;
+    if (c === 'confirmed') return `<span class="df-inci-badge df-inci-high">✅ Composition confirmée par toi · trouvée sur ${src}${lic}${dt}</span>`;
     if (c === 'photo') {
       return `<span class="df-inci-badge df-inci-low">📷 Lue sur ta photo, à vérifier</span>
         <details class="df-inci-read"><summary>Voir la liste lue</summary><p>${_esc((id.inciList || []).join(', '))}</p></details>`;
@@ -351,7 +436,7 @@ const DupeFinder = (() => {
         <div>
           <span class="df-orig-label">Ton produit</span>
           <h2 class="df-orig-name">${(id.brand ? id.brand + ' ' : '') + (id.name || '')}</h2>
-          ${_refPrice() > 0 ? `<span class="df-orig-price">${_refPrice().toFixed(2)} € <small>(${id.priceSource === 'user' ? 'prix indiqué par toi' : 'prix de notre catalogue'})</small></span>` : '<span class="df-orig-price df-price-unverified">Prix non renseigné</span>'}
+          ${_refPrice() > 0 ? `<span class="df-orig-price">${_eur(_refPrice())} <small>(${id.priceSource === 'user' ? 'prix indiqué par toi' : 'prix de notre catalogue'})</small></span>` : '<span class="df-orig-price df-price-unverified">Prix non renseigné</span>'}
           ${_inciBadge(id)}
         </div>
       </div>`;
@@ -371,21 +456,33 @@ const DupeFinder = (() => {
         </div>
       </div>` : '';
 
-    // Pas de vrai dupe (ni catalogue ni externe)
-    if (!S.trueDupe || (!catRes.length && !extRes.length)) {
+    // Aucun produit de notre sélection ne partage l'actif principal : l'écran reste utile (jamais « rien trouvé »)
+    if (!catRes.length) {
       const alt = S.bestAltId ? _catalogProduct(S.bestAltId) : null;
-      // Produit déjà peu cher : on le dit clairement (pas de dupe car rien de moins cher à qualité comparable)
-      // Seulement si le prix vient de notre catalogue ET que la recherche a pu se faire (statut « none »)
-      const cheapMsg = (_refPrice() > 0 && _refPrice() <= 20 && S.status === 'none')
-        ? `Ce produit n'a pas de dupe : il est déjà peu cher (${_refPrice().toFixed(2).replace('.', ',')} €), il est difficile de trouver moins cher à qualité équivalente.`
-        : '';
+      const fam = id.mainFamily && typeof MainActive !== 'undefined' ? MainActive.label(id.mainFamily) : '';
+      const list = (id.inciList || []).slice(0, 12);
+      // Ce que contient le produit : composition trouvée (ou lue sur photo), avec son actif principal
+      const compoCard = list.length ? `
+        <div class="df-compo-card">
+          <h3>Ce que contient ton produit</h3>
+          ${fam ? `<p>Actif principal : <strong>${_esc(fam)}</strong></p>` : ''}
+          <p class="df-compo-list">${_esc(list.join(', '))}${(id.inciList || []).length > list.length ? '…' : ''}</p>
+        </div>` : '';
+      // Pas de composition : on peut encore la faire lire sur une photo de la liste d'ingrédients
+      const photoCta = (!list.length && S.status !== 'makeup-soon')
+        ? `<button class="btn btn-dark df-btn-main" onclick="DupeFinder.goPhoto()">📷 Photographier la liste d'ingrédients</button>` : '';
+      const queued = (id._queued === true && S.status !== 'makeup-soon')
+        ? `<p class="df-queued">📝 On ajoute ton produit à notre liste de recherche : nous enrichirons notre sélection pour te proposer des alternatives.</p>` : '';
       return `
         <div class="df-results">
           ${header}
           ${selfBanner || `<div class="df-nodupe">
             <span class="df-hero-emoji">💡</span>
-            <p>${cheapMsg || S.noDupeMsg || "Nous n'avons pas trouvé de dupe suffisamment proche de ce produit. Nous préférons ne pas te proposer une alternative peu pertinente."}</p>
+            <p>${_esc(S.noDupeMsg || "Nous n'avons pas encore de produit de notre sélection à te proposer pour celui-ci.")}</p>
           </div>`}
+          ${compoCard}
+          ${photoCta}
+          ${queued}
           ${alt ? `<p class="df-alt-h">Une alternative similaire, adaptée à ta peau :</p>${_resultCard({ id: alt.id, similarity: 0, role: 'value', skinFit: 'adapted', commonPoints: [], differences: [], why: '', skinNote: '' }, 0)}` : ''}
           ${_footer(left)}
         </div>`;
@@ -400,10 +497,13 @@ const DupeFinder = (() => {
     const realDupes = catRes.filter(r => r.level === 'reliable' || r.level === 'similar');
     const others    = catRes.filter(r => !(r.level === 'reliable' || r.level === 'similar'));
     const catHtml = realDupes.map((r, i) => _resultCard(r, i)).join('')
-      + (others.length ? `<div class="df-altsep"><span>${realDupes.length ? 'Autres options' : 'Options qui partagent l\'actif principal'}</span></div>
-         <p class="df-alt-h">Même actif principal, mais nous ne pouvons pas prouver qu'elles coûtent moins cher au ${others.some(o => o.unitPrice && o.unitPrice.unit === 'g') ? 'gramme' : 'millilitre'} que ton produit.</p>`
-         + others.map((r, i) => _resultCard(r, realDupes.length + i)).join('') : '')
-      + (_refUnitKnown() ? '' : _vPriceForm());
+      + (others.length
+        ? (realDupes.length
+            ? `<div class="df-altsep"><span>Autres options</span></div>
+               <p class="df-alt-h">Même actif principal, mais nous ne pouvons pas prouver qu'elles coûtent moins cher au ${others.some(o => o.unitPrice && o.unitPrice.unit === 'g') ? 'gramme' : 'millilitre'} que ton produit.</p>`
+            : '')
+          + others.map((r, i) => _resultCard(r, realDupes.length + i)).join('')
+        : '');
     const extHtml = '';
 
     // Alternative peau distincte du meilleur dupe (catalogue)
@@ -418,19 +518,24 @@ const DupeFinder = (() => {
 
     // Titre de section : sépare « Ton produit » des propositions (seulement s'il y a des dupes du catalogue)
     const _t = String((id.brand ? id.brand + ' ' : '') + (id.name || '')).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-    const _prices = catRes.map(r => { const cp = _catalogProduct(r.id); return cp && cp.price != null ? cp.price : null; }).filter(x => x != null && x > 0);
+    // « à partir de » : seulement parmi les dupes prouvés moins chers (jamais parmi les options non comparables)
+    const _prices = realDupes.map(r => { const cp = _catalogProduct(r.id); return cp && cp.price != null ? cp.price : null; }).filter(x => x != null && x > 0);
     const _from = _prices.length ? Math.min.apply(null, _prices) : 0;
     const _count = realDupes.length;
+    // « Les dupes de… » seulement s'il y a au moins un dupe fiable ou similaire ; sinon « Des options avec le même actif que… »
+    const _priceKnown = _refUnitKnown();
     const dupesTitle = _count ? `
         <div class="df-dupes-title">
           <span class="df-dupes-eyebrow">✦ Les dupes de ✦</span>
           <h3 class="df-dupes-h">« ${_t} »</h3>
-          <p class="df-dupes-sub">Des produits de notre sélection qui partagent l'actif principal de ton produit et coûtent moins cher à l'unité.</p>
-          <span class="df-dupes-count">${_count} dupe${_count > 1 ? 's' : ''} trouvé${_count > 1 ? 's' : ''}${_from ? ' · à partir de ' + _from.toFixed(2).replace('.', ',') + ' €' : ''}</span>
+          <p class="df-dupes-sub">Des produits de notre sélection qui partagent l'actif principal de ton produit, s'utilisent de la même façon et coûtent moins cher à l'unité.</p>
+          <span class="df-dupes-count">${_count} dupe${_count > 1 ? 's' : ''} trouvé${_count > 1 ? 's' : ''}${_from ? ' · à partir de ' + _eur(_from) : ''}</span>
         </div>` : (catRes.length ? `
         <div class="df-dupes-title">
-          <span class="df-dupes-eyebrow">✦ Pour « ${_t} » ✦</span>
-          <p class="df-dupes-sub">Aucun dupe prouvé moins cher pour l'instant.</p>
+          <span class="df-dupes-eyebrow">✦ Des options avec le même actif que ✦</span>
+          <h3 class="df-dupes-h">« ${_t} »</h3>
+          <p class="df-dupes-sub">Même actif principal et même façon de les utiliser. ${_priceKnown ? 'Aucune n\'est prouvée moins chère que ton produit.' : 'Indique ton prix pour savoir lesquelles te font économiser.'}</p>
+          <span class="df-dupes-count">${catRes.length} option${catRes.length > 1 ? 's' : ''}</span>
         </div>` : '');
 
     return `
@@ -438,6 +543,7 @@ const DupeFinder = (() => {
         ${header}
         ${selfBanner}
         ${warn}
+        ${_vPriceForm()}
         ${dupesTitle}
         <div class="df-list">${catHtml}${extHtml}</div>
         ${altBlock}
@@ -445,12 +551,19 @@ const DupeFinder = (() => {
       </div>`;
   }
 
-  function _footer(left) {
-    const quota = _isPremium() ? '' :
-      (left > 0
-        ? `<p class="df-quota">Il te reste <strong>${left}</strong> recherche${left > 1 ? 's' : ''} gratuite${left > 1 ? 's' : ''}</p>`
-        : `<p class="df-quota">C'était ta dernière recherche gratuite. <a href="#" onclick="showScreen('premium');return false;">Passer Premium ✦</a></p>`);
-    return `${quota}<button class="btn btn-outline df-btn" onclick="DupeFinder.goHome()">📸 Scanner un autre produit</button>`;
+  function _footer() {
+    return `${_quotaLine()}<button class="btn btn-outline df-btn" onclick="DupeFinder.goHome()">📸 Scanner un autre produit</button>`;
+  }
+
+  // Limite atteinte (quota du mois, trop de demandes, plafond de coût du jour) : message doux du serveur
+  function _vLimit() {
+    return `
+      <div class="df-blocked">
+        <span class="df-hero-emoji">⏳</span>
+        <h2>On fait une pause</h2>
+        <p>${_esc(S.limitMsg || 'Réessaie dans quelques instants.')}</p>
+        <button class="btn btn-ghost df-btn-alt" onclick="DupeFinder.goHome()">← Retour</button>
+      </div>`;
   }
 
   // ── État ERREUR TECHNIQUE (≠ absence de dupe) — avec bouton Réessayer ──
@@ -525,6 +638,8 @@ const DupeFinder = (() => {
     id.inciConfidence = 'none'; id.inciList = []; id.mainFamily = null; S.photoMsg = ''; S.view = 'compoPhoto'; render();
   }
 
+  function goPhoto() { S.photoMsg = ''; S.view = 'compoPhoto'; render(); }
+
   function skipCompo() {
     const id = S.identified;
     if (id) { id.inciConfidence = 'none'; id.inciList = []; id.mainFamily = null; }
@@ -550,14 +665,9 @@ const DupeFinder = (() => {
     }
     S.view = 'reading'; render();
     try {
-      const controller = new AbortController();
-      const tid = setTimeout(() => controller.abort(), 30000);
-      const r = await fetch(apiUrl('/api/inci'), {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'photo', photo }), signal: controller.signal
-      });
-      clearTimeout(tid);
-      const d = await r.json().catch(() => null);
+      const resp = await _post('/api/inci', { mode: 'photo', photo }, 30000);
+      if (_limitFrom(resp)) return;
+      const r = resp, d = resp.data;
       if (!r.ok || !d || !d.found || !d.inciList || d.inciList.length < 5) {
         S.photoMsg = "Je n'ai pas pu lire la liste. Reprends la photo plus près, bien nette, sans reflet."; S.view = 'compoPhoto'; render(); return;
       }
@@ -575,28 +685,48 @@ const DupeFinder = (() => {
     const id = S.identified || {};
     return _refPrice() > 0 && (id.volumeMl > 0 || id.netWeightG > 0);
   }
+  // Juste au-dessus des résultats. On ne demande que le PRIX : la contenance est remplie quand la fiche la donne.
+  // (La contenance n'est demandée que si aucune fiche ne l'indique.)
   function _vPriceForm() {
+    const id = S.identified || {};
+    const needPrice  = !(_refPrice() > 0);
+    const needAmount = !(id.volumeMl > 0 || id.netWeightG > 0);
+    if (!needPrice && !needAmount) return '';
+    const intro = needPrice
+      ? 'Combien as-tu payé ton produit ? Entre le prix pour voir ce que tu économises.'
+      : 'Quelle est la contenance de ton produit ? Elle permet de comparer les prix au millilitre.';
     return `
       <div class="df-priceform">
-        <p><strong>Pour savoir lesquelles sont vraiment moins chères</strong>, indique ce que tu as payé ton produit et sa contenance. Rien n'est enregistré sur ton compte.</p>
+        <p><strong>${intro}</strong></p>
         <div class="df-priceform-row">
-          <input id="dfRefPrice" type="number" inputmode="decimal" step="0.01" min="0" class="df-input" placeholder="Prix payé (€)">
-          <input id="dfRefAmount" type="number" inputmode="decimal" step="0.1" min="0" class="df-input" placeholder="Contenance">
-          <select id="dfRefUnit" class="df-input"><option value="ml">ml</option><option value="g">g</option></select>
+          ${needPrice ? '<input id="dfRefPrice" type="number" inputmode="decimal" step="0.01" min="0" class="df-input" placeholder="Prix payé (€)">' : ''}
+          ${needAmount ? '<input id="dfRefAmount" type="number" inputmode="decimal" step="0.1" min="0" class="df-input" placeholder="Contenance"><select id="dfRefUnit" class="df-input df-unit"><option value="ml">ml</option><option value="g">g</option></select>' : ''}
         </div>
-        <button class="btn btn-dark df-btn-main" onclick="DupeFinder.recompute()">Recalculer</button>
+        <button class="btn btn-dark df-btn-main" onclick="DupeFinder.recompute()">Voir mes économies</button>
+        <p class="df-priceform-note">Ce prix sert uniquement à calculer : il n'est enregistré nulle part.</p>
       </div>`;
   }
   function recompute() {
-    const price  = parseFloat(String(document.getElementById('dfRefPrice')?.value || '').replace(',', '.'));
-    const amount = parseFloat(String(document.getElementById('dfRefAmount')?.value || '').replace(',', '.'));
-    const unit   = document.getElementById('dfRefUnit')?.value === 'g' ? 'g' : 'ml';
+    const id = S.identified || {};
+    const pEl = document.getElementById('dfRefPrice'), aEl = document.getElementById('dfRefAmount');
+    const num = el => parseFloat(String((el && el.value) || '').replace(',', '.'));
+    const price  = pEl ? num(pEl) : id.estPrice;
+    const amount = aEl ? num(aEl) : (id.volumeMl > 0 ? id.volumeMl : id.netWeightG);
+    const unit   = aEl ? (document.getElementById('dfRefUnit')?.value === 'g' ? 'g' : 'ml') : (id.netWeightG > 0 ? 'g' : 'ml');
     if (!(price > 0 && price < 5000) || !(amount > 0 && amount < 5000)) {
-      if (typeof showToast === 'function') showToast('Indique un prix et une contenance valides', 'warning');
+      if (typeof showToast === 'function') showToast(pEl ? 'Indique le prix que tu as payé' : 'Indique la contenance', 'warning');
       return;
     }
     S.userRef = { price, amount, unit };
     _runMatch();
+  }
+
+  // Contenance écrite dans le nom du produit (« … 30 ml ») : remplie automatiquement
+  function _volumeFromName(name) {
+    const m = String(name || '').toLowerCase().replace(',', '.').match(/(\d+(?:\.\d+)?)\s*(ml|g)\b/);
+    if (!m) return null;
+    const n = parseFloat(m[1]);
+    return (n > 0 && n < 5000) ? { amount: n, unit: m[2] } : null;
   }
 
   // ─── Navigation UI ────────────────────────────────────────────
@@ -683,16 +813,11 @@ const DupeFinder = (() => {
   // ─── INCI réel via Open Beauty Facts (best-effort, non bloquant) ──
   async function _fetchInci(id) {
     try {
-      const controller = new AbortController();
-      const tid = setTimeout(() => controller.abort(), 25000);   // la recherche de composition sur le web peut prendre quelques secondes
-      const resp = await fetch(apiUrl('/api/inci'), {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ barcode: id.barcode || '', brand: id.brand || '', name: id.name || '' }),
-        signal: controller.signal
-      });
-      clearTimeout(tid);
-      if (!resp.ok) return null;
-      return await resp.json().catch(() => null);
+      // la recherche de composition sur le web peut prendre quelques secondes
+      const r = await _post('/api/inci', { barcode: id.barcode || '', brand: id.brand || '', name: id.name || '' }, 25000);
+      if (_limitFrom(r)) return { limited: true };     // compte requis, quota épuisé, limite de produits inconnus du jour…
+      if (!r.ok) return null;
+      return r.data;
     } catch (e) { console.warn('[DupeFinder] INCI fetch échoué:', e.message); return null; }
   }
 
@@ -712,9 +837,17 @@ const DupeFinder = (() => {
   function _shortlist(id) {
     const cat = _normCat(id.category);
     // Le produit scanné ne peut pas être son propre dupe (même fiche, accents/tailles ignorés)
-    const _notSelf = p => !(typeof SameProduct !== 'undefined' && SameProduct.same(id, p));
+    // (même marque + nom proche, ou même marque + composition quasi identique : pluriel, « 2.0 », contenance, format…)
+    const refList = (id.inciList && id.inciList.length >= 8) ? id.inciList : (id.catalogInci && id.catalogInci.length >= 8 ? id.catalogInci : null);
+    const _notSelf = p => !(typeof SameProduct !== 'undefined' &&
+      (SameProduct.sameWithCompo ? SameProduct.sameWithCompo(id, p, refList, p.inciNormalized) : SameProduct.same(id, p)));
     const catalog = (AppState.products.catalog || []).filter(_notSelf);
-    let pool = catalog.filter(p => _normCat(p.category) === cat);
+    // Même USAGE que le produit de la personne (pads / lotion, sérum, crème, masque à rincer, peeling…) :
+    // plus précis que la catégorie, qui range pads, peelings et sérums dans le même « bucket ».
+    const refUsage = (typeof UsageType !== 'undefined') ? UsageType.usageOf({ name: id.name, category: id.category }) : null;
+    let pool = refUsage
+      ? catalog.filter(p => UsageType.compatible(refUsage, UsageType.usageOf(p)).ok)
+      : catalog.filter(p => _normCat(p.category) === cat);
     if (!pool.length) pool = catalog.filter(p => p.category === id.category);
     if (!pool.length) return [];
     const acts = (id.keyActives || []).map(_slug).filter(Boolean);
@@ -760,7 +893,11 @@ const DupeFinder = (() => {
       S.view = 'insufficient'; render(); return;
     }
 
-    if (_left() <= 0) { S.view = 'blocked'; render(); return; }  // inerte tant que l'app est gratuite
+    if (!id._searchId) id._searchId = 'r' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);   // une recherche = un seul décompte
+    if (_left() <= 0 && !id._counted) {
+      S.limitMsg = 'Tu as utilisé tous tes dupes ce mois-ci. Ils reviennent le 1er du mois prochain.';
+      S.view = 'limit'; render(); return;
+    }
 
     // Maquillage : pas d'actif principal, donc pas de dupe pour l'instant (à venir). On garde la demande
     // (scan enregistré, sans e-mail) pour savoir quels produits sont recherchés, mais on n'appelle pas l'IA.
@@ -780,6 +917,7 @@ const DupeFinder = (() => {
     // 2) Composition de la référence : nos fiches → cache → Open Beauty Facts → INCIDecoder.
     //    Jamais inventée : chaque liste garde sa page source et sa date.
     const inci = await _fetchInci(id);
+    if (inci && inci.limited) return;                  // un message de limite est déjà affiché
     _applyInci(id, inci);
 
     // Page au nom proche mais pas identique (ex. version « baby », « nuit ») : on demande de CONFIRMER
@@ -794,6 +932,8 @@ const DupeFinder = (() => {
   // l'IA n'est jamais affichée.
   function _applyCatalogOwn(id) {
     id.priceVerified = false; id.estPrice = 0; id.priceSource = ''; id.catalogTags = undefined; id.catalogInci = undefined;
+    const vn = _volumeFromName(id.name);
+    if (vn && !id.volumeMl && !id.netWeightG) { if (vn.unit === 'g') id.netWeightG = vn.amount; else id.volumeMl = vn.amount; }
     try {
       if (typeof SameProduct !== 'undefined') {
         const own = (AppState.products.catalog || []).find(p => SameProduct.same(id, p));
@@ -855,21 +995,15 @@ const DupeFinder = (() => {
     console.info('[DupeFinder] shortlist:', candidates.length, 'candidat(s) catalogue');
     if (!id._scanSaved) { id._scanSaved = true; _saveScan(id, candidates.length > 0); }
 
-    let resp, data;
+    let data;
     try {
-      const controller = new AbortController();
-      const tid = setTimeout(() => controller.abort(), 40000);
       const t0  = Date.now();
-      resp = await fetch(apiUrl('/api/dupeMatch'), {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ product: id, candidates, userSkin: _userSkin(),
-          ageConstraint: (typeof AgeGuard !== 'undefined') ? AgeGuard.aiConstraint(AppState.questionnaire?.answers) : null }),
-        signal: controller.signal
-      });
-      clearTimeout(tid);
-      console.info('[DupeFinder] dupeMatch HTTP', resp.status, '·', (Date.now() - t0) + 'ms');
-      data = await resp.json().catch(() => null);
-      if (!resp.ok || !data) throw new Error('HTTP ' + resp.status + (data && data.error ? ' · ' + data.error : ' · reponse illisible'));
+      const r = await _post('/api/dupeMatch', { product: id, candidates, userSkin: _userSkin(),
+        ageConstraint: (typeof AgeGuard !== 'undefined') ? AgeGuard.aiConstraint(AppState.questionnaire?.answers) : null }, 45000);
+      console.info('[DupeFinder] dupeMatch HTTP', r.status, '·', (Date.now() - t0) + 'ms');
+      if (_limitFrom(r)) return;                       // compte requis, quota épuisé, trop de demandes, plafond du jour
+      data = r.data;
+      if (!r.ok || !data) throw new Error('HTTP ' + r.status + (data && data.error ? ' · ' + data.error : ' · reponse illisible'));
     } catch (err) {
       // ── ÉTAT ERREUR TECHNIQUE (réseau / timeout / serveur) — distinct de « aucun dupe » ──
       const kind = (err.name === 'AbortError') ? 'timeout (40s)' : (err.message || 'réseau');
@@ -887,17 +1021,30 @@ const DupeFinder = (() => {
     S.noDupeMsg       = data.noDupeMessage || '';
     S.bestAltId       = data.bestSkinAlternativeId || null;
     S.selfDupe        = null; // plus de « ce produit est un dupe de… » issu de la mémoire de l'IA (phase 1)
-    if (!id._counted) { id._counted = true; _inc(); }   // un recalcul (prix/contenance) ne compte pas comme une nouvelle recherche
+    // (le décompte du dupe est fait par le serveur : une seule fois par recherche, et seulement si un résultat s'affiche)
 
-    const hasResults = S.trueDupe && S.results.length > 0;
-    if (hasResults) {
+    // Règle n°1 : l'écran ne finit jamais sur « rien trouvé ». Dès qu'il y a UN produit du même actif, on l'affiche
+    // (dupes d'abord, puis « autres options »). Sinon, écran utile : ce que contient le produit + mise de côté.
+    if (S.results.length > 0) {
       console.info('[DupeFinder] resultats:', S.results.length, 'produit(s) du catalogue');
       S.view = 'results';
     } else {
-      console.info('[DupeFinder] aucun dupe fiable (trueDupe=' + S.trueDupe + ')');
+      console.info('[DupeFinder] aucun produit du même actif (statut ' + S.status + ')');
       S.view = 'nodupe';
+      if (S.status !== 'makeup-soon') _queueProduct(id, S.status);    // gardé de côté pour l'enrichir plus tard
     }
     render();
+  }
+
+  // « On ajoute ton produit à notre liste de recherche » : marque, nom, catégorie (jamais de compte ni d'adresse IP)
+  async function _queueProduct(id, reason) {
+    if (!id || id._queued !== undefined) return;
+    id._queued = false;
+    try {
+      const r = await _post('/api/inci', { mode: 'queue', brand: id.brand || '', name: id.name || '', category: id.category || '', barcode: id.barcode || '', reason: reason || '' }, 12000);
+      id._queued = !!(r.ok && r.data && r.data.ok);
+      if (S.identified === id && (S.view === 'nodupe')) render();
+    } catch (e) { id._queued = false; }
   }
 
   // ─── Sauvegarde des scans (enrichissement catalogue / admin) ──
@@ -991,7 +1138,7 @@ const DupeFinder = (() => {
   return {
     initScreen, render, goHome, goManual, goBarcode,
     pickCamera, pickGallery, onPhoto, submitManual, startSearch, retry,
-    confirmCompo, skipCompo, onIngredientsPhoto, recompute
+    confirmCompo, skipCompo, goPhoto, onIngredientsPhoto, recompute
   };
 })();
 

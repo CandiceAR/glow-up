@@ -2,6 +2,8 @@
    api/saveProducts.js — Persiste les produits via GitHub API (Vercel)
    ============================================================ */
 
+const { requireAdmin } = require('../lib/adminAuth.js');
+
 const OWNER     = 'CandiceAR';
 const REPO      = 'glow-up';
 const FILE_PATH = 'data/products-manual.json';
@@ -17,6 +19,13 @@ module.exports = async (req, res) => {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST')    return res.status(405).json({ error: 'Method Not Allowed' });
+
+  // SÉCURITÉ : seule l'administratrice identifiée peut modifier le catalogue (lib/adminAuth.js).
+  // Avant le 23 oct. 2026, cette route n'exigeait AUCUNE identification.
+  const admin = await requireAdmin(req, res);
+  if (!admin) return;
+  // mode « whoami » : le panneau d'administration vérifie ici que la personne connectée est bien administratrice
+  if (req.body && req.body.mode === 'whoami') return res.status(200).json({ ok: true, email: admin.email });
 
   const token = process.env.GITHUB_TOKEN;
   if (!token) return res.status(503).json({ error: 'GITHUB_TOKEN non configuré' });

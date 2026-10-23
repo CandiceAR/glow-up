@@ -392,7 +392,7 @@ const RoutineRenderer = (() => {
           <div class="step-product-name">${product.name}</div>
           <div class="step-product-meta">
             <span class="step-product-stars">${stars}</span>
-            <span class="step-product-price">${product.price ? product.price.toFixed(2) + ' €' : ''}</span>
+            <span class="step-product-price">${product.price ? product.price.toFixed(2).replace('.', ',') + ' €' : ''}</span>
           </div>
         </div>
         <a class="btn-step-buy"
@@ -496,7 +496,7 @@ const RoutineRenderer = (() => {
       <div class="routine-global-total">
         <div>
           <div class="routine-global-total-label">Budget routine estimé</div>
-          <div class="routine-global-total-price">${total.toFixed(2)} €</div>
+          <div class="routine-global-total-price">${total.toFixed(2).replace('.', ',')} €</div>
           <div class="routine-global-total-duration">≈ ${perMonth} €/mois · Dure environ ${durLabel}</div>
           <div class="routine-global-total-note">${routineNote}</div>
         </div>
@@ -998,7 +998,7 @@ const RoutineRenderer = (() => {
     const totalHtml = total > 0 ? `
       <div class="cg-total">
         <span class="cg-total-label">Total routine (${stepIndex} produit${stepIndex > 1 ? 's' : ''})</span>
-        <strong class="cg-total-amount">${total.toFixed(2)} €</strong>
+        <strong class="cg-total-amount">${total.toFixed(2).replace('.', ',')} €</strong>
       </div>` : '';
 
     return `
@@ -1071,7 +1071,7 @@ const RoutineRenderer = (() => {
     const url = d.amazonUrl || d.shopUrl || '#';
     return `<a class="dupe-cta" href="${url}" target="_blank" rel="noopener nofollow${d.amazonUrl ? ' sponsored' : ''}" onclick="event.stopPropagation()">
       <span class="dupe-cta-badge">💸 Dupe</span>
-      <span class="dupe-cta-txt">−${r.pct}% · ${r.savings} € économisés</span>
+      <span class="dupe-cta-txt">−${r.pct}% · ${String(r.savings).replace(".", ",")} € économisés</span>
       <span class="dupe-cta-arrow">→</span>
     </a>`;
   }
@@ -1374,7 +1374,7 @@ const RoutineRenderer = (() => {
           <span class="alt-card-name">${nm}</span>
           <div class="alt-card-meta">
             ${reason ? `<span class="alt-card-reason">${reason}</span>` : ''}
-            ${p.price != null ? `<span class="alt-card-price">${p.price.toFixed(2)} €</span>` : ''}
+            ${p.price != null ? `<span class="alt-card-price">${p.price.toFixed(2).replace('.', ',')} €</span>` : ''}
             ${p.rating ? `<span class="alt-card-rating">★ ${p.rating}</span>` : ''}
           </div>
         </div>

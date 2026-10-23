@@ -331,13 +331,16 @@ const MakeupAI = (() => {
 
   async function callMakeupRender(imageB64, maskB64, prompt, _retry) {
     const retry = _retry || 0;
+    let idToken = null;   // compte requis côté serveur (route payante)
+    try { const cu = firebase.auth().currentUser; idToken = cu ? await cu.getIdToken() : null; } catch (e) {}
     const res = await fetch(apiUrl('/api/makeupRender'), {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         image:  `data:image/jpeg;base64,${imageB64}`,
         mask:   `data:image/png;base64,${maskB64}`,
-        prompt
+        prompt,
+        idToken
       })
     });
 

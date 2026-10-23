@@ -2,6 +2,8 @@
    api/uploadImage.js — Upload image dans assets/ via GitHub API (Vercel)
    ============================================================ */
 
+const { requireAdmin } = require('../lib/adminAuth.js');
+
 const OWNER = 'CandiceAR';
 const REPO  = 'glow-up';
 
@@ -17,12 +19,21 @@ async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST')    return res.status(405).json({ error: 'Method Not Allowed' });
 
+  // SÉCURITÉ : seule l'administratrice identifiée peut déposer une image (lib/adminAuth.js).
+  // Avant le 23 oct. 2026, n'importe qui pouvait écrire des fichiers dans le dépôt GitHub public.
+  const admin = await requireAdmin(req, res);
+  if (!admin) return;
+
   const token = process.env.GITHUB_TOKEN;
   if (!token) return res.status(503).json({ error: 'GITHUB_TOKEN non configuré' });
 
   const { filename, contentBase64 } = req.body || {};
   if (!filename || !contentBase64) {
     return res.status(400).json({ error: 'filename et contentBase64 requis' });
+  }
+  // images seulement (jpg, png, webp), pas de fichier exécutable ni de page web
+  if (typeof filename !== 'string' || typeof contentBase64 !== 'string' || !/\.(jpe?g|png|webp)$/i.test(filename)) {
+    return res.status(400).json({ error: 'Seules les images .jpg, .png ou .webp sont acceptées' });
   }
 
   const safeName = filename.replace(/[^a-zA-Z0-9._\-]/g, '-');

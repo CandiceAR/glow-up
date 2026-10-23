@@ -5,6 +5,8 @@
               shade, keyActives[], texture, finish, coverage, estPrice, confidence }
    ============================================================ */
 
+const AI = require('../lib/aiGuard.js');
+
 const CORS = {
   'Access-Control-Allow-Origin':  '*',
   'Access-Control-Allow-Headers': 'Content-Type',
@@ -24,6 +26,10 @@ module.exports = async (req, res) => {
   Object.entries(CORS).forEach(([k, v]) => res.setHeader(k, v));
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST')    return res.status(405).json({ error: 'Method Not Allowed' });
+
+  // Protection : limite par IP + plafond de coût global (voir lib/aiGuard.js)
+  const G = await AI.guard(req, res, 'identify', { ai: true });
+  if (!G) return;
 
   // Mode « verdict » du scan produit (même fonction : le plan Hobby limite à 12 fonctions API)
   if (req.body && req.body.mode === 'verdict') return require('../lib/scanVerdict')(req, res);
@@ -83,24 +89,16 @@ Règles :
 - Réponds UNIQUEMENT avec le JSON.`;
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type':      'application/json',
-        'x-api-key':         apiKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model:      'claude-sonnet-4-6',
-        max_tokens: 600,
-        messages: [{
-          role: 'user',
-          content: [
-            { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Data } },
-            { type: 'text', text: prompt }
-          ]
-        }]
-      })
+    const resp = await AI.anthropic('identify', apiKey, {
+      model:      'claude-sonnet-4-6',
+      max_tokens: 600,
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Data } },
+          { type: 'text', text: prompt }
+        ]
+      }]
     });
 
     if (!resp.ok) {

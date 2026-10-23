@@ -237,10 +237,13 @@ const Subscription = (() => {
     showToast('Redirection vers le paiement…', 'info', 2000);
 
     try {
+      // le serveur reconnaît la personne grâce à son jeton Firebase (et non à un identifiant envoyé par le navigateur)
+      let idToken = null;
+      try { const cu = firebase.auth().currentUser; idToken = cu ? await cu.getIdToken() : null; } catch (e) {}
       const res = await fetch(apiUrl('/api/createCheckout'), {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ priceKey, uid, email })
+        body:    JSON.stringify({ priceKey, idToken })
       });
       const data = await res.json();
       if (data.url) {

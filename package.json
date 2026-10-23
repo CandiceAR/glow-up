@@ -18,6 +18,7 @@
   "scripts": {
     "build:web": "node scripts/build-web.js",
     "build:blog": "node build-blog.js",
-    "ios:prepare": "node scripts/build-web.js && npx cap sync ios"
+    "ios:prepare": "node scripts/build-web.js && npx cap sync ios",
+    "test": "node tests/run.js"
   }
 }

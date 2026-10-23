@@ -460,7 +460,7 @@ const MakeupRoutine = (() => {
             <p class="premium-card-desc">${description || ''}</p>
             ${rating ? `<div class="premium-card-rating">★ ${rating}</div>` : ''}
             <div class="premium-card-price-row">
-              <span class="premium-card-price">${price != null ? price.toFixed(2) + ' €' : '—'}</span>
+              <span class="premium-card-price">${price != null ? price.toFixed(2).replace('.', ',') + ' €' : '—'}</span>
             </div>
             ${canCompare ? '<p class="pc-value">✨ Compare les prix du marché en 1 clic</p>' : ''}
           </div>
@@ -519,7 +519,7 @@ const MakeupRoutine = (() => {
     if ((product.rating || 0) >= 4.5)
       return `L'une des mieux notées de sa catégorie (★${product.rating}).`;
     if (mk.mkBudget === 'petits-prix' && product.price != null && product.price <= 15)
-      return `Excellent rapport qualité-prix à ${product.price.toFixed(2)} €.`;
+      return `Excellent rapport qualité-prix à ${product.price.toFixed(2).replace('.', ',')} €.`;
     if (mk.mkLook)
       return `Cohérente avec ton objectif « ${({ naturel: 'naturel', soigne: 'soigné', glam: 'glam' })[mk.mkLook] || mk.mkLook} ».`;
     return `Formule et tenue adaptées à ton teint.`;
@@ -560,7 +560,7 @@ const MakeupRoutine = (() => {
           <span class="alt-card-name">${nm}</span>
           <div class="alt-card-meta">
             ${reason ? `<span class="alt-card-reason">${reason}</span>` : ''}
-            ${p.price != null ? `<span class="alt-card-price">${p.price.toFixed(2)} €</span>` : ''}
+            ${p.price != null ? `<span class="alt-card-price">${p.price.toFixed(2).replace('.', ',')} €</span>` : ''}
             ${p.rating ? `<span class="alt-card-rating">★ ${p.rating}</span>` : ''}
           </div>
         </div>
@@ -773,7 +773,7 @@ const MakeupRoutine = (() => {
           ${coreTotal > 0 ? `
           <div class="cg-total">
             <span class="cg-total-label">Total routine (${productCount} produit${productCount > 1 ? 's' : ''})</span>
-            <strong class="cg-total-amount">${coreTotal.toFixed(2)} €</strong>
+            <strong class="cg-total-amount">${coreTotal.toFixed(2).replace('.', ',')} €</strong>
           </div>` : ''}
         </section>
 
@@ -782,7 +782,7 @@ const MakeupRoutine = (() => {
         ${allBonus.length > 0 && totalWithBonus > coreTotal ? `
         <div class="cg-total cg-total-bonus">
           <span class="cg-total-label">Total avec bonus</span>
-          <strong class="cg-total-amount">${totalWithBonus.toFixed(2)} €</strong>
+          <strong class="cg-total-amount">${totalWithBonus.toFixed(2).replace('.', ',')} €</strong>
         </div>` : ''}
 
         <!-- Enregistrer ma routine — juste après la routine -->

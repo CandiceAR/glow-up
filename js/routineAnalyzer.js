@@ -711,7 +711,7 @@ const RoutineAnalyzer = (() => {
         <div class="ra-opt-prod-info">
           <span class="ra-opt-prod-brand">${p.brand || ''}</span>
           <span class="ra-opt-prod-name">${p.name || ''}</span>
-          ${p.price != null ? `<span class="ra-opt-prod-price">${p.price.toFixed(2)} €</span>` : ''}
+          ${p.price != null ? `<span class="ra-opt-prod-price">${p.price.toFixed(2).replace('.', ',')} €</span>` : ''}
         </div>
         ${buy ? `<a class="ra-opt-buy" href="${url}" target="_blank" rel="noopener nofollow${isAff ? ' sponsored' : ''}" ${isAff ? `onclick="if(typeof trackAmazonClick==='function')trackAmazonClick('${p.id}')"` : ''}>Voir →</a>` : ''}
       </div>`;

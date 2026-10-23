@@ -9,6 +9,8 @@
               products[], routine{}, optimized{} }
    ============================================================ */
 
+const AI = require('../lib/aiGuard.js');
+
 const CORS = {
   'Access-Control-Allow-Origin':  '*',
   'Access-Control-Allow-Headers': 'Content-Type',
@@ -22,6 +24,9 @@ module.exports = async (req, res) => {
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(503).json({ error: 'ANTHROPIC_API_KEY manquante' });
+
+  // Protection : limite par IP + plafond de coût global (voir lib/aiGuard.js)
+  if (!(await AI.guard(req, res, 'analyzeRoutine', { ai: true }))) return;
 
   const { products, quiz, skin, moment, ageConstraint, concernHint } = req.body || {};
   if (!Array.isArray(products) || !products.length) {
@@ -110,18 +115,10 @@ Retourne UNIQUEMENT ce JSON valide, sans texte avant/après :
 Les "ref" renvoient à l'index des produits fournis. N'invente pas de produits inexistants.`;
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type':      'application/json',
-        'x-api-key':         apiKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model:      'claude-sonnet-4-6',
-        max_tokens: 3000,
-        messages: [{ role: 'user', content: prompt }]
-      })
+    const resp = await AI.anthropic('analyzeRoutine', apiKey, {
+      model:      'claude-sonnet-4-6',
+      max_tokens: 3000,
+      messages: [{ role: 'user', content: prompt }]
     });
 
     if (!resp.ok) {

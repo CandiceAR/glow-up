@@ -4,6 +4,8 @@
    Sortie  : { cernes, rougeurs, eclat, texture, taches, imperfections }
    ============================================================ */
 
+const AI = require('../lib/aiGuard.js');
+
 const CORS = {
   'Access-Control-Allow-Origin':  '*',
   'Access-Control-Allow-Headers': 'Content-Type',
@@ -17,6 +19,9 @@ module.exports = async (req, res) => {
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(503).json({ error: 'ANTHROPIC_API_KEY manquante' });
+
+  // Protection : limite par IP + plafond de coût global (voir lib/aiGuard.js)
+  if (!(await AI.guard(req, res, 'faceVision', { ai: true }))) return;
 
   const { photo } = req.body || {};
   if (!photo || typeof photo !== 'string') {
@@ -56,27 +61,19 @@ Règles :
 - Réponds UNIQUEMENT avec le JSON, aucun autre texte.`;
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type':      'application/json',
-        'x-api-key':         apiKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model:      'claude-sonnet-4-6',
-        max_tokens: 400,
-        messages: [{
-          role: 'user',
-          content: [
-            {
-              type:   'image',
-              source: { type: 'base64', media_type: mediaType, data: base64Data }
-            },
-            { type: 'text', text: prompt }
-          ]
-        }]
-      })
+    const resp = await AI.anthropic('faceVision', apiKey, {
+      model:      'claude-sonnet-4-6',
+      max_tokens: 400,
+      messages: [{
+        role: 'user',
+        content: [
+          {
+            type:   'image',
+            source: { type: 'base64', media_type: mediaType, data: base64Data }
+          },
+          { type: 'text', text: prompt }
+        ]
+      }]
     });
 
     if (!resp.ok) {

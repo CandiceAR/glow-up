@@ -310,7 +310,7 @@ const ProductCatalog = (() => {
           <div class="modal-paired-info">
             <span class="product-brand">${paired.brand}</span>
             <p class="modal-paired-name">${paired.name}</p>
-            <span class="modal-paired-price">${paired.price.toFixed(2)} €</span>
+            <span class="modal-paired-price">${paired.price.toFixed(2).replace('.', ',')} €</span>
           </div>
           <a class="btn btn-amazon btn-amazon-sm" href="${paired.amazonUrl || paired.shopUrl || '#'}" target="_blank" rel="noopener nofollow sponsored">Acheter</a>
         </div>
@@ -441,18 +441,18 @@ const ProductCatalog = (() => {
         <span class="dupe-name">${d.name || ''}</span>
         <span class="dupe-reason">${reason}</span>
       </div>
-      <div class="dupe-price"><s>${product.price.toFixed(2)} €</s><strong>${d.price.toFixed(2)} €</strong></div>`;
+      <div class="dupe-price"><s>${product.price.toFixed(2).replace('.', ',')} €</s><strong>${d.price.toFixed(2).replace('.', ',')} €</strong></div>`;
     if (isSub) {
       return `<div class="dupe-block">
-        <div class="dupe-head"><span class="dupe-badge">💸 Le dupe de ce produit</span><span class="dupe-save">−${r.pct}% · économise ${r.savings} €</span></div>
+        <div class="dupe-head"><span class="dupe-badge">💸 Le dupe de ce produit</span><span class="dupe-save">−${r.pct}% · économise ${String(r.savings).replace(".", ",")} €</span></div>
         <div class="dupe-card">${cardInner}</div>
         <a class="dupe-buy" href="${url}" target="_blank" rel="noopener nofollow${d.amazonUrl ? ' sponsored' : ''}" onclick="event.stopPropagation()">Voir le dupe →</a>
       </div>`;
     }
     return `<div class="dupe-block dupe-block--locked" onclick="Subscription.openLock('dupe')" role="button" tabindex="0">
-      <div class="dupe-head"><span class="dupe-badge">💸 Le dupe de ce produit</span><span class="dupe-save">économise ${r.savings} €</span></div>
+      <div class="dupe-head"><span class="dupe-badge">💸 Le dupe de ce produit</span><span class="dupe-save">économise ${String(r.savings).replace(".", ",")} €</span></div>
       <div class="dupe-card dupe-card--blur" aria-hidden="true">${cardInner}</div>
-      <div class="dupe-lock-cta">Débloque le dupe à ${d.price.toFixed(2)} € · Premium →</div>
+      <div class="dupe-lock-cta">Débloque le dupe à ${d.price.toFixed(2).replace('.', ',')} € · Premium →</div>
     </div>`;
   }
 
@@ -465,7 +465,7 @@ const ProductCatalog = (() => {
   function priceLabel(product) {
     if (product.price != null && product.price !== '') {
       const n = Number(product.price);
-      return (product.priceIsIndicative ? '≈ ' : '') + n.toFixed(2) + ' €';
+      return (product.priceIsIndicative ? '≈ ' : '') + n.toFixed(2).replace('.', ',') + ' €';
     }
     if (product.amazonUrl) return 'Prix sur Amazon';
     if (product.shopUrl)   return 'Voir le prix';

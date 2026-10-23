@@ -4,8 +4,17 @@
 
 'use strict';
 
-const ADMIN_PASSWORD = 'glowup2026';
+// (Le mot de passe « admin » qui était écrit ici a été supprimé le 23 oct. 2026 : le dépôt est public, il protégeait
+//  donc l'accès à rien. L'accès se fait maintenant avec un vrai compte, vérifié par le serveur — voir lib/adminAuth.js.)
 const TAG            = 'kand10ar-21';
+
+// Configuration Firebase du site (publique par conception : elle ne donne aucun droit, les règles Firestore protègent)
+const ADMIN_FIREBASE_CONFIG = {
+  apiKey:        'AIzaSyDrpKPZf8qA_M86pOlChzBbOddGjGQoYiM',
+  authDomain:    'glow-up-9f0d2.firebaseapp.com',
+  projectId:     'glow-up-9f0d2',
+  storageBucket: 'glow-up-9f0d2.firebasestorage.app'
+};
 
 const Admin = (() => {
 
@@ -30,31 +39,84 @@ const Admin = (() => {
   }
 
   // ─── Auth ─────────────────────────────────────────────────────
-  function login() {
-    const pw = document.getElementById('adminPassword').value;
-    if (pw === ADMIN_PASSWORD) {
-      sessionStorage.setItem('glow_admin', '1');
-      document.getElementById('loginPanel').style.display  = 'none';
-      document.getElementById('adminPanel').style.display  = 'block';
-      initAdmin();
-    } else {
-      const err = document.getElementById('loginError');
-      err.textContent = 'Mot de passe incorrect';
-      err.style.display = 'block';
-    }
+  // Connexion avec un vrai compte (Google ou e-mail). Le SERVEUR décide si c'est bien l'administratrice
+  // (jeton Firebase + e-mail confirmé + liste ADMIN_EMAILS) : le navigateur ne décide de rien.
+  let _entered = false;
+
+  function _fbAuth() {
+    if (typeof firebase === 'undefined' || !firebase.auth) return null;
+    if (!firebase.apps.length) firebase.initializeApp(ADMIN_FIREBASE_CONFIG);
+    return firebase.auth();
   }
 
-  function logout() {
-    sessionStorage.removeItem('glow_admin');
+  function _loginError(msg) {
+    const err = document.getElementById('loginError');
+    if (!err) return;
+    err.textContent = msg;
+    err.style.display = 'block';
+  }
+
+  // Jeton d'identité à joindre aux appels d'administration (/api/saveProducts, /api/uploadImage)
+  async function adminToken() {
+    const a = _fbAuth();
+    const u = a && a.currentUser;
+    return u ? u.getIdToken() : null;
+  }
+
+  async function _enter(user) {
+    if (_entered) return true;
+    try {
+      const idToken = await user.getIdToken();
+      const r = await fetch(apiUrl('/api/saveProducts'), {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'whoami', idToken })
+      });
+      if (r.ok) {
+        _entered = true;
+        document.getElementById('loginPanel').style.display  = 'none';
+        document.getElementById('adminPanel').style.display  = 'block';
+        initAdmin();
+        return true;
+      }
+      const d = await r.json().catch(() => ({}));
+      _loginError(d.message || 'Ce compte n\'a pas accès à l\'administration.');
+      try { await _fbAuth().signOut(); } catch (e) {}
+    } catch (e) {
+      _loginError('Connexion impossible pour le moment. Réessaie.');
+    }
+    return false;
+  }
+
+  async function loginGoogle() {
+    const a = _fbAuth();
+    if (!a) { _loginError('Service de connexion indisponible.'); return; }
+    try {
+      const cred = await a.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+      await _enter(cred.user);
+    } catch (e) { _loginError('Connexion annulée ou refusée.'); }
+  }
+
+  async function loginEmail() {
+    const a = _fbAuth();
+    if (!a) { _loginError('Service de connexion indisponible.'); return; }
+    const email = (document.getElementById('adminEmail').value || '').trim();
+    const pw = document.getElementById('adminPassword').value;
+    if (!email || !pw) { _loginError('Indique ton e-mail et ton mot de passe.'); return; }
+    try {
+      const cred = await a.signInWithEmailAndPassword(email, pw);
+      await _enter(cred.user);
+    } catch (e) { _loginError('E-mail ou mot de passe incorrect.'); }
+  }
+
+  async function logout() {
+    try { const a = _fbAuth(); if (a) await a.signOut(); } catch (e) {}
     location.reload();
   }
 
   function checkAuth() {
-    if (sessionStorage.getItem('glow_admin') === '1') {
-      document.getElementById('loginPanel').style.display  = 'none';
-      document.getElementById('adminPanel').style.display  = 'block';
-      initAdmin();
-    }
+    const a = _fbAuth();
+    if (!a) return;
+    a.onAuthStateChanged(u => { if (u && !_entered) _enter(u); });   // session déjà ouverte : on revérifie auprès du serveur
   }
 
   // ─── Extraire ASIN ────────────────────────────────────────────
@@ -767,7 +829,7 @@ const Admin = (() => {
         const res = await fetch(apiUrl('/api/uploadImage'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ filename, contentBase64: base64 }),
+          body: JSON.stringify({ filename, contentBase64: base64, idToken: await adminToken() }),
           signal: controller.signal
         });
         clearTimeout(timeout);
@@ -1622,7 +1684,7 @@ const Admin = (() => {
   });
 
   return {
-    login, logout,
+    loginGoogle, loginEmail, logout, adminToken,
     showAddForm, editProduct, duplicateProduct, cancelForm, saveProduct, scanBarcode, toggleMultiUsageZones,
     onCategoryChange, autoTagAll,
     toggleActive, toggleFeatured, deleteProduct,

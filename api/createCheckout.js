@@ -55,8 +55,14 @@ module.exports = async (req, res) => {
     return res.status(out.status).json(out.json);
   }
 
+  // SÉCURITÉ (23 oct. 2026) : le paiement exige un compte identifié ; l'identifiant et l'e-mail viennent du jeton vérifié
+  // par le serveur, plus de ce que le navigateur prétend (avant : n'importe qui pouvait créer des paiements au nom d'un autre uid).
+  const G = await require('../lib/aiGuard.js').guard(req, res, 'checkout', { auth: true });
+  if (!G) return;
+
   try {
-    const { priceKey, uid, email } = req.body || {};
+    const { priceKey } = req.body || {};
+    const uid = G.user.uid, email = G.user.email;
     const priceId = PRICE_IDS[priceKey];
     if (!priceId) return res.status(400).json({ error: 'Plan invalide' });
 

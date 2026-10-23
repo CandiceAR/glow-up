@@ -17,9 +17,10 @@
       L'IA ne fait que recopier ce qui est écrit : si la photo est illisible, elle ne renvoie rien.
    ============================================================ */
 
-const { lookup, splitInci, cleanList, EMPTY } = require('../lib/inciLookup.js');
+const { lookup, queueProduct, cleanList, EMPTY } = require('../lib/inciLookup.js');
 const MainActive = require('../lib/mainActive.js');
 const _sim = require('../lib/inciSim.js');
+const AI = require('../lib/aiGuard.js');   // limite par IP, plafond de coût, quotas par compte
 
 // Actif principal déduit de la composition (jamais de l'IA) : sert à choisir les produits à comparer
 function withActive(r) {
@@ -51,17 +52,13 @@ RÈGLES IMPÉRATIVES :
 Réponds UNIQUEMENT avec ce JSON :
 { "readable": true ou false, "ingredients": ["Aqua", "Glycerin", ...] }`;
 
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1500,
-      messages: [{ role: 'user', content: [
-        { type: 'image', source: { type: 'base64', media_type: m[1], data: m[2] } },
-        { type: 'text', text: prompt }
-      ] }]
-    })
+  const resp = await AI.anthropic('inciPhoto', apiKey, {
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 1500,
+    messages: [{ role: 'user', content: [
+      { type: 'image', source: { type: 'base64', media_type: m[1], data: m[2] } },
+      { type: 'text', text: prompt }
+    ] }]
   });
   if (!resp.ok) return { error: 'API Anthropic indisponible', status: 502 };
   const ai = await resp.json();
@@ -75,16 +72,52 @@ Réponds UNIQUEMENT avec ce JSON :
   return { parsed };
 }
 
+const _pub = (q) => q ? { plan: q.plan, limit: q.limit, used: q.used, remaining: q.remaining } : null;
+const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+const _nextMonthLabel = () => MONTHS[parseInt(AI.parisMonth().slice(5, 7), 10) % 12];
+
+// Quota du mois épuisé ? (une recherche déjà décomptée peut continuer : prix recalculé, photo, etc.)
+const _quotaBlocked = (res, q) => {
+  if (q.remaining === 0 && !q.alreadyCounted) {
+    res.status(429).json({
+      error: 'quota', quota: _pub(q),
+      message: `Tu as utilisé tes ${q.limit} recherches de dupes ce mois-ci. Elles reviennent le 1er ${_nextMonthLabel()}.`
+    });
+    return true;
+  }
+  return false;
+};
+const MSG_UNKNOWN_LIMIT = 'Tu as atteint la limite de recherches de produits inconnus pour aujourd\'hui. Reviens demain, ou cherche un produit de notre catalogue.';
+
 module.exports = async (req, res) => {
   Object.entries(CORS).forEach(([k, v]) => res.setHeader(k, v));
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST')    return res.status(405).json({ error: 'Method Not Allowed' });
 
   const body = req.body || {};
+  const searchId = AI.safeId(body.searchId);
 
+  // ── Mode « quota » : où en est le compte ce mois-ci (pour afficher « Il te reste N dupes ») ──
+  if (body.mode === 'quota') {
+    const G = await AI.guard(req, res, 'inci', { auth: true });
+    if (!G) return;
+    return res.status(200).json({ quota: _pub(await AI.quotaStatus(G.user.uid, G.cfg, searchId)) });
+  }
+
+  // ── Mode « queue » : produit introuvable, gardé de côté pour l'enrichir plus tard (aucune donnée personnelle) ──
+  if (body.mode === 'queue') {
+    if (!(await AI.guard(req, res, 'queue', {}))) return;
+    const ok = await queueProduct(body.brand, body.name, body.category, body.barcode, body.reason);
+    return res.status(200).json({ ok });
+  }
+
+  // ── Mode « photo » : liste d'ingrédients photographiée ──
   if (body.mode === 'photo') {
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) return res.status(503).json({ error: 'ANTHROPIC_API_KEY manquante' });
+    const G = await AI.guard(req, res, 'inciPhoto', { ai: true, auth: true });
+    if (!G) return;
+    if (_quotaBlocked(res, await AI.quotaStatus(G.user.uid, G.cfg, searchId))) return;
     try {
       const out = await readPhoto(body.photo, apiKey);
       if (out.error) return res.status(out.status).json({ error: out.error });
@@ -104,7 +137,17 @@ module.exports = async (req, res) => {
     }
   }
 
-  // mode « lookup » : ne lève jamais d'erreur (pas de composition = confiance « none »)
-  const r = await lookup({ barcode: body.barcode, brand: body.brand, name: body.name });
+  // ── Mode « lookup » : compte requis, quota du mois, limite de produits inconnus par jour ──
+  const G = await AI.guard(req, res, 'inci', { auth: true });
+  if (!G) return;
+  const uid = G.user.uid;
+  if (_quotaBlocked(res, await AI.quotaStatus(uid, G.cfg, searchId))) return;
+
+  // ne lève jamais d'erreur (pas de composition = confiance « none »)
+  const r = await lookup(
+    { barcode: body.barcode, brand: body.brand, name: body.name },
+    { gate: () => AI.gateUnknown(uid, searchId, G.cfg), useIncidecoder: G.cfg.incidecoder !== false }
+  );
+  if (r && r.limited) return res.status(429).json({ error: 'unknown-limit', message: MSG_UNKNOWN_LIMIT });
   return res.status(200).json(withActive(r));
 };

@@ -4,6 +4,8 @@
    Sortie : { insights: [{key, phrase, conseil}], synthese: "..." }
    ============================================================ */
 
+const AI = require('../lib/aiGuard.js');
+
 const CORS = {
   'Access-Control-Allow-Origin':  '*',
   'Access-Control-Allow-Headers': 'Content-Type',
@@ -61,6 +63,9 @@ module.exports = async (req, res) => {
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(503).json({ error: 'ANTHROPIC_API_KEY manquante' });
+
+  // Protection : limite par IP + plafond de coût global (voir lib/aiGuard.js)
+  if (!(await AI.guard(req, res, 'skinInsights', { ai: true }))) return;
 
   const raw = req.body?.analysisData;
   if (!raw || typeof raw !== 'object') return res.status(400).json({ error: 'analysisData manquant' });
@@ -225,20 +230,12 @@ CONTRAINTES STRICTES :
 - Format : JSON valide UNIQUEMENT. Aucun texte hors JSON, aucun markdown.`;
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type':      'application/json',
-        'x-api-key':         apiKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model:       'claude-haiku-4-5-20251001',
-        max_tokens:  1100,
-        temperature: 0.80,
-        system:      systemPrompt,
-        messages:    [{ role: 'user', content: userPrompt }]
-      })
+    const resp = await AI.anthropic('skinInsights', apiKey, {
+      model:       'claude-haiku-4-5-20251001',
+      max_tokens:  1100,
+      temperature: 0.80,
+      system:      systemPrompt,
+      messages:    [{ role: 'user', content: userPrompt }]
     });
 
     const aiData  = await resp.json();
