@@ -15485,7 +15485,9 @@
         "ceramides",
         "hyaluronique"
       ],
-      "active": true
+      "active": true,
+      "netWeightG": 340,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m262",
@@ -15508,7 +15510,9 @@
         "ceramides",
         "hyaluronique"
       ],
-      "active": true
+      "active": true,
+      "volumeMl": 177,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m263",
@@ -15530,7 +15534,9 @@
       "ingredientTags": [
         "ceramides"
       ],
-      "active": true
+      "active": true,
+      "netWeightG": 454,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m264",
@@ -15784,7 +15790,9 @@
         "matchedTitle": "",
         "confidence": "élevée",
         "phase": "lot2-2026-10-20"
-      }
+      },
+      "volumeMl": 90,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m265",
@@ -15827,7 +15835,9 @@
         "niacinamide",
         "hyaluronique"
       ],
-      "active": true
+      "active": true,
+      "volumeMl": 53,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m267",
@@ -15847,7 +15857,9 @@
         "sensibilite"
       ],
       "ingredientTags": [],
-      "active": true
+      "active": true,
+      "volumeMl": 50,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m268",
@@ -15889,7 +15901,9 @@
       "ingredientTags": [
         "snail"
       ],
-      "active": true
+      "active": true,
+      "volumeMl": 100,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m270",
@@ -15912,7 +15926,9 @@
         "hyaluronique",
         "squalane"
       ],
-      "active": true
+      "active": true,
+      "volumeMl": 50,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m271",
@@ -15934,7 +15950,9 @@
       "ingredientTags": [
         "salicylique"
       ],
-      "active": true
+      "active": true,
+      "volumeMl": 40,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m272",
@@ -15956,7 +15974,9 @@
       "ingredientTags": [
         "zinc"
       ],
-      "active": true
+      "active": true,
+      "volumeMl": 150,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m273",
@@ -16045,7 +16065,9 @@
         "sebum"
       ],
       "ingredientTags": [],
-      "active": true
+      "active": true,
+      "volumeMl": 30,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m277",
@@ -16245,7 +16267,9 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
-      }
+      },
+      "volumeMl": 150,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m280",
@@ -16470,7 +16494,9 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
-      }
+      },
+      "volumeMl": 20,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m283",
@@ -16669,7 +16695,9 @@
         "matchedTitle": "",
         "confidence": "élevée",
         "phase": "lot2-2026-10-20"
-      }
+      },
+      "volumeMl": 100,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m286",
@@ -16712,7 +16740,9 @@
         "acne"
       ],
       "ingredientTags": [],
-      "active": true
+      "active": true,
+      "volumeMl": 400,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m288",
@@ -16777,7 +16807,9 @@
         "imperfections"
       ],
       "ingredientTags": [],
-      "active": true
+      "active": true,
+      "volumeMl": 200,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m291",
@@ -16798,7 +16830,9 @@
       "ingredientTags": [
         "hyaluronique"
       ],
-      "active": true
+      "active": true,
+      "volumeMl": 50,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m292",
@@ -16819,7 +16853,9 @@
       "ingredientTags": [
         "uree"
       ],
-      "active": true
+      "active": true,
+      "volumeMl": 250,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m293",
@@ -17049,7 +17085,9 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
-      }
+      },
+      "volumeMl": 50,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m294",
@@ -17071,7 +17109,9 @@
       "ingredientTags": [
         "karite"
       ],
-      "active": true
+      "active": true,
+      "volumeMl": 50,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m295",
@@ -17093,7 +17133,9 @@
       "ingredientTags": [
         "karite"
       ],
-      "active": true
+      "active": true,
+      "volumeMl": 50,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m296",
@@ -17488,7 +17530,9 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
-      }
+      },
+      "volumeMl": 30,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m297",
@@ -17531,7 +17575,9 @@
         "barriere"
       ],
       "ingredientTags": [],
-      "active": true
+      "active": true,
+      "volumeMl": 500,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m299",
@@ -17875,7 +17921,9 @@
         "matchedTitle": "Bioderma Sensibio AR Soin Anti-Rougeurs 40 ml",
         "confidence": "élevée",
         "phase": "lot2-2026-10-20"
-      }
+      },
+      "volumeMl": 40,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m302",
@@ -17894,7 +17942,9 @@
         "sensibilite"
       ],
       "ingredientTags": [],
-      "active": true
+      "active": true,
+      "volumeMl": 40,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m303",
@@ -17914,7 +17964,9 @@
         "teinte"
       ],
       "ingredientTags": [],
-      "active": true
+      "active": true,
+      "volumeMl": 40,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m304",
@@ -18080,7 +18132,9 @@
         "hyaluronique",
         "cafeine"
       ],
-      "active": true
+      "active": true,
+      "volumeMl": 20,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m312",
@@ -18104,7 +18158,9 @@
         "cafeine",
         "vitaminec"
       ],
-      "active": true
+      "active": true,
+      "volumeMl": 15,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m313",
@@ -18125,7 +18181,9 @@
       "ingredientTags": [
         "cafeine"
       ],
-      "active": true
+      "active": true,
+      "volumeMl": 15,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m314",
@@ -18148,7 +18206,9 @@
         "hyaluronique",
         "cafeine"
       ],
-      "active": true
+      "active": true,
+      "volumeMl": 15,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m315",
@@ -18548,7 +18608,9 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
-      }
+      },
+      "volumeMl": 15,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m316",
@@ -18570,7 +18632,9 @@
       "ingredientTags": [
         "peptides"
       ],
-      "active": true
+      "active": true,
+      "volumeMl": 15,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m317",
@@ -18593,7 +18657,9 @@
         "vitaminec",
         "hyaluronique"
       ],
-      "active": true
+      "active": true,
+      "volumeMl": 15,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m318",
@@ -18679,7 +18745,9 @@
         "salicylique",
         "niacinamide"
       ],
-      "active": true
+      "active": true,
+      "volumeMl": 400,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m322",
@@ -18876,7 +18944,9 @@
         "matchScore": 1,
         "confidence": "élevée",
         "phase": "phase2-2026-10"
-      }
+      },
+      "volumeMl": 200,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m323",
@@ -18895,7 +18965,9 @@
         "matifiant"
       ],
       "ingredientTags": [],
-      "active": true
+      "active": true,
+      "netWeightG": 65,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m324",
@@ -18917,7 +18989,9 @@
       "ingredientTags": [
         "argile"
       ],
-      "active": true
+      "active": true,
+      "volumeMl": 150,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m325",
@@ -18940,7 +19014,9 @@
         "argile",
         "ceramides"
       ],
-      "active": true
+      "active": true,
+      "volumeMl": 250,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m326",
@@ -18962,7 +19038,9 @@
         "argile",
         "charbon"
       ],
-      "active": true
+      "active": true,
+      "volumeMl": 150,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m327",
@@ -18984,7 +19062,9 @@
         "argile",
         "charbon"
       ],
-      "active": true
+      "active": true,
+      "volumeMl": 50,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m328",
@@ -19006,7 +19086,9 @@
       "ingredientTags": [
         "niacinamide"
       ],
-      "active": true
+      "active": true,
+      "volumeMl": 200,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m329",
@@ -19591,7 +19673,9 @@
       "ingredientTags": [
         "argile"
       ],
-      "active": true
+      "active": true,
+      "volumeMl": 150,
+      "volumeFrom": "nom du produit"
     },
     {
       "id": "m337",
