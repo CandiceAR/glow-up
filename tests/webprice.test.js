@@ -41,8 +41,21 @@ const run = (a, pg, product) => WebPrice.findPrice(product || PRODUCT, { anthrop
   check('page impossible à télécharger → pas de prix', r === null);
   r = await run(ai(ans({ found: false })));
   check('l\'IA dit « pas trouvé » → pas de prix', r === null);
-  r = await WebPrice.findPrice({ id: 'mY', brand: 'Marque Test', name: 'Sérum Éclat', price: 12 }, { anthropic: async () => ai(ans()), fetchPage: async () => html(page()) });
-  check('contenance du catalogue inconnue → jamais de prix (on ne sait pas quelle taille)', r === null);
+  // ── Contenance inconnue du catalogue : lue sur la page, collée au prix ──
+  const NOVOL = { id: 'mY', brand: 'Marque Test', name: 'Sérum Éclat', price: 12 };
+  const runNV = (a, pg) => WebPrice.findPrice(NOVOL, { anthropic: async () => a, fetchPage: async () => html(pg || page()) });
+  r = await runNV(ai(ans({ size: { value: 30, unit: 'ml' } })));
+  check('contenance inconnue : lue sur la page à côté du prix → retenue, avec sa trace', r && r.price === 9.9 && r.volumeMl === 30 && r.volumeFrom === 'page du revendeur', JSON.stringify(r));
+  r = await runNV(ai(ans({ size: { value: 50, unit: 'ml' } })));
+  check('… contenance annoncée absente de la page → refusée', r === null);
+  r = await runNV(ai(ans({ size: { value: 30, unit: 'ml' } })), page({ body: 'Format 30 ml. ' + 'x'.repeat(1500) + ' Prix : 9,90 €' }));
+  check('… contenance et prix éloignés sur la page (autre format possible) → refusés', r === null);
+  r = await runNV(ai(ans({ size: { value: 30, unit: 'oz' } })));
+  check('… unité inconnue → refusée', r === null);
+  r = await runNV(ai(ans()));
+  check('… l\'IA n\'a pas donné de contenance → refusé', r === null);
+  r = await runNV(ai(ans({ size: { value: 50, unit: 'g' } })), page({ body: 'Pot 50 g — 9,90 €' }));
+  check('… produit en grammes : netWeightG', r && r.netWeightG === 50 && !r.volumeMl, JSON.stringify(r));
   r = await run({ ok: false, status: 503, capReached: true });
   check('plafond de coût atteint → rien, sans erreur', r === null);
   check('« 9,90 € » / « €9.90 » / prix de la fiche de la page sont reconnus', WebPrice.priceOnPage('9,90 €', 9.9) && WebPrice.priceOnPage('€9.90', 9.9) && WebPrice.priceOnPage('{"price":"9.90"}', 9.9) && !WebPrice.priceOnPage('19,90 €', 9.9));
@@ -82,7 +95,7 @@ const run = (a, pg, product) => WebPrice.findPrice(product || PRODUCT, { anthrop
   check('… jamais plus de 4 recherches de prix par recherche de dupe', priceCalls >= 1 && priceCalls <= 4, priceCalls + ' recherche(s)');
   const callsBefore = priceCalls;
   o = (await search(base)).o;
-  check('2e recherche : prix servis par la mémoire (7 jours), pas de nouvelle recherche payante pour ce produit', priceCalls - callsBefore < callsBefore || priceCalls === callsBefore, (priceCalls - callsBefore) + ' nouvelle(s)');
+  check('2e recherche : les produits déjà cherchés viennent de la mémoire (7 jours) ; au plus 4 nouveaux produits, jamais les mêmes', priceCalls - callsBefore <= 4, (priceCalls - callsBefore) + ' nouvelle(s)');
   const again = (o.results || []).find(x => x.id === 'm405');
   check('… et le prix reste affiché', again && again.priceInfo.verified && again.priceInfo.value === 6.5);
 

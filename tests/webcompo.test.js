@@ -133,5 +133,16 @@ const run = (ai, page, brand, name) => WebCompo.find(brand || 'Marque Test', nam
   check('actif probable rétinol : jamais plus concentré / jamais de produit sans rétinol', o.results.every(r => { const p = P.find(x => x.id === r.id); return /retin/i.test(p.name + ' ' + (p.ingredientTags || []).join(' ')); }), o.results.map(r => r.id).join(','));
   global.fetch = realFetch;
 
+  console.log('\n── Nos sources ne sont jamais envoyées à l\'appli ──');
+  const pv = require(path.join(ROOT, 'api', 'inci.js')).publicView;
+  const ext = { found: true, source: 'incidecoder', sourceUrl: 'https://incidecoder.com/products/x', sourceLabel: 'INKEEDecoder (ex-INCIDecoder)', matchedName: 'Marque Sérum - Parapharmacie - VIDAL', inciList: ['aqua'] };
+  let v = pv(ext);
+  check('INKEEDecoder : ni nom, ni adresse envoyés à l\'appli', v.source === 'ext' && v.sourceUrl === '' && v.sourceLabel === '', JSON.stringify([v.source, v.sourceUrl, v.sourceLabel]));
+  check('Open Beauty Facts et recherche web : pareil', ['openbeautyfacts', 'web'].every(x => { const o = pv(Object.assign({}, ext, { source: x })); return o.source === 'ext' && !o.sourceUrl && !o.sourceLabel; }));
+  check('le titre de la page perd le nom du site (« - VIDAL »)', v.matchedName === 'Marque Sérum');
+  v = pv({ found: true, source: 'glowup', sourceUrl: 'https://incidecoder.com/x', sourceLabel: 'INCIDecoder', matchedName: 'Notre fiche', inciList: ['aqua'] });
+  check('nos propres fiches : adresse retirée aussi, libellé « fiche vérifiée par Glow Up »', v.source === 'glowup' && v.sourceUrl === '' && /Glow Up/.test(v.sourceLabel));
+  check('aucune trace de ces noms dans la réponse complète', !/incidecoder|inkeedecoder|openbeautyfacts|vidal/i.test(JSON.stringify(pv(ext))));
+
   done('niveaux 2 et 3 (recherche web vérifiée, dupe probable)');
 })().catch(e => { console.error(e); process.exit(1); });

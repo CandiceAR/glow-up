@@ -30,6 +30,18 @@ function withActive(r) {
   return Object.assign({}, r, { mainFamily: fam || null, mainLabel: fam ? MainActive.label(fam) : '' });
 }
 
+// Ce que l'appli reçoit : jamais le nom ni l'adresse du site où une composition a été trouvée (nos sources restent chez nous,
+// dans la mémoire du serveur). Seules nos propres fiches sont dites « glowup ». Le titre de la page est nettoyé de son suffixe de site.
+function publicView(r) {
+  if (!r || !r.found) return r;
+  const own = r.source === 'glowup';
+  const out = Object.assign({}, r, { source: own ? 'glowup' : (r.source === 'photo' ? 'photo' : 'ext') });
+  out.sourceUrl = '';
+  out.sourceLabel = own ? 'fiche vérifiée par Glow Up' : '';
+  if (!own) out.matchedName = String(r.matchedName || '').replace(/\s[|–—-]\s.*$/, '').trim();
+  return out;
+}
+
 const CORS = {
   'Access-Control-Allow-Origin':  '*',
   'Access-Control-Allow-Headers': 'Content-Type',
@@ -155,5 +167,6 @@ module.exports = async (req, res) => {
     { gate: () => AI.gateUnknown(uid, searchId, G.cfg), useIncidecoder: G.cfg.incidecoder !== false, web }
   );
   if (r && r.limited) return res.status(429).json({ error: 'unknown-limit', message: MSG_UNKNOWN_LIMIT });
-  return res.status(200).json(withActive(r));
+  return res.status(200).json(publicView(withActive(r)));
 };
+module.exports.publicView = publicView;   // pour les tests

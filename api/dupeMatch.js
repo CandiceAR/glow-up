@@ -287,18 +287,28 @@ module.exports = async (req, res) => {
   //    Lancé en parallèle du classement par l'IA. Seuls les produits qui ont une chance d'être moins chers sont cherchés
   //    (prix du catalogue indicatif), 4 par recherche au plus, et chaque résultat est gardé 7 jours.
   const refUnit0 = _unit(product.refPrice, product.volumeMl, product.netWeightG);
-  const _applyPrice = (c, r) => Object.assign(c, { price: r.price, priceVerified: true, priceSource: { name: r.host, url: r.url }, priceRetrievedAt: r.date, priceNote: 'relevé automatiquement' });
+  const _applyPrice = (c, r) => {
+    Object.assign(c, { price: r.price, priceVerified: true, priceSource: { name: r.host, url: r.url }, priceRetrievedAt: r.date, priceNote: 'relevé automatiquement' });
+    // contenance du catalogue absente : celle lue sur la page du revendeur (à côté du prix) la remplace, avec sa trace
+    if (!(c.volumeMl > 0 || c.netWeightG > 0)) {
+      if (r.volumeMl > 0) { c.volumeMl = r.volumeMl; c.volumeFrom = 'page du revendeur'; }
+      else if (r.netWeightG > 0) { c.netWeightG = r.netWeightG; c.volumeFrom = 'page du revendeur'; }
+    }
+  };
   const pricesP = (async () => {
     if (!refUnit0 || G.cfg.webPrice === false) return;
     const need = cands.filter(c => {
       if (c.priceVerified) return false;
-      const cu = _unit(c.price, c.volumeMl, c.netWeightG) || _unit(1, c.volumeMl, c.netWeightG);   // 2e forme : contenance connue, prix inconnu
-      const fd = !!(usageInfo[c.id] && usageInfo[c.id].formatDiff);
-      return cu && cu.unit === refUnit0.unit && !fd;
-    }).map(c => ({ c, hint: Number(c.price) > 0 ? (_unit(c.price, c.volumeMl, c.netWeightG) || {}).per100 : null }))
+      if ((usageInfo[c.id] && usageInfo[c.id].formatDiff)) return false;
+      const known = c.volumeMl > 0 || c.netWeightG > 0;
+      if (!known) return true;                       // contenance inconnue : on la lira sur la page du revendeur
+      const cu = _unit(1, c.volumeMl, c.netWeightG);
+      return cu && cu.unit === refUnit0.unit;
+    }).map(c => ({ c, known: c.volumeMl > 0 || c.netWeightG > 0, hint: (Number(c.price) > 0 && (c.volumeMl > 0 || c.netWeightG > 0)) ? (_unit(c.price, c.volumeMl, c.netWeightG) || {}).per100 : null }))
       // indicatif seulement : on écarte ceux dont le prix du catalogue est très au-dessus du produit de la personne
       .filter(x => x.hint == null || x.hint < refUnit0.per100 * 1.5)
-      .sort((a, b) => (a.hint == null ? 1e9 : a.hint) - (b.hint == null ? 1e9 : b.hint));
+      // d'abord ceux dont la contenance est connue (les moins chers au ml en tête), puis ceux dont on doit lire la contenance
+      .sort((a, b) => (a.known === b.known ? ((a.hint == null ? 1e9 : a.hint) - (b.hint == null ? 1e9 : b.hint)) : (a.known ? -1 : 1)));
     const hits = await Promise.all(need.map(x => WebPrice.cacheGet(x.c.id)));
     const toSearch = [];
     need.forEach((x, i) => {
@@ -488,6 +498,7 @@ Retourne UNIQUEMENT ce JSON, sans texte avant/après :
       unitPrice: (!formatDiff && refUnit && cu && refUnit.unit === cu.unit)
         ? { unit: refUnit.unit, ref: Math.round(refUnit.per100 * 100) / 100, cand: Math.round(cu.per100 * 100) / 100 } : null,
       candUnit: cu ? { unit: cu.unit, per100: Math.round(cu.per100 * 100) / 100 } : null,     // prix de ce produit à l'unité (affiché sur la carte)
+      amount: (c.volumeMl > 0 || c.netWeightG > 0) ? { volumeMl: c.volumeMl > 0 ? c.volumeMl : 0, netWeightG: c.volumeMl > 0 ? 0 : c.netWeightG, from: c.volumeFrom || '' } : null,
       sortUnit: cu ? cu.per100 : null, sortPrice: Number(c.price) > 0 ? Number(c.price) : null,
       similarity: sim == null ? 0 : sim,
       commonPoints: t.common, differences: diffs.slice(0, 4),

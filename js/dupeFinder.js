@@ -269,7 +269,7 @@ const DupeFinder = (() => {
     ref_amount:            { s: 'Contenance de ton produit non renseignée', l: 'La contenance de ton produit n\'est pas renseignée : nous ne pouvons pas calculer son prix au millilitre.' },
     cand_price_missing:    { s: 'Prix non renseigné', l: 'Le prix de ce produit n\'est pas renseigné.' },
     cand_amount:           { s: 'Contenance non renseignée', l: 'La contenance de ce produit n\'est pas renseignée : pas de prix au millilitre.' },
-    cand_price_unverified: { s: 'Prix non vérifié', l: 'Le prix de ce produit n\'a pas été relevé chez un revendeur (avec sa source et sa date) : nous ne pouvons pas affirmer qu\'il est moins cher.' },
+    cand_price_unverified: { s: 'Prix indicatif', l: 'Prix indicatif.' },
     unit_mismatch:         { s: 'Unités différentes (ml / g)', l: 'L\'un se mesure en millilitres, l\'autre en grammes : pas de comparaison possible.' },
     not_cheaper:           { s: 'Plus cher au ml', l: 'Il coûte plus cher à l\'unité que ton produit.' },
     formula_unknown:       { s: 'Composition non vérifiée', l: 'La composition de ce produit n\'est pas vérifiée : les formules n\'ont pas été comparées.' },
@@ -345,8 +345,8 @@ const DupeFinder = (() => {
     // « Prix relevé le [date] chez [revendeur] » (prix sourcé et daté), sinon « Prix non vérifié »
     const pi = r.priceInfo;
     const priceLine = !pi ? '' : (pi.verified
-      ? `<p class="df-row-meta df-price-src">🏷️ Prix relevé le ${_frDate(pi.date)} chez ${pi.url ? `<a href="${_esc(pi.url)}" target="_blank" rel="noopener">${_esc(pi.source)}</a>` : _esc(pi.source)}${pi.note ? ` <small>(${_esc(pi.note)})</small>` : ''}</p>`
-      : '<p class="df-row-meta df-price-src">🏷️ Prix non vérifié (indicatif)</p>');
+      ? `<p class="df-row-meta df-price-src">🏷️ Prix relevé le ${_frDate(pi.date)} chez ${pi.url ? `<a href="${_esc(pi.url)}" target="_blank" rel="noopener">${_esc(pi.source)}</a>` : _esc(pi.source)}${pi.note ? ` <small>(${_esc(pi.note)})</small>` : ''}${r.amount && r.amount.from ? ' <small>· contenance lue sur la même page</small>' : ''}</p>`
+      : '<p class="df-row-meta df-price-src">🏷️ Prix indicatif</p>');
     return `
       <div class="df-row-pills">
         ${lv ? `<span class="df-pill df-lv ${lv.cls}">${lv.icon} ${_esc(_lvLabel(r))}</span>` : ''}
@@ -384,7 +384,9 @@ const DupeFinder = (() => {
     const isAff = !!p.amazonUrl;
     // Prix à volume égal — uniquement si les 2 contenances sont connues
     const refVol  = (S.identified && S.identified.volumeMl) || 0;
-    const candVol = p.volumeMl || 0;
+    // contenance : celle du catalogue, sinon celle lue par le serveur sur la page du revendeur
+    const am = r.amount || {};
+    const candVol = p.volumeMl || am.volumeMl || 0, candWeight = p.netWeightG || am.netWeightG || 0;
     let volLine = '';
     // Format différent (pads ↔ lotion) : pas de comparaison de prix, donc pas d'« économie »
     if (r.formatDiff) savings = 0;
@@ -396,8 +398,8 @@ const DupeFinder = (() => {
     const descr = (p.description || '').length > 220 ? p.description.slice(0, 219) + '…' : (p.description || '');
     // Sous le nom : niveau · contenance · prix au millilitre (visibles sans ouvrir la carte)
     const lvInfo = r.level ? (LEVEL[r.level] || LEVEL.other) : null;
-    const amount = p.volumeMl > 0 ? `${p.volumeMl} ml` : (p.netWeightG > 0 ? `${p.netWeightG} g` : 'contenance non renseignée');
-    const cu = r.candUnit || (price > 0 && p.volumeMl > 0 ? { unit: 'ml', per100: price / p.volumeMl * 100 } : (price > 0 && p.netWeightG > 0 ? { unit: 'g', per100: price / p.netWeightG * 100 } : null));
+    const amount = candVol > 0 ? `${candVol} ml` : (candWeight > 0 ? `${candWeight} g` : 'contenance non renseignée');
+    const cu = r.candUnit || (price > 0 && candVol > 0 ? { unit: 'ml', per100: price / candVol * 100 } : (price > 0 && candWeight > 0 ? { unit: 'g', per100: price / candWeight * 100 } : null));
     const meta = [
       lvInfo ? `<span class="df-meta-lv ${lvInfo.cls}">${lvInfo.icon} ${_esc(_lvLabel(r))}</span>` : '',
       `<span>${amount}</span>`,
@@ -434,16 +436,12 @@ const DupeFinder = (() => {
   // Une liste trouvée seulement d'après le nom peut concerner un autre produit : on ne l'affiche pas comme un fait.
   function _inciBadge(id) {
     const c = id && id.inciConfidence;
-    const src = id && id.inciSourceUrl
-      ? `<a href="${_esc(id.inciSourceUrl)}" target="_blank" rel="noopener">${_esc(id.inciSourceLabel || 'source')}</a>`
-      : _esc((id && id.inciSourceLabel) || 'source');
+    // On ne nomme JAMAIS le site d'où vient une composition (nos sources restent chez nous) : seulement « trouvée » et la date.
     const dt = id && id.inciDate ? ' · ' + _frDate(id.inciDate) : '';
-    // Open Beauty Facts est une base collaborative : on ne dit jamais « vérifiée », on cite la source et la date
-    const lic = (id && id.inciSource === 'openbeautyfacts') ? ' <small>(licence ODbL)</small>' : '';
     const own = id && id.inciSource === 'glowup';
-    if (c === 'high' && own) return `<span class="df-inci-badge df-inci-high">✅ Composition issue de notre fiche (${src})${dt}</span>`;
-    if (c === 'high')      return `<span class="df-inci-badge df-inci-high">✅ Composition trouvée sur ${src}${lic}${dt}</span>`;
-    if (c === 'confirmed') return `<span class="df-inci-badge df-inci-high">✅ Composition confirmée par toi · trouvée sur ${src}${lic}${dt}</span>`;
+    if (c === 'high' && own) return `<span class="df-inci-badge df-inci-high">✅ Composition issue de notre fiche${dt}</span>`;
+    if (c === 'high')      return `<span class="df-inci-badge df-inci-high">✅ Composition trouvée${dt}</span>`;
+    if (c === 'confirmed') return `<span class="df-inci-badge df-inci-high">✅ Composition confirmée par toi${dt}</span>`;
     if (c === 'photo') {
       return `<span class="df-inci-badge df-inci-low">📷 Lue sur ta photo, à vérifier</span>
         <details class="df-inci-read"><summary>Voir la liste lue</summary><p>${_esc((id.inciList || []).join(', '))}</p></details>`;
@@ -464,7 +462,7 @@ const DupeFinder = (() => {
         : `Prix relevé le ${_frDate(id.priceDate)} chez ${id.priceSourceUrl ? `<a href="${_esc(id.priceSourceUrl)}" target="_blank" rel="noopener">${_esc(id.priceSourceName)}</a>` : _esc(id.priceSourceName)}${id.priceNote ? ' · ' + _esc(id.priceNote) : ''}`;
       return `<span class="df-orig-price">${_eur(_refPrice())} <small>(${lbl})</small>${edit}</span>`;
     }
-    if (id.catalogPriceHint > 0) return `<span class="df-orig-price df-price-unverified">≈ ${_eur(id.catalogPriceHint)} <small>(prix indicatif, non vérifié)</small></span>`;
+    if (id.catalogPriceHint > 0) return `<span class="df-orig-price df-price-unverified">≈ ${_eur(id.catalogPriceHint)} <small>(prix indicatif)</small></span>`;
     return '<span class="df-orig-price df-price-unverified">Prix non renseigné</span>';
   }
 
@@ -665,12 +663,11 @@ const DupeFinder = (() => {
 
   function _vCompoConfirm() {
     const id = S.identified || {};
-    const link = id.inciSourceUrl ? ` <a href="${_esc(id.inciSourceUrl)}" target="_blank" rel="noopener">voir la page</a>` : '';
     return `
       <div class="df-confirm">
         <h2>On a trouvé une fiche proche</h2>
         <div class="df-id-card"><span class="df-id-brand">Ton produit</span><h2 class="df-id-name">${_esc((id.brand ? id.brand + ' ' : '') + (id.name || ''))}</h2></div>
-        <div class="df-id-card"><span class="df-id-brand">Fiche trouvée (${_esc(id.inciSourceLabel)})</span><h2 class="df-id-name">${_esc(id.inciTitle)}</h2>${link}</div>
+        <div class="df-id-card"><span class="df-id-brand">Fiche trouvée</span><h2 class="df-id-name">${_esc(id.inciTitle)}</h2></div>
         <p class="df-confirm-q">C'est bien le même produit&nbsp;?</p>
         <p class="df-compo-note">Certaines versions (baby, nuit, mini…) n'ont pas la même composition. Si ce n'est pas exactement le tien, mieux vaut ne pas l'utiliser.</p>
         <button class="btn btn-dark df-btn-main" onclick="DupeFinder.confirmCompo(true)">✅ Oui, c'est le même</button>

@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/(lib/(aiGuard|fb|adminAuth|accountDelete|inciLookup|inciSim|scanVerdict|webCompo|webPrice)\\.js|tests/.*|scripts/.*|app-store/.*|data/reference-inci\\.json|CLAUDE\\.md)",
+      "destination": "/",
+      "permanent": false
+    },
+    {
       "source": "/(.*)",
       "has": [{ "type": "host", "value": "glow-up-pi.vercel.app" }],
       "destination": "https://www.glowupskin.app/$1",
