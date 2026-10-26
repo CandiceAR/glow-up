@@ -1,38 +1,123 @@
 {
   "redirects": [
     {
-      "source": "/(lib/(aiGuard|fb|adminAuth|accountDelete|inciLookup|inciSim|scanVerdict|webCompo|webPrice)\\.js|tests/.*|scripts/.*|app-store/.*|data/reference-inci\\.json|CLAUDE\\.md)",
+      "source": "/lib/aiGuard.js",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/lib/fb.js",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/lib/adminAuth.js",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/lib/accountDelete.js",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/lib/inciLookup.js",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/lib/inciSim.js",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/lib/scanVerdict.js",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/lib/webCompo.js",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/lib/webPrice.js",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/data/reference-inci.json",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/CLAUDE.md",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/tests/:path*",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/scripts/:path*",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/app-store/:path*",
       "destination": "/",
       "permanent": false
     },
     {
       "source": "/(.*)",
-      "has": [{ "type": "host", "value": "glow-up-pi.vercel.app" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "glow-up-pi.vercel.app"
+        }
+      ],
       "destination": "https://www.glowupskin.app/$1",
       "permanent": true
     }
   ],
   "rewrites": [
-    { "source": "/favicon.ico", "destination": "/icons/icon-192.png" },
-    { "source": "/admin", "destination": "/admin.html" }
+    {
+      "source": "/favicon.ico",
+      "destination": "/icons/icon-192.png"
+    },
+    {
+      "source": "/admin",
+      "destination": "/admin.html"
+    }
   ],
   "headers": [
     {
       "source": "/",
       "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
       ]
     },
     {
       "source": "/index.html",
       "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
       ]
     },
     {
       "source": "/sw.js",
       "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
       ]
     }
   ],
