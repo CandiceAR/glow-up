@@ -44,8 +44,9 @@ const req = (ip, body) => ({ headers: { 'x-forwarded-for': ip }, body: body || {
   // ── limite par IP ──
   G._reset();
   let last;
-  for (let i = 1; i <= 31; i++) { const res = mkRes(); const g = await G.guard(req('1.2.3.4'), res, 'inci', { ai: false }); last = { g, res, i }; if (!g) break; }
-  ok('IP : la 31e demande /inci en une heure est refusée (429)', last.i === 31 && last.g === null && last.res.code === 429, 'bloquée à la demande n°' + last.i);
+  const LIM = G.DEFAULTS.ipPerHour.inci;   // limite par heure de la route /inci (lue dans les réglages)
+  for (let i = 1; i <= LIM + 1; i++) { const res = mkRes(); const g = await G.guard(req('1.2.3.4'), res, 'inci', { ai: false }); last = { g, res, i }; if (!g) break; }
+  ok('IP : la demande n°' + (LIM + 1) + ' /inci en une heure est refusée (429)', last.i === LIM + 1 && last.g === null && last.res.code === 429, 'bloquée à la demande n°' + last.i);
   const resOther = mkRes();
   ok('IP : une autre adresse n\'est pas touchée', !!(await G.guard(req('9.9.9.9'), resOther, 'inci', {})));
   const resPhoto = mkRes(); let blockedAt = 0;
@@ -129,8 +130,8 @@ const req = (ip, body) => ({ headers: { 'x-forwarded-for': ip }, body: body || {
 
   // ── sans Firestore : mode dégradé ──
   fb._set({ db: null, auth: null, FieldValue: null }); G._reset();
-  let b = 0; for (let i = 1; i <= 35; i++) { const r = mkRes(); if (!(await G.guard(req('3.3.3.3'), r, 'inci', {}))) { b = i; break; } }
-  ok('sans base : limite par IP gardée en mémoire', b === 31, 'bloquée à ' + b);
+  let b = 0; for (let i = 1; i <= LIM + 5; i++) { const r = mkRes(); if (!(await G.guard(req('3.3.3.3'), r, 'inci', {}))) { b = i; break; } }
+  ok('sans base : limite par IP gardée en mémoire', b === LIM + 1, 'bloquée à ' + b);
   const noDbCap = mkRes();
   ok('sans base : le plafond ne bloque pas par erreur', !!(await G.guard(req('4.4.4.4'), noDbCap, 'dupeMatch', { ai: true })));
   const noDbAuth = mkRes();
