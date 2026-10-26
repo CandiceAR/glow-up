@@ -49,6 +49,19 @@ const Questionnaire = (() => {
       ]
     },
 
+    // Q0c — Poches gonflées ou cernes ? (conditionnel : complexes contient cernes) — sert à choisir le bon patch pour les yeux
+    {
+      id: 'q0c', key: 'eyeConcern', type: 'single', required: false,
+      question: 'Qu\'est-ce qui te gêne le plus sous les yeux ?',
+      subtitle: 'Pour te conseiller le bon patch pour les yeux',
+      skipIf: (answers) => !answers.complexes?.includes('cernes') || !!AppState.questionnaire?.reused?.eyeConcern,
+      options: [
+        { value: 'poches',  emoji: '🫧', label: 'Des poches gonflées',  desc: 'Yeux gonflés, surtout le matin' },
+        { value: 'cernes',  emoji: '🌑', label: 'Des cernes foncés',    desc: 'Cercles bleutés, bruns ou gris' },
+        { value: 'les_deux', emoji: '😴', label: 'Les deux',            desc: 'Poches et cernes' }
+      ]
+    },
+
     // Q-PHOTO — Étape analyse photo (sautée si le visage a déjà été analysé)
     {
       id: 'q-photo', key: null, type: 'photo-step',
@@ -495,7 +508,7 @@ const Questionnaire = (() => {
     const r  = AppState.questionnaire.reused = AppState.questionnaire.reused || {};
     const _has = v => v !== undefined && v !== null && !(Array.isArray(v) && !v.length);
     const _empty = v => v === undefined || v === null || (Array.isArray(v) && !v.length);
-    ['skinType', 'complexes', 'cernesColor'].forEach(k => {
+    ['skinType', 'complexes', 'cernesColor', 'eyeConcern'].forEach(k => {
       if (_empty(a[k]) && _has(src[k])) { a[k] = src[k]; pf[k] = src[k]; r[k] = true; }
     });
     if (prof.skinAnalysis && AppState.face?.skinAnalysis) r.face = true;
@@ -513,6 +526,7 @@ const Questionnaire = (() => {
     if (a.skinType)    AppState.profile.skinType    = a.skinType;
     if (a.complexes)   AppState.profile.concerns    = a.complexes;
     if (a.cernesColor) AppState.profile.cernesColor = a.cernesColor;
+    if (a.eyeConcern)  AppState.profile.eyeConcern  = a.eyeConcern;
     if (a.budget)      AppState.profile.budget      = a.budget;
   }
 

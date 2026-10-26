@@ -276,6 +276,8 @@ const DupeFinder = (() => {
     formula_unknown:       { s: 'Composition non vérifiée', l: 'La composition de ce produit n\'est pas vérifiée : les formules n\'ont pas été comparées.' },
     formula_far:           { s: 'Formule moins proche', l: 'La formule est trop différente de celle de ton produit pour parler de dupe.' }
   };
+  // « au millilitre » / « au gramme » / « au patch » selon les produits comparés
+  const _unitWord = list => list.some(o => o.unitPrice && o.unitPrice.unit === 'patch') ? 'patch' : (list.some(o => o.unitPrice && o.unitPrice.unit === 'g') ? 'gramme' : 'millilitre');
   function _lvLabel(r) {
     if (r.level !== 'other') return (LEVEL[r.level] || LEVEL.other).label;
     const first = (r.reasons || [])[0];
@@ -387,7 +389,7 @@ const DupeFinder = (() => {
     const refVol  = (S.identified && S.identified.volumeMl) || 0;
     // contenance : celle du catalogue, sinon celle lue par le serveur sur la page du revendeur
     const am = r.amount || {};
-    const candVol = p.volumeMl || am.volumeMl || 0, candWeight = p.netWeightG || am.netWeightG || 0;
+    const candVol = p.volumeMl || am.volumeMl || 0, candWeight = p.netWeightG || am.netWeightG || 0, candPatch = p.patchCount || am.patchCount || 0;
     let volLine = '';
     // Format différent (pads ↔ lotion) : pas de comparaison de prix, donc pas d'« économie »
     if (r.formatDiff) savings = 0;
@@ -396,11 +398,18 @@ const DupeFinder = (() => {
       volLine = `<div class="df-vol">${_eur(price)} / ${candVol} ml → ≈ <strong>${_eur(normCand)}</strong> pour ${refVol} ml</div>`;
       if (est > 0 && normCand < est) savings = est - normCand;
     }
+    // « Tu économises » seulement si la comparaison est prouvée au même prix à l'unité (ml, g ou patch), jamais sur deux contenances différentes
+    if (r.unitPrice && !r.formatDiff) {
+      const idn = S.identified || {};
+      const refAmt = r.unitPrice.unit === 'patch' ? idn.patchCount : (r.unitPrice.unit === 'g' ? idn.netWeightG : idn.volumeMl);
+      const d = refAmt > 0 ? (r.unitPrice.ref - r.unitPrice.cand) / 100 * refAmt : 0;
+      savings = d > 0 ? d : 0;
+    } else savings = 0;
     const descr = (p.description || '').length > 220 ? p.description.slice(0, 219) + '…' : (p.description || '');
     // Sous le nom : niveau · contenance · prix au millilitre (visibles sans ouvrir la carte)
     const lvInfo = r.level ? (LEVEL[r.level] || LEVEL.other) : null;
-    const amount = candVol > 0 ? `${candVol} ml` : (candWeight > 0 ? `${candWeight} g` : 'contenance non renseignée');
-    const cu = r.candUnit || (price > 0 && candVol > 0 ? { unit: 'ml', per100: price / candVol * 100 } : (price > 0 && candWeight > 0 ? { unit: 'g', per100: price / candWeight * 100 } : null));
+    const amount = candVol > 0 ? `${candVol} ml` : (candWeight > 0 ? `${candWeight} g` : (candPatch > 0 ? `${candPatch} patchs` : 'contenance non renseignée'));
+    const cu = r.candUnit || (price > 0 && candVol > 0 ? { unit: 'ml', per100: price / candVol * 100 } : (price > 0 && candWeight > 0 ? { unit: 'g', per100: price / candWeight * 100 } : (price > 0 && candPatch > 0 ? { unit: 'patch', per100: price / candPatch * 100 } : null)));
     const meta = [
       lvInfo ? `<span class="df-meta-lv ${lvInfo.cls}">${lvInfo.icon} ${_esc(_lvLabel(r))}</span>` : '',
       `<span>${amount}</span>`,
@@ -412,7 +421,7 @@ const DupeFinder = (() => {
       price: price != null ? _eur(price) : '—',
       body: _rowBody({
         r, descr, volLine,
-        savings: savings > 0 ? `Tu économises ${_eur(savings)}${volLine ? ' (à volume égal)' : ''}` : '',
+        savings: savings > 0 ? `Tu économises ${_eur(savings)}${volLine ? ' (à volume égal)' : (r.unitPrice && r.unitPrice.unit === 'patch' ? ' (pour le même nombre de patchs)' : '')}` : '',
         compareUrl: _compareUrl(p), buyUrl: p.amazonUrl || p.shopUrl || '#', isAff,
         buyAttrs: isAff ? ` onclick="if(typeof trackAmazonClick==='function')trackAmazonClick('${p.id}')"` : ''
       })
@@ -542,7 +551,7 @@ const DupeFinder = (() => {
     // Dupes probables : même actif et moins chers (prix relevé), mais la composition n'a pas pu être vérifiée
     const probHtml = probables.length
       ? `${realDupes.length ? '<div class="df-altsep"><span>Dupes probables</span></div>' : ''}
-         <p class="df-alt-h">Même type de produit et moins chers au ${probables.some(o => o.unitPrice && o.unitPrice.unit === 'g') ? 'gramme' : 'millilitre'}, mais nous n'avons pas pu vérifier la composition. Regarde la liste d'ingrédients avant d'acheter.</p>`
+         <p class="df-alt-h">Même type de produit et moins chers au ${_unitWord(probables)}, mais nous n'avons pas pu vérifier la composition. Regarde la liste d'ingrédients avant d'acheter.</p>`
         + probables.map((r, i) => _resultCard(r, realDupes.length + i)).join('')
       : '';
     // La personne a le produit en main : la photo de la liste d'ingrédients rend le résultat plus précis (facultatif)
@@ -557,7 +566,7 @@ const DupeFinder = (() => {
       + (others.length
         ? ((realDupes.length || probables.length)
             ? `<div class="df-altsep"><span>Autres options</span></div>
-               <p class="df-alt-h">Même actif principal, mais nous ne pouvons pas prouver qu'elles coûtent moins cher au ${others.some(o => o.unitPrice && o.unitPrice.unit === 'g') ? 'gramme' : 'millilitre'} que ton produit.</p>`
+               <p class="df-alt-h">Même actif principal, mais nous ne pouvons pas prouver qu'elles coûtent moins cher au ${_unitWord(others)} que ton produit.</p>`
             : '')
           + others.map((r, i) => _resultCard(r, realDupes.length + i)).join('')
         : '');
@@ -752,14 +761,14 @@ const DupeFinder = (() => {
   // Prix et contenance de TON produit (facultatif) : nécessaires pour prouver qu'un produit coûte moins cher au ml
   function _refUnitKnown() {
     const id = S.identified || {};
-    return _refPrice() > 0 && (id.volumeMl > 0 || id.netWeightG > 0);
+    return _refPrice() > 0 && (id.volumeMl > 0 || id.netWeightG > 0 || id.patchCount > 0);
   }
   // Juste au-dessus des résultats. On ne demande que le PRIX : la contenance est remplie quand la fiche la donne.
   // (La contenance n'est demandée que si aucune fiche ne l'indique.)
   function _vPriceForm() {
     const id = S.identified || {};
     const needPrice  = !(_refPrice() > 0) || !!S.forcePriceForm;    // « Modifier » rouvre le champ prix
-    const needAmount = !(id.volumeMl > 0 || id.netWeightG > 0);
+    const needAmount = !(id.volumeMl > 0 || id.netWeightG > 0 || id.patchCount > 0);
     if (!needPrice && !needAmount) return '';
     const intro = needPrice
       ? 'Combien as-tu payé ton produit ? Entre le prix pour voir ce que tu économises.'
@@ -769,7 +778,7 @@ const DupeFinder = (() => {
         <p><strong>${intro}</strong></p>
         <div class="df-priceform-row">
           ${needPrice ? '<input id="dfRefPrice" type="number" inputmode="decimal" step="0.01" min="0" class="df-input" placeholder="Prix payé (€)">' : ''}
-          ${needAmount ? '<input id="dfRefAmount" type="number" inputmode="decimal" step="0.1" min="0" class="df-input" placeholder="Contenance"><select id="dfRefUnit" class="df-input df-unit"><option value="ml">ml</option><option value="g">g</option></select>' : ''}
+          ${needAmount ? '<input id="dfRefAmount" type="number" inputmode="decimal" step="0.1" min="0" class="df-input" placeholder="Contenance"><select id="dfRefUnit" class="df-input df-unit"><option value="ml">ml</option><option value="g">g</option><option value="patch">patchs</option></select>' : ''}
         </div>
         <button class="btn btn-dark df-btn-main" onclick="DupeFinder.recompute()">Voir mes économies</button>
         <p class="df-priceform-note">Ce prix sert uniquement à calculer : il n'est enregistré nulle part.</p>
@@ -787,7 +796,7 @@ const DupeFinder = (() => {
   function _vPriceAsk() {
     const id = S.identified || {};
     const needPrice  = !(_refPrice() > 0);
-    const needAmount = !(id.volumeMl > 0 || id.netWeightG > 0);
+    const needAmount = !(id.volumeMl > 0 || id.netWeightG > 0 || id.patchCount > 0);
     return `
       <div class="df-priceask">
         <span class="df-hero-emoji">💶</span>
@@ -796,7 +805,7 @@ const DupeFinder = (() => {
         <p>C'est ce prix qui permet de <strong>prouver</strong> qu'un autre produit coûte moins cher. Sans lui, nous ne pouvons pas te proposer de vrais dupes.</p>
         <div class="df-priceform-row">
           ${needPrice ? '<input id="dfRefPrice" type="number" inputmode="decimal" step="0.01" min="0" class="df-input" placeholder="Prix (€)">' : ''}
-          ${needAmount ? '<input id="dfRefAmount" type="number" inputmode="decimal" step="0.1" min="0" class="df-input" placeholder="Contenance"><select id="dfRefUnit" class="df-input df-unit"><option value="ml">ml</option><option value="g">g</option></select>' : ''}
+          ${needAmount ? '<input id="dfRefAmount" type="number" inputmode="decimal" step="0.1" min="0" class="df-input" placeholder="Contenance"><select id="dfRefUnit" class="df-input df-unit"><option value="ml">ml</option><option value="g">g</option><option value="patch">patchs</option></select>' : ''}
         </div>
         <button class="btn btn-dark df-btn-main" onclick="DupeFinder.recompute()">Voir les dupes</button>
         <button class="btn btn-ghost df-btn-alt" onclick="DupeFinder.skipPrice()">Je ne connais pas le prix</button>
@@ -809,8 +818,9 @@ const DupeFinder = (() => {
     const pEl = document.getElementById('dfRefPrice'), aEl = document.getElementById('dfRefAmount');
     const num = el => parseFloat(String((el && el.value) || '').replace(',', '.'));
     const price  = pEl ? num(pEl) : id.estPrice;
-    const amount = aEl ? num(aEl) : (id.volumeMl > 0 ? id.volumeMl : id.netWeightG);
-    const unit   = aEl ? (document.getElementById('dfRefUnit')?.value === 'g' ? 'g' : 'ml') : (id.netWeightG > 0 ? 'g' : 'ml');
+    const amount = aEl ? num(aEl) : (id.volumeMl > 0 ? id.volumeMl : (id.netWeightG > 0 ? id.netWeightG : id.patchCount));
+    const uSel   = aEl ? document.getElementById('dfRefUnit')?.value : '';
+    const unit   = aEl ? (uSel === 'g' || uSel === 'patch' ? uSel : 'ml') : (id.patchCount > 0 ? 'patch' : (id.netWeightG > 0 ? 'g' : 'ml'));
     if (!(price > 0 && price < 5000) || !(amount > 0 && amount < 5000)) {
       if (typeof showToast === 'function') showToast(pEl ? 'Indique le prix que tu as payé' : 'Indique la contenance', 'warning');
       return;
@@ -824,7 +834,11 @@ const DupeFinder = (() => {
 
   // Contenance écrite dans le nom du produit (« … 30 ml ») : remplie automatiquement
   function _volumeFromName(name) {
-    const m = String(name || '').toLowerCase().replace(',', '.').match(/(\d+(?:\.\d+)?)\s*(ml|g)\b/);
+    const low = String(name || '').toLowerCase().replace(',', '.');
+    // patchs pour les yeux : « 60 patchs » ou « 30 paires » (une paire = 2 patchs)
+    const pm = low.match(/(\d+)\s*(patch(?:e?s)?|paires?|pairs?)\b/);
+    if (pm) { const c = parseInt(pm[1], 10) * (/^(paire|pair)/.test(pm[2]) ? 2 : 1); return (c >= 2 && c <= 400) ? { amount: c, unit: 'patch' } : null; }
+    const m = low.match(/(\d+(?:\.\d+)?)\s*(ml|g)\b/);
     if (!m) return null;
     const n = parseFloat(m[1]);
     return (n > 0 && n < 5000) ? { amount: n, unit: m[2] } : null;
@@ -975,7 +989,7 @@ const DupeFinder = (() => {
       ? AgeGuard.filter(scored, AgeGuard.age(AppState.questionnaire?.answers)) : scored;
     return _pool.map(p => ({
       id: p.id, brand: p.brand, name: p.name, category: p.category, price: p.price,
-      volumeMl: p.volumeMl || undefined, netWeightG: p.netWeightG || undefined,   // prix à l'unité (règle du prix au ml)
+      volumeMl: p.volumeMl || undefined, netWeightG: p.netWeightG || undefined, patchCount: p.patchCount || undefined,   // prix à l'unité (règle du prix au ml)
       barcode: p.barcode || '',
       // INCI structuré du catalogue → similarité de FORMULE côté serveur (fait autorité)
       inciNormalized: Array.isArray(p.inciNormalized) ? p.inciNormalized.slice(0, 45) : undefined,
@@ -1040,7 +1054,7 @@ const DupeFinder = (() => {
     id.priceVerified = false; id.estPrice = 0; id.priceSource = ''; id.catalogTags = undefined; id.catalogInci = undefined;
     id.priceSourceName = ''; id.priceSourceUrl = ''; id.priceDate = ''; id.priceNote = ''; id.catalogPriceHint = 0;
     const vn = _volumeFromName(id.name);
-    if (vn && !id.volumeMl && !id.netWeightG) { if (vn.unit === 'g') id.netWeightG = vn.amount; else id.volumeMl = vn.amount; }
+    if (vn && !id.volumeMl && !id.netWeightG && !id.patchCount) { if (vn.unit === 'g') id.netWeightG = vn.amount; else if (vn.unit === 'patch') id.patchCount = vn.amount; else id.volumeMl = vn.amount; }
     try {
       if (typeof SameProduct !== 'undefined') {
         const own = (AppState.products.catalog || []).find(p => SameProduct.same(id, p));
@@ -1055,6 +1069,7 @@ const DupeFinder = (() => {
           }
           if (own.volumeMl > 0 && !id.volumeMl) id.volumeMl = own.volumeMl;
           if (own.netWeightG > 0 && !id.netWeightG) id.netWeightG = own.netWeightG;
+          if (own.patchCount > 0 && !id.patchCount) id.patchCount = own.patchCount;
           id.catalogTags = own.ingredientTags || [];
           if (Array.isArray(own.inciNormalized) && own.inciNormalized.length && (!own.inciVerificationStatus || own.inciVerificationStatus === 'verified')) {
             id.catalogInci = own.inciNormalized.slice(0, 45);
@@ -1071,7 +1086,9 @@ const DupeFinder = (() => {
     if (!u) return;
     if (u.price > 0) { id.estPrice = u.price; id.priceVerified = true; id.priceSource = 'user'; id.priceSourceName = ''; id.priceDate = ''; id.priceNote = ''; }
     if (u.amount > 0) {
-      if (u.unit === 'g') { id.netWeightG = u.amount; id.volumeMl = 0; } else { id.volumeMl = u.amount; id.netWeightG = 0; }
+      if (u.unit === 'g') { id.netWeightG = u.amount; id.volumeMl = 0; id.patchCount = 0; }
+      else if (u.unit === 'patch') { id.patchCount = u.amount; id.volumeMl = 0; id.netWeightG = 0; }
+      else { id.volumeMl = u.amount; id.netWeightG = 0; id.patchCount = 0; }
     }
   }
 

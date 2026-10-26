@@ -78,11 +78,12 @@ const NOTE_PHOTO = "Compositions comparées. La liste de ton produit a été lue
 // Un produit n'est « dupe » que s'il coûte moins cher à l'unité que la référence. Sans prix ou sans contenance
 // des deux côtés, on ne peut pas le prouver : « autre option ».
 const STRONG = new Set(['retinoid', 'retinoid_like', 'vitc', 'aha', 'bha', 'pha', 'brightening', 'peptide', 'pdrn_nad', 'collagen', 'niacinamide']);
-function _unit(price, volumeMl, weightG) {
-  const p = Number(price), v = Number(volumeMl), w = Number(weightG);
+function _unit(price, volumeMl, weightG, patchCount) {
+  const p = Number(price), v = Number(volumeMl), w = Number(weightG), n = Number(patchCount);
   if (!(p > 0 && p < 5000)) return null;
   if (v > 0 && v < 5000) return { unit: 'ml', per100: p / v * 100 };
   if (w > 0 && w < 5000) return { unit: 'g', per100: p / w * 100 };
+  if (n > 0 && n < 1000) return { unit: 'patch', per100: p / n * 100 };      // patchs pour les yeux : prix par patch (une paire = 2 patchs)
   return null;
 }
 // Niveaux (seuils à valider avec Candice) :
@@ -156,7 +157,7 @@ function _authoritative(c) {
   if (!f) return Object.assign({}, c, { priceVerified: false, priceSource: null, priceRetrievedAt: '', discontinued: false });
   const verified = !!(f.priceVerified && f.priceSource && f.priceSource.name && f.priceRetrievedAt && f.price > 0);
   return Object.assign({}, c, {
-    price: f.price, volumeMl: f.volumeMl, netWeightG: f.netWeightG, active: f.active,
+    price: f.price, volumeMl: f.volumeMl, netWeightG: f.netWeightG, patchCount: f.patchCount, active: f.active,
     priceVerified: verified, priceSource: verified ? f.priceSource : null, priceRetrievedAt: verified ? f.priceRetrievedAt : '',
     priceNote: verified ? (f.priceNote || '') : '', discontinued: f.discontinued === true
   });
@@ -246,8 +247,13 @@ module.exports = async (req, res) => {
   const generic = !refMain && (refTrusted || product.estimated === true);
   // « Options du même type » (niveau 3) : quand aucun dupe n'est possible (actif inconnu, ou aucun produit de notre sélection
   // ne le partage), on propose quand même des produits du même USAGE, du moins cher au plus cher — jamais appelés « dupes ».
-  let typeOnly = !refMain && !generic;
-  if (generic) refMain = { family: null, label: 'produit de base, sans actif vedette', via: 'generic' };
+  // Patchs pour les yeux : le type de produit (un patch) compte plus que l'actif principal (la composition d'un patch est surtout
+  // un gel de base, avec quelques traces d'actifs). Un patch est comparé à tous les patchs ; les dupes restent « probables »
+  // ou mieux selon le prix par patch prouvé et la comparaison des compositions.
+  const patchMode = ((UsageType.usageOf(product) || {}).group) === 'eye_patch';
+  let typeOnly = !patchMode && !refMain && !generic;
+  if (patchMode) refMain = { family: null, label: 'patchs pour les yeux', via: 'patch' };
+  else if (generic) refMain = { family: null, label: 'produit de base, sans actif vedette', via: 'generic' };
   if (typeOnly) refMain = { family: null, label: '', via: 'type' };
 
   // ── Un dupe partage l'actif principal : on écarte tous les autres candidats AVANT toute IA ──
@@ -258,7 +264,7 @@ module.exports = async (req, res) => {
     const m = MainActive.resolve({ name: c.name, inci: trusted ? c.inciNormalized : null, tags: c.ingredientTags }, _sim);
     if (m) candMain[c.id] = m;
   });
-  const sharesActive = c => { const m = candMain[c.id]; return generic ? (!m || !MainActive.isHero(m.family)) : !!(m && m.family === refMain.family); };
+  const sharesActive = c => { const m = candMain[c.id]; return patchMode ? true : generic ? (!m || !MainActive.isHero(m.family)) : !!(m && m.family === refMain.family); };
   let candsActive = typeOnly ? cands0.slice() : cands0.filter(sharesActive);
   if (!candsActive.length) { typeOnly = true; refMain = { family: null, label: '', via: 'type' }; candsActive = cands0.slice(); }
 
@@ -296,13 +302,15 @@ module.exports = async (req, res) => {
   // ── Prix des produits proposés : relevé AUTOMATIQUE chez un revendeur (page retéléchargée et vérifiée, voir lib/webPrice.js).
   //    Lancé en parallèle du classement par l'IA. Seuls les produits qui ont une chance d'être moins chers sont cherchés
   //    (prix du catalogue indicatif), 4 par recherche au plus, et chaque résultat est gardé 7 jours.
-  const refUnit0 = _unit(product.refPrice, product.volumeMl, product.netWeightG);
+  const refUnit0 = _unit(product.refPrice, product.volumeMl, product.netWeightG, product.patchCount);
+  const _hasAmount = c => c.volumeMl > 0 || c.netWeightG > 0 || c.patchCount > 0;
   const _applyPrice = (c, r) => {
     Object.assign(c, { price: r.price, priceVerified: true, priceSource: { name: r.host, url: r.url }, priceRetrievedAt: r.date, priceNote: 'relevé automatiquement' });
     // contenance du catalogue absente : celle lue sur la page du revendeur (à côté du prix) la remplace, avec sa trace
-    if (!(c.volumeMl > 0 || c.netWeightG > 0)) {
+    if (!_hasAmount(c)) {
       if (r.volumeMl > 0) { c.volumeMl = r.volumeMl; c.volumeFrom = 'page du revendeur'; }
       else if (r.netWeightG > 0) { c.netWeightG = r.netWeightG; c.volumeFrom = 'page du revendeur'; }
+      else if (r.patchCount > 0) { c.patchCount = r.patchCount; c.volumeFrom = 'page du revendeur'; }
     }
   };
   const pricesP = (async () => {
@@ -310,11 +318,10 @@ module.exports = async (req, res) => {
     const need = cands.filter(c => {
       if (c.priceVerified) return false;
       if ((usageInfo[c.id] && usageInfo[c.id].formatDiff)) return false;
-      const known = c.volumeMl > 0 || c.netWeightG > 0;
-      if (!known) return true;                       // contenance inconnue : on la lira sur la page du revendeur
-      const cu = _unit(1, c.volumeMl, c.netWeightG);
+      if (!_hasAmount(c)) return true;               // contenance inconnue : on la lira sur la page du revendeur
+      const cu = _unit(1, c.volumeMl, c.netWeightG, c.patchCount);
       return cu && cu.unit === refUnit0.unit;
-    }).map(c => ({ c, known: c.volumeMl > 0 || c.netWeightG > 0, hint: (Number(c.price) > 0 && (c.volumeMl > 0 || c.netWeightG > 0)) ? (_unit(c.price, c.volumeMl, c.netWeightG) || {}).per100 : null }))
+    }).map(c => ({ c, known: _hasAmount(c), hint: (Number(c.price) > 0 && _hasAmount(c)) ? (_unit(c.price, c.volumeMl, c.netWeightG, c.patchCount) || {}).per100 : null }))
       // indicatif seulement : on écarte ceux dont le prix du catalogue est très au-dessus du produit de la personne
       .filter(x => x.hint == null || x.hint < refUnit0.per100 * 1.5)
       // d'abord ceux dont la contenance est connue (les moins chers au ml en tête), puis ceux dont on doit lire la contenance
@@ -369,7 +376,7 @@ module.exports = async (req, res) => {
 
   const validIds = new Set(slim.map(c => c.id));
 
-  const prompt = `Tu aides à ordonner des produits de beauté de NOTRE catalogue qui ont TOUS le même actif principal que le produit de l'utilisatrice (${refMain.label}).
+  const prompt = `Tu aides à ordonner des produits de beauté de NOTRE catalogue qui ${patchMode ? 'sont TOUS des patchs pour les yeux, comme le produit de l\'utilisatrice' : `ont TOUS le même actif principal que le produit de l'utilisatrice (${refMain.label})`}.
 
 PRODUIT DE L'UTILISATRICE : ${JSON.stringify({ brand: product.brand, name: product.name, category: product.category, type: product.productType })}
 
@@ -441,7 +448,8 @@ Retourne UNIQUEMENT ce JSON, sans texte avant/après :
   // Phrases à MODÈLE FIXE à partir de données vérifiées (jamais la prose de l'IA)
   const _templates = (id) => {
     const f = formulaMap[id];
-    const common = [typeOnly ? 'Même type de produit' + (refUsage && refUsage.label ? ' : ' + refUsage.label : '')
+    const common = [patchMode ? 'Même type de produit : patchs pour les yeux'
+      : typeOnly ? 'Même type de produit' + (refUsage && refUsage.label ? ' : ' + refUsage.label : '')
       : generic ? 'Même type de produit, sans actif vedette'
       : (refMain.via === 'estimate' ? `Actif principal probable (estimé) : ${refMain.label}` : `Même actif principal : ${refMain.label}`)];
     const diffs = [];
@@ -455,7 +463,7 @@ Retourne UNIQUEMENT ce JSON, sans texte avant/après :
     return { common: common.slice(0, 7), diffs: diffs.slice(0, 3), formula: !!(f && f.cmp && !f.cmp.eliminated) };
   };
 
-  const refUnit = _unit(product.refPrice, product.volumeMl, product.netWeightG);
+  const refUnit = _unit(product.refPrice, product.volumeMl, product.netWeightG, product.patchCount);
   const MIN_SIM = 55;   // en dessous, la formule est trop différente pour parler de « dupe »
 
   // Choix de l'IA (3 au plus)
@@ -471,7 +479,7 @@ Retourne UNIQUEMENT ce JSON, sans texte avant/après :
     const sim = !f ? null : (r
       ? _reconcile(c.id, Math.max(0, Math.min(100, parseInt(r.similarity, 10) || 0)))
       : (f.eliminated ? Math.min(f.sim, 20) : f.sim));
-    const cu = _unit(c.price, c.volumeMl, c.netWeightG);
+    const cu = _unit(c.price, c.volumeMl, c.netWeightG, c.patchCount);
     // Pads et lotion ne se comparent pas au millilitre : format différent → au mieux « autre option »
     const formatDiff = !!(usageInfo[c.id] && usageInfo[c.id].formatDiff);
     // Un dupe repose sur un prix SOURCÉ et DATÉ (celui du produit proposé) : sinon, on ne prouve rien
@@ -510,11 +518,13 @@ Retourne UNIQUEMENT ce JSON, sans texte avant/après :
       unitPrice: (!formatDiff && refUnit && cu && refUnit.unit === cu.unit)
         ? { unit: refUnit.unit, ref: Math.round(refUnit.per100 * 100) / 100, cand: Math.round(cu.per100 * 100) / 100 } : null,
       candUnit: cu ? { unit: cu.unit, per100: Math.round(cu.per100 * 100) / 100 } : null,     // prix de ce produit à l'unité (affiché sur la carte)
-      amount: (c.volumeMl > 0 || c.netWeightG > 0) ? { volumeMl: c.volumeMl > 0 ? c.volumeMl : 0, netWeightG: c.volumeMl > 0 ? 0 : c.netWeightG, from: c.volumeFrom || '' } : null,
+      amount: _hasAmount(c) ? { volumeMl: c.volumeMl > 0 ? c.volumeMl : 0, netWeightG: c.volumeMl > 0 ? 0 : (c.netWeightG > 0 ? c.netWeightG : 0),
+        patchCount: (c.volumeMl > 0 || c.netWeightG > 0) ? 0 : (c.patchCount > 0 ? c.patchCount : 0), from: c.volumeFrom || '' } : null,
       sortUnit: cu ? cu.per100 : null, sortPrice: Number(c.price) > 0 ? Number(c.price) : null,
       similarity: sim == null ? 0 : sim,
       commonPoints: t.common, differences: diffs.slice(0, 4),
-      why: typeOnly ? 'Même type de produit que le tien.'
+      why: patchMode ? 'Même type de produit que le tien : des patchs pour les yeux.'
+        : typeOnly ? 'Même type de produit que le tien.'
         : generic ? 'Même type de produit que le tien (crème ou soin de base, sans actif vedette).'
         : (refMain.via === 'estimate' ? `Actif principal probable de ton produit : ${refMain.label} (estimation, sa composition n'a pas pu être vérifiée).`
           : `Même actif principal que ton produit : ${refMain.label}.`),

@@ -1,7 +1,7 @@
 // Lance tous les tests automatiques : npm test  (aucun réseau, aucune clé nécessaire)
 const { spawnSync } = require('child_process');
 const path = require('path');
-const files = ['dupes.test.js', 'guard.test.js', 'admin.test.js', 'account.test.js', 'routes.test.js', 'scanmath.test.js', 'webcompo.test.js', 'webprice.test.js', 'actifs.test.js'];
+const files = ['dupes.test.js', 'guard.test.js', 'admin.test.js', 'account.test.js', 'routes.test.js', 'scanmath.test.js', 'webcompo.test.js', 'webprice.test.js', 'actifs.test.js', 'patchs.test.js', 'patchs-catalogue.test.js'];
 let bad = 0;
 files.forEach(f => {
   console.log('\n════════ ' + f + ' ════════');
