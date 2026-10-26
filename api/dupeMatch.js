@@ -70,6 +70,7 @@ const MAKEUP_CATS = new Set(['foundation', 'concealer', 'corrector', 'powder', '
   'mascara', 'eyeliner', 'eyebrow', 'eyeshadow', 'lipstick', 'lipgloss', 'lipliner']);
 const NOTE_UNVERIFIED = "Composition non vérifiée : les formules n'ont pas été comparées. L'actif principal indiqué est celui annoncé sur la fiche du produit.";
 const NOTE_ESTIMATE = "Composition de ton produit non vérifiée : nous n'avons pas pu comparer les formules. Avant d'acheter, regarde la liste d'ingrédients sur l'emballage.";
+const NOTE_TYPE = "Nous n'avons pas pu identifier l'actif principal de ton produit : ce n'est pas un dupe, seulement un produit du même type.";
 const NOTE_VERIFIED = 'Compositions comparées (liste de ton produit trouvée sur une page source, liste de ce produit issue de notre catalogue).';
 const NOTE_PHOTO = "Compositions comparées. La liste de ton produit a été lue sur ta photo : à vérifier. Celle de ce produit vient de notre catalogue.";
 
@@ -243,37 +244,46 @@ module.exports = async (req, res) => {
   // Produit sans actif vedette (crème de base, huile…) : composition trouvée sans actif, ou estimation « aucun actif vedette ».
   // On propose alors des produits du même usage qui n'ont pas non plus d'actif vedette (jamais un rétinol pour une crème de base).
   const generic = !refMain && (refTrusted || product.estimated === true);
-  if (!refMain && !generic) return _none(res, 'unverified', MSG_UNVERIFIED, quota);
+  // « Options du même type » (niveau 3) : quand aucun dupe n'est possible (actif inconnu, ou aucun produit de notre sélection
+  // ne le partage), on propose quand même des produits du même USAGE, du moins cher au plus cher — jamais appelés « dupes ».
+  let typeOnly = !refMain && !generic;
   if (generic) refMain = { family: null, label: 'produit de base, sans actif vedette', via: 'generic' };
+  if (typeOnly) refMain = { family: null, label: '', via: 'type' };
 
   // ── Un dupe partage l'actif principal : on écarte tous les autres candidats AVANT toute IA ──
   const candMain = {};
-  const candsActive = cands0.filter(c => {
+  cands0.forEach(c => {
     const trusted = Array.isArray(c.inciNormalized) && c.inciNormalized.length >= 3
       && (!c.inciVerificationStatus || c.inciVerificationStatus === 'verified');
     const m = MainActive.resolve({ name: c.name, inci: trusted ? c.inciNormalized : null, tags: c.ingredientTags }, _sim);
     if (m) candMain[c.id] = m;
-    if (generic) return !m || !MainActive.isHero(m.family);
-    return m && m.family === refMain.family;
   });
-  if (!candsActive.length) return _none(res, 'no-shared-active', msgNoShared(refMain.label), quota);
+  const sharesActive = c => { const m = candMain[c.id]; return generic ? (!m || !MainActive.isHero(m.family)) : !!(m && m.family === refMain.family); };
+  let candsActive = typeOnly ? cands0.slice() : cands0.filter(sharesActive);
+  if (!candsActive.length) { typeOnly = true; refMain = { family: null, label: '', via: 'type' }; candsActive = cands0.slice(); }
 
   // ── Même USAGE : pads / lotion avec pads / lotion, sérum avec sérum, crème avec crème, masque à rincer avec masque à
   //    rincer, peeling avec peeling. Un peeling concentré à rincer n'est pas une alternative à un pad quotidien. ──
   const refUsage = UsageType.usageOf(product);
   const refRank = _ranks(refListAny);
   const usageInfo = {};
-  const candsUsage = candsActive.filter(c => {
+  const keepUsage = list => list.filter(c => {
     const comp = UsageType.compatible(refUsage, UsageType.usageOf(c));
     if (!comp.ok) return false;
+    if (typeOnly && !refUsage && c.category !== product.category) return false;     // usage inconnu : au moins la même catégorie
     usageInfo[c.id] = { formatDiff: !!comp.formatDiff };
     return true;
   });
   // ── Concentration : jamais un exfoliant / rétinoïde nettement plus concentré que celui de la personne ──
-  const cands = candsUsage.filter(c => !UsageType.tooStrong(product, c, {
+  const keepSafe = list => list.filter(c => !UsageType.tooStrong(product, c, {
     refGroup: refUsage && refUsage.group, refRank, candRank: _ranks(c.inciNormalized)
   }));
-  if (!cands.length) return _none(res, 'no-same-usage', msgNoUsage(refUsage && refUsage.label), quota);
+  let cands = keepSafe(keepUsage(candsActive));
+  if (!cands.length && !typeOnly) {          // même actif mais pas le même usage : on bascule sur « même type »
+    typeOnly = true; refMain = { family: null, label: '', via: 'type' };
+    cands = keepSafe(keepUsage(cands0.slice()));
+  }
+  if (!cands.length) return _none(res, typeOnly && !refUsage ? 'unverified' : 'no-same-usage', typeOnly && !refUsage ? MSG_UNVERIFIED : msgNoUsage(refUsage && refUsage.label), quota);
 
   // Limiter la charge : max 25 candidats, champs compacts
   const slim = cands.slice(0, 25).map(c => ({
@@ -296,7 +306,7 @@ module.exports = async (req, res) => {
     }
   };
   const pricesP = (async () => {
-    if (!refUnit0 || G.cfg.webPrice === false) return;
+    if (!refUnit0 || typeOnly || G.cfg.webPrice === false) return;
     const need = cands.filter(c => {
       if (c.priceVerified) return false;
       if ((usageInfo[c.id] && usageInfo[c.id].formatDiff)) return false;
@@ -391,7 +401,7 @@ Retourne UNIQUEMENT ce JSON, sans texte avant/après :
   // ── Classement par l'IA (facultatif) : notes de peau + ordre des 3 meilleurs.
   //    Si elle est indisponible (panne, plafond de coût), on affiche quand même les options du même actif. ──
   let parsed = { results: [], bestSkinAlternativeId: null };
-  try {
+  if (!typeOnly) try {            // « options du même type » : pas de classement par l'IA (inutile et payant)
     const resp = await AI.anthropic('dupeMatch', apiKey, {
       model:      'claude-sonnet-4-6',
       max_tokens: 900,
@@ -431,17 +441,18 @@ Retourne UNIQUEMENT ce JSON, sans texte avant/après :
   // Phrases à MODÈLE FIXE à partir de données vérifiées (jamais la prose de l'IA)
   const _templates = (id) => {
     const f = formulaMap[id];
-    const common = [generic ? 'Même type de produit, sans actif vedette'
+    const common = [typeOnly ? 'Même type de produit' + (refUsage && refUsage.label ? ' : ' + refUsage.label : '')
+      : generic ? 'Même type de produit, sans actif vedette'
       : (refMain.via === 'estimate' ? `Actif principal probable (estimé) : ${refMain.label}` : `Même actif principal : ${refMain.label}`)];
     const diffs = [];
     if (f && f.cmp && !f.cmp.eliminated) {
       const c = f.cmp;
-      if (c.common.length) common.push(`Actifs en commun dans la composition : ${c.common.join(', ')}`);
+      c.common.forEach(x => common.push(x));       // un point commun par actif, en français (« Acide tranexamique (sous une autre forme) »)
       if (c.onlyRef.length) diffs.push(`Présent dans ton produit mais pas dans celui-ci : ${c.onlyRef.join(', ')}`);
       if (c.onlyCand.length) diffs.push(`Présent dans celui-ci en plus : ${c.onlyCand.join(', ')}`);
       if (c.derivMismatch.length) diffs.push(`Forme de l'actif différente : ${c.derivMismatch.slice(0, 2).map(x => x.replace('≠', ' ≠ ')).join(' ; ')}`);
     }
-    return { common: common.slice(0, 4), diffs: diffs.slice(0, 3), formula: !!(f && f.cmp && !f.cmp.eliminated) };
+    return { common: common.slice(0, 7), diffs: diffs.slice(0, 3), formula: !!(f && f.cmp && !f.cmp.eliminated) };
   };
 
   const refUnit = _unit(product.refPrice, product.volumeMl, product.netWeightG);
@@ -471,7 +482,8 @@ Retourne UNIQUEMENT ce JSON, sans texte avant/après :
     // Un dupe exige une formule connue et assez proche ; sinon c'est une « autre option »
     // « Dupe probable » : même actif (ou même type de produit) et même usage, moins cher à l'unité PROUVÉ (prix sourcé et daté),
     // mais les formules ne peuvent pas être comparées (composition de l'un des deux non vérifiée).
-    const level = (sim != null && sim >= MIN_SIM) ? _level({ cheaper, sim, refVerified, candVerified, family: refMain.family })
+    const level = typeOnly ? 'type'
+      : (sim != null && sim >= MIN_SIM) ? _level({ cheaper, sim, refVerified, candVerified, family: refMain.family })
       : (sim == null && cheaper ? 'probable' : 'other');
     // POURQUOI ce n'est pas un dupe (affiché sur la carte) — du plus important au moins important
     const reasons = [];
@@ -502,20 +514,21 @@ Retourne UNIQUEMENT ce JSON, sans texte avant/après :
       sortUnit: cu ? cu.per100 : null, sortPrice: Number(c.price) > 0 ? Number(c.price) : null,
       similarity: sim == null ? 0 : sim,
       commonPoints: t.common, differences: diffs.slice(0, 4),
-      why: generic ? 'Même type de produit que le tien (crème ou soin de base, sans actif vedette).'
+      why: typeOnly ? 'Même type de produit que le tien.'
+        : generic ? 'Même type de produit que le tien (crème ou soin de base, sans actif vedette).'
         : (refMain.via === 'estimate' ? `Actif principal probable de ton produit : ${refMain.label} (estimation, sa composition n'a pas pu être vérifiée).`
           : `Même actif principal que ton produit : ${refMain.label}.`),
       role: r && ROLES.includes(r.role) ? r.role : 'closest',
       skinFit: r && FITS.includes(r.skinFit) ? r.skinFit : null,        // null : l'IA ne s'est pas prononcée
       skinNote: r && typeof r.skinNote === 'string' ? r.skinNote.slice(0, 200) : '',
       source: 'catalog', formula: t.formula,
-      compositionNote: t.formula ? (refVerified ? NOTE_VERIFIED : NOTE_PHOTO) : (estimateMode ? NOTE_ESTIMATE : NOTE_UNVERIFIED),
+      compositionNote: typeOnly ? NOTE_TYPE : t.formula ? (refVerified ? NOTE_VERIFIED : NOTE_PHOTO) : (estimateMode ? NOTE_ESTIMATE : NOTE_UNVERIFIED),
       mainActive: refMain.label, confidence: t.formula ? 'high' : 'low'
     };
   };
 
   const all = cands.slice(0, 25).map(c => build(c, picked.get(c.id) || null));
-  const LV = { reliable: 0, similar: 1, probable: 2, other: 3 };
+  const LV = { reliable: 0, similar: 1, probable: 2, other: 3, type: 4 };
   const INF = Number.POSITIVE_INFINITY;
   all.sort((a, b) => {
     if (LV[a.level] !== LV[b.level]) return LV[a.level] - LV[b.level];
@@ -525,8 +538,8 @@ Retourne UNIQUEMENT ce JSON, sans texte avant/après :
     if (ua !== ub) return ua - ub;
     return (a.sortPrice == null ? INF : a.sortPrice) - (b.sortPrice == null ? INF : b.sortPrice);
   });
-  const dupes = all.filter(r => r.level !== 'other').slice(0, 6);
-  const others = all.filter(r => r.level === 'other').slice(0, 6);
+  const dupes = all.filter(r => r.level !== 'other' && r.level !== 'type').slice(0, 6);
+  const others = all.filter(r => r.level === 'other' || r.level === 'type').slice(0, 6);
   const results = dupes.concat(others).map(r => { const o = Object.assign({}, r); delete o.sortUnit; delete o.sortPrice; return o; });
 
   const bestAlt = (parsed.bestSkinAlternativeId && validIds.has(parsed.bestSkinAlternativeId))
@@ -543,7 +556,7 @@ Retourne UNIQUEMENT ce JSON, sans texte avant/après :
     status: results.length ? 'ok' : 'none',
     trueDupeExists: dupes.some(r => r.level === 'reliable' || r.level === 'similar'),
     probableDupeExists: dupes.some(r => r.level === 'probable'),
-    noDupeMessage: '',
+    noDupeMessage: '', typeOnly,
     results, externalResults: [], bestSkinAlternativeId: bestAlt, selfDupe: null,
     quota: _pub(quotaOut)
   });

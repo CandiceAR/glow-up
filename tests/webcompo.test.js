@@ -105,7 +105,10 @@ const run = (ai, page, brand, name) => WebCompo.find(brand || 'Marque Test', nam
   const base = { brand: 'Marque Inconnue', name: 'Sérum Fantôme Éclat', category: 'serum', productType: 'skincare', inciList: [], inciConfidence: 'none' };
 
   let o = (await search(base)).o;
-  check('sans composition NI estimation : on ne devine pas (message honnête)', o.status === 'unverified' && o.results.length === 0);
+  check('sans composition NI estimation : on ne devine pas l\'actif, mais on propose des « options du même type »', o.status === 'ok' && o.typeOnly === true && o.results.length > 0, o.status + ' · ' + o.results.length);
+  check('… jamais appelées « dupes » (niveau « type »), jamais d\'actif affirmé', o.results.every(r => r.level === 'type') && o.trueDupeExists === false && o.probableDupeExists === false);
+  check('… du même usage que le produit (sérum avec sérum)', o.results.every(r => (require(path.join(ROOT, 'lib', 'usageType.js')).usageOf(P.find(x => x.id === r.id)) || {}).group === 'serum'));
+  check('… avec une note qui dit que ce n\'est pas un dupe', o.results.every(r => /pas un dupe/.test(r.compositionNote)));
 
   o = (await search(Object.assign({}, base, { estimated: true, estimateFamily: 'niacinamide' }))).o;
   check('actif probable (niacinamide) → des produits du même actif et du même usage', o.status === 'ok' && o.results.length > 0, o.status + ' · ' + o.results.length);

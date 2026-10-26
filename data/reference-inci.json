@@ -985,25 +985,24 @@
     "Niacinamide",
     "Hydroxyethylpiperazine Ethane Sulfonic Acid",
     "Glycerin",
-    "Hydroxyethyl Urea",
-    "Propylene Glycol",
     "Tranexamic Acid",
-    "Phenoxyethanol",
+    "Propylene Glycol",
+    "Hydroxyethyl Urea",
+    "Kojic Acid",
     "Caprylyl Glycol",
     "Allantoin",
     "Chlorphenesin",
     "Xanthan Gum",
     "Disodium EDTA"
    ],
-   "inciRaw": "Aqua/Water, Butylene Glycol, Niacinamide, Hydroxyethylpiperazine Ethane Sulfonic Acid, Glycerin, Hydroxyethyl Urea, Propylene Glycol, Tranexamic Acid, Phenoxyethanol, Caprylyl Glycol, Allantoin, Chlorphenesin, Xanthan Gum, Disodium EDTA",
+   "inciRaw": "Aqua / Water, Butylene Glycol, Niacinamide, Hydroxyethylpiperazine Ethane Sulfonic Acid, Glycerin, Tranexamic Acid, Propylene Glycol, Hydroxyethyl Urea, Kojic Acid, Caprylyl Glycol, Allantoin, Chlorphenesin, Xanthan Gum, Disodium EDTA",
    "source": {
-    "type": "incidecoder",
-    "url": "https://incidecoder.com/products/skinceuticals-discoloration-defense",
-    "productTitle": "SkinCeuticals Discoloration Defense Sérum",
-    "nameMatchScore": 1,
-    "note": "INCIDecoder reprend la liste d'ingrédients publiée par la marque. Les pages officielles des marques bloquent souvent la lecture automatique : la liste officielle n'a pu être relue que pour certains produits (voir officialCheck)."
+    "type": "brand",
+    "url": "",
+    "productTitle": "SkinCeuticals Discoloration Defense",
+    "note": "Liste d'ingrédients publiée par la marque, fournie par Candice le 26/10/2026."
    },
-   "retrievedAt": "2026-10-13",
+   "retrievedAt": "2026-10-26",
    "verified": {
     "price": 78.49,
     "currency": "EUR",
@@ -1014,7 +1013,39 @@
     },
     "priceRetrievedAt": "2026-10-14",
     "priceNote": ""
-   }
+   },
+   "previous": {
+    "inci": [
+     "Aqua/Water",
+     "Butylene Glycol",
+     "Niacinamide",
+     "Hydroxyethylpiperazine Ethane Sulfonic Acid",
+     "Glycerin",
+     "Hydroxyethyl Urea",
+     "Propylene Glycol",
+     "Tranexamic Acid",
+     "Phenoxyethanol",
+     "Caprylyl Glycol",
+     "Allantoin",
+     "Chlorphenesin",
+     "Xanthan Gum",
+     "Disodium EDTA"
+    ],
+    "inciRaw": "Aqua/Water, Butylene Glycol, Niacinamide, Hydroxyethylpiperazine Ethane Sulfonic Acid, Glycerin, Hydroxyethyl Urea, Propylene Glycol, Tranexamic Acid, Phenoxyethanol, Caprylyl Glycol, Allantoin, Chlorphenesin, Xanthan Gum, Disodium EDTA",
+    "source": {
+     "type": "incidecoder",
+     "url": "https://incidecoder.com/products/skinceuticals-discoloration-defense",
+     "productTitle": "SkinCeuticals Discoloration Defense Sérum",
+     "nameMatchScore": 1,
+     "note": "INCIDecoder reprend la liste d'ingrédients publiée par la marque. Les pages officielles des marques bloquent souvent la lecture automatique : la liste officielle n'a pu être relue que pour certains produits (voir officialCheck)."
+    },
+    "retrievedAt": "2026-10-13",
+    "note": "Ancienne liste relevée sur INCIDecoder le 13/10/2026 (contenait Phenoxyethanol, sans Kojic Acid) : remplacée par la liste publiée par la marque."
+   },
+   "aliases": [
+    "Discoloration Defense Serum",
+    "Discoloration Defense Sérum"
+   ]
   },
   {
    "key": "vichy-mineral-89",

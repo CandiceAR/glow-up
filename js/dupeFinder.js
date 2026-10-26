@@ -260,6 +260,7 @@ const DupeFinder = (() => {
     reliable: { icon: '🎯', label: 'Dupe fiable',                         cls: 'df-lv-reliable' },
     similar:  { icon: '≈',  label: 'Dupe similaire',                      cls: 'df-lv-similar' },
     probable: { icon: '≈',  label: 'Dupe probable · composition non vérifiée', cls: 'df-lv-probable' },
+    type:     { icon: '•',  label: 'Option du même type',                  cls: 'df-lv-other' },
     other:    { icon: '•',  label: 'Autre option · pas prouvée moins chère', cls: 'df-lv-other' }
   };
   // POURQUOI une « Autre option » n'est pas un dupe : s = court (sur la carte), l = long (dans le détail). Dit toujours la vraie raison.
@@ -536,7 +537,8 @@ const DupeFinder = (() => {
     // Les dupes prouvés moins chers d'abord, puis les « autres options » (jamais appelées « dupes »)
     const realDupes = catRes.filter(r => r.level === 'reliable' || r.level === 'similar');
     const probables = catRes.filter(r => r.level === 'probable');
-    const others    = catRes.filter(r => !(r.level === 'reliable' || r.level === 'similar' || r.level === 'probable'));
+    const types     = catRes.filter(r => r.level === 'type');      // « options du même type » : pas de dupe possible, mais une proposition
+    const others    = catRes.filter(r => !(r.level === 'reliable' || r.level === 'similar' || r.level === 'probable' || r.level === 'type'));
     // Dupes probables : même actif et moins chers (prix relevé), mais la composition n'a pas pu être vérifiée
     const probHtml = probables.length
       ? `${realDupes.length ? '<div class="df-altsep"><span>Dupes probables</span></div>' : ''}
@@ -546,8 +548,12 @@ const DupeFinder = (() => {
     // La personne a le produit en main : la photo de la liste d'ingrédients rend le résultat plus précis (facultatif)
     const preciseCta = (!(id.inciList || []).length && id.inciConfidence !== 'photo')
       ? `<p class="df-precise">Tu as le produit en main&nbsp;? <a href="#" onclick="DupeFinder.goPhoto();return false;">Photographie sa liste d'ingrédients</a> pour un résultat plus précis.</p>` : '';
+    const typeHtml = types.length
+      ? `<p class="df-alt-h">Nous n'avons pas pu identifier l'actif principal de ton produit : ce ne sont pas des dupes, mais des produits du même type, du moins cher au plus cher.</p>`
+        + types.map((r, i) => _resultCard(r, i)).join('')
+      : '';
     const catHtml = realDupes.map((r, i) => _resultCard(r, i)).join('')
-      + probHtml
+      + probHtml + typeHtml
       + (others.length
         ? ((realDupes.length || probables.length)
             ? `<div class="df-altsep"><span>Autres options</span></div>
@@ -587,6 +593,11 @@ const DupeFinder = (() => {
           <h3 class="df-dupes-h">« ${_t} »</h3>
           <p class="df-dupes-sub">Moins chers que ton produit et du même type, mais sa composition n'a pas pu être vérifiée : ce sont des dupes <strong>probables</strong>, pas des dupes confirmés.</p>
           <span class="df-dupes-count">${probables.length} dupe${probables.length > 1 ? 's' : ''} probable${probables.length > 1 ? 's' : ''}${(function () { const pp = probables.map(r => { const cp = _catalogProduct(r.id); return cp && cp.price > 0 ? cp.price : null; }).filter(Boolean); return pp.length ? ' · à partir de ' + _eur(Math.min.apply(null, pp)) : ''; })()}</span>
+        </div>` : types.length ? `
+        <div class="df-dupes-title">
+          <span class="df-dupes-eyebrow">✦ Des options du même type que ✦</span>
+          <h3 class="df-dupes-h">« ${_t} »</h3>
+          <span class="df-dupes-count">${types.length} option${types.length > 1 ? 's' : ''}</span>
         </div>` : (catRes.length ? `
         <div class="df-dupes-title">
           <span class="df-dupes-eyebrow">✦ Des options avec le même actif que ✦</span>
