@@ -11,7 +11,12 @@ const FirestoreProducts = (() => {
     apiKey:        'AIzaSyDrpKPZf8qA_M86pOlChzBbOddGjGQoYiM',
     authDomain:    'glow-up-9f0d2.firebaseapp.com',
     projectId:     'glow-up-9f0d2',
-    storageBucket: 'glow-up-9f0d2.firebasestorage.app'
+    storageBucket: 'glow-up-9f0d2.firebasestorage.app',
+    // Configuration COMPLÈTE (identique à js/auth.js) : ce fichier peut démarrer Firebase avant auth.js ; sans appId et
+    // measurementId, Google Analytics ne démarrait jamais (« installations/missing-app-config-values »).
+    messagingSenderId: '808394116548',
+    appId:             '1:808394116548:web:6075126d3d7a41edff6891',
+    measurementId:     'G-HLB50Z689S'
   };
 
   function _db() {
