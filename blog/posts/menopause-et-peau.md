@@ -7,6 +7,8 @@ date: 2026-10-04
 excerpt: Sécheresse, perte de fermeté, rides plus marquées… À la ménopause, la chute des œstrogènes transforme la peau. Voici ce qui change et comment adapter sa routine.
 metaDescription: Ménopause et peau : pourquoi la peau change (sécheresse, perte de fermeté, rides), et comment adapter sa routine skincare avec les bons actifs après 50 ans.
 author: Candice Arav
+image: /assets/blog/menopause-et-peau.jpg
+image_alt: Femme mûre aux cheveux blonds, souriante, tenant son téléphone
 related:
   - skincare-apres-50-ans
   - retinol-apres-40-ans

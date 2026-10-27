@@ -7,6 +7,8 @@ date: 2026-10-01
 excerpt: Le rétinol est l'actif anti-âge le plus documenté, mais il intimide. Après 40 ans, voici comment l'introduire sans rougeurs, à quelle fréquence, et les erreurs à éviter.
 metaDescription: Rétinol après 40 ans : pourquoi c'est l'actif anti-âge n°1, comment l'introduire sans irritation, à quelle fréquence l'utiliser et les erreurs à éviter.
 author: Candice Arav
+image: /assets/blog/retinol-apres-40-ans.jpg
+image_alt: Main dévissant la pipette d'un flacon de sérum en verre ambré, sur fond rose
 related:
   - pourquoi-les-rides-apparaissent-apres-35-ans
   - skincare-grossesse

@@ -8,6 +8,8 @@ updated: 2026-10-12
 excerpt: Soleil, hormones, âge… Les taches brunes ont plusieurs origines. On explique pourquoi elles apparaissent sur le visage et les gestes qui aident vraiment à les atténuer.
 metaDescription: Taches brunes sur le visage : causes (soleil, hormones, âge), types de taches et solutions douces pour les atténuer et unifier le teint après 40 ans.
 author: Candice Arav
+image: /assets/blog/taches-brunes-visage.jpg
+image_alt: Gros plan sur le visage d'une femme qui applique du sérum avec une pipette près de l'œil
 related:
   - skincare-grossesse
   - menopause-et-peau

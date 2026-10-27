@@ -6,6 +6,8 @@ date: 2026-10-05
 excerpt: Douceur, hydratation en couches, actifs innovants… La skincare coréenne a beaucoup à offrir aux peaux matures. Voici comment l'adapter après 40-50 ans, sans se compliquer la vie.
 metaDescription: La skincare coréenne pour peau mature : pourquoi elle fonctionne, la routine étape par étape et les actifs à privilégier après 40-50 ans.
 author: Candice Arav
+image: /assets/blog/skincare-coreenne-peau-mature.jpg
+image_alt: Femme détendue sur un canapé avec un masque en tissu sur le visage, son téléphone à la main
 related:
   - skincare-apres-50-ans
   - acide-hyaluronique-guide

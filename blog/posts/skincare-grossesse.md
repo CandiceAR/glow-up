@@ -8,6 +8,8 @@ updated: 2026-10-15
 excerpt: Certains actifs skincare sont déconseillés pendant la grossesse. Le point sur ce qu'on évite, ce qu'on privilégie, et comment reprendre sa routine après l'accouchement.
 metaDescription: Rétinoïdes, hydroquinone, huiles essentielles : quels actifs éviter pendant la grossesse, lesquels privilégier, et comment retrouver sa routine skincare après l'accouchement.
 author: Candice Arav
+image: /assets/blog/skincare-grossesse.jpg
+image_alt: Femme enceinte, les mains posées sur son ventre arrondi, sur fond pêche
 related:
   - peau-apres-la-grossesse
   - taches-brunes-visage

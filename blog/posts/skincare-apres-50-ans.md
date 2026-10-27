@@ -7,6 +7,8 @@ date: 2026-10-08
 excerpt: Après 50 ans, la peau a de nouveaux besoins : nourrir, raffermir, protéger. Voici une routine simple et efficace pour une peau souple, confortable et lumineuse.
 metaDescription: Skincare après 50 ans : les besoins de la peau (sécheresse, fermeté, taches) et une routine matin/soir simple avec les bons actifs pour une peau éclatante.
 author: Candice Arav
+image: /assets/blog/skincare-apres-50-ans.jpg
+image_alt: Femme mûre souriante au regard levé, sur fond rose
 related:
   - menopause-et-peau
   - skincare-coreenne-peau-mature
