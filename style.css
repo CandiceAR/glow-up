@@ -10926,3 +10926,17 @@ body.drawer-open{ overflow: hidden; }   /* blocage du défilement arrière-plan 
 .df-priceask .df-ask-name { font-family: var(--serif, Georgia, serif); font-size: 17px; margin: 0 0 10px; }
 .df-priceask .df-priceform-row { max-width: 340px; margin: 14px auto; }
 .df-priceask .df-priceform-note { font-size: 12px; color: var(--muted, #6b6560); margin-top: 6px; }
+
+/* Jeu concours Instagram — carte « 🎁 Concours » (écran résultat et Mon profil) */
+.contest-card { margin: 22px 0; padding: 20px 18px; border-radius: 20px; background: #FDEBD6; border: 1px solid #F0CFA6; box-shadow: 0 6px 20px rgba(180, 72, 46, .08); }
+.contest-title { margin: 0 0 6px; font-size: 20px; }
+.contest-text { margin: 0 0 12px; font-size: 15px; line-height: 1.5; }
+.contest-label { display: block; font-size: 13px; font-weight: 700; margin: 6px 0 4px; }
+.contest-input { width: 100%; box-sizing: border-box; padding: 12px 14px; font-size: 16px; border: 1px solid #E2C9A8; border-radius: 12px; background: #fff; }
+.contest-check { display: flex; gap: 10px; align-items: flex-start; margin: 12px 0; font-size: 13px; line-height: 1.45; }
+.contest-check input { margin-top: 3px; width: 18px; height: 18px; flex: none; }
+.contest-check a { color: #B4482E; text-decoration: underline; }
+.contest-btn { width: 100%; }
+.contest-ok { margin: 0 0 8px; font-weight: 700; line-height: 1.5; color: #2f6b3f; }
+.contest-error { margin: 0 0 10px; color: #a3281c; font-size: 13px; font-weight: 600; }
+.contest-note, .contest-muted { margin: 0 0 12px; font-size: 14px; line-height: 1.5; color: #6f5a4d; }

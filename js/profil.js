@@ -35,9 +35,11 @@ const Profil = (() => {
   function _name() {
     const d = AppState?.user?.displayName;
     if (d) return d.split(' ')[0];
+    // Sans prénom : on n'affiche JAMAIS le début de l'adresse e-mail tel quel (« candice_arav »). On ne le garde que s'il ressemble à
+    // un prénom (lettres seulement) ; sinon on dit simplement « Bonjour ✨ ».
     const e = AppState?.user?.email;
-    if (e) return e.split('@')[0];
-    return 'toi';
+    if (e) { const p = e.split('@')[0]; if (/^[A-Za-zÀ-ÿ]{2,20}$/.test(p)) return p.charAt(0).toUpperCase() + p.slice(1).toLowerCase(); }
+    return '';
   }
   function _today() {
     return new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
@@ -230,13 +232,15 @@ const Profil = (() => {
     c.innerHTML = `
       <div class="pf-header">
         <div class="pf-hello">
-          <h1>Bonjour ${_name()} ✨</h1>
+          <h1>Bonjour${_name() ? ' ' + _name() : ''} ✨</h1>
           <div class="pf-today"><span>Ta peau aujourd'hui</span><span class="pf-date">${_today()}</span></div>
         </div>
         ${_renderMetrics()}
       </div>
+      ${typeof Contest !== 'undefined' ? Contest.html('profil') : ''}
       <div class="pf-body">${_renderContent()}</div>
       ${_renderTabs()}`;
+    if (typeof Contest !== 'undefined') Contest.mount();
   }
 
   return { initScreen, render, setTab, setMoment, revokeAI };

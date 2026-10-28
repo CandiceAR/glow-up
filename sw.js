@@ -1,4 +1,4 @@
-const CACHE_NAME = 'glowup-v283';
+const CACHE_NAME = 'glowup-v284';
 
 const STATIC_ASSETS = [
   '/',
@@ -21,7 +21,8 @@ const STATIC_ASSETS = [
   '/js/skinJourney.js',
   '/js/makeupRoutine.js',
   '/js/firestoreProducts.js',
-  '/js/subscription.js'
+  '/js/subscription.js',
+  '/js/contest.js'
 ];
 
 // Installation : mise en cache des ressources statiques

@@ -27,10 +27,13 @@ function makeFake() {
   const ref = (c, id) => ({
     _k: c + '/' + id,
     get: async () => snap(c + '/' + id),
-    set: async (d, o) => { const k = c + '/' + id; store.set(k, o && o.merge ? apply(store.get(k) || {}, d) : apply({}, d)); }
+    set: async (d, o) => { const k = c + '/' + id; store.set(k, o && o.merge ? apply(store.get(k) || {}, d) : apply({}, d)); },
+    delete: async () => { store.delete(c + '/' + id); }
   });
   const db = {
-    collection: c => ({ doc: id => ref(c, id) }),
+    collection: c => ({ doc: id => ref(c, id),
+      where: () => ({ limit: () => ({ get: async () => ({ empty: true, docs: [], size: 0 }) }) }),   // sans correspondance (suppression de compte)
+      get: async () => ({ docs: [...store.keys()].filter(k => k.startsWith(c + '/')).map(k => ({ id: k.slice(c.length + 1), data: () => JSON.parse(JSON.stringify(store.get(k))) })) }) }),
     runTransaction: async fn => fn({
       get: async r => snap(r._k),
       set: (r, d, o) => { store.set(r._k, o && o.merge ? apply(store.get(r._k) || {}, d) : apply({}, d)); }

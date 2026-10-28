@@ -625,6 +625,9 @@ const RoutineRenderer = (() => {
           ? renderLockedSection('Routine du soir', routine.soir, '🌙')
           : renderRoutineSection('Routine du soir', routine.soir, '🌙', hasRetinol)}
 
+      <!-- 🎁 Jeu concours — juste sous la routine (visible seulement pendant la période du concours) -->
+      ${typeof Contest !== 'undefined' ? Contest.html('results') : ''}
+
       <!-- Bannière sauvegarde — juste après la routine -->
       ${renderSaveBanner()}
 
@@ -639,6 +642,7 @@ const RoutineRenderer = (() => {
 
       ${renderDebugLog(routine.log)}
     `;
+    if (typeof Contest !== 'undefined') Contest.mount();
   }
 
   // Bandeau vitrine Premium (résultats, non-abonnées) — au pic d'intention

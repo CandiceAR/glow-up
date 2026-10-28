@@ -20,6 +20,10 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST')    return res.status(405).json({ error: 'Method Not Allowed' });
 
+  // Jeu concours (lib/contest.js) : modes « contest… » — participation (compte requis) et tirage (administratrice).
+  // Vercel est limité à 12 fonctions : ces modes vivent ici plutôt que dans une nouvelle route.
+  if (req.body && typeof req.body.mode === 'string' && req.body.mode.indexOf('contest') === 0) return require('../lib/contest.js').handle(req, res);
+
   // SÉCURITÉ : seule l'administratrice identifiée peut modifier le catalogue (lib/adminAuth.js).
   // Avant le 23 oct. 2026, cette route n'exigeait AUCUNE identification.
   const admin = await requireAdmin(req, res);

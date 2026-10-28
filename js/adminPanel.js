@@ -1048,7 +1048,7 @@ const Admin = (() => {
 
   // ─── Onglets ──────────────────────────────────────────────────
   let currentTab = 'products';
-  const TAB_IDS  = ['products', 'analytics', 'catalogue', 'asin', 'coach', 'referrals', 'scanned', 'ageRules'];
+  const TAB_IDS  = ['products', 'analytics', 'catalogue', 'asin', 'coach', 'referrals', 'scanned', 'ageRules', 'contest'];
 
   function showTab(tab) {
     currentTab = tab;
@@ -1065,6 +1065,73 @@ const Admin = (() => {
     if (tab === 'catalogue') renderCatalogueTab();
     if (tab === 'scanned')   loadScanned();
     if (tab === 'ageRules')  loadAgeRules();
+    if (tab === 'contest')   loadContest();
+  }
+
+  // ─── Jeu concours : participations, export CSV, tirage au sort (appels serveur protégés : lib/contest.js) ──
+  async function _contest(mode, extra) {
+    const r = await fetch(apiUrl('/api/saveProducts'), {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(Object.assign({ mode, idToken: await adminToken() }, extra || {}))
+    });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(d.message || ('Erreur ' + r.status));
+    return d;
+  }
+  const _cEsc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  async function loadContest() {
+    const box = document.getElementById('contestBox');
+    if (!box) return;
+    try {
+      const d = await _contest('contestAdminStats');
+      const last = d.draws.length ? d.draws[d.draws.length - 1] : null;
+      const PH = { before: 'pas encore commencé', open: 'EN COURS', closed: 'terminé (tirage possible)' };
+      const rows = d.draws.map(x => '<tr><td>' + x.number + '</td><td>' + _cEsc(x.instagram_handle) + '</td><td>' + _cEsc(x.drawn_at_paris || '') + '</td><td>' + _cEsc(x.status) + (x.reason ? ' — ' + _cEsc(x.reason) : '') + '</td></tr>').join('');
+      box.innerHTML = `
+        <p><strong style="font-size:1.6rem">${d.count}</strong> participation${d.count > 1 ? 's' : ''} · concours ${PH[d.phase] || d.phase} · il est ${_cEsc(d.now_paris)} (Paris)</p>
+        <p style="color:var(--muted);font-size:0.85rem">Du ${_cEsc(d.window.start)} au ${_cEsc(d.window.end)} (heure de Paris). Tirage prévu le 12 novembre.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin:14px 0;">
+          <button class="btn btn-outline" onclick="Admin.exportContest()">⬇️ Exporter en CSV (pseudo, date)</button>
+          <button class="btn btn-outline" onclick="Admin.drawContest()" ${d.phase !== 'closed' ? 'disabled title="Le tirage est possible après le 8 novembre 23h59"' : ''}>🎲 ${last && last.status === 'gagnante' ? 'Relancer un tirage' : 'Tirer au sort'}</button>
+        </div>
+        ${last && last.status === 'gagnante' ? '<div style="background:#E7F3EA;border-radius:12px;padding:14px;margin:10px 0"><strong>Gagnante actuelle :</strong> <span style="font-size:1.3rem">' + _cEsc(last.instagram_handle) + '</span><br><span style="font-size:0.8rem;color:#555">tirée le ' + _cEsc(last.drawn_at_paris || '') + ' · tirage n°' + last.number + ' sur ' + last.eligible + ' participation(s). Fais une capture de cet écran.</span></div>' : ''}
+        ${rows ? '<h4 style="margin:18px 0 6px">Historique des tirages</h4><table class="admin-table"><thead><tr><th>N°</th><th>Pseudo</th><th>Date (Paris)</th><th>Statut</th></tr></thead><tbody>' + rows + '</tbody></table>' : ''}
+        <details style="margin-top:22px"><summary style="cursor:pointer;color:var(--muted)">Suppression des données du concours (après la remise du lot)</summary>
+          <p style="font-size:0.82rem;color:var(--muted)">Efface toutes les participations et tous les pseudos. L'historique des tirages est anonymisé. Action définitive.</p>
+          <button class="btn btn-outline" style="color:var(--error)" onclick="Admin.purgeContest()">🗑️ Supprimer les données du concours</button></details>`;
+    } catch (e) {
+      box.innerHTML = '<p style="color:var(--error)">' + _cEsc(e.message) + '</p>';
+    }
+  }
+  async function exportContest() {
+    try {
+      const d = await _contest('contestAdminExport');
+      const blob = new Blob(['﻿' + d.csv], { type: 'text/csv;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = 'concours-glowup-participations.csv';
+      document.body.appendChild(a); a.click(); a.remove();
+      toast(d.count + ' participation(s) exportée(s)');
+    } catch (e) { toast(e.message, 'error'); }
+  }
+  async function drawContest() {
+    try {
+      let reason = '';
+      const stats = await _contest('contestAdminStats');
+      const last = stats.draws.length ? stats.draws[stats.draws.length - 1] : null;
+      if (last && last.status === 'gagnante') {
+        reason = (prompt('Une gagnante est déjà tirée (' + last.instagram_handle + '). Pourquoi relancer ? (ex. : non abonnée, sans réponse sous 72 h)') || '').trim();
+        if (!reason) return;
+      } else if (!confirm('Lancer le tirage au sort ?')) return;
+      const d = await _contest('contestAdminDraw', { reason });
+      toast('Gagnante : ' + d.winner);
+      loadContest();
+    } catch (e) { toast(e.message, 'error'); }
+  }
+  async function purgeContest() {
+    const c = prompt('Action définitive : toutes les participations seront supprimées. Tape SUPPRIMER pour confirmer.');
+    if (c !== 'SUPPRIMER') return;
+    try { const d = await _contest('contestAdminPurge', { confirm: 'SUPPRIMER' }); toast(d.deleted + ' document(s) supprimé(s)'); loadContest(); }
+    catch (e) { toast(e.message, 'error'); }
   }
 
   // ─── Règles d'âge (adéquation actifs selon l'âge) ─────────────
@@ -1689,7 +1756,7 @@ const Admin = (() => {
     onCategoryChange, autoTagAll,
     toggleActive, toggleFeatured, deleteProduct,
     search, filterCat, filterIngredient, filterConcern, toggleNoPhotoFilter, patchSkincareTags, importNewFromJSON, forceSyncAllFromJSON, showTab, checkMissingPhotos,
-    loadReferrals,
+    loadReferrals, loadContest, exportContest, drawContest, purgeContest,
     extractASIN, extractASINFromUrl, checkTag, autoFillAmazonUrl, exportJSON,
     setPeriod, exportStatsCSV, clearStats,
     saveCoachKey, deleteCoachKey, testCoachKey,
