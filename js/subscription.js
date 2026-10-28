@@ -26,8 +26,12 @@ const Subscription = (() => {
   // LANCEMENT 100% GRATUIT : monétisation désactivée. L'infrastructure Stripe
   // reste en place et propre, mais AUCUN parcours payant n'est exposé
   // (ni paywall, ni écran tarifaire, ni bouton d'abonnement, ni Checkout).
-  // Repasser cette constante à true pour réactiver la monétisation plus tard.
-  const MONETIZATION_ENABLED = false;
+  // Pour réactiver la monétisation sur le SITE WEB plus tard : passer WEB_PAYMENTS à true.
+  // Dans l'APPLICATION iPhone (Capacitor), la monétisation reste TOUJOURS coupée : Apple impose son propre système d'achat
+  // (StoreKit) pour tout abonnement vendu dans l'app, et interdit d'y proposer un paiement Stripe ou d'y renvoyer vers le site.
+  const WEB_PAYMENTS = false;
+  const IS_NATIVE_APP = !!(typeof window !== 'undefined' && window.Capacitor && typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform());
+  const MONETIZATION_ENABLED = WEB_PAYMENTS && !IS_NATIVE_APP;
 
   // ─── Plan courant ─────────────────────────────────────────────
   function getPlan() {
