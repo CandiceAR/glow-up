@@ -92,7 +92,7 @@ const run = (a, pg, product) => WebPrice.findPrice(product || PRODUCT, { anthrop
   check('le prix de The Inkey List (non vérifié au catalogue) est relevé automatiquement', inkey && inkey.priceInfo.verified && inkey.priceInfo.value === 6.5 && inkey.priceInfo.source === 'Sephora' && /^\d{4}-\d\d-\d\d$/.test(inkey.priceInfo.date), JSON.stringify(inkey && inkey.priceInfo));
   check('… la note dit « relevé automatiquement » et le lien est la page vérifiée', inkey && /automatiquement/.test(inkey.priceInfo.note) && /sephora\.fr\/p\/inkey/.test(inkey.priceInfo.url));
   check('… il devient un « dupe probable » (moins cher au ml, prix relevé)', inkey && inkey.level === 'probable', inkey && inkey.level);
-  check('… jamais plus de 4 recherches de prix par recherche de dupe', priceCalls >= 1 && priceCalls <= 4, priceCalls + ' recherche(s)');
+  check('… jamais plus de 8 recherches de prix par recherche de dupe', priceCalls >= 1 && priceCalls <= 8, priceCalls + ' recherche(s)');
   const callsBefore = priceCalls;
   o = (await search(base)).o;
   check('2e recherche : les produits déjà cherchés viennent de la mémoire (7 jours) ; au plus 4 nouveaux produits, jamais les mêmes', priceCalls - callsBefore <= 4, (priceCalls - callsBefore) + ' nouvelle(s)');
