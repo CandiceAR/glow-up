@@ -303,7 +303,7 @@ module.exports = async (req, res) => {
 
   // ── Prix des produits proposés : relevé AUTOMATIQUE chez un revendeur (page retéléchargée et vérifiée, voir lib/webPrice.js).
   //    Lancé en parallèle du classement par l'IA. Seuls les produits qui ont une chance d'être moins chers sont cherchés
-  //    (prix du catalogue indicatif), 4 par recherche au plus, et chaque résultat est gardé 7 jours.
+  //    (prix du catalogue indicatif), 8 par recherche au plus, et chaque résultat est gardé 7 jours.
   const refUnit0 = _unit(product.refPrice, product.volumeMl, product.netWeightG, product.patchCount);
   const _hasAmount = c => c.volumeMl > 0 || c.netWeightG > 0 || c.patchCount > 0;
   const _applyPrice = (c, r) => {
@@ -345,7 +345,7 @@ module.exports = async (req, res) => {
       if (h && (!h.volumeMl || !x.c.volumeMl || h.volumeMl === x.c.volumeMl)) _applyPrice(x.c, h);
       else if (h === undefined) toSearch.push(x.c);          // jamais cherché (ou trop ancien)
     });                                                     // h === null : déjà cherché récemment, introuvable → on ne repaie pas
-    const max = Number(G.cfg.webPricePerSearch) >= 0 ? Number(G.cfg.webPricePerSearch) : 4;
+    const max = Number(G.cfg.webPricePerSearch) >= 0 ? Number(G.cfg.webPricePerSearch) : 8;
     const deps = { anthropic: (route, b) => AI.anthropic(route, apiKey, b) };
     await Promise.all(toSearch.slice(0, max).map(async c => {
       const r = await WebPrice.findPrice(c, deps);

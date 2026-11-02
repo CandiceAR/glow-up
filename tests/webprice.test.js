@@ -105,7 +105,7 @@ const run = (a, pg, product) => WebPrice.findPrice(product || PRODUCT, { anthrop
 
   fake.store.set('serverConfig/limits', { webPrice: false });
   // le réglage est lu avec 60 s de mémoire : on vérifie seulement qu'il existe dans les réglages par défaut
-  check('coupe-circuit « webPrice » présent dans les réglages', require(path.join(ROOT, 'lib', 'aiGuard.js')).DEFAULTS.webPrice === true && require(path.join(ROOT, 'lib', 'aiGuard.js')).DEFAULTS.webPricePerSearch === 4);
+  check('coupe-circuit « webPrice » présent dans les réglages', require(path.join(ROOT, 'lib', 'aiGuard.js')).DEFAULTS.webPrice === true && require(path.join(ROOT, 'lib', 'aiGuard.js')).DEFAULTS.webPricePerSearch === 8);
   global.fetch = realFetch;
 
   done('relevé automatique des prix');
