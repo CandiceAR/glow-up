@@ -37,7 +37,7 @@ function publicView(r) {
   const own = r.source === 'glowup';
   const out = Object.assign({}, r, { source: own ? 'glowup' : (r.source === 'photo' ? 'photo' : 'ext') });
   out.sourceUrl = '';
-  out.sourceLabel = own ? 'fiche vérifiée par Glow Up' : '';
+  out.sourceLabel = own ? (r.sourceLabel === 'liste officielle de la marque' ? r.sourceLabel : 'fiche vérifiée par Glow Up') : '';
   if (!own) out.matchedName = String(r.matchedName || '').replace(/\s[|–—-]\s.*$/, '').trim();
   return out;
 }
