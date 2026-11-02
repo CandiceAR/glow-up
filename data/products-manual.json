@@ -33871,29 +33871,29 @@
       ],
       "active": true,
       "_priceIndicatif": true,
-      "inciRaw": "Aqua/Water/Eau, Glycerin, Caprylic/Capric Triglyceride, Propanediol, Cetearyl Alcohol, Betaine, Hydrogenated Coco-Glycerides, Panthenol, Glyceryl Stearate, PEG-100 Stearate, Pentylene Glycol, Butyrospermum Parkii (Shea) Butter, Cetearyl Glucoside, Albizia Julibrissin Bark Extract, Acacia Farnesiana Flower Wax, Caffeine, Steareth-21, Dimethicone, Carbomer, Chlorphenesin, Ethylhexylglycerin, Tocopheryl Acetate, Ci 77891/Titanium Dioxide, Synthetic Fluorphlogopite, Disodium EDTA, Escin, Parfum/Fragrance, Butylene Glycol, Dimethiconol, Sodium Hydroxide, Alcohol, Harungana Madagascariensis Extract, Olea Europaea (Olive) Fruit Extract, Paullinia Cupana Seed Extract, Sodium Benzoate, Tin Oxide, Acetyl Tetrapeptide-2, Dextran",
+      "inciRaw": "Aqua/Water/Eau, Caprylic/Capric Triglyceride, Propanediol, Cetearyl Alcohol, Butyrospermum Parkii (Shea) Butter, Hydrogenated Coco-Glycerides, Pentylene Glycol, Panthenol, Glycerin, Glyceryl Stearate, PEG-100 Stearate, Cetearyl Glucoside, Caffeine, Steareth-21, Hydroxyacetophenone, Dimethicone, Chlorphenesin, Avena Sativa (Oat) Kernel Extract, Carbomer, Ethylhexylglycerin, PVP, Tocopheryl Acetate, CI 77891/Titanium Dioxide, Synthetic Fluorphlogopite, Disodium EDTA, Escin, Parfum/Fragrance, Butylene Glycol, Sodium Hydroxide, Dimethiconol, Phenethyl Alcohol, Citric Acid, Harungana Madagascariensis Extract, Marrubium Vulgare Extract, Sodium Benzoate, Furcellaria Lumbricalis Extract, Sodium Carrageenan, Jania Rubens Extract, Tin Oxide, Maris Sal/Sea Salt/Sel Marin, Acetyl Tetrapeptide-2, Dextran",
       "inciNormalized": [
         "aqua/water/eau",
-        "glycerin",
         "caprylic/capric triglyceride",
         "propanediol",
         "cetearyl alcohol",
-        "betaine",
+        "butyrospermum parkii butter",
         "hydrogenated coco-glycerides",
+        "pentylene glycol",
         "panthenol",
+        "glycerin",
         "glyceryl stearate",
         "peg-100 stearate",
-        "pentylene glycol",
-        "butyrospermum parkii butter",
         "cetearyl glucoside",
-        "albizia julibrissin bark extract",
-        "acacia farnesiana flower wax",
         "caffeine",
         "steareth-21",
+        "hydroxyacetophenone",
         "dimethicone",
-        "carbomer",
         "chlorphenesin",
+        "avena sativa kernel extract",
+        "carbomer",
         "ethylhexylglycerin",
+        "pvp",
         "tocopheryl acetate",
         "ci 77891/titanium dioxide",
         "synthetic fluorphlogopite",
@@ -33901,14 +33901,18 @@
         "escin",
         "parfum/fragrance",
         "butylene glycol",
-        "dimethiconol",
         "sodium hydroxide",
-        "alcohol",
+        "dimethiconol",
+        "phenethyl alcohol",
+        "citric acid",
         "harungana madagascariensis extract",
-        "olea europaea fruit extract",
-        "paullinia cupana seed extract",
+        "marrubium vulgare extract",
         "sodium benzoate",
+        "furcellaria lumbricalis extract",
+        "sodium carrageenan",
+        "jania rubens extract",
         "tin oxide",
+        "maris sal/sea salt/sel marin",
         "acetyl tetrapeptide-2",
         "dextran"
       ],
@@ -33922,17 +33926,9 @@
           "isActive": false
         },
         {
-          "inci": "Glycerin",
-          "normalized": "glycerin",
-          "position": 2,
-          "family": "humectant",
-          "function": "humectant",
-          "isActive": false
-        },
-        {
           "inci": "Caprylic/Capric Triglyceride",
           "normalized": "caprylic/capric triglyceride",
-          "position": 3,
+          "position": 2,
           "family": "emollient",
           "function": "émollient",
           "isActive": false
@@ -33940,7 +33936,7 @@
         {
           "inci": "Propanediol",
           "normalized": "propanediol",
-          "position": 4,
+          "position": 3,
           "family": "humectant",
           "function": "humectant",
           "isActive": false
@@ -33948,25 +33944,33 @@
         {
           "inci": "Cetearyl Alcohol",
           "normalized": "cetearyl alcohol",
-          "position": 5,
+          "position": 4,
           "family": "",
           "function": "",
           "isActive": false
         },
         {
-          "inci": "Betaine",
-          "normalized": "betaine",
-          "position": 6,
-          "family": "humectant",
-          "function": "humectant",
+          "inci": "Butyrospermum Parkii (Shea) Butter",
+          "normalized": "butyrospermum parkii butter",
+          "position": 5,
+          "family": "emollient",
+          "function": "émollient",
           "isActive": false
         },
         {
           "inci": "Hydrogenated Coco-Glycerides",
           "normalized": "hydrogenated coco-glycerides",
-          "position": 7,
+          "position": 6,
           "family": "",
           "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Pentylene Glycol",
+          "normalized": "pentylene glycol",
+          "position": 7,
+          "family": "humectant",
+          "function": "humectant",
           "isActive": false
         },
         {
@@ -33978,9 +33982,17 @@
           "isActive": true
         },
         {
+          "inci": "Glycerin",
+          "normalized": "glycerin",
+          "position": 9,
+          "family": "humectant",
+          "function": "humectant",
+          "isActive": false
+        },
+        {
           "inci": "Glyceryl Stearate",
           "normalized": "glyceryl stearate",
-          "position": 9,
+          "position": 10,
           "family": "",
           "function": "",
           "isActive": false
@@ -33988,47 +34000,15 @@
         {
           "inci": "PEG-100 Stearate",
           "normalized": "peg-100 stearate",
-          "position": 10,
+          "position": 11,
           "family": "",
           "function": "",
-          "isActive": false
-        },
-        {
-          "inci": "Pentylene Glycol",
-          "normalized": "pentylene glycol",
-          "position": 11,
-          "family": "humectant",
-          "function": "humectant",
-          "isActive": false
-        },
-        {
-          "inci": "Butyrospermum Parkii (Shea) Butter",
-          "normalized": "butyrospermum parkii butter",
-          "position": 12,
-          "family": "emollient",
-          "function": "émollient",
           "isActive": false
         },
         {
           "inci": "Cetearyl Glucoside",
           "normalized": "cetearyl glucoside",
-          "position": 13,
-          "family": "",
-          "function": "",
-          "isActive": false
-        },
-        {
-          "inci": "Albizia Julibrissin Bark Extract",
-          "normalized": "albizia julibrissin bark extract",
-          "position": 14,
-          "family": "",
-          "function": "",
-          "isActive": false
-        },
-        {
-          "inci": "Acacia Farnesiana Flower Wax",
-          "normalized": "acacia farnesiana flower wax",
-          "position": 15,
+          "position": 12,
           "family": "",
           "function": "",
           "isActive": false
@@ -34036,7 +34016,7 @@
         {
           "inci": "Caffeine",
           "normalized": "caffeine",
-          "position": 16,
+          "position": 13,
           "family": "",
           "function": "",
           "isActive": false
@@ -34044,7 +34024,15 @@
         {
           "inci": "Steareth-21",
           "normalized": "steareth-21",
-          "position": 17,
+          "position": 14,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Hydroxyacetophenone",
+          "normalized": "hydroxyacetophenone",
+          "position": 15,
           "family": "",
           "function": "",
           "isActive": false
@@ -34052,9 +34040,25 @@
         {
           "inci": "Dimethicone",
           "normalized": "dimethicone",
-          "position": 18,
+          "position": 16,
           "family": "occlusive",
           "function": "occlusif",
+          "isActive": false
+        },
+        {
+          "inci": "Chlorphenesin",
+          "normalized": "chlorphenesin",
+          "position": 17,
+          "family": "preservative",
+          "function": "conservateur",
+          "isActive": false
+        },
+        {
+          "inci": "Avena Sativa (Oat) Kernel Extract",
+          "normalized": "avena sativa kernel extract",
+          "position": 18,
+          "family": "",
+          "function": "",
           "isActive": false
         },
         {
@@ -34066,19 +34070,19 @@
           "isActive": false
         },
         {
-          "inci": "Chlorphenesin",
-          "normalized": "chlorphenesin",
+          "inci": "Ethylhexylglycerin",
+          "normalized": "ethylhexylglycerin",
           "position": 20,
-          "family": "preservative",
-          "function": "conservateur",
+          "family": "humectant",
+          "function": "humectant",
           "isActive": false
         },
         {
-          "inci": "Ethylhexylglycerin",
-          "normalized": "ethylhexylglycerin",
+          "inci": "PVP",
+          "normalized": "pvp",
           "position": 21,
-          "family": "humectant",
-          "function": "humectant",
+          "family": "",
+          "function": "",
           "isActive": false
         },
         {
@@ -34090,7 +34094,7 @@
           "isActive": true
         },
         {
-          "inci": "Ci 77891/Titanium Dioxide",
+          "inci": "CI 77891/Titanium Dioxide",
           "normalized": "ci 77891/titanium dioxide",
           "position": 23,
           "family": "",
@@ -34138,48 +34142,48 @@
           "isActive": false
         },
         {
-          "inci": "Dimethiconol",
-          "normalized": "dimethiconol",
-          "position": 29,
-          "family": "",
-          "function": "",
-          "isActive": false
-        },
-        {
           "inci": "Sodium Hydroxide",
           "normalized": "sodium hydroxide",
-          "position": 30,
+          "position": 29,
           "family": "ph",
           "function": "pH",
           "isActive": false
         },
         {
-          "inci": "Alcohol",
-          "normalized": "alcohol",
+          "inci": "Dimethiconol",
+          "normalized": "dimethiconol",
+          "position": 30,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Phenethyl Alcohol",
+          "normalized": "phenethyl alcohol",
           "position": 31,
           "family": "",
           "function": "",
           "isActive": false
         },
         {
+          "inci": "Citric Acid",
+          "normalized": "citric acid",
+          "position": 32,
+          "family": "ph",
+          "function": "pH",
+          "isActive": false
+        },
+        {
           "inci": "Harungana Madagascariensis Extract",
           "normalized": "harungana madagascariensis extract",
-          "position": 32,
+          "position": 33,
           "family": "",
           "function": "",
           "isActive": false
         },
         {
-          "inci": "Olea Europaea (Olive) Fruit Extract",
-          "normalized": "olea europaea fruit extract",
-          "position": 33,
-          "family": "emollient",
-          "function": "émollient",
-          "isActive": false
-        },
-        {
-          "inci": "Paullinia Cupana Seed Extract",
-          "normalized": "paullinia cupana seed extract",
+          "inci": "Marrubium Vulgare Extract",
+          "normalized": "marrubium vulgare extract",
           "position": 34,
           "family": "",
           "function": "",
@@ -34194,9 +34198,41 @@
           "isActive": false
         },
         {
+          "inci": "Furcellaria Lumbricalis Extract",
+          "normalized": "furcellaria lumbricalis extract",
+          "position": 36,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Sodium Carrageenan",
+          "normalized": "sodium carrageenan",
+          "position": 37,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Jania Rubens Extract",
+          "normalized": "jania rubens extract",
+          "position": 38,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
           "inci": "Tin Oxide",
           "normalized": "tin oxide",
-          "position": 36,
+          "position": 39,
+          "family": "",
+          "function": "",
+          "isActive": false
+        },
+        {
+          "inci": "Maris Sal/Sea Salt/Sel Marin",
+          "normalized": "maris sal/sea salt/sel marin",
+          "position": 40,
           "family": "",
           "function": "",
           "isActive": false
@@ -34204,7 +34240,7 @@
         {
           "inci": "Acetyl Tetrapeptide-2",
           "normalized": "acetyl tetrapeptide-2",
-          "position": 37,
+          "position": 41,
           "family": "peptide",
           "function": "peptide",
           "isActive": true
@@ -34212,7 +34248,7 @@
         {
           "inci": "Dextran",
           "normalized": "dextran",
-          "position": 38,
+          "position": 42,
           "family": "",
           "function": "",
           "isActive": false
@@ -34223,24 +34259,25 @@
         "Tocopheryl Acetate",
         "Acetyl Tetrapeptide-2"
       ],
-      "inciSourceUrl": "https://incidecoder.com/products/clarins-total-eye-lift",
-      "inciLastVerifiedAt": "2026-10-20",
+      "inciSourceUrl": "",
+      "inciLastVerifiedAt": "2026-11-02",
       "inciVerificationStatus": "verified",
       "dupeEligible": true,
       "needsReview": false,
       "inciMatch": {
-        "source": "incidecoder",
+        "source": "official",
         "matchedTitle": "Clarins Total Eye Lift",
         "confidence": "élevée",
-        "phase": "lot3-2026-10-20",
-        "note": ""
+        "phase": "officiel-2026-11-02",
+        "note": "Liste officielle (rubrique « Composition » du site Clarins, code V4480A) recopiée par Candice Arav le 2026-11-02. Remplace la liste INCIDecoder du 2026-10-20 (38 ingrédients, formule différente)."
       },
       "volumeMl": 15,
       "volumeSource": {
         "url": "https://www.stylevana.com/en_US/clarins-total-eye-lift-15ml8940.html",
         "retrievedAt": "2026-10-20",
         "type": "fiche produit d'un revendeur"
-      }
+      },
+      "inciSourceKind": "official"
     },
     {
       "id": "m446",

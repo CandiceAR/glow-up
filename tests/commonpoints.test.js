@@ -69,22 +69,41 @@ const refBase = ['Aqua', 'Glycerin', 'Panthenol', 'Dimethicone', 'Cetearyl Alcoh
   const r4 = await run(prod3, cand3);
   check('on dit quel ingrédient est chez qui (jamais « même actif principal » faux)', r4 && /Acide glycolique chez ton produit, Acide lactique chez celui-ci/.test(r4.commonPoints[0]) && !/^Même actif principal/.test(r4.commonPoints[0]), r4 && r4.commonPoints.join(' | '));
 
-  console.log('\n── Cas : Clarins Total Eye Lift (catalogue) contre une liste sans caféine ──');
+  console.log('\n── Cas d\'essai : une liste sans caféine contre Clarins Total Eye Lift (liste officielle du catalogue) ──');
   const m445 = P.find(x => x.id === 'm445');
-  check('la liste Clarins du catalogue contient bien « Caffeine » et « Tocopheryl Acetate »', m445.inciNormalized.some(x => /^caffeine$/i.test(x)) && m445.inciNormalized.some(x => /tocopheryl acetate/i.test(x)));
-  const sis = { brand: 'Sisley', name: "Sisleÿa L'Intégral Yeux et Lèvres", category: 'eye', productType: 'skincare', inciList: ['Aqua', 'Glycerin', 'Panthenol', 'Tocopheryl Acetate', 'Dimethicone', 'Cetearyl Alcohol', 'Phenoxyethanol', 'Carbomer', 'Parfum'],
+  check('la liste Clarins du catalogue est la liste officielle (42 ingrédients, « Hydroxyacetophenone », plus d\'« Albizia »)', m445.inciNormalized.length === 42 && m445.inciNormalized.includes('hydroxyacetophenone') && !m445.inciNormalized.some(x => /albizia/.test(x)) && m445.inciSourceKind === 'official');
+  check('… et contient bien « Caffeine » et « Tocopheryl Acetate »', m445.inciNormalized.some(x => /^caffeine$/i.test(x)) && m445.inciNormalized.some(x => /tocopheryl acetate/i.test(x)));
+  const sis = { brand: 'Marque S', name: 'Crème Yeux Essai', category: 'eye', productType: 'skincare', inciList: ['Aqua', 'Glycerin', 'Panthenol', 'Tocopheryl Acetate', 'Dimethicone', 'Cetearyl Alcohol', 'Phenoxyethanol', 'Carbomer', 'Parfum'],
     inciConfidence: 'high', inciSource: 'web', inciSourceUrl: 'https://www.sisley-paris.com/fr-FR/soin/yeux', inciDate: '2026-11-03', volumeMl: 15, refPrice: 173 };
   const c445 = { id: 'm445', brand: m445.brand, name: m445.name, category: m445.category, price: m445.price, volumeMl: m445.volumeMl, inciNormalized: m445.inciNormalized,
     inciVerificationStatus: m445.inciVerificationStatus, ingredientTags: [], concernTags: [], description: '' };
   const r3 = await run(sis, c445);
   const cp3 = r3 ? r3.commonPoints.join(' | ') : '', df3 = r3 ? r3.differences.join(' | ') : '';
-  check('Clarins proposé pour Sisley', !!r3);
-  check('la caféine (absente chez Sisley) est une différence, pas un point commun', !/Caféine/.test(cp3) && /Caféine/.test(df3), cp3 + ' // ' + df3);
+  check('Clarins proposé', !!r3);
+  check('la caféine (absente de la liste d\'essai) est une différence, pas un point commun', !/Caféine/.test(cp3) && /Caféine/.test(df3), cp3 + ' // ' + df3);
   check('la vitamine E (Tocopheryl Acetate) et le panthénol, présents dans les deux, sont des points communs', /Vitamine E/.test(cp3) && /Panthénol/.test(cp3), cp3);
-  check('source et date des deux listes : ton produit = site officiel (03/11/2026), Clarins = fiche en ligne (20/10/2026)',
-    r3 && r3.inciInfo && r3.inciInfo.ref.label === 'site officiel de la marque' && r3.inciInfo.ref.date === '2026-11-03'
-    && r3.inciInfo.cand.label === 'fiche produit trouvée en ligne' && r3.inciInfo.cand.date === '2026-10-20', JSON.stringify(r3 && r3.inciInfo));
-  check('le nom du site tiers (incidecoder) n\'apparaît nulle part dans ce qui est affiché', !/incidecoder|openbeautyfacts/i.test(JSON.stringify(r3 && r3.inciInfo)));
+  check('source et date : liste d\'essai = fiche en ligne (03/11/2026), Clarins = site officiel de la marque (02/11/2026)',
+    r3 && r3.inciInfo && r3.inciInfo.ref.label === 'fiche produit trouvée en ligne' && r3.inciInfo.ref.date === '2026-11-03'
+    && r3.inciInfo.cand.label === 'site officiel de la marque' && r3.inciInfo.cand.date === '2026-11-02', JSON.stringify(r3 && r3.inciInfo));
+  check('le nom d\'un site tiers (incidecoder…) n\'apparaît nulle part dans ce qui est affiché', !/incidecoder|openbeautyfacts/i.test(JSON.stringify(r3 && r3.inciInfo)));
+
+  console.log('\n── Le vrai cas : Sisley (liste officielle) contre Clarins (liste officielle) ──');
+  const L = require(path.join(ROOT, 'lib', 'inciLookup.js'));
+  const lk = await L.lookup({ brand: 'Sisley', name: "Sisleÿa L'Intégral Yeux et Lèvres" }, { useIncidecoder: false });
+  check('Sisley retrouvée dans nos fiches sous son nom court (liste officielle, date 02/11/2026)', lk.found && lk.source === 'glowup' && lk.sourceLabel === 'liste officielle de la marque' && lk.retrievedAt === '2026-11-02', JSON.stringify([lk.found, lk.source, lk.sourceLabel, (lk.inciList || []).length]));
+  check('la liste Sisley officielle contient « caffeine » (en 15e position) et ne contient pas le code « IL#10A »', lk.inciList.indexOf('caffeine') === 14 && !/il#10a/i.test(lk.inci));
+  const real = await run({ brand: 'Sisley', name: "Sisleÿa L'Intégral Yeux et Lèvres", category: 'eye', productType: 'skincare', inciList: lk.inciList, inciConfidence: lk.confidence,
+    inciSource: lk.source, inciSourceLabel: lk.sourceLabel, inciSourceUrl: lk.sourceUrl, inciDate: lk.retrievedAt, volumeMl: 15, refPrice: 173 }, c445);
+  const cp5 = real ? real.commonPoints.join(' | ') : '', df5 = real ? real.differences.join(' | ') : '';
+  check('la caféine est un POINT COMMUN (elle est dans les deux listes officielles)', /Caféine/.test(cp5) && !/Caféine/.test(df5), cp5 + ' // ' + df5);
+  check('panthénol, vitamine E et avoine… : seulement ce qui est écrit dans les deux listes', /Panthénol/.test(cp5) && /Vitamine E/.test(cp5), cp5);
+  check('adénosine, bisabolol (chez Sisley seulement) sont des différences', /Adénosine/.test(df5) && /Bisabolol/.test(df5), df5);
+  check('source et date : site officiel de la marque des deux côtés, 02/11/2026', real && real.inciInfo && real.inciInfo.ref.label === 'site officiel de la marque' && real.inciInfo.cand.label === 'site officiel de la marque' && real.inciInfo.ref.date === '2026-11-02' && real.inciInfo.cand.date === '2026-11-02', JSON.stringify(real && real.inciInfo));
+  check('Clarins ne cite plus l\'ancien « Albizia » ni le « Paullinia » de l\'ancienne liste', !/albizia|paullinia/i.test(JSON.stringify(m445.inciNormalized)));
+
+  console.log('\n── Eight Hour Cream ──');
+  check('plus d\'actif vedette « acide salicylique » pour Eight Hour Cream (baume nourrissant)', MainActive.resolve({ name: 'Eight Hour Cream', inci: require(path.join(ROOT, 'data', 'reference-inci.json')).refs.find(x => x.key === 'elizabeth-arden-eight-hour-cream').inci, tags: [] }, require(path.join(ROOT, 'lib', 'inciSim.js'))) === null);
+  check('… mais un vrai produit à l\'acide salicylique garde son actif', (MainActive.resolve({ name: 'BHA 2% Liquid', inci: ['aqua', 'salicylic acid'], tags: [] }, require(path.join(ROOT, 'lib', 'inciSim.js'))) || {}).family === 'bha');
 
   console.log('\n── Source et date des listes ──');
   check('liste lue sur photo', InciInfo.describe({ photo: true, date: '2026-11-03' }).label === 'liste lue sur la photo');

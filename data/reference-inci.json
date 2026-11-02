@@ -1209,6 +1209,72 @@
     "priceRetrievedAt": "2026-10-15",
     "priceNote": ""
    }
+  },
+  {
+   "key": "sisley-sisleya-l-integral-yeux-levres",
+   "hero": {
+    "brand": "Sisley",
+    "name": "Sisleÿa L'Intégral Anti-Âge Crème Contour des Yeux et des Lèvres",
+    "price": 173,
+    "volumeMl": 15
+   },
+   "aliases": [
+    "Sisleÿa L'Intégral Yeux et Lèvres",
+    "Sisleya L'Intégral Yeux et Lèvres",
+    "Sisleÿa L'Intégral Anti-Âge Contour des Yeux et des Lèvres",
+    "Sisleÿa L'Intégral Crème Contour des Yeux et des Lèvres"
+   ],
+   "inci": [
+    "Aqua/Water/Eau",
+    "Glycerin",
+    "Butyrospermum Parkii (Shea) Butter",
+    "Glyceryl Myristate",
+    "Coco-Caprylate/Caprate",
+    "Hydrogenated Polyisobutene",
+    "Potassium Cetyl Phosphate",
+    "Citrus Aurantium Amara (Bitter Orange) Flower Water",
+    "Rosa Centifolia Flower Water",
+    "Stearyl Alcohol",
+    "Cetearyl Alcohol",
+    "Isopropyl Palmitate",
+    "Panthenol",
+    "Tocopheryl Acetate",
+    "Caffeine",
+    "Cedrus Atlantica Oil/Extract",
+    "Avena Sativa (Oat) Kernel Extract",
+    "Hydrolyzed Soy Protein",
+    "Bisabolol",
+    "Saccharide Hydrolysate",
+    "Adenosine",
+    "Albizia Julibrissin Bark Extract",
+    "Punica Granatum Fruit Extract",
+    "Passiflora Edulis Fruit Extract",
+    "Hydrolyzed Yeast Protein",
+    "Hydroxyethyl Acrylate/Sodium Acryloyldimethyl Taurate Copolymer",
+    "Ceteareth-33",
+    "Pentylene Glycol",
+    "Butylene Glycol",
+    "Carbomer",
+    "Ethylhexylglycerin",
+    "Disodium EDTA",
+    "Sodium Hydroxide",
+    "Polysorbate 60",
+    "Sorbitan Isostearate",
+    "Citric Acid",
+    "Glycine Soja (Soybean) Oil",
+    "Phenoxyethanol",
+    "Sodium Benzoate",
+    "Potassium Sorbate",
+    "Tocopherol"
+   ],
+   "inciRaw": "Aqua/Water/Eau, Glycerin, Butyrospermum Parkii (Shea) Butter, Glyceryl Myristate, Coco-Caprylate/Caprate, Hydrogenated Polyisobutene, Potassium Cetyl Phosphate, Citrus Aurantium Amara (Bitter Orange) Flower Water, Rosa Centifolia Flower Water, Stearyl Alcohol, Cetearyl Alcohol, Isopropyl Palmitate, Panthenol, Tocopheryl Acetate, Caffeine, Cedrus Atlantica Oil/Extract, Avena Sativa (Oat) Kernel Extract, Hydrolyzed Soy Protein, Bisabolol, Saccharide Hydrolysate, Adenosine, Albizia Julibrissin Bark Extract, Punica Granatum Fruit Extract, Passiflora Edulis Fruit Extract, Hydrolyzed Yeast Protein, Hydroxyethyl Acrylate/Sodium Acryloyldimethyl Taurate Copolymer, Ceteareth-33, Pentylene Glycol, Butylene Glycol, Carbomer, Ethylhexylglycerin, Disodium EDTA, Sodium Hydroxide, Polysorbate 60, Sorbitan Isostearate, Citric Acid, Glycine Soja (Soybean) Oil, Phenoxyethanol, Sodium Benzoate, Potassium Sorbate, Tocopherol",
+   "source": {
+    "type": "official",
+    "url": "",
+    "productTitle": "Sisleÿa L'Intégral Anti-Âge Crème Contour des Yeux et des Lèvres",
+    "note": "Liste officielle recopiée depuis le site de la marque par Candice Arav le 2026-11-02 (rubrique « Les ingrédients »). La marque précise que ses listes sont régulièrement mises à jour."
+   },
+   "retrievedAt": "2026-11-02"
   }
  ]
 }

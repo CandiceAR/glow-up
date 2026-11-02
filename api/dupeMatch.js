@@ -161,7 +161,7 @@ function _authoritative(c) {
     price: f.price, volumeMl: f.volumeMl, netWeightG: f.netWeightG, patchCount: f.patchCount, active: f.active,
     priceVerified: verified, priceSource: verified ? f.priceSource : null, priceRetrievedAt: verified ? f.priceRetrievedAt : '',
     priceNote: verified ? (f.priceNote || '') : '', discontinued: f.discontinued === true,
-    inciSourceUrl: f.inciSourceUrl || '', inciLastVerifiedAt: f.inciLastVerifiedAt || ''
+    inciSourceUrl: f.inciSourceUrl || '', inciLastVerifiedAt: f.inciLastVerifiedAt || '', inciSourceKind: f.inciSourceKind || ''
   });
 }
 
@@ -552,8 +552,8 @@ Retourne UNIQUEMENT ce JSON, sans texte avant/après :
       skinNote: r && typeof r.skinNote === 'string' ? r.skinNote.slice(0, 200) : '',
       // D'où viennent les deux listes INCI comparées, et à quelle date (seulement quand elles ont été comparées)
       inciInfo: t.formula ? {
-        ref: InciInfo.describe({ source: product.inciSource, sourceUrl: product.inciSourceUrl, date: product.inciDate, brand: product.brand, photo: refConf === 'photo' }),
-        cand: InciInfo.describe({ source: 'catalogue', sourceUrl: c.inciSourceUrl, date: c.inciLastVerifiedAt, brand: c.brand })
+        ref: InciInfo.describe({ source: product.inciSource, sourceUrl: product.inciSourceUrl, date: product.inciDate, brand: product.brand, photo: refConf === 'photo', official: product.inciSourceLabel === 'liste officielle de la marque' }),
+        cand: InciInfo.describe({ source: 'catalogue', sourceUrl: c.inciSourceUrl, date: c.inciLastVerifiedAt, brand: c.brand, official: c.inciSourceKind === 'official' })
       } : null,
       source: 'catalog', formula: t.formula,
       compositionNote: typeOnly ? NOTE_TYPE : t.formula ? (refVerified ? NOTE_VERIFIED : NOTE_PHOTO) : (estimateMode ? NOTE_ESTIMATE : NOTE_UNVERIFIED),
