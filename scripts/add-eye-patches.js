@@ -13,7 +13,21 @@ const raw = fs.readFileSync(file, 'utf8');
 const D = JSON.parse(raw);
 const DATE = '2026-10-26';
 
+// Prix Amazon.fr relevé par Candice sur sa capture d'écran du 26/10/2026 (24,90 € pour 60 patchs = 0,42 €/patch), note et avis lus sur la même page.
+const AMAZON = { name: 'Amazon.fr', value: 24.9, note: '60 patchs (0,42 €/patch), prix relevé par Candice sur Amazon.fr' };
+const UPDATES = {
+  'terez honor terez honor vitamin c niacinamide tranexamic acid eye gel patch': { rating: 4.3, reviews: 110, asin: 'B0F9B4NTPF' },
+  'terez honor terez honor 24k gold retinol eye patches': { asin: 'B0GQD3TT9N' },
+  'terez honor terez honor caffeine hyaluronic acid eye gel patch': { rating: 4.4, reviews: 2154 },
+  'terez honor terez honor collagen multi peptide eye gel patch': { rating: 4.5, reviews: 989 }
+};
+
 const PATCHS = [
+  { brand: 'Terez & Honor', name: 'Terez & Honor Collagen Multi-Peptide Eye Gel Patch', patchCount: 60,
+    description: "Patchs hydrogel pour les ridules et la peau qui manque de fermeté sous les yeux : collagène, peptides et acide hyaluronique ; la caféine aide contre les poches, la niacinamide donne de l'éclat.",
+    concernTags: ['rides', 'poches', 'cernes', 'yeux'], ingredientTags: ['collagene', 'peptides', 'hyaluronique', 'cafeine', 'niacinamide', 'ceramides'],
+    src: 'https://terezandhonor.com/products/peptide-collagen-eye-gel-patch',
+    inci: 'Water, Glycerin, Niacinamide, Hydrolyzed Collagen, Calcium Chloride, Butyrospermum Parkii Butter, Butylene Glycol, 1,2-Hexanediol, Sodium Hyaluronate, Potassium Hyaluronate, Glutathione, Ceramide NP, Dimethylsilanol Hyaluronate, Sodium Acetylated Hyaluronate, Sodium Hyaluronate Crosspolymer, Acetyl Hexapeptide-8, Hydroxypropyltrimonium Hyaluronate, Hydrolyzed Sodium Hyaluronate, Hydrolyzed Hyaluronic Acid, Hyaluronic Acid, Copper Tripeptide-1, Acetyl Tetrapeptide-5, Palmitoyl Tripeptide-1, Palmitoyl Tripeptide-5, Palmitoyl Pentapeptide-4, Hexapeptide-3, Caffeine, Glucomannan, Chondrus Crispus Powder, PEG-60 Hydrogenated Castor Oil, Hydroxyacetophenone, Pentylene Glycol, Ceratonia Siliqua Gum, Xanthan Gum, Ethylhexylglycerin, Dextrin, Monascus Extract, Hydroxyethylcellulose, Adenosine, Disodium EDTA, Gardenia Florida Fruit Extract, Caprylic/Capric Triglyceride, Hydrogenated Lecithin, Tocopheryl Acetate, Prunella Vulgaris Extract, Fucus Vesiculosus Extract' },
   { brand: 'Yepoda', name: 'Yepoda The Depuff Eyespresso Patchs Décongestionnants', patchCount: 60,
     description: "Patchs hydrogel à poser 10 à 15 minutes sous les yeux. Utiles contre les poches gonflées et le regard fatigué : la caféine et le thé vert décongestionnent.",
     concernTags: ['poches', 'yeux'], ingredientTags: ['cafeine', 'allantoin'],
@@ -106,8 +120,23 @@ PATCHS.forEach(x => {
   added.push(p);
   console.log(p.id, '|', p.name, '|', p.patchCount + ' patchs', '|', norm.length + ' ingrédients', '|', x.price ? x.price.value + ' € (' + x.price.name + ')' : 'sans prix en euros');
 });
-console.log('\n' + added.length + ' patch(s) à ajouter.');
-if (process.argv.includes('--write') && added.length) {
+// Terez & Honor : prix Amazon.fr (24,90 € les 60 patchs), note et avis, lien Amazon avec le tag d'affiliation quand l'ASIN est connu.
+// Ne touche que nos propres fiches de patchs (curatedBy patchs-yeux-…). Idempotent.
+let updated = 0;
+const all = D.products.concat(added);
+all.forEach(p => {
+  if (!/^patchs-yeux-/.test(p.curatedBy || '')) return;
+  const u = UPDATES[key(p)];
+  if (!u) return;
+  const before = JSON.stringify(p);
+  Object.assign(p, { price: AMAZON.value, currency: 'EUR', priceVerified: true, priceSource: { name: AMAZON.name, url: u.asin ? 'https://www.amazon.fr/dp/' + u.asin : '' },
+    priceRetrievedAt: DATE, priceNote: AMAZON.note });
+  if (u.rating) { p.rating = u.rating; p.reviews = u.reviews; }
+  if (u.asin) { p.asin = u.asin; p.amazonUrl = 'https://www.amazon.fr/dp/' + u.asin + '?tag=glowupapp-21'; }
+  if (JSON.stringify(p) !== before) { updated++; console.log('mis à jour :', p.id, p.name); }
+});
+console.log('\n' + added.length + ' patch(s) à ajouter, ' + updated + ' fiche(s) mise(s) à jour.');
+if (process.argv.includes('--write') && (added.length || updated)) {
   D.products.push.apply(D.products, added);
   const m = /^\{\r?\n( +)"/.exec(raw);
   const indent = m ? m[1].length : 2;

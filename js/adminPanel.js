@@ -6,7 +6,7 @@
 
 // (Le mot de passe « admin » qui était écrit ici a été supprimé le 23 oct. 2026 : le dépôt est public, il protégeait
 //  donc l'accès à rien. L'accès se fait maintenant avec un vrai compte, vérifié par le serveur — voir lib/adminAuth.js.)
-const TAG            = 'kand10ar-21';
+const TAG            = 'glowupapp-21';
 
 // Configuration Firebase du site (publique par conception : elle ne donne aucun droit, les règles Firestore protègent)
 const ADMIN_FIREBASE_CONFIG = {

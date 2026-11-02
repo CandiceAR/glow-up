@@ -60,6 +60,7 @@ function _ranks(list) {
 }
 // Règle Glow Up : un dupe partage l'ACTIF PRINCIPAL de la référence (nom > INCI vérifiée > fiche catalogue)
 const MainActive = require('../lib/mainActive.js');
+const InciInfo = require('../lib/inciInfo.js');
 
 // Messages affichés quand on ne peut pas (ou ne doit pas) proposer de dupe
 const MSG_UNVERIFIED = "Nous n'avons pas pu vérifier la composition de ce produit ni identifier son actif principal. Nous préférons ne pas te proposer de dupe plutôt que de te donner une information non vérifiée.";
@@ -159,7 +160,8 @@ function _authoritative(c) {
   return Object.assign({}, c, {
     price: f.price, volumeMl: f.volumeMl, netWeightG: f.netWeightG, patchCount: f.patchCount, active: f.active,
     priceVerified: verified, priceSource: verified ? f.priceSource : null, priceRetrievedAt: verified ? f.priceRetrievedAt : '',
-    priceNote: verified ? (f.priceNote || '') : '', discontinued: f.discontinued === true
+    priceNote: verified ? (f.priceNote || '') : '', discontinued: f.discontinued === true,
+    inciSourceUrl: f.inciSourceUrl || '', inciLastVerifiedAt: f.inciLastVerifiedAt || ''
   });
 }
 
@@ -446,21 +448,38 @@ Retourne UNIQUEMENT ce JSON, sans texte avant/après :
   };
 
   // Phrases à MODÈLE FIXE à partir de données vérifiées (jamais la prose de l'IA)
+  // Ligne « actif principal » : seulement des ingrédients RÉELLEMENT présents dans les deux listes INCI, avec leur nom courant.
+  // Si les deux listes ne confirment aucun ingrédient de cette famille, on le dit (jamais d'exemples de la catégorie).
+  const _mainLine = (f) => {
+    const own = f && f.cmp && !f.cmp.eliminated ? MainActive.mainCommon(refMain.family, f.cmp) : { labels: [], ids: [] };
+    if (own.labels.length) return { common: `Même actif principal : ${own.labels.join(', ')}`, why: `Même actif principal que ton produit : ${own.labels.join(', ')}.`, ids: own.ids };
+    if (f && f.cmp && !f.cmp.eliminated) {
+      // Même famille mais pas le même ingrédient (ex. acide glycolique chez toi, acide lactique chez lui) : on dit lequel est où
+      if (own.refOnly.length && own.candOnly.length) {
+        const t = `Même famille d'actif (${refMain.label}), mais pas le même ingrédient : ${own.refOnly.join(', ')} chez ton produit, ${own.candOnly.join(', ')} chez celui-ci`;
+        return { common: t, why: `${t}.`, ids: [] };
+      }
+      return { common: `Même famille d'actif annoncée : ${refMain.label} (non retrouvée dans les deux listes d'ingrédients)`, why: `Même famille d'actif que ton produit : ${refMain.label} (annoncée par le nom ou la fiche, non retrouvée dans les deux listes d'ingrédients).`, ids: [] };
+    }
+    return { common: `Même famille d'actif annoncée : ${refMain.label}`, why: `Même famille d'actif que ton produit : ${refMain.label} (composition de l'un des deux produits non comparée).`, ids: [] };
+  };
   const _templates = (id) => {
     const f = formulaMap[id];
+    const ml = (!patchMode && !typeOnly && !generic && refMain.via !== 'estimate') ? _mainLine(f) : null;
     const common = [patchMode ? 'Même type de produit : patchs pour les yeux'
       : typeOnly ? 'Même type de produit' + (refUsage && refUsage.label ? ' : ' + refUsage.label : '')
       : generic ? 'Même type de produit, sans actif vedette'
-      : (refMain.via === 'estimate' ? `Actif principal probable (estimé) : ${refMain.label}` : `Même actif principal : ${refMain.label}`)];
+      : (refMain.via === 'estimate' ? `Actif principal probable (estimé) : ${refMain.label}` : ml.common)];
     const diffs = [];
     if (f && f.cmp && !f.cmp.eliminated) {
       const c = f.cmp;
-      c.common.forEach(x => common.push(x));       // un point commun par actif, en français (« Acide tranexamique (sous une autre forme) »)
+      const inMain = new Set(ml ? ml.ids : []);    // déjà cités dans la ligne « actif principal » : pas de doublon
+      c.commonFull.forEach(x => { if (!inMain.has(x.id)) common.push(x.label); });   // un point commun par actif, en français (« Acide tranexamique (sous une autre forme) »)
       if (c.onlyRef.length) diffs.push(`Présent dans ton produit mais pas dans celui-ci : ${c.onlyRef.join(', ')}`);
       if (c.onlyCand.length) diffs.push(`Présent dans celui-ci en plus : ${c.onlyCand.join(', ')}`);
       if (c.derivMismatch.length) diffs.push(`Forme de l'actif différente : ${c.derivMismatch.slice(0, 2).map(x => x.replace('≠', ' ≠ ')).join(' ; ')}`);
     }
-    return { common: common.slice(0, 7), diffs: diffs.slice(0, 3), formula: !!(f && f.cmp && !f.cmp.eliminated) };
+    return { common: common.slice(0, 7), diffs: diffs.slice(0, 3), formula: !!(f && f.cmp && !f.cmp.eliminated), why: ml ? ml.why : '' };
   };
 
   const refUnit = _unit(product.refPrice, product.volumeMl, product.netWeightG, product.patchCount);
@@ -527,10 +546,15 @@ Retourne UNIQUEMENT ce JSON, sans texte avant/après :
         : typeOnly ? 'Même type de produit que le tien.'
         : generic ? 'Même type de produit que le tien (crème ou soin de base, sans actif vedette).'
         : (refMain.via === 'estimate' ? `Actif principal probable de ton produit : ${refMain.label} (estimation, sa composition n'a pas pu être vérifiée).`
-          : `Même actif principal que ton produit : ${refMain.label}.`),
+          : t.why),
       role: r && ROLES.includes(r.role) ? r.role : 'closest',
       skinFit: r && FITS.includes(r.skinFit) ? r.skinFit : null,        // null : l'IA ne s'est pas prononcée
       skinNote: r && typeof r.skinNote === 'string' ? r.skinNote.slice(0, 200) : '',
+      // D'où viennent les deux listes INCI comparées, et à quelle date (seulement quand elles ont été comparées)
+      inciInfo: t.formula ? {
+        ref: InciInfo.describe({ source: product.inciSource, sourceUrl: product.inciSourceUrl, date: product.inciDate, brand: product.brand, photo: refConf === 'photo' }),
+        cand: InciInfo.describe({ source: 'catalogue', sourceUrl: c.inciSourceUrl, date: c.inciLastVerifiedAt, brand: c.brand })
+      } : null,
       source: 'catalog', formula: t.formula,
       compositionNote: typeOnly ? NOTE_TYPE : t.formula ? (refVerified ? NOTE_VERIFIED : NOTE_PHOTO) : (estimateMode ? NOTE_ESTIMATE : NOTE_UNVERIFIED),
       mainActive: refMain.label, confidence: t.formula ? 'high' : 'low'

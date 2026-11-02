@@ -310,6 +310,16 @@ const DupeFinder = (() => {
   }
 
   function _catalogProduct(id) { return (AppState.products.catalog || []).find(p => p.id === id); }
+
+  // UN SEUL prix pour un dupe, partout (fiche, bouton « à partir de », économies) : celui relevé par le serveur
+  // (revendeur + date) s'il existe, sinon celui du catalogue. Ainsi le bouton et la fiche ne peuvent plus se contredire.
+  function _shownPrice(r) {
+    const p = _catalogProduct(r.id);
+    if (!p) return null;
+    return (r.priceInfo && r.priceInfo.verified && r.priceInfo.value > 0) ? r.priceInfo.value : (p.price != null ? p.price : null);
+  }
+  // « 173 € » (sans « ,00 » quand le prix est rond) pour la ligne de comparaison de prix
+  function _eurShort(n) { n = Number(n); return (Number.isInteger(n) ? String(n) : n.toFixed(2).replace('.', ',')) + ' €'; }
   function _compareUrl(p) { return `https://www.google.com/search?q=${encodeURIComponent((p.brand || '') + ' ' + (p.name || ''))}&tbm=shop`; }
 
   // ─── Lignes compactes repliables : photo + nom + prix, détail au clic ──
@@ -331,6 +341,13 @@ const DupeFinder = (() => {
         </summary>
         <div class="df-row-body">${o.body}</div>
       </details>`;
+  }
+
+  // D'où viennent les deux listes d'ingrédients comparées, et leur date (nature de la source, jamais le nom d'un site tiers)
+  function _inciSrcLine(info) {
+    if (!info || !info.ref || !info.cand) return '';
+    const one = x => _esc(x.label) + (x.date ? `, relevée le ${_frDate(x.date)}` : ', date non enregistrée');
+    return `<p class="df-row-meta df-inci-src">📋 Listes d'ingrédients comparées : ton produit — ${one(info.ref)} · celui-ci — ${one(info.cand)}</p>`;
   }
 
   // Contenu du menu déroulant (identique pour catalogue et hors catalogue)
@@ -367,6 +384,7 @@ const DupeFinder = (() => {
       ${r.differences?.length ? `<p class="df-why-h">≠ Différences</p><ul class="df-row-ul">${r.differences.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}
       ${r.skinNote ? `<p class="df-why-h">🧴 Pour ta peau</p><p class="df-skinnote">${r.skinNote}</p>` : ''}
       ${r.compositionNote ? `<p class="df-row-meta df-compo-note">${r.compositionNote}</p>` : ''}
+      ${_inciSrcLine(r.inciInfo)}
       <div class="df-result-ctas">
         <a class="pc-cta pc-cta--compare" href="${o.compareUrl}" target="_blank" rel="noopener">🔍 Comparer les prix</a>
         <a class="pc-cta pc-cta--buy" href="${o.buyUrl}" target="_blank" rel="noopener nofollow${o.isAff ? ' sponsored' : ''}"${o.buyAttrs || ''}>Acheter →</a>
@@ -381,7 +399,7 @@ const DupeFinder = (() => {
     const p = _catalogProduct(r.id);
     if (!p) return '';
     // Prix affiché : celui relevé par le serveur (revendeur + date) s'il existe, sinon celui du catalogue
-    const price = (r.priceInfo && r.priceInfo.verified && r.priceInfo.value > 0) ? r.priceInfo.value : p.price;
+    const price = _shownPrice(r);
     const est = _refPrice();
     let savings = (est > 0 && price != null && price < est) ? (est - price) : 0;
     const isAff = !!p.amazonUrl;
@@ -395,7 +413,9 @@ const DupeFinder = (() => {
     if (r.formatDiff) savings = 0;
     else if (refVol > 0 && candVol > 0 && price != null) {
       const normCand = price / candVol * refVol;
-      volLine = `<div class="df-vol">${_eur(price)} / ${candVol} ml → ≈ <strong>${_eur(normCand)}</strong> pour ${refVol} ml</div>`;
+      // Même volume : une ligne simple « 173 € → 90 € » (rien à convertir) ; volumes différents : prix ramené au volume du produit
+      if (refVol === candVol) volLine = est > 0 ? `<div class="df-vol">${_eurShort(est)} → <strong>${_eurShort(price)}</strong></div>` : '';
+      else volLine = `<div class="df-vol">${_eur(price)} / ${candVol} ml → ≈ <strong>${_eur(normCand)}</strong> pour ${refVol} ml</div>`;
       if (est > 0 && normCand < est) savings = est - normCand;
     }
     // « Tu économises » seulement si la comparaison est prouvée au même prix à l'unité (ml, g ou patch), jamais sur deux contenances différentes
@@ -585,7 +605,7 @@ const DupeFinder = (() => {
     // Titre de section : sépare « Ton produit » des propositions (seulement s'il y a des dupes du catalogue)
     const _t = String((id.brand ? id.brand + ' ' : '') + (id.name || '')).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
     // « à partir de » : seulement parmi les dupes prouvés moins chers (jamais parmi les options non comparables)
-    const _prices = realDupes.map(r => { const cp = _catalogProduct(r.id); return cp && cp.price != null ? cp.price : null; }).filter(x => x != null && x > 0);
+    const _prices = realDupes.map(r => _shownPrice(r)).filter(x => x != null && x > 0);   // les mêmes prix que sur les fiches
     const _from = _prices.length ? Math.min.apply(null, _prices) : 0;
     const _count = realDupes.length;
     // « Les dupes de… » seulement s'il y a au moins un dupe fiable ou similaire ; sinon « Des options avec le même actif que… »
@@ -601,7 +621,7 @@ const DupeFinder = (() => {
           <span class="df-dupes-eyebrow">✦ Des dupes probables de ✦</span>
           <h3 class="df-dupes-h">« ${_t} »</h3>
           <p class="df-dupes-sub">Moins chers que ton produit et du même type, mais sa composition n'a pas pu être vérifiée : ce sont des dupes <strong>probables</strong>, pas des dupes confirmés.</p>
-          <span class="df-dupes-count">${probables.length} dupe${probables.length > 1 ? 's' : ''} probable${probables.length > 1 ? 's' : ''}${(function () { const pp = probables.map(r => { const cp = _catalogProduct(r.id); return cp && cp.price > 0 ? cp.price : null; }).filter(Boolean); return pp.length ? ' · à partir de ' + _eur(Math.min.apply(null, pp)) : ''; })()}</span>
+          <span class="df-dupes-count">${probables.length} dupe${probables.length > 1 ? 's' : ''} probable${probables.length > 1 ? 's' : ''}${(function () { const pp = probables.map(r => _shownPrice(r)).filter(x => x > 0); return pp.length ? ' · à partir de ' + _eur(Math.min.apply(null, pp)) : ''; })()}</span>
         </div>` : types.length ? `
         <div class="df-dupes-title">
           <span class="df-dupes-eyebrow">✦ Des options du même type que ✦</span>

@@ -41,7 +41,7 @@ const compare = async (brand, name, cat, candId) => {
   console.log('\n── Cas 1 : SkinCeuticals Discoloration Defense / Good Molecules Discoloration Correcting Serum ──');
   let x = await compare('SkinCeuticals', 'Discoloration Defense', 'serum', 'm428');
   check('composition SkinCeuticals trouvée dans nos fiches', x.lk.found && x.lk.source === 'glowup');
-  check('« Acide tranexamique (sous une autre forme) » est un point commun', x.r && x.r.commonPoints.includes('Acide tranexamique (sous une autre forme)'), x.r && x.r.commonPoints.join(' | '));
+  check('« Acide tranexamique (sous une autre forme) » est un point commun', x.r && x.r.commonPoints.join(' | ').includes('Acide tranexamique (sous une autre forme)'),x.r && x.r.commonPoints.join(' | '));
   check('composition = liste publiée par la marque (14 ingrédients, avec Kojic Acid, sans Phenoxyethanol)', x.lk.inciList.length === 14 && x.lk.inciList.includes('kojic acid') && !x.lk.inciList.includes('phenoxyethanol'), x.lk.inciList.join(', '));
   check('« Serum » et « Sérum » ouvrent cette même fiche (pas un autre produit)', ['Discoloration Defense Serum', 'Discoloration Defense Sérum', 'Discoloration Defense Serum 30 ml'].every(n => { const o = L._internal.fromOwn('SkinCeuticals', n); return o && o.matchedName === 'SkinCeuticals Discoloration Defense' && o.inciList.includes('kojic acid'); }));
   check('un autre produit SkinCeuticals (C E Ferulic) garde sa propre fiche', (L._internal.fromOwn('SkinCeuticals', 'C E Ferulic') || {}).matchedName === 'SkinCeuticals C E Ferulic');
@@ -53,7 +53,7 @@ const compare = async (brand, name, cat, candId) => {
 
   console.log('\n── Cas 2 : Drunk Elephant C-Firma / The Ordinary Vitamin C Suspension 23 % ──');
   x = await compare('Drunk Elephant', 'C-Firma Fresh Day Serum', 'serum', 'm402');
-  check('« Vitamine C » est un point commun', x.r && x.r.commonPoints.includes('Vitamine C'), x.r && x.r.commonPoints.join(' | '));
+  check('« Vitamine C » est un point commun', x.r && x.r.commonPoints.join(' | ').includes('Vitamine C'),x.r && x.r.commonPoints.join(' | '));
   check('« Acide hyaluronique » est un point commun', x.r && x.r.commonPoints.includes('Acide hyaluronique'));
   check('les actifs de C-Firma absents chez The Ordinary sont dits en français', x.r && x.r.differences.join(' ').includes('Acide férulique'), x.r && x.r.differences.join(' | '));
 
@@ -63,7 +63,7 @@ const compare = async (brand, name, cat, candId) => {
   const r3 = await call(handler, { product: prod, candidates: [cand('m396')], userSkin: {}, idToken: 'tok', searchId: 'ac-r3-abcdef' }, '10.9.8.1');
   const y = (r3.o.results || []).find(z => z.id === 'm396');
   check('le rétinol 0,5 % est proposé pour un rétinol 1 % (le pourcentage des noms fait foi)', !!y, r3.o.status);
-  check('« Rétinoïdes » est un point commun', y && y.commonPoints.includes('Rétinoïdes'), y && y.commonPoints.join(' | '));
+  check('« Rétinoïdes » est un point commun', y && y.commonPoints.join(' | ').includes('Rétinoïdes'),y && y.commonPoints.join(' | '));
   const r3b = await call(handler, { product: Object.assign({}, prod, { name: 'Retinol 0.3% Serum' }), candidates: [cand('m396')], userSkin: {}, idToken: 'tok', searchId: 'ac-r3b-abcdef' }, '10.9.8.2');
   check('… mais un rétinol 0,5 % n\'est PAS proposé pour un rétinol 0,3 % (trop concentré) — règle de sécurité gardée', !(r3b.o.results || []).some(z => z.level !== 'type' && z.id === 'm396'));
 
