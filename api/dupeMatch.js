@@ -326,8 +326,18 @@ module.exports = async (req, res) => {
     }).map(c => ({ c, known: _hasAmount(c), hint: (Number(c.price) > 0 && _hasAmount(c)) ? (_unit(c.price, c.volumeMl, c.netWeightG, c.patchCount) || {}).per100 : null }))
       // indicatif seulement : on écarte ceux dont le prix du catalogue est très au-dessus du produit de la personne
       .filter(x => x.hint == null || x.hint < refUnit0.per100 * 1.5)
-      // d'abord ceux dont la contenance est connue (les moins chers au ml en tête), puis ceux dont on doit lire la contenance
-      .sort((a, b) => (a.known === b.known ? ((a.hint == null ? 1e9 : a.hint) - (b.hint == null ? 1e9 : b.hint)) : (a.known ? -1 : 1)));
+      // d'abord ceux dont la contenance est connue, puis ceux dont on doit lire la contenance.
+      // Parmi eux, les produits dont la FORMULE ressemble vraiment (liste INCI du catalogue, similarité ≥ 55) passent avant les autres :
+      // le relevé de prix est limité à quelques produits par recherche, il doit servir ceux qui peuvent être de vrais dupes (puis les moins chers au ml).
+      .map(x => Object.assign(x, { close: (() => {
+        const ci = Array.isArray(x.c.inciNormalized) ? x.c.inciNormalized : null;
+        if (!ci || !ci.length || !refInciList.length) return 1;
+        const s = _formulaSim(refInciList, ci);
+        return (s && s.score != null && s.score >= 55) ? 0 : 1;
+      })() }))
+      .sort((a, b) => (a.known !== b.known) ? (a.known ? -1 : 1)
+        : (a.close !== b.close) ? (a.close - b.close)
+        : ((a.hint == null ? 1e9 : a.hint) - (b.hint == null ? 1e9 : b.hint)));
     const hits = await Promise.all(need.map(x => WebPrice.cacheGet(x.c.id)));
     const toSearch = [];
     need.forEach((x, i) => {

@@ -33860,7 +33860,7 @@
       "category": "eye",
       "imageUrl": "assets/products/m445.jpg",
       "amazonUrl": "https://www.amazon.fr/s?k=Clarins%20Total%20Eye%20Lift%20Soin%20Contour%20des%20Yeux&tag=glowupapp-21",
-      "price": 74,
+      "price": 90,
       "rating": 4.5,
       "reviews": 0,
       "description": "",
@@ -33870,7 +33870,6 @@
         "ridules"
       ],
       "active": true,
-      "_priceIndicatif": true,
       "inciRaw": "Aqua/Water/Eau, Caprylic/Capric Triglyceride, Propanediol, Cetearyl Alcohol, Butyrospermum Parkii (Shea) Butter, Hydrogenated Coco-Glycerides, Pentylene Glycol, Panthenol, Glycerin, Glyceryl Stearate, PEG-100 Stearate, Cetearyl Glucoside, Caffeine, Steareth-21, Hydroxyacetophenone, Dimethicone, Chlorphenesin, Avena Sativa (Oat) Kernel Extract, Carbomer, Ethylhexylglycerin, PVP, Tocopheryl Acetate, CI 77891/Titanium Dioxide, Synthetic Fluorphlogopite, Disodium EDTA, Escin, Parfum/Fragrance, Butylene Glycol, Sodium Hydroxide, Dimethiconol, Phenethyl Alcohol, Citric Acid, Harungana Madagascariensis Extract, Marrubium Vulgare Extract, Sodium Benzoate, Furcellaria Lumbricalis Extract, Sodium Carrageenan, Jania Rubens Extract, Tin Oxide, Maris Sal/Sea Salt/Sel Marin, Acetyl Tetrapeptide-2, Dextran",
       "inciNormalized": [
         "aqua/water/eau",
@@ -34269,7 +34268,7 @@
         "matchedTitle": "Clarins Total Eye Lift",
         "confidence": "élevée",
         "phase": "officiel-2026-11-02",
-        "note": "Liste officielle (rubrique « Composition » du site Clarins, code V4480A) recopiée par Candice Arav le 2026-11-02. Remplace la liste INCIDecoder du 2026-10-20 (38 ingrédients, formule différente)."
+        "note": "Liste officielle (rubrique « Composition » du site Clarins, code V4480A) recopiée par Candice Arav le 2026-11-02. Remplace la liste INCIDecoder du 2026-10-20 (42 ingrédients, formule différente)."
       },
       "volumeMl": 15,
       "volumeSource": {
@@ -34277,7 +34276,14 @@
         "retrievedAt": "2026-10-20",
         "type": "fiche produit d'un revendeur"
       },
-      "inciSourceKind": "official"
+      "inciSourceKind": "official",
+      "priceVerified": true,
+      "priceSource": {
+        "name": "Clarins (site officiel)",
+        "url": ""
+      },
+      "priceRetrievedAt": "2026-11-02",
+      "priceNote": "prix officiel du site de la marque, confirmé par Candice Arav"
     },
     {
       "id": "m446",

@@ -101,6 +101,17 @@ const refBase = ['Aqua', 'Glycerin', 'Panthenol', 'Dimethicone', 'Cetearyl Alcoh
   check('source et date : site officiel de la marque des deux côtés, 02/11/2026', real && real.inciInfo && real.inciInfo.ref.label === 'site officiel de la marque' && real.inciInfo.cand.label === 'site officiel de la marque' && real.inciInfo.ref.date === '2026-11-02' && real.inciInfo.cand.date === '2026-11-02', JSON.stringify(real && real.inciInfo));
   check('Clarins ne cite plus l\'ancien « Albizia » ni le « Paullinia » de l\'ancienne liste', !/albizia|paullinia/i.test(JSON.stringify(m445.inciNormalized)));
 
+  console.log('\n── Relevé de prix : les produits à la formule proche sont cherchés en premier ──');
+  const WebPrice = require(path.join(ROOT, 'lib', 'webPrice.js'));
+  const searched = []; const realFind = WebPrice.findPrice; WebPrice.findPrice = async c => { searched.push(c.id); return null; };
+  const cheap = i => ({ id: 'zz-cheap' + i, brand: 'Marque ' + i, name: 'Cica Eye Soin ' + i, category: 'eye', price: 12 + i, volumeMl: 15, ingredientTags: [], concernTags: [], description: '' });
+  const close = { id: 'zz-close', brand: 'Marque Z', name: 'Cica Eye Soin Z', category: 'eye', price: 80, volumeMl: 15, inciNormalized: m445.inciNormalized, inciVerificationStatus: 'verified', ingredientTags: [], concernTags: [], description: '' };
+  const refEye = { brand: 'Sisley', name: "Sisleÿa L'Intégral Yeux et Lèvres", category: 'eye', productType: 'skincare', inciList: lk.inciList, inciConfidence: lk.confidence, volumeMl: 15, refPrice: 173 };
+  const rr = await call(handler, { product: refEye, candidates: [1, 2, 3, 4, 5, 6].map(cheap).concat([close]), userSkin: {}, idToken: 'tok', searchId: 'cp-order-abcdef' }, '10.6.6.6');
+  WebPrice.findPrice = realFind;
+  check('la recherche a abouti', rr.o.status === 'ok', JSON.stringify(rr.o).slice(0, 200));
+  check('le produit à la formule proche (zz-close) est dans les 4 relevés de prix, bien qu\'il ne soit pas le moins cher', searched.slice(0, 4).includes('zz-close'), searched.join(', '));
+
   console.log('\n── Eight Hour Cream ──');
   check('plus d\'actif vedette « acide salicylique » pour Eight Hour Cream (baume nourrissant)', MainActive.resolve({ name: 'Eight Hour Cream', inci: require(path.join(ROOT, 'data', 'reference-inci.json')).refs.find(x => x.key === 'elizabeth-arden-eight-hour-cream').inci, tags: [] }, require(path.join(ROOT, 'lib', 'inciSim.js'))) === null);
   check('… mais un vrai produit à l\'acide salicylique garde son actif', (MainActive.resolve({ name: 'BHA 2% Liquid', inci: ['aqua', 'salicylic acid'], tags: [] }, require(path.join(ROOT, 'lib', 'inciSim.js'))) || {}).family === 'bha');

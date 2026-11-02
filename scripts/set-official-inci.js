@@ -68,6 +68,10 @@ const before = (p.inciNormalized || []).length;
 p.inciRaw = clList.join(', ');
 p.inciNormalized = st.inciNormalized; p.inciStructured = st.inciStructured; p.actives = st.actives;
 p.inciSourceKind = 'official'; p.inciSourceUrl = ''; p.inciLastVerifiedAt = DATE; p.inciVerificationStatus = 'verified';
+// Prix officiel du site Clarins confirmé par Candice le 2026-11-02 : prix SOURCÉ et DATÉ → le produit peut être un dupe sans dépendre du relevé web
+p.price = 90; p.priceVerified = true; delete p._priceIndicatif;
+p.priceSource = { name: 'Clarins (site officiel)', url: '' };
+p.priceRetrievedAt = DATE; p.priceNote = 'prix officiel du site de la marque, confirmé par Candice Arav';
 p.inciMatch = { source: 'official', matchedTitle: 'Clarins Total Eye Lift', confidence: 'élevée', phase: 'officiel-' + DATE,
   note: "Liste officielle (rubrique « Composition » du site Clarins, code V4480A) recopiée par Candice Arav le " + DATE + ". Remplace la liste INCIDecoder du 2026-10-20 (" + before + " ingrédients, formule différente)." };
 saveLike(fCat, raw, cat);
