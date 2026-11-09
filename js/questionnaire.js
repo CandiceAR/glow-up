@@ -1294,6 +1294,7 @@ const Questionnaire = (() => {
       return;
     }
     // Navigateur classique : écran de capture live (getUserMedia)
+    sessionStorage.removeItem('glow_retake');   // ce parcours-ci reprend le questionnaire, pas « Refaire mon analyse de peau »
     sessionStorage.setItem('glow_resume_questionnaire', '1');
     showScreen('capture');
   }
@@ -1316,12 +1317,17 @@ const Questionnaire = (() => {
     AppState.face = AppState.face || {};
     AppState.face.photo        = dataUrl;
     AppState.face.skinAnalysis = null;
+    AppState.face.landmarks    = null;   // nouvelle photo → le visage est repéré à nouveau (sinon l'ancien repérage serait réutilisé)
 
     _showPhotoAnalyzing();
     try {
       if (typeof SkinAnalysis !== 'undefined') {
         const result = await SkinAnalysis.analyzeFromPhoto(dataUrl);
-        if (result) AppState.face.skinAnalysis = result;
+        if (result) {
+          AppState.face.skinAnalysis = result;
+          // Le score entre dans l'historique (Skin Journey)
+          try { if (typeof SkinJourney !== 'undefined') SkinJourney.captureAnalysis({ silent: true, hasMakeup: !!AppState.face.hasMakeup }); } catch (e) { /* l'historique est un confort */ }
+        }
       }
     } catch {}
 

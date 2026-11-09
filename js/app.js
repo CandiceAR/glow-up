@@ -153,6 +153,9 @@ function showScreen(name) {
     if (typeof SkinAnalysis !== 'undefined') SkinAnalysis.stopLiveAnalysis();
   }
 
+  // « Refaire mon analyse de peau » : le repère n'est valable que tant qu'on reste sur l'écran photo
+  if (name !== 'capture' && name !== 'skin-retake') { try { sessionStorage.removeItem('glow_retake'); } catch (e) { /* stockage indisponible */ } }
+
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const target = document.getElementById('screen-' + name);
   if (!target) { console.warn('Screen not found:', name); return; }
@@ -779,23 +782,34 @@ async function handleCaptureNext() {
     sessionStorage.removeItem('glow_resume_questionnaire');
     // Mode questionnaire skincare → analyse silencieuse, pas d'écran intermédiaire
     AppState.face.skinAnalysis = null;
+    AppState.face.landmarks = null;   // nouvelle photo → le visage est repéré à nouveau (sinon l'ancien repérage serait réutilisé)
     try {
       if (typeof SkinAnalysis !== 'undefined') {
         const result = await SkinAnalysis.analyzeFromPhoto(AppState.face.photo);
         if (result) AppState.face.skinAnalysis = result;
       }
     } catch {}
+    // Le score entre dans l'historique (Skin Journey)
+    try { if (AppState.face.skinAnalysis && typeof SkinJourney !== 'undefined') SkinJourney.captureAnalysis({ silent: true, hasMakeup: !!AppState.face.hasMakeup }); } catch {}
     showScreen('questionnaire');
     if (typeof Questionnaire !== 'undefined') Questionnaire.resumeFromPhoto();
     return;
   }
 
+  // « Refaire mon analyse de peau » (photo seulement, sans le questionnaire)
+  if (sessionStorage.getItem('glow_retake') === '1' && typeof SkinRetake !== 'undefined') {
+    SkinRetake.onCaptured();
+    return;
+  }
+
   AppState.face.skinAnalysis = null;
+  AppState.face.landmarks = null;
   showScreen('skin-analysis');
 }
 
 // ─── Passer la photo depuis la capture (bouton skip) ──────────
 function _captureSkip() {
+  if (sessionStorage.getItem('glow_retake') === '1' && typeof SkinRetake !== 'undefined') { SkinRetake.cancel(); return; }
   if (sessionStorage.getItem('glow_resume_questionnaire') === '1') {
     sessionStorage.removeItem('glow_resume_questionnaire');
     showScreen('questionnaire');

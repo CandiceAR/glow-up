@@ -631,6 +631,9 @@ const RoutineRenderer = (() => {
       <!-- Bannière sauvegarde — juste après la routine -->
       ${renderSaveBanner()}
 
+      <!-- Mon score de peau + « Refaire mon analyse de peau » (photo seulement) — skincare uniquement -->
+      ${(AppState.routineChoice !== 'makeup' && typeof SkinRetake !== 'undefined') ? SkinRetake.cardHtml('routine') : ''}
+
       <!-- ✦ SKIN JOURNEY — skincare uniquement -->
       ${AppState.routineChoice !== 'makeup' ? renderSkinJourneyTeaser() : ''}
 

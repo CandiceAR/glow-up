@@ -1,4 +1,4 @@
-const CACHE_NAME = 'glowup-v286';
+const CACHE_NAME = 'glowup-v287';
 
 const STATIC_ASSETS = [
   '/',
@@ -19,6 +19,8 @@ const STATIC_ASSETS = [
   '/js/catalogue.js',
   '/js/skinAnalysis.js',
   '/js/skinJourney.js',
+  '/js/skinRetake.js',
+  '/lib/skinScore.js',
   '/js/makeupRoutine.js',
   '/js/firestoreProducts.js',
   '/js/subscription.js',

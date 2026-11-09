@@ -96,7 +96,9 @@ const Profil = (() => {
     }
   }
 
-  function _cOverview() { return _routineActuelle() + _evolutionTeaser() + _aiConsentBlock(); }
+  // En haut de « Mon profil » : le dernier score de peau (avec sa date) et le bouton « Refaire mon analyse de peau »
+  const _scoreCard = () => (typeof SkinRetake !== 'undefined') ? SkinRetake.cardHtml('profil') : '';
+  function _cOverview() { return _scoreCard() + _routineActuelle() + _evolutionTeaser() + _aiConsentBlock(); }
 
   // Photos & IA : l'utilisatrice peut retirer à tout moment l'accord donné avant l'envoi d'une photo
   function _aiConsentBlock() {

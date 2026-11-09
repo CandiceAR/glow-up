@@ -95,6 +95,8 @@ const SkinJourney = (() => {
 
   // ─── Enregistrement d'une analyse (appelé après chaque analyse) ─
   // opts.silent : amorçage discret de J0 (pas de toast ni d'écran de confirmation)
+  // opts.date (AAAA-MM-JJ) : date de l'analyse quand elle n'est pas d'aujourd'hui (ex. ancienne analyse reprise comme point de départ)
+  // opts.hasMakeup : photo prise avec maquillage (résultat moins précis, noté dans l'historique)
   function captureAnalysis(opts = {}) {
     if (!_eligible()) return;                       // besoin d'un compte
     const r = AppState?.face?.skinAnalysis;
@@ -103,10 +105,15 @@ const SkinJourney = (() => {
     if (!metrics) return;
 
     let data = load() || { startDate: getToday(), entries: [] };
-    const today = getToday();
+    const today = opts.date || getToday();
+    // Version légère de l'analyse (score global + score par zone) : jamais de photo ni de pixels dans l'historique
+    const snap = (typeof SkinScore !== 'undefined' && SkinScore.snapshot) ? SkinScore.snapshot(r, metrics, today) : null;
 
     data.entries = (data.entries || []).filter(e => e.date !== today);   // dédup jour
-    data.entries.push({ date: today, ts: Date.now(), day: 0, metrics, globalScore: r.globalScore || null, thumb: null });
+    const entry = { date: today, ts: Date.now(), day: 0, metrics, globalScore: snap ? snap.globalScore : (r.globalScore || null), thumb: null };
+    if (snap) entry.zones = snap.zones;
+    if (opts.hasMakeup) entry.hasMakeup = true;
+    data.entries.push(entry);
     data.entries.sort((a, b) => new Date(a.date) - new Date(b.date));
     data.startDate = data.entries[0].date;
     data.entries.forEach(e => { e.day = daysBetween(data.startDate, e.date); });
@@ -114,12 +121,12 @@ const SkinJourney = (() => {
     save(data);
     if (!opts.silent) _justRecorded = true;
 
-    const photo = AppState?.face?.photo;
+    const photo = opts.date ? null : AppState?.face?.photo;   // la photo en mémoire appartient à l'analyse du jour, pas à une ancienne
     if (photo) compressPhoto(photo, thumb => {
       if (!thumb) return;
       const d = load(); if (!d) return;
       const e = d.entries.find(x => x.date === today);
-      if (!e) return;
+      if (!e || e.ts !== entry.ts) return;          // une analyse plus récente a pris la place : on ne lui colle pas cette photo
       e.thumb = thumb;
       _capThumbs(d);
       save(d);
@@ -261,7 +268,8 @@ const SkinJourney = (() => {
           <p class="sj-tip" onclick="showScreen('capture')">Comment prendre une bonne photo ?</p>
         ` : `
           <h1 class="sj-state-title">Ton suivi a commencé ✨</h1>
-          <p class="sj-state-sub">Prochaine analyse disponible à <strong>J+${CADENCE}</strong> (${_prettyDate(_nextDate(data))}).<br>Reviens bientôt pour reprendre une photo.</p>
+          <p class="sj-state-sub">Prochaine analyse conseillée à <strong>J+${CADENCE}</strong> (${_prettyDate(_nextDate(data))}).<br>Tu peux aussi refaire ton analyse dès maintenant si tu veux.</p>
+          <button class="btn btn-outline" onclick="SkinJourney.takePhoto()">Refaire mon analyse de peau</button>
         `}
       </div>
     </div>`;
@@ -469,7 +477,11 @@ const SkinJourney = (() => {
   function setView(v)  { _view = v; _justRecorded = false; render(); }
   function setMetric(k){ _metricKey = k; render(); }
   function setSel(i)   { _selIdx = i; render(); }
-  function takePhoto() { showScreen('capture'); }
+  // Nouvelle photo = « Refaire mon analyse de peau » (photo seulement, sans refaire le questionnaire)
+  function takePhoto() {
+    if (typeof SkinRetake !== 'undefined' && SkinRetake.start) SkinRetake.start('journey');
+    else showScreen('capture');
+  }
   function resetConfirm() {
     if (confirm('Effacer tout ton Skin Journey ? Cette action est définitive.')) {
       localStorage.removeItem(STORAGE_KEY);
@@ -487,6 +499,7 @@ const SkinJourney = (() => {
     setView, setMetric, setSel, takePhoto,
     resetConfirm,
     render,
+    entries: () => { const d = load(); return (d && Array.isArray(d.entries)) ? d.entries : []; },
     isActive: () => { const d = load(); return !!(d && d.entries && d.entries.length); },
     hasEvolution: () => { const d = load(); return !!(d && d.entries && d.entries.length >= 2); },
     summary: () => { const d = load(); return (d && d.entries && d.entries.length >= 2) ? _deltas(d) : null; },

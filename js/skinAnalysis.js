@@ -579,7 +579,7 @@ const SkinAnalysis = (() => {
       : 0.5;
     const eyeContrast = detectEyeContrast(sourceCanvas, landmarks, w, h, skinLumNorm);
 
-    return { zones: zoneResults, undertone, skinType, globalScore, faceShape, cernes, carnation, eyeContrast };
+    return { zones: zoneResults, undertone, skinType, globalScore, faceShape, cernes, carnation, eyeContrast, analyzedAt: new Date().toISOString() };
   }
 
   // ─── Extraction sclérotique (blanc des yeux) pour balance des blancs ───────
