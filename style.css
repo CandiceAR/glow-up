@@ -10987,3 +10987,4 @@ body.drawer-open{ overflow: hidden; }   /* blocage du défilement arrière-plan 
 .sr-fail-ic { display: block; font-size: 40px; color: var(--nude); margin-bottom: 8px; }
 .sr-actions { margin-top: 6px; }
 @media (max-width: 380px) { .sr-zone { grid-template-columns: 80px 1fr 28px 34px; gap: 8px; } }
+.sr-fail .sr-h1 { margin: 0 0 14px; }
