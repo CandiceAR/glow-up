@@ -895,6 +895,10 @@ const RoutineRenderer = (() => {
       ? (_isLowBudget() ? _buildLowBudgetRoutine() : _filterSpfIfIncluded(r.matin || []))
       : (r.soir || []);
     const hasCR = typeof CurrentRoutine !== 'undefined';
+    // Même ajustement des titres que l'écran de la routine (renderResults) AVANT le choix des produits : sans cela, le produit
+    // annoncé ici (récapitulatif « Ce que tu as demandé », Profil, « Modifier ma routine ») pouvait différer de celui affiché
+    // dans les étapes, car un titre ajusté change le choix.
+    try { _alignStepsWithProducts(steps, section); } catch (e) { /* on garde les titres d'origine */ }
     const used = new Set(), usedKept = new Set(), occ = {};
     return [...steps].sort((a, b) => a.order - b.order).map(step => {
       const n = occ[step.step] = (occ[step.step] === undefined ? 0 : occ[step.step] + 1);
@@ -1173,7 +1177,8 @@ const RoutineRenderer = (() => {
     const asked = RequestedActives.parse(AppState.questionnaire?.answers?.freeText).wanted;
     if (!asked.length) return '';
     let rows = [];
-    try { rows = [...resolveSection('matin'), ...resolveSection('soir')]; } catch (e) { rows = []; }
+    // Petit budget : la routine du soir n'est pas détaillée à l'écran (nettoyant + crème du matin) → on ne cite que ce qui est affiché
+    try { rows = _isLowBudget() ? resolveSection('matin') : [...resolveSection('matin'), ...resolveSection('soir')]; } catch (e) { rows = []; }
     const catalog = AppState.products.catalog || [];
     const prodOf = r => r.product || (r.kept && r.kept.id ? catalog.find(p => p.id === r.kept.id) : null);
     const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));

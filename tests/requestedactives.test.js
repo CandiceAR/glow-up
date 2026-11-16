@@ -21,7 +21,8 @@ check('au plus 4 molécules demandées', RA.parse('hyaluronique, céramides, nia
 const rules = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'rules.json'), 'utf8'));
 const CAT = (() => { const j = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'products-manual.json'), 'utf8')); return (Array.isArray(j) ? j : j.products).filter(p => p.active !== false && !p.discontinued); })();
 const ctx = { console: { log() {}, warn() {}, error() {}, info() {} }, window: { location: { search: '', href: '', origin: '', hostname: 'localhost' } }, AppState: null, fetch: async () => ({ ok: true, json: async () => rules }), localStorage: { getItem: () => null, setItem() {} }, sessionStorage: { getItem: () => null, setItem() {} },
-  document: { getElementById: () => null, querySelectorAll: () => [], addEventListener() {} }, location: { search: '', href: '', origin: '', hostname: 'localhost' }, navigator: { userAgent: 'test' }, RequestedActives: RA };
+  document: { getElementById: () => null, querySelectorAll: () => [], addEventListener() {} }, location: { search: '', href: '', origin: '', hostname: 'localhost' }, navigator: { userAgent: 'test' }, RequestedActives: RA,
+  Subscription: { canAccess: () => true, getPlan: () => 'glowplus', canGenerateRoutine: () => true } };   // tout est gratuit : la routine du soir s'affiche en entier
 vm.createContext(ctx);
 const load = f => vm.runInContext(fs.readFileSync(path.join(ROOT, f), 'utf8'), ctx, { filename: f });
 load('js/rulesEngine.js'); load('js/skinConcern.js'); load('js/routineRenderer.js');
@@ -101,6 +102,24 @@ vm.runInContext('globalThis.RE = RulesEngine; globalThis.RR = RoutineRenderer;',
   check('« je veux des céramides » : ces deux produits ne sont jamais choisis pour l’étape des céramides (' + wrongCer + '/' + total + ')', wrongCer === 0);
   const variety = new Set(); for (let i = 0; i < 40; i++) { const r = run({ freeText: ASK }, 'var' + i); r.rows.forEach(x => { if (x.product && x.step.mustHave && x.step.mustHave.indexOf('ceramide') >= 0) variety.add(x.product.id); }); }
   check('choix variés : au moins 4 produits à céramides différents proposés sur 40 routines (' + variety.size + ')', variety.size >= 4, [...variety].join(','));
+
+  console.log('\n── Les produits annoncés en haut sont ceux des étapes en dessous ──');
+  const strip = s => s.replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"');
+  const PROFILS = [['peau sèche', {}], ['peau sensible', SENS], ['peau grasse', { skinType: 'grasse', oiliness: 'brillante', complexes: ['acne'], concerns: ['acne'] }], ['peau mixte, budget serré', { skinType: 'mixte', budget: 'low' }]];
+  PROFILS.forEach(([nom, extra]) => {
+    let produits = 0, absents = 0, coches = 0, cochesAbsentes = 0, exemple = '';
+    for (let i = 0; i < 25; i++) {
+      run(Object.assign({ freeText: ASK }, extra), 'cmp' + nom.length + '_' + i);
+      // petit budget : la routine du soir n'est pas détaillée à l'écran, seules les étapes du matin comptent
+      const rows = extra.budget === 'low' ? ctx.RR.resolveSection('matin') : [].concat(ctx.RR.resolveSection('matin'), ctx.RR.resolveSection('soir'));
+      holder.innerHTML = ''; ctx.RR.renderResults();
+      const html = strip(holder.innerHTML), recap = (html.match(/class="rq-card"[\s\S]*?<\/section>/) || [''])[0], body = html.replace(recap, '');
+      rows.filter(r => r.product).forEach(r => { produits++; if (!body.includes(r.product.name)) { absents++; exemple = exemple || r.product.name; } });
+      [...recap.matchAll(/rq-ok[\s\S]*?dans ([^<]+)</g)].forEach(m => { coches++; if (!rows.some(r => r.product && m[1].trim() === ((r.product.brand ? r.product.brand + ' ' : '') + r.product.name))) cochesAbsentes++; });
+    }
+    check(nom + ' : les ' + produits + ' produits choisis sont bien affichés dans les étapes (' + absents + ' absents)', absents === 0, exemple);
+    check(nom + ' : chaque produit coché dans « Ce que tu as demandé » est un produit de la routine (' + coches + ' cochés, ' + cochesAbsentes + ' hors routine)', cochesAbsentes === 0 && coches > 0);
+  });
 
   console.log('\n── Autres cas ──');
   const nothing = run({}, 'x1'), nothing2 = run({ freeText: 'Peau très sensible, je suis fatiguée' }, 'x1');
