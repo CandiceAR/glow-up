@@ -90,6 +90,18 @@ vm.runInContext('globalThis.RE = RulesEngine; globalThis.RR = RoutineRenderer;',
   try { ctx.RR.renderResults(); page = holder.innerHTML; } catch (e) { page = 'ERREUR ' + e.message; }
   check('molécule bien présente (rétinol d’un produit déjà choisi) : cochée avec le nom du produit, jamais d’étape rétinol ajoutée', retAsk.has('retinoid') ? /rq-ok/.test(page) : /rq-ko/.test(page));
 
+  console.log('\n── La liste d’ingrédients vérifiée l’emporte sur l’étiquette de la fiche ──');
+  const byId = id => CAT.find(p => p.id === id);
+  check('Cicaplast Baume B5+ et The Ordinary NMF + HA : fiche « céramides » mais liste vérifiée SANS céramides → pas comptés', !ctx.RR.productHasActive(byId('m427'), 'ceramide') && !ctx.RR.productHasActive(byId('m398'), 'ceramide'));
+  check('The Ordinary NMF + HA contient bien de l’acide hyaluronique (hyaluronate de sodium dans sa liste)', ctx.RR.productHasActive(byId('m398'), 'hyaluronic'));
+  check('CeraVe Pommade Réparatrice (céramides dans sa liste) : compté', ctx.RR.productHasActive(byId('m264'), 'ceramide'));
+  check('CeraVe Baume 177 ml (pas encore de liste) : on garde la fiche (« céramides »), comme avant', ctx.RR.productHasActive(byId('m262'), 'ceramide'));
+  let wrongCer = 0;
+  for (let i = 0; i < total; i++) { const r = run({ freeText: 'je veux des céramides' }, 'v' + i); if (r.rows.some(x => x.product && x.step.mustHave && x.step.mustHave.indexOf('ceramide') >= 0 && /cicaplast|natural moisturizing/i.test(x.product.name))) wrongCer++; }
+  check('« je veux des céramides » : ces deux produits ne sont jamais choisis pour l’étape des céramides (' + wrongCer + '/' + total + ')', wrongCer === 0);
+  const variety = new Set(); for (let i = 0; i < 40; i++) { const r = run({ freeText: ASK }, 'var' + i); r.rows.forEach(x => { if (x.product && x.step.mustHave && x.step.mustHave.indexOf('ceramide') >= 0) variety.add(x.product.id); }); }
+  check('choix variés : au moins 4 produits à céramides différents proposés sur 40 routines (' + variety.size + ')', variety.size >= 4, [...variety].join(','));
+
   console.log('\n── Autres cas ──');
   const nothing = run({}, 'x1'), nothing2 = run({ freeText: 'Peau très sensible, je suis fatiguée' }, 'x1');
   check('sans molécule demandée, la routine est exactement la même qu\'avant', JSON.stringify(nothing.routine.matin) === JSON.stringify(nothing2.routine.matin) && JSON.stringify(nothing.routine.soir) === JSON.stringify(nothing2.routine.soir));

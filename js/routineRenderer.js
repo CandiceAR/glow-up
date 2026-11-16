@@ -218,7 +218,17 @@ const RoutineRenderer = (() => {
     return ((p.ingredientTags || []).join(' ') + ' ' + (p.inciNormalized || []).join(' ')
           + ' ' + (p.name || '') + ' ' + (p.concernTags || []).join(' ')).toLowerCase();
   }
-  function _productHasActive(p, a) { const re = ACTIVE_MATCH[a]; return re ? re.test(_productText(p)) : false; }
+  // Un produit dont la liste d'ingrédients est VÉRIFIÉE : cette liste décide, elle seule (une étiquette « céramides » de la fiche
+  // ne peut pas contredire la liste : Cicaplast Baume B5+ et The Ordinary NMF + HA n'ont pas de céramides). Sans liste vérifiée :
+  // fiche (étiquettes, nom), comme avant.
+  function _inciVerified(p) {
+    return Array.isArray(p.inciNormalized) && p.inciNormalized.length >= 5 && (!p.inciVerificationStatus || p.inciVerificationStatus === 'verified');
+  }
+  function _productHasActive(p, a) {
+    const re = ACTIVE_MATCH[a];
+    if (!re) return false;
+    return re.test(_inciVerified(p) ? p.inciNormalized.join(' ').toLowerCase() : _productText(p));
+  }
 
   // ─── Budget utilisateur ───────────────────────────────────────
   // Normalise les valeurs de budget (questionnaire: low/medium/high, ancien: petits-prix/bon-rapport/premium)
