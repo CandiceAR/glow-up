@@ -495,11 +495,11 @@ const RoutineAnalyzer = (() => {
     }
   }
 
-  // Produits jugés adaptés (verdict "adapted" ou dans la routine optimisée "keep")
+  // Produits à garder : UNIQUEMENT ceux dont le verdict est « Adapté » (la liste « à garder » proposée par l'IA ne compte plus :
+  // elle pouvait contredire les verdicts et faire passer un produit « Peu adapté » pour « validé »).
   function _computeKeep(result) {
-    const refs = new Set();
-    (result.optimized?.keep || []).forEach(r => refs.add(r));
-    (result.products || []).forEach(p => { if (p.verdict === 'adapted') refs.add(p.ref); });
+    const refs = new Set((typeof RoutineVerdict !== 'undefined') ? RoutineVerdict.keepRefs(result)
+      : (result.products || []).filter(p => p.verdict === 'adapted').map(p => p.ref));
     return [...refs].map(ref => S.products[ref]).filter(Boolean).map(p => ({
       id: p.id || null, brand: p.brand || '', name: p.name || '', category: p.category || 'other', fromCatalog: !!p.id,
       photo: p.photo || null   // vignette de la photo prise par l'utilisatrice
@@ -602,10 +602,12 @@ const RoutineAnalyzer = (() => {
   }
 
   // ─── Résultats ────────────────────────────────────────────────
+  // Les libellés viennent de la même source que la décision « à garder » (lib/routineVerdict.js)
+  const _LB = (typeof RoutineVerdict !== 'undefined') ? RoutineVerdict.LABEL : { adapted: 'Adapté à ta peau', weak: 'Peu adapté', discouraged: 'Déconseillé' };
   const VERDICT = {
-    adapted:     { icon: '✅', label: 'Adapté à ta peau',  cls: 'ra-v-ok' },
-    weak:        { icon: '⚠️', label: 'Peu adapté',        cls: 'ra-v-warn' },
-    discouraged: { icon: '❌', label: 'Déconseillé',       cls: 'ra-v-bad' }
+    adapted:     { icon: '✅', label: _LB.adapted,      cls: 'ra-v-ok' },
+    weak:        { icon: '⚠️', label: _LB.weak,         cls: 'ra-v-warn' },
+    discouraged: { icon: '❌', label: _LB.discouraged,  cls: 'ra-v-bad' }
   };
   const ACT = { keep: '✅', replace: '🔄', add: '➕' };
 

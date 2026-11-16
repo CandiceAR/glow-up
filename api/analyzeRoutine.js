@@ -10,6 +10,7 @@
    ============================================================ */
 
 const AI = require('../lib/aiGuard.js');
+const RV = require('../lib/routineVerdict.js');
 
 const CORS = {
   'Access-Control-Allow-Origin':  '*',
@@ -191,11 +192,21 @@ Les "ref" renvoient à l'index des produits fournis. N'invente pas de produits i
                      reason: typeof x.reason === 'string' ? x.reason.slice(0, 200) : '' }))
     };
 
+    // Cohérence : la liste « à garder » = EXACTEMENT les produits au verdict « Adapté ». Un produit « Peu adapté » / « Déconseillé »
+    // n'y figure jamais (l'IA pouvait se contredire) ; ceux qu'elle avait oubliés dans « à remplacer » y sont ajoutés avec leur raison.
+    optimized.keep = RV.keepRefs({ products: prods });
+    prods.filter(p => p.verdict !== 'adapted').forEach(p => {
+      if (!optimized.replace.some(x => x.ref === p.ref)) optimized.replace.push({ ref: p.ref, suggestion: '', reason: RV.reasonFor(p).slice(0, 200) });
+    });
+    // Idem pour les 3 actions : « garde ton … » à propos d'un produit non adapté est retiré
+    const notAdapted = prods.filter(p => p.verdict !== 'adapted').map(p => slim[p.ref]).filter(Boolean);
+    const actionsOk = priorityActions.filter(a => !(a.type === 'keep' && notAdapted.some(p => RV.mentions(a.text, p))));
+
     return res.status(200).json({
       score,
       strengths:    strArr(parsed.strengths, 4),
       improvements: strArr(parsed.improvements, 4),
-      priorityActions,
+      priorityActions: actionsOk,
       products: prods,
       routine,
       optimized

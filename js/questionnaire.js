@@ -1709,18 +1709,12 @@ const Questionnaire = (() => {
     if (!ra) {
       try { ra = JSON.parse(localStorage.getItem('glow_routine_analysis') || 'null'); AppState.routineAnalysis = ra; } catch (e) {}
     }
-    if (!ra || !Array.isArray(ra.keepProducts) || !ra.keepProducts.length) return;
-    if (typeof CurrentRoutine === 'undefined') return;
-    const list = CurrentRoutine.list();
-    ra.keepProducts.forEach(p => {
-      const exists = list.some(e => (e.name || '').toLowerCase().trim() === (p.name || '').toLowerCase().trim());
-      if (!exists) list.push({
-        _key: 'ra_' + Math.random().toString(36).slice(2, 9),
-        id: p.id || null, brand: p.brand || '', name: p.name || '',
-        category: p.category || 'other', fromCatalog: !!p.id, loved: true, forceKeep: true,
-        photo: p.photo || null   // vignette de la photo prise par l'utilisatrice
-      });
-    });
+    if (!ra || !ra.result) return;
+    if (typeof CurrentRoutine === 'undefined' || typeof RoutineVerdict === 'undefined') return;
+    // Seuls les produits « Adapté » d'après le verdict de l'analyse sont gardés. On ne se fie PAS à la liste « keepProducts »
+    // enregistrée (d'anciennes analyses y avaient mis des produits « Peu adapté ») : on la recalcule depuis les verdicts,
+    // et on retire le marquage « gardé » des produits qui ne sont plus adaptés.
+    RoutineVerdict.syncKeep(CurrentRoutine.list(), ra, () => 'ra_' + Math.random().toString(36).slice(2, 9));
   }
 
   // ─── Submit ───────────────────────────────────────────────────

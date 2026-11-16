@@ -142,14 +142,29 @@ const CurrentRoutine = (() => {
                         mixte: 'mixte', sensible: 'sensible', mature: 'mature' };
   function _lbl(t) { return _TYPE_LABEL[t] || t; }
 
+  // Dernière analyse « Analyser ma routine » (mémoire, sinon enregistrée sur l'appareil) : seule SOURCE du verdict
+  function _analysis() {
+    let ra = AppState && AppState.routineAnalysis;
+    if (!ra) {
+      try { ra = JSON.parse(localStorage.getItem('glow_routine_analysis') || 'null'); if (ra && AppState) AppState.routineAnalysis = ra; } catch (e) { ra = null; }
+    }
+    return (ra && ra.result) ? ra : null;
+  }
+
   // Retourne { verdict:'keep'|'replace', reason }
   function evaluate(entry) {
     const skinType = _userSkinType();
 
-    // Validé par l'analyse "Ma routine actuelle" → on garde, quelle que soit la catégorie
-    if (entry.forceKeep) {
-      return { verdict: 'keep', reason: 'Validée par ton analyse de routine ✓' };
+    // 1) Le verdict de « Analyser ma routine » décide, et lui seul :
+    //    « Adapté » → gardé et « Validée par ton analyse » ; « Peu adapté » / « Déconseillé » → jamais gardé ni validé,
+    //    on propose une option mieux adaptée avec la raison de l'analyse. (Elle peut toujours le remettre elle-même
+    //    avec « Modifier ma routine » : il s'affiche alors comme son choix, sans mention « validée ».)
+    const av = (typeof RoutineVerdict !== 'undefined') ? RoutineVerdict.verdictOf(_analysis(), entry) : null;
+    if (av) {
+      if (av.verdict === 'adapted') return { verdict: 'keep', reason: 'Validée par ton analyse de routine ✓', analysis: 'adapted' };
+      return { verdict: 'replace', reason: RoutineVerdict.reasonFor(av) + ' On te propose une option mieux adaptée.', analysis: av.verdict };
     }
+    // Sans analyse qui le concerne, « Validée par ton analyse » ne peut pas être affirmé : on applique les règles ci-dessous.
 
     // Produit saisi manuellement : pas de données ingrédient → on fait confiance
     if (!entry.fromCatalog) {
