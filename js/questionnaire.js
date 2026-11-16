@@ -267,9 +267,9 @@ const Questionnaire = (() => {
     {
       id: 'q15', key: 'freeText', type: 'textarea',
       question: 'Autre chose à me dire sur ta peau ?',
-      subtitle: 'Optionnel — allergies spécifiques, contexte particulier…',
+      subtitle: 'Optionnel — allergies, contexte, ou les molécules que tu veux dans ta routine (acide hyaluronique, céramides, niacinamide…)',
       required: false, skipIf: null,
-      placeholder: 'Ex : j\'utilise déjà de la vitamine C, je suis enceinte…'
+      placeholder: 'Ex : je veux de l\'acide hyaluronique et des céramides, je suis enceinte…'
     }
   ];
 

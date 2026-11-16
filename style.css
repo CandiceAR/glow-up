@@ -10988,3 +10988,12 @@ body.drawer-open{ overflow: hidden; }   /* blocage du défilement arrière-plan 
 .sr-actions { margin-top: 6px; }
 @media (max-width: 380px) { .sr-zone { grid-template-columns: 80px 1fr 28px 34px; gap: 8px; } }
 .sr-fail .sr-h1 { margin: 0 0 14px; }
+
+/* ── « Ce que tu as demandé » (molécules du texte libre, js/routineRenderer.js) ── */
+.rq-card { background: var(--white); border: 1px solid var(--sand); border-radius: var(--radius); padding: 16px 18px; margin: 0 0 14px; box-shadow: var(--shadow-sm); }
+.rq-title { font-family: var(--font-serif); font-size: 20px; color: var(--charcoal); margin: 0 0 8px; }
+.rq-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.rq-row { display: grid; grid-template-columns: 22px 1fr; gap: 8px; font-size: 14px; line-height: 1.45; color: var(--charcoal); }
+.rq-mark { font-weight: 700; }
+.rq-ok .rq-mark { color: #3f8a58; }
+.rq-ko .rq-mark { color: #b5604d; }

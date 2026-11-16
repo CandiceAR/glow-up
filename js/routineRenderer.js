@@ -188,7 +188,19 @@ const RoutineRenderer = (() => {
     panthenol:  /panthenol/i,
     caffeine:   /caffeine|caf[ée]ine/i,
   };
+  // Actifs EXIGÉS pour une étape : ceux que son titre promet + ceux que la personne a demandés pour cette étape (step.mustHave,
+  // voir lib/requestedActives.js). Un produit qui ne les contient pas ne peut pas être choisi, et le titre ne les annonce pas à tort.
   function _stepRequiredActives(step) {
+    const base = _labelRequiredActives(step);
+    const must = (step && Array.isArray(step.mustHave)) ? step.mustHave : [];
+    return must.length ? [...new Set([...base, ...must])] : base;
+  }
+  // Molécules demandées dans « Autre chose à me dire » (ex. acide hyaluronique + céramides)
+  function _wantedActives() {
+    try { return (typeof RequestedActives !== 'undefined') ? RequestedActives.parse(AppState.questionnaire?.answers?.freeText).wanted.map(w => w.id) : []; }
+    catch (e) { return []; }
+  }
+  function _labelRequiredActives(step) {
     if (!step) return [];
     // 1) Le LIBELLÉ de l'étape fait foi : « Sérum rétinol » exige du rétinol, rien d'autre.
     //    (Avant, les mots de la note — ex. « collagène » — ajoutaient des actifs et laissaient passer
@@ -278,6 +290,15 @@ const RoutineRenderer = (() => {
       // Si tous exclus → on garde le pool complet (fallback, mieux que rien)
     }
 
+    // Molécules DEMANDÉES pour cette étape (« Autre chose à me dire ») : on ne garde que les produits qui les contiennent
+    // vraiment (tous si possible, sinon au moins un) — avant les filtres de budget et de peau, qui ne doivent pas les écarter.
+    const must = (stepMeta && Array.isArray(stepMeta.mustHave)) ? stepMeta.mustHave : [];
+    if (must.length) {
+      const all = pool.filter(p => must.every(a => _productHasActive(p, a)));
+      if (all.length) pool = all;
+      else { const some = pool.filter(p => must.some(a => _productHasActive(p, a))); if (some.length) pool = some; }
+    }
+
     // Filtrer par prix plafond si petit budget
     if (_isLowBudget() && LOW_BUDGET_PRICE_CAPS[stepType]) {
       const cheap = pool.filter(p => p.price > 0 && p.price <= LOW_BUDGET_PRICE_CAPS[stepType]);
@@ -322,6 +343,13 @@ const RoutineRenderer = (() => {
       if (_chosen.length || _current.length) _covered = SkinConcern.concernsCovered(_chosen.concat(_current));
     }
 
+    const _wantedIds = _wantedActives();
+    const _hostsActive = (id, type) => {
+      const a = (typeof RequestedActives !== 'undefined') ? RequestedActives.ACTIVES.find(x => x.id === id) : null;
+      const t = type === 'toner' ? 'serum' : type;
+      return !!(a && a.host.indexOf(t) >= 0);
+    };
+
     // Scorer : skinType match +20, rating ×10, isFeatured +10 (réduit pour ne pas dominer)
     pool = pool.map(p => {
       let score = (p.rating || 0) * 10;
@@ -329,6 +357,8 @@ const RoutineRenderer = (() => {
       if (p.skinTypeTags && skinType && p.skinTypeTags.includes(skinType)) score += 20;
       // Bonus fort par actif promis réellement présent (cohérence libellé ↔ produit)
       score += reqActives.filter(a => _productHasActive(p, a)).length * 40;
+      // Bonus pour les molécules demandées que ce type d'étape peut porter (couvre aussi la routine « essentielle » à petit budget)
+      if (_wantedIds.length) score += _wantedIds.filter(a => _hostsActive(a, stepType) && _productHasActive(p, a)).length * 80;
       // Bonus +30 : adéquation problématique → actifs (priorité réduite si déjà couvert)
       if (_concernKeys.length && typeof SkinConcern !== 'undefined') {
         let cb = 0;
@@ -593,6 +623,9 @@ const RoutineRenderer = (() => {
       ${lowBudget ? `<div class="routine-budget-notice">🌱 Routine essentielle · Budget serré · Max ~40 € pour les 3 produits</div>` : ''}
 
       ${renderWarnings(routine.warnings, hasRetinol)}
+
+      <!-- ✅ Ce que tu as demandé (« Autre chose à me dire ») : molécules présentes ou non dans la routine -->
+      ${_renderRequestedRecap()}
 
       <!-- 🧴 Ta routine actuelle : ce qu'on garde / ce qu'on remplace -->
       ${typeof CurrentRoutine !== 'undefined' ? CurrentRoutine.renderRecapBlock() : ''}
@@ -1123,6 +1156,29 @@ const RoutineRenderer = (() => {
     for (const a of ACTIVES) if (a.k.some(kw => hay.includes(kw))) found.push(a);
     return found.slice(0, 6);
   }
+  // ─── « Ce que tu as demandé » : chaque molécule écrite dans « Autre chose à me dire » est-elle dans la routine ? ───
+  // Coche uniquement si un produit PLACÉ dans la routine la contient vraiment (liste d'ingrédients ou fiche) ; sinon le dit franchement.
+  function _renderRequestedRecap() {
+    if (typeof RequestedActives === 'undefined') return '';
+    const asked = RequestedActives.parse(AppState.questionnaire?.answers?.freeText).wanted;
+    if (!asked.length) return '';
+    let rows = [];
+    try { rows = [...resolveSection('matin'), ...resolveSection('soir')]; } catch (e) { rows = []; }
+    const catalog = AppState.products.catalog || [];
+    const prodOf = r => r.product || (r.kept && r.kept.id ? catalog.find(p => p.id === r.kept.id) : null);
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+    const lines = asked.map(a => {
+      const hit = rows.find(r => { const p = prodOf(r); return p && _productHasActive(p, a.id); });
+      if (hit) {
+        const p = prodOf(hit);
+        return `<li class="rq-row rq-ok"><span class="rq-mark">✓</span><div><strong>${esc(cap(a.fr))}</strong> · dans ${esc((p.brand ? p.brand + ' ' : '') + p.name)}</div></li>`;
+      }
+      return `<li class="rq-row rq-ko"><span class="rq-mark">✗</span><div><strong>${esc(cap(a.fr))}</strong> · pas inclus : aucun produit de notre sélection qui en contient, adapté à ton profil, n'a pu être placé dans ta routine.</div></li>`;
+    }).join('');
+    return `<section class="rq-card"><h2 class="rq-title">Ce que tu as demandé</h2><ul class="rq-list">${lines}</ul></section>`;
+  }
+
   function _renderMoleculesBlock() {
     const actives = _collectActives();
     if (!actives.length) return '';

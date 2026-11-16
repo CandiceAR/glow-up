@@ -238,6 +238,15 @@ const RulesEngine = (() => {
       });
     }
 
+    // ── « Autre chose à me dire » : les molécules demandées (acide hyaluronique, céramides…) ont chacune une étape qui
+    //    EXIGE un produit qui la contient (voir lib/requestedActives.js). Après toutes les autres adaptations (sécurité incluse).
+    if (typeof RequestedActives !== 'undefined') {
+      const withRequests = RequestedActives.adapt(adapted, answers);
+      const asked = RequestedActives.parse(answers && answers.freeText).wanted;
+      if (asked.length) logEntry('REQUEST', 'Molécules demandées : ' + asked.map(a => a.fr).join(', '));
+      return withRequests;
+    }
+
     return adapted;
   }
 
